@@ -1,25 +1,25 @@
 {
-  "name": "zenfuse-connectors",
-  "version": "0.1.0",
-  "description": "Zenfuse exchange connectors",
+  "name": "zenfuse",
+  "version": "0.1.0-dev",
+  "description": "Elegant crypto exchanges connector",
   "main": "src/index.js",
   "scripts": {
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zenfuse/node-connectors.git"
+    "url": "git+https://github.com/zenfuse/zenfuse.js.git"
   },
-  "author": "Zenfuse",
+  "author": "zenfuse.io",
   "license": "AGPL-3.0-or-later",
   "engines": {
     "node": ">=12",
     "npm": ">=6"
   },
   "bugs": {
-    "url": "https://github.com/zenfuse/node-connectors/issues"
+    "url": "https://github.com/zenfuse/zenfuse.js/issues"
   },
-  "homepage": "https://github.com/zenfuse/node-connectors#readme",
+  "homepage": "https://zenfuse.js",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
