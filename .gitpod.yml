@@ -1,3 +1,6 @@
 tasks:
+  - name: Setup environment
+    command: nvm i 12
+
   - name: Instaling deps
     init: npm install
