@@ -1,5 +1,5 @@
 image:
-  file: .gitpod.Dockerfile
+    file: .gitpod.Dockerfile
 tasks:
-  - name: Instaling deps
-    init: npm install
+    - name: Instaling deps
+      init: npm install
