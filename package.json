@@ -1,0 +1,33 @@
+{
+  "name": "zenfuse-connectors",
+  "version": "0.1.0",
+  "description": "Zenfuse exchange connectors",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zenfuse/node-connectors.git"
+  },
+  "author": "Zenfuse",
+  "license": "AGPL-3.0-or-later",
+  "engines": {
+    "node": ">=12",
+    "npm": ">=6"
+  },
+  "bugs": {
+    "url": "https://github.com/zenfuse/node-connectors/issues"
+  },
+  "homepage": "https://github.com/zenfuse/node-connectors#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
+    "eslint": "^8.2.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.3.1",
+    "nock": "^13.2.1",
+    "prettier": "^2.4.1"
+  }
+}
