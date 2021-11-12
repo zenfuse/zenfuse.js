@@ -1,0 +1,3 @@
+tasks:
+  - name: Instaling deps
+    init: npm install
