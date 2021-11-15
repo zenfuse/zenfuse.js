@@ -28,7 +28,11 @@ class ExchangeBase {
      * @returns {object};
      */
     fetch(endpoint) {
-        return this.fetcher(endpoint);
+        return this.fetcher(endpoint)
+            .then((res) => {
+                return res.body;
+            })
+            .catch(this.#handleFetcherError);
     }
 
     /**
@@ -51,6 +55,10 @@ class ExchangeBase {
      */
     handleWebSocketError(err) {
         throw err;
+    }
+
+    #handleFetcherError(err) {
+        throw new (class FetcherError extends err {})();
     }
 }
 

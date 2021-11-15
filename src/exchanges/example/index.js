@@ -18,6 +18,8 @@ class ExchangeName extends ExchangeBase {
     #keys = null;
 
     /**
+     * @note Constructor checks connection to exchange API
+     *
      * @param {import('got').ExtendOptions} httpClientOptions User defined options for in lib http client
      */
     constructor(httpClientOptions) {
