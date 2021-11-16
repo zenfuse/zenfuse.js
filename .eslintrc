@@ -10,7 +10,7 @@
     "parserOptions": {
         "ecmaVersion": 2019
     },
-    "plugins": ["prettier", "@typescript-eslint"],
+    "plugins": ["prettier", "@typescript-eslint", "jest"],
     "rules": {
         "prettier/prettier": "error"
     }
