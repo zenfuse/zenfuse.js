@@ -13,5 +13,5 @@
     "plugins": ["prettier", "@typescript-eslint"],
     "rules": {
         "prettier/prettier": "error"
-    
+    }
 }

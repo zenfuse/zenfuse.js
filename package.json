@@ -4,7 +4,8 @@
     "description": "Neat crypto exchanges connector",
     "main": "src/index.js",
     "scripts": {
-        "test": "node --trace-warnings node_modules/.bin/jest --no-cache"
+        "test": "node --trace-warnings node_modules/.bin/jest --no-cache",
+        "format": "eslint --fix .; prettier --write ."
     },
     "repository": {
         "type": "git",
