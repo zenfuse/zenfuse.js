@@ -1,6 +1,10 @@
 const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
-const { getOnlySpotMarkets, structualizeMarkets } = require('./functions');
+const {
+    getOnlySpotMarkets,
+    structualizeMarkets,
+    getAllTickers,
+} = require('./functions');
 
 /**
  * Http client options specialy for this exchange
@@ -21,7 +25,10 @@ class BinanceBase extends ExchangeBase {
      * @param {import('got').ExtendOptions} httpClientOptions User defined options for in http client lib
      */
     constructor(httpClientOptions) {
-        const options = Object.assign(EXCHANGE_HTTP_CLIENT_OPTIONS, httpClientOptions);
+        const options = Object.assign(
+            EXCHANGE_HTTP_CLIENT_OPTIONS,
+            httpClientOptions,
+        );
         super(options);
     }
 
@@ -46,12 +53,17 @@ class BinanceBase extends ExchangeBase {
         await this.fetch('api/v3/ping');
     }
 
+    /**
+     * @returns {string[]} Array of tickers on this exchange
+     */
     async fetchTickers() {
-        const responceBody = await this.fetch('api/v3/exchangeInfo').catch((err) => {
-            throw err;
-        });
+        const responceBody = await this.fetch('api/v3/exchangeInfo').catch(
+            (err) => {
+                throw err;
+            },
+        );
 
-        const tickers = {};
+        const tickers = getAllTickers(responceBody.symbols);
 
         return {
             tickers,
@@ -59,10 +71,15 @@ class BinanceBase extends ExchangeBase {
         };
     }
 
+    /**
+     * @returns Array of ticker pairs on this exchange
+     */
     async fetchMarkets() {
-        const responceBody = await this.fetch('api/v3/exchangeInfo').catch((err) => {
-            throw err;
-        });
+        const responceBody = await this.fetch('api/v3/exchangeInfo').catch(
+            (err) => {
+                throw err;
+            },
+        );
 
         const spotMarkets = getOnlySpotMarkets(responceBody.symbols);
 
@@ -75,7 +92,7 @@ class BinanceBase extends ExchangeBase {
     }
 
     #checkInstanceHasKeys() {
-        if (!!this.#keys) {
+        if (this.#keys) {
             throw new NotAuathenticatedError();
         }
     }

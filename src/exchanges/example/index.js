@@ -23,7 +23,10 @@ class ExchangeName extends ExchangeBase {
      * @param {import('got').ExtendOptions} httpClientOptions User defined options for in lib http client
      */
     constructor(httpClientOptions) {
-        const options = Object.assign(EXCHANGE_HTTP_CLIENT_OPTIONS, httpClientOptions);
+        const options = Object.assign(
+            EXCHANGE_HTTP_CLIENT_OPTIONS,
+            httpClientOptions,
+        );
         super(options);
     }
 

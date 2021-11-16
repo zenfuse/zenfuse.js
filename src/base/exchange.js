@@ -16,7 +16,10 @@ class ExchangeBase {
      * @param {string | URL} agentOptions.prefixUrl
      */
     constructor(httpClientOptions) {
-        const options = Object.assign(this.defaultHttpClientOptions, httpClientOptions);
+        const options = Object.assign(
+            this.defaultHttpClientOptions,
+            httpClientOptions,
+        );
 
         this.fetcher = got.extend(options);
     }

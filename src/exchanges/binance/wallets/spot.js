@@ -1,7 +1,7 @@
 const BinanceBase = require('../base');
 
 /**
- * 
+ *
  */
 class BinanceSpot extends BinanceBase {
     constructor(httpClientOptions) {

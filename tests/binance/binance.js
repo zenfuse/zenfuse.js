@@ -15,11 +15,13 @@ describe('Spot Wallet', () => {
     describe('ping()', () => {
         it('should be defined', () => {
             expect(new Binance('spot').ping).toBeDefined();
-        })
+        });
         it(
             'should pings :)',
             async () => {
-                const scope = nock(BINANCE_HOSTNAME).get('/api/v3/ping').reply(200, {});
+                const scope = nock(BINANCE_HOSTNAME)
+                    .get('/api/v3/ping')
+                    .reply(200, {});
 
                 await new Binance('spot').ping();
 
@@ -34,9 +36,11 @@ describe('Spot Wallet', () => {
 
         const mockFilePath = __dirname + '/mocks/exchangeInfo.json';
         const mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-        const scope = nock(BINANCE_HOSTNAME).get('/api/v3/exchangeInfo').replyWithFile(200, mockFilePath, {
-            'Content-Type': 'application/json',
-        });
+        const scope = nock(BINANCE_HOSTNAME)
+            .get('/api/v3/exchangeInfo')
+            .replyWithFile(200, mockFilePath, {
+                'Content-Type': 'application/json',
+            });
 
         afterAll(() => scope.done());
 
@@ -47,9 +51,11 @@ describe('Spot Wallet', () => {
         it(
             'should fetch without errors',
             async () => {
-                result = await new Binance('spot').fetchMarkets().catch((err) => {
-                    throw err;
-                });
+                result = await new Binance('spot')
+                    .fetchMarkets()
+                    .catch((err) => {
+                        throw err;
+                    });
             },
             TEST_TIMEOUT,
         );
@@ -75,9 +81,54 @@ describe('Spot Wallet', () => {
                             type: 'string',
                         },
                     },
+                    required: ['symbol', 'baseTicker', 'quoteTicker'],
                 },
             };
             expect(result.markets).toMatchSchema(schema);
+        });
+    });
+
+    describe('fetchTickers()', () => {
+        let result;
+
+        const mockFilePath = __dirname + '/mocks/exchangeInfo.json';
+        const mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
+        const scope = nock(BINANCE_HOSTNAME)
+            .get('/api/v3/exchangeInfo')
+            .replyWithFile(200, mockFilePath, {
+                'Content-Type': 'application/json',
+            });
+
+        afterAll(() => scope.done());
+
+        it('should be defined', () => {
+            expect(new Binance('spot').fetchTickers).toBeDefined();
+        });
+
+        it(
+            'should fetch without errors',
+            async () => {
+                result = await new Binance('spot')
+                    .fetchTickers()
+                    .catch((err) => {
+                        throw err;
+                    });
+            },
+            TEST_TIMEOUT,
+        );
+
+        it('should have valid responceBody', () => {
+            expect(result.responceBody).toMatchObject(mockedMarkets);
+        });
+
+        it('should match schema', () => {
+            const schema = {
+                type: 'array',
+                items: {
+                    type: 'string',
+                },
+            };
+            expect(result.tickers).toMatchSchema(schema);
         });
     });
 });
