@@ -5,8 +5,8 @@
     "main": "src/index.js",
     "scripts": {
         "test": "npm run unit-tests",
-        "e2e-tests": "MOCK_HTTP=false node --trace-warnings node_modules/.bin/jest --no-cache",
-        "unit-tests": "node --trace-warnings node_modules/.bin/jest --no-cache",
+        "e2e-tests": "MOCK_HTTP=false node --trace-warnings node_modules/.bin/jest --no-cache --runInBand",
+        "unit-tests": "node --trace-warnings node_modules/.bin/jest",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint ."
     },

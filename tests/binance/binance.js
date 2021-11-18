@@ -8,16 +8,22 @@ const isEnd2EndTest = process.env.MOCK_HTTP === 'false';
 const BINANCE_HOSTNAME = 'https://api.binance.com';
 
 describe('Spot Wallet', () => {
+    let binance;
+
+    beforeAll(() => {
+        binance = new Binance('spot');
+    });
+
     describe('ping()', () => {
         it('should be defined', () => {
-            expect(new Binance('spot').ping).toBeDefined();
+            expect(binance.ping).toBeDefined();
         });
         it('should pings :)', async () => {
             const scope = nock(BINANCE_HOSTNAME)
                 .get('/api/v3/ping')
                 .reply(200, {});
 
-            await new Binance('spot').ping();
+            await binance.ping();
 
             scope.done();
         });
@@ -37,13 +43,11 @@ describe('Spot Wallet', () => {
         afterAll(() => scope.done());
 
         it('should be defined', () => {
-            expect(new Binance('spot').fetchMarkets).toBeDefined();
+            expect(binance.fetchMarkets).toBeDefined();
         });
 
         it('should fetch without errors', async () => {
-            result = await new Binance('spot').fetchMarkets().catch((err) => {
-                throw err;
-            });
+            result = await binance.fetchMarkets();
         });
 
         it('should have valid responceBody', () => {
@@ -56,8 +60,7 @@ describe('Spot Wallet', () => {
             }
         });
 
-        it('should match schema', () => {
-            // console.log(result);
+        it('should return valid schema', () => {
             const schema = {
                 type: 'array',
                 items: {
@@ -94,11 +97,11 @@ describe('Spot Wallet', () => {
         afterAll(() => scope.done());
 
         it('should be defined', () => {
-            expect(new Binance('spot').fetchTickers).toBeDefined();
+            expect(binance.fetchTickers).toBeDefined();
         });
 
         it('should fetch without errors', async () => {
-            result = await new Binance('spot').fetchTickers().catch((err) => {
+            result = await binance.fetchTickers().catch((err) => {
                 throw err;
             });
         });
@@ -113,7 +116,7 @@ describe('Spot Wallet', () => {
             }
         });
 
-        it('should match schema', () => {
+        it('should return valid schema', () => {
             const schema = {
                 type: 'array',
                 items: {
