@@ -35,7 +35,7 @@ class ExchangeBase {
             .then((res) => {
                 return res.body;
             })
-            .catch(this.#handleFetcherError);
+            .catch(this._handleFetcherError);
     }
 
     /**
@@ -49,18 +49,23 @@ class ExchangeBase {
 
         ws.on('message', onMessage);
 
-        ws.on('error', this.handleWebSocketError.bind(this));
+        ws.on('error', this._handleWebSocketError.bind(this));
     }
 
     /**
      * @param {WebSocket.ErrorEvent} err
      * @private
      */
-    handleWebSocketError(err) {
+    _handleWebSocketError(err) {
         throw err;
     }
 
-    #handleFetcherError(err) {
+    /**
+     *
+     * @param {Error} err
+     * @private
+     */
+    _handleFetcherError(err) {
         throw new (class FetcherError extends err {})();
     }
 }
