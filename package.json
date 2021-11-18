@@ -17,7 +17,7 @@
     "author": "zenfuse.io",
     "license": "AGPL-3.0-or-later",
     "engines": {
-        "node": ">=14",
+        "node": ">=12",
         "npm": ">=6"
     },
     "bugs": {
