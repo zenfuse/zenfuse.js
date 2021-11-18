@@ -2,6 +2,10 @@
  * This is list of clean functions for Binance data form an API
  */
 
+/**
+ * @param {array} symbols Array of symbols from `api/v3/exchangeInfo`
+ * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
+ */
 const getAllTickers = (symbols) => {
     const tickers = new Set();
 
@@ -14,7 +18,7 @@ const getAllTickers = (symbols) => {
 };
 
 /**
- * @param {array} symbols List of symbols from binance endpoint
+ * @param {array} symbols List of symbols from `api/v3/exchangeInfo` endpoint
  * @returns {array} Symbols only with spot type
  */
 const getOnlySpotMarkets = (symbols) => {
