@@ -6,7 +6,14 @@ const { Binance } = require('../../'); // zenfuse itself
 
 expect.extend(matchers);
 
-nock.disableNetConnect();
+const isEnd2EndTest = process.env.MOCK_HTTP === 'false';
+
+if (isEnd2EndTest) {
+    process.env.NOCK_OFF = 'true';
+    nock.enableNetConnect();
+} else {
+    nock.disableNetConnect();
+}
 
 const TEST_TIMEOUT = 5000;
 const BINANCE_HOSTNAME = 'https://api.binance.com';
@@ -61,7 +68,13 @@ describe('Spot Wallet', () => {
         );
 
         it('should have valid responceBody', () => {
-            expect(result.responceBody).toMatchObject(mockedMarkets);
+            if (isEnd2EndTest) {
+                expect(result.responceBody).toBeInstanceOf(Object);
+            }
+
+            if (!isEnd2EndTest) {
+                expect(result.responceBody).toMatchObject(mockedMarkets);
+            }
         });
 
         it('should match schema', () => {
@@ -118,7 +131,13 @@ describe('Spot Wallet', () => {
         );
 
         it('should have valid responceBody', () => {
-            expect(result.responceBody).toMatchObject(mockedMarkets);
+            if (isEnd2EndTest) {
+                expect(result.responceBody).toBeInstanceOf(Object);
+            }
+
+            if (!isEnd2EndTest) {
+                expect(result.responceBody).toMatchObject(mockedMarkets);
+            }
         });
 
         it('should match schema', () => {
