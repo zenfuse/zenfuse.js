@@ -1,21 +1,10 @@
-const nock = require('nock');
 const { readFileSync } = require('fs');
-const { matchers } = require('jest-json-schema');
+const nock = require('nock');
 
 const { Binance } = require('../../'); // zenfuse itself
 
-expect.extend(matchers);
-
 const isEnd2EndTest = process.env.MOCK_HTTP === 'false';
 
-if (isEnd2EndTest) {
-    process.env.NOCK_OFF = 'true';
-    nock.enableNetConnect();
-} else {
-    nock.disableNetConnect();
-}
-
-const TEST_TIMEOUT = 5000;
 const BINANCE_HOSTNAME = 'https://api.binance.com';
 
 describe('Spot Wallet', () => {
@@ -23,19 +12,15 @@ describe('Spot Wallet', () => {
         it('should be defined', () => {
             expect(new Binance('spot').ping).toBeDefined();
         });
-        it(
-            'should pings :)',
-            async () => {
-                const scope = nock(BINANCE_HOSTNAME)
-                    .get('/api/v3/ping')
-                    .reply(200, {});
+        it('should pings :)', async () => {
+            const scope = nock(BINANCE_HOSTNAME)
+                .get('/api/v3/ping')
+                .reply(200, {});
 
-                await new Binance('spot').ping();
+            await new Binance('spot').ping();
 
-                scope.done();
-            },
-            TEST_TIMEOUT,
-        );
+            scope.done();
+        });
     });
 
     describe('fetchMarkets()', () => {
@@ -55,17 +40,11 @@ describe('Spot Wallet', () => {
             expect(new Binance('spot').fetchMarkets).toBeDefined();
         });
 
-        it(
-            'should fetch without errors',
-            async () => {
-                result = await new Binance('spot')
-                    .fetchMarkets()
-                    .catch((err) => {
-                        throw err;
-                    });
-            },
-            TEST_TIMEOUT,
-        );
+        it('should fetch without errors', async () => {
+            result = await new Binance('spot').fetchMarkets().catch((err) => {
+                throw err;
+            });
+        });
 
         it('should have valid responceBody', () => {
             if (isEnd2EndTest) {
@@ -118,17 +97,11 @@ describe('Spot Wallet', () => {
             expect(new Binance('spot').fetchTickers).toBeDefined();
         });
 
-        it(
-            'should fetch without errors',
-            async () => {
-                result = await new Binance('spot')
-                    .fetchTickers()
-                    .catch((err) => {
-                        throw err;
-                    });
-            },
-            TEST_TIMEOUT,
-        );
+        it('should fetch without errors', async () => {
+            result = await new Binance('spot').fetchTickers().catch((err) => {
+                throw err;
+            });
+        });
 
         it('should have valid responceBody', () => {
             if (isEnd2EndTest) {

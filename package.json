@@ -42,8 +42,14 @@
     },
     "jest": {
         "testMatch": [
-            "**/tests/**/*.js",
-            "**/?(*.)+(spec|test).[jt]s?(x)"
+            "**/tests/**/*(?<!jest.setup\\.).js",
+            "**/?(*.)+(spec|test).js"
+        ],
+        "testPathIgnorePatterns": [
+            "jest.setup.js"
+        ],
+        "setupFilesAfterEnv": [
+            "<rootDir>tests/jest.setup.js"
         ]
     }
 }
