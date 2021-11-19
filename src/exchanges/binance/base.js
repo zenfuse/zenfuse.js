@@ -14,7 +14,7 @@ const EXCHANGE_HTTP_CLIENT_OPTIONS = {
  * @important Any class what extends ExchangeBase should have same public interface
  */
 class BinanceBase extends ExchangeBase {
-    keys = null;
+    _keys = null;
 
     /**
      * @param {import('got').ExtendOptions} httpClientOptions User defined options for in http client lib
@@ -32,13 +32,13 @@ class BinanceBase extends ExchangeBase {
      *
      * @param {object} keys
      * @param {string} keys.publicKey
-     * @param {string} keys.privateKey
+     * @param {string} keys.privateKey Same as secret key
      * @returns {this}
      */
     auth(keys) {
-        this.keys = {};
-        this.keys.publicKey = keys.publicKey;
-        this.keys.privateKey = keys.privateKey;
+        this._keys = {};
+        this._keys.publicKey = keys.publicKey;
+        this._keys.privateKey = keys.privateKey;
         return this;
     }
 
@@ -49,8 +49,11 @@ class BinanceBase extends ExchangeBase {
         await this.fetch('api/v3/ping');
     }
 
-    checkInstanceHasKeys() {
-        if (!this.keys) {
+    /**
+     * @private
+     */
+    _checkInstanceHasKeys() {
+        if (this._keys === null) {
             throw new NotAuathenticatedError();
         }
     }
