@@ -44,8 +44,8 @@
     },
     "jest": {
         "testMatch": [
-            "**/tests/**/*(?<!jest.setup\\.).js",
-            "**/?(*.)+(spec|test).js"
+            "**/tests/**/*.test.js",
+            "**/?(*.)+spec.js"
         ],
         "testPathIgnorePatterns": [
             "jest.setup.js"

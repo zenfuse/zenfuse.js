@@ -19,3 +19,8 @@ if (isEnd2EndTest) {
 }
 
 jest.setTimeout(TEST_TIMEOUT);
+
+process.on('unhandledRejection', (error) => {
+    console.error('unhandledRejection', error.message);
+    process.exit(1);
+});

@@ -1,17 +1,19 @@
 const { readFileSync } = require('fs');
 const nock = require('nock');
 
-const { Binance } = require('../../'); // zenfuse itself
+const { Binance } = require('../../src'); // zenfuse itself
 
 const isEnd2EndTest = process.env.MOCK_HTTP === 'false';
 
-const BINANCE_HOSTNAME = 'https://api.binance.com';
+const BINANCE_HOSTNAME = 'https://testnet.binance.vision';
 
 describe('Spot Wallet', () => {
     let binance;
 
     beforeAll(() => {
-        binance = new Binance('spot');
+        binance = new Binance('spot', {
+            prefixUrl: BINANCE_HOSTNAME,
+        });
     });
 
     describe('ping()', () => {
@@ -86,13 +88,19 @@ describe('Spot Wallet', () => {
     describe('fetchTickers()', () => {
         let result;
 
-        const mockFilePath = __dirname + '/mocks/exchangeInfo.json';
-        const mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-        const scope = nock(BINANCE_HOSTNAME)
-            .get('/api/v3/exchangeInfo')
-            .replyWithFile(200, mockFilePath, {
-                'Content-Type': 'application/json',
-            });
+        let mockFilePath;
+        let mockedMarkets;
+        let scope = { done() {} };
+
+        if (!isEnd2EndTest) {
+            mockFilePath = __dirname + '/mocks/exchangeInfo.json';
+            mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
+            scope = nock(BINANCE_HOSTNAME)
+                .get('/api/v3/exchangeInfo')
+                .replyWithFile(200, mockFilePath, {
+                    'Content-Type': 'application/json',
+                });
+        }
 
         afterAll(() => scope.done());
 
@@ -127,6 +135,12 @@ describe('Spot Wallet', () => {
         });
     });
 
+    ///////////////////////////////////////////////////////////////
+
+    //// Private API Zone
+
+    ///////////////////////////////////////////////////////////////
+
     describe('auth()', () => {
         it('should bo defined', () => {
             expect(binance.auth).toBeDefined();
@@ -141,6 +155,67 @@ describe('Spot Wallet', () => {
             binance.auth(keys);
 
             expect(binance._keys).toMatchObject(keys);
+        });
+    });
+
+    describe.skip('createOrder()', () => {
+        it('should be defined', () => {
+            expect(binance.createOrder).toBeDefined();
+        });
+
+        describe('market order', () => {
+            let result;
+
+            const orderParams = {
+                symbol: 'BTC/USDT',
+                type: 'market',
+                side: 'sell',
+            };
+
+            const binanceRequestExpectation = {};
+
+            const mockedResponce = {
+                symbol: 'BTCUSDT',
+                orderId: 28,
+                orderListId: -1, //Unless OCO, value will be -1
+                clientOrderId: '6gCrw2kRUAF9CvJDGP16IP',
+                transactTime: 1507725176595,
+                price: '0.00000000',
+                origQty: '10.00000000',
+                executedQty: '10.00000000',
+                cummulativeQuoteQty: '10.00000000',
+                status: 'FILLED',
+                timeInForce: 'GTC',
+                type: 'MARKET',
+                side: 'SELL',
+                fills: [],
+            };
+
+            const scope = nock(BINANCE_HOSTNAME)
+                .filteringRequestBody((body) => {
+                    return expect(body).toMatchObject(
+                        binanceRequestExpectation,
+                    );
+                })
+                .post('/api/v3/order')
+                .matchHeader('accept ', 'application/json')
+                .reply(201, mockedResponce);
+
+            afterAll(() => scope.done());
+
+            it('should create order without errors', async () => {
+                result = await binance.createOrder(orderParams);
+            });
+
+            it('should have valid responceBody', () => {
+                if (isEnd2EndTest) {
+                    expect(result.responceBody).toBeInstanceOf(Object);
+                }
+
+                if (!isEnd2EndTest) {
+                    expect(result.responceBody).toMatchObject(mockedResponce);
+                }
+            });
         });
     });
 });
