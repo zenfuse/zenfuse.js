@@ -8,7 +8,8 @@
         "e2e-tests": "MOCK_HTTP=false node --trace-warnings node_modules/.bin/jest --no-cache --runInBand",
         "unit-tests": "node --trace-warnings node_modules/.bin/jest",
         "format": "eslint --fix .; prettier --write .",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "update-mocks": "sh scripts/update_static_mocks.sh"
     },
     "repository": {
         "type": "git",
