@@ -27,12 +27,14 @@ class ExchangeBase {
     /**
      * Make http request based on constructor settings
      *
-     * @param {string} endpoint;
+     * @param {URL} url
+     * @param {import('http').RequestOptions} options
      * @returns {object};
      */
-    fetch(endpoint) {
-        return this.fetcher(endpoint)
+    fetch() {
+        return this.fetcher(...arguments)
             .then((res) => {
+                // TODO: Log request
                 return res.body;
             })
             .catch(this._handleFetcherError);
