@@ -7,7 +7,8 @@ const {
 } = require('../functions');
 
 /**
- *
+ * Binance class for spot wallet Api
+ * @important should have same
  */
 class BinanceSpot extends BinanceBase {
     constructor(httpClientOptions) {
@@ -65,7 +66,7 @@ class BinanceSpot extends BinanceBase {
      * @param {number|string} order.price New order object
      */
     async createOrder(order) {
-        this.checkInstanceHasKeys();
+        this._checkInstanceHasKeys();
 
         return order;
     }

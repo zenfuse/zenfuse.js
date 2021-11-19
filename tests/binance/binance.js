@@ -126,4 +126,21 @@ describe('Spot Wallet', () => {
             expect(result.tickers).toMatchSchema(schema);
         });
     });
+
+    describe('auth()', () => {
+        it('should bo defined', () => {
+            expect(binance.auth).toBeDefined();
+        });
+
+        it('should pass keys to instance', () => {
+            const keys = {
+                publicKey: 'public',
+                privateKey: 'secret',
+            };
+
+            binance.auth(keys);
+
+            expect(binance._keys).toMatchObject(keys);
+        });
+    });
 });
