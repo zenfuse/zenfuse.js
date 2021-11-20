@@ -3,7 +3,8 @@ const nock = require('nock');
 
 const { Binance } = require('../../src'); // zenfuse itself
 
-const isEnd2EndTest = process.env.MOCK_HTTP === 'false';
+const isEnd2EndTest = process.env.TEST_MODE === 'e2e';
+const isIntegrationTest = !isEnd2EndTest;
 
 const BINANCE_HOSTNAME = 'https://testnet.binance.vision';
 
@@ -60,7 +61,7 @@ describe('Spot Wallet', () => {
                 expect(result.responseBody).toBeInstanceOf(Object);
             }
 
-            if (!isEnd2EndTest) {
+            if (isIntegrationTest) {
                 expect(result.responseBody).toMatchObject(mockedMarkets);
             }
         });
@@ -95,7 +96,7 @@ describe('Spot Wallet', () => {
         let mockedMarkets;
         let scope = { done() {} };
 
-        if (!isEnd2EndTest) {
+        if (isIntegrationTest) {
             mockFilePath = __dirname + '/mocks/exchangeInfo.json';
             mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
             scope = nock(BINANCE_HOSTNAME)
@@ -122,7 +123,7 @@ describe('Spot Wallet', () => {
                 expect(result.responseBody).toBeInstanceOf(Object);
             }
 
-            if (!isEnd2EndTest) {
+            if (isIntegrationTest) {
                 expect(result.responseBody).toMatchObject(mockedMarkets);
             }
         });
@@ -183,7 +184,7 @@ describe('Spot Wallet', () => {
                 symbol: 'BNBUSDT',
             };
 
-            const mockedResponse = {
+            const mockedCreatedOrder = {
                 symbol: 'BTCUSDT',
                 orderId: 28,
                 orderListId: -1,
@@ -207,7 +208,7 @@ describe('Spot Wallet', () => {
                     expect(q).toMatchObject(binanceRequestExpectation);
                     return true;
                 })
-                .reply(201, mockedResponse);
+                .reply(201, mockedCreatedOrder);
 
             afterAll(() => scope.done());
 
@@ -222,8 +223,10 @@ describe('Spot Wallet', () => {
                     expect(result.responseBody).toBeInstanceOf(Object);
                 }
 
-                if (!isEnd2EndTest) {
-                    expect(result.responseBody).toMatchObject(mockedResponse);
+                if (isIntegrationTest) {
+                    expect(result.responseBody).toMatchObject(
+                        mockedCreatedOrder,
+                    );
                 }
             });
         });
@@ -272,7 +275,16 @@ describe('Spot Wallet', () => {
 
         it('should fetch without errors', async () => {
             result = await binance.fetchBalances();
-            console.log(result);
+        });
+
+        it('should have valid responseBody', () => {
+            if (isEnd2EndTest) {
+                expect(result.responseBody).toBeInstanceOf(Object);
+            }
+
+            if (isIntegrationTest) {
+                expect(result.responseBody).toMatchObject(mockedBalances);
+            }
         });
     });
 });

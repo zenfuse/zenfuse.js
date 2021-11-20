@@ -5,9 +5,9 @@
     "main": "src/index.js",
     "scripts": {
         "test": "npm run unit-tests && npm run integration-tests ",
-        "e2e-tests": "MOCK_HTTP=false node --trace-warnings node_modules/.bin/jest --no-cache --runInBand --expand",
-        "integration-tests": "node --trace-warnings node_modules/.bin/jest --expand",
-        "unit-tests": "jest --testMatch '**/?(*.)+(spec).js'",
+        "e2e-tests": "TEST_MODE=e2e node --trace-warnings node_modules/.bin/jest --no-cache --runInBand --expand",
+        "integration-tests": "TEST_MODE=integration node --trace-warnings node_modules/.bin/jest --expand",
+        "unit-tests": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
         "update-mocks": "sh scripts/update_static_mocks.sh"
