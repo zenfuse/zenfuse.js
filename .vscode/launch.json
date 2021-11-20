@@ -7,7 +7,7 @@
         {
             "name": "E2E Tests",
             "request": "launch",
-            "runtimeArgs": ["run-script", "e2e-tests"],
+            "runtimeArgs": ["run-script", "test:e2e"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**"],
             "type": "node"
@@ -15,7 +15,7 @@
         {
             "name": "Integration Tests",
             "request": "launch",
-            "runtimeArgs": ["run-script", "integration-tests"],
+            "runtimeArgs": ["run-script", "test:integration"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**"],
             "type": "node"
@@ -23,10 +23,10 @@
         {
             "name": "Unit Tests",
             "request": "launch",
-            "runtimeArgs": ["run-script", "unit-tests"],
+            "runtimeArgs": ["run-script", "test:unit"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**"],
             "type": "node"
-        },
+        }
     ]
 }

@@ -4,10 +4,10 @@
     "description": "Neat crypto exchanges connector",
     "main": "src/index.js",
     "scripts": {
-        "test": "npm run unit-tests && npm run integration-tests ",
-        "e2e-tests": "TEST_MODE=e2e node --trace-warnings node_modules/.bin/jest --no-cache --runInBand --expand",
-        "integration-tests": "TEST_MODE=integration node --trace-warnings node_modules/.bin/jest --expand",
-        "unit-tests": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
+        "test": "npm run test:unit && npm run test:integration",
+        "test:e2e": "TEST_MODE=e2e node --trace-warnings node_modules/.bin/jest --no-cache --runInBand --expand",
+        "test:integration": "TEST_MODE=integration node --trace-warnings node_modules/.bin/jest --expand",
+        "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
         "update-mocks": "sh scripts/update_static_mocks.sh"

@@ -11,7 +11,7 @@ const BINANCE_HOSTNAME = 'https://testnet.binance.vision';
 const API_PUBLIC_KEY = process.env.BINANCE_SPOT_TESTNET_PUBLIC_KEY;
 const API_SECRET_KEY = process.env.BINANCE_SPOT_TESTNET_SECRET_KEY;
 
-describe('Spot Wallet', () => {
+describe('Binance Spot Wallet', () => {
     let binance;
 
     beforeAll(() => {
