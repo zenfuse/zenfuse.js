@@ -46,7 +46,7 @@
         "ws": "^8.2.3"
     },
     "jest": {
-        "verbose": true,
+        "bail": true,
         "testMatch": [
             "**/tests/**/*.test.js"
         ],

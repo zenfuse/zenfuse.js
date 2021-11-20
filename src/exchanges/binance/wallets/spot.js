@@ -75,8 +75,26 @@ class BinanceSpot extends BinanceBase {
         });
 
         return {
-            ...createdOrder,
+            createdOrder,
             responseBody: createdOrder,
+        };
+    }
+
+    async fetchBalances() {
+        this._checkInstanceHasKeys();
+
+        const response = await this.fetch('api/v3/account');
+
+        const balances = response.balances.map((b) => {
+            return {
+                ticker: b.asset,
+                balance: b.free,
+            };
+        });
+
+        return {
+            balances,
+            responseBody: response,
         };
     }
 }

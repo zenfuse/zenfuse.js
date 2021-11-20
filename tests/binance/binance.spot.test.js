@@ -170,17 +170,17 @@ describe('Spot Wallet', () => {
             let result;
 
             const orderParams = {
-                symbol: 'BTC/USDT',
+                symbol: 'BNB/USDT',
                 type: 'market',
-                side: 'sell',
+                side: 'buy',
                 amount: '1',
             };
 
             const binanceRequestExpectation = {
-                side: 'SELL',
+                side: 'BUY',
                 type: 'MARKET',
                 quantity: '1',
-                symbol: 'BTCUSDT',
+                symbol: 'BNBUSDT',
             };
 
             const mockedResponse = {
@@ -213,7 +213,6 @@ describe('Spot Wallet', () => {
 
             it('should create order without errors', async () => {
                 result = await binance.createOrder(orderParams);
-                console.log(result);
             });
 
             it('should have valid responseBody', () => {
@@ -224,10 +223,56 @@ describe('Spot Wallet', () => {
                 }
 
                 if (!isEnd2EndTest) {
-                    expect(result).toBeDefined();
                     expect(result.responseBody).toMatchObject(mockedResponse);
                 }
             });
+        });
+    });
+
+    describe('fetchBalances()', () => {
+        it('should be defined', () => {
+            expect(binance.fetchBalances).toBeDefined();
+        });
+
+        let result;
+
+        const mockedBalances = {
+            makerCommission: 0,
+            takerCommission: 0,
+            buyerCommission: 0,
+            sellerCommission: 0,
+            canTrade: true,
+            canWithdraw: false,
+            canDeposit: false,
+            updateTime: 1637431263247,
+            accountType: 'SPOT',
+            balances: [
+                { asset: 'BNB', free: '1002.00000000', locked: '0.00000000' },
+                { asset: 'BTC', free: '0.00000000', locked: '0.00000000' },
+                { asset: 'BUSD', free: '9883.26000000', locked: '0.00000000' },
+                { asset: 'ETH', free: '100.00000000', locked: '0.00000000' },
+                { asset: 'LTC', free: '500.00000000', locked: '0.00000000' },
+                { asset: 'TRX', free: '500000.00000000', locked: '0.00000000' },
+                { asset: 'USDT', free: '57080.70341854', locked: '0.00000000' },
+                { asset: 'XRP', free: '50000.00000000', locked: '0.00000000' },
+            ],
+            permissions: ['SPOT'],
+        };
+
+        const scope = nock(BINANCE_HOSTNAME)
+            .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
+            .get('/api/v3/account')
+            .query((query) => {
+                expect(query.timestamp).toBeDefined();
+                return true;
+            })
+            .reply(200, mockedBalances);
+
+        afterAll(() => scope.done());
+
+        it('should fetch without errors', async () => {
+            result = await binance.fetchBalances();
+            console.log(result);
         });
     });
 });

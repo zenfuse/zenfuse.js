@@ -41,6 +41,7 @@ class BinanceBase extends ExchangeBase {
      */
     fetch(url, options = {}) {
         if (this._keys) {
+            if (!options.searchParams) options.searchParams = {};
             options.searchParams.timestamp = Date.now();
 
             options.searchParams.signature = createHmacSignature(

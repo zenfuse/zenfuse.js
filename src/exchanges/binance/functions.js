@@ -25,14 +25,13 @@ const transformOrderForCreation = (order) => {
     }
 
     if (order.amount) {
+        // NOTE: "amount" should be "quantity" for binance
         newOrder.quantity = toBN(order.amount).toString();
     }
 
     if (order.price) {
         newOrder.price = toBN(order.price).toString();
     }
-
-    console.debug(order);
 
     newOrder.symbol = order.symbol.replace('/', '');
 
