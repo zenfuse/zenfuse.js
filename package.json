@@ -4,9 +4,10 @@
     "description": "Neat crypto exchanges connector",
     "main": "src/index.js",
     "scripts": {
-        "test": "npm run unit-tests",
-        "e2e-tests": "MOCK_HTTP=false node --trace-warnings node_modules/.bin/jest --no-cache --runInBand",
-        "unit-tests": "node --trace-warnings node_modules/.bin/jest",
+        "test": "npm run unit-tests && npm run integration-tests ",
+        "e2e-tests": "MOCK_HTTP=false node --trace-warnings node_modules/.bin/jest --no-cache --runInBand --expand",
+        "integration-tests": "node --trace-warnings node_modules/.bin/jest --expand",
+        "unit-tests": "jest --testMatch '**/?(*.)+(spec).js'",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
         "update-mocks": "sh scripts/update_static_mocks.sh"
@@ -28,6 +29,7 @@
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.3.1",
         "@typescript-eslint/parser": "^5.3.1",
+        "dotenv": "^10.0.0",
         "eslint": "^8.2.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-jest": "^25.2.4",
@@ -40,18 +42,17 @@
     },
     "dependencies": {
         "got": "^11.8.2",
+        "web3-utils": "^1.6.1",
         "ws": "^8.2.3"
     },
     "jest": {
+        "verbose": true,
         "testMatch": [
-            "**/tests/**/*.test.js",
-            "**/?(*.)+spec.js"
-        ],
-        "testPathIgnorePatterns": [
-            "jest.setup.js"
+            "**/tests/**/*.test.js"
         ],
         "setupFilesAfterEnv": [
             "<rootDir>tests/jest.setup.js"
-        ]
+        ],
+        "globalSetup": "<rootDir>tests/global.setup.js"
     }
 }

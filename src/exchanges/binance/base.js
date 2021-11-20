@@ -1,11 +1,16 @@
+const WebSocket = require('ws');
+const { HTTPError } = require('got');
+
 const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
+const BinanceApiError = require('./errors/api.error');
+const { createHmacSignature } = require('./functions');
 
 /**
  * Http client options specialy for Binance
  * @type {import('got').ExtendOptions}
  */
-const EXCHANGE_HTTP_CLIENT_OPTIONS = {
+const BINANCE_HTTP_CLIENT_OPTIONS = {
     prefixUrl: 'https://api.binance.com/',
 };
 
@@ -21,10 +26,50 @@ class BinanceBase extends ExchangeBase {
      */
     constructor(httpClientOptions) {
         const options = Object.assign(
-            EXCHANGE_HTTP_CLIENT_OPTIONS,
+            BINANCE_HTTP_CLIENT_OPTIONS,
             httpClientOptions,
         );
         super(options);
+    }
+
+    /**
+     * Make http request based on constructor settings
+     *
+     * @param {URL} url
+     * @param {import('http').RequestOptions} options
+     * @returns {object};
+     */
+    fetch(url, options = {}) {
+        if (this._keys) {
+            options.searchParams.timestamp = Date.now();
+
+            options.searchParams.signature = createHmacSignature(
+                options.searchParams,
+                this._keys.privateKey,
+            );
+
+            options = Object.assign(options, {
+                headers: {
+                    'X-MBX-APIKEY': this._keys.publicKey,
+                },
+            });
+        }
+
+        return this.fetcher(url, options).catch(this._handleFetcherError);
+    }
+
+    /**
+     * Get websocket connection
+     *
+     * @param {*} url
+     * @param {WebSocket} onMessage
+     */
+    getWebSocketConnection(url, onMessage) {
+        const ws = new WebSocket(url);
+
+        ws.on('message', onMessage);
+
+        ws.on('error', this._handleWebSocketError.bind(this));
     }
 
     /**
@@ -46,7 +91,7 @@ class BinanceBase extends ExchangeBase {
      * Ping binance servers
      */
     async ping() {
-        await this.fetch('api/v3/ping');
+        return await this.fetch('api/v3/ping');
     }
 
     /**
@@ -56,6 +101,28 @@ class BinanceBase extends ExchangeBase {
         if (this._keys === null) {
             throw new NotAuathenticatedError();
         }
+    }
+
+    /**
+     * @param {WebSocket.ErrorEvent} err
+     * @private
+     */
+    _handleWebSocketError(err) {
+        throw err;
+    }
+
+    /**
+     *
+     * @param {Error} err
+     * @private
+     */
+    async _handleFetcherError(err) {
+        await err.response;
+        if (err instanceof HTTPError) {
+            throw new BinanceApiError(err);
+        }
+
+        throw err;
     }
 
     // _() {

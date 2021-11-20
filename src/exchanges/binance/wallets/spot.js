@@ -3,7 +3,8 @@ const BinanceBase = require('../base');
 const {
     getOnlySpotMarkets,
     structualizeMarkets,
-    getAllTickers,
+    getAllTickersFromSymbols,
+    transformOrderForCreation,
 } = require('../functions');
 
 /**
@@ -19,19 +20,19 @@ class BinanceSpot extends BinanceBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const responceBody = await this.fetch('api/v3/exchangeInfo').catch(
+        const responseBody = await this.fetch('api/v3/exchangeInfo').catch(
             (err) => {
                 throw err;
             },
         );
 
-        const spotMarkets = getOnlySpotMarkets(responceBody.symbols);
+        const spotMarkets = getOnlySpotMarkets(responseBody.symbols);
 
-        const tickers = getAllTickers(spotMarkets);
+        const tickers = getAllTickersFromSymbols(spotMarkets);
 
         return {
             tickers,
-            responceBody,
+            responseBody,
         };
     }
 
@@ -39,19 +40,19 @@ class BinanceSpot extends BinanceBase {
      * @returns Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
-        const responceBody = await this.fetch('api/v3/exchangeInfo').catch(
+        const responseBody = await this.fetch('api/v3/exchangeInfo').catch(
             (err) => {
                 throw err;
             },
         );
 
-        const spotMarkets = getOnlySpotMarkets(responceBody.symbols);
+        const spotMarkets = getOnlySpotMarkets(responseBody.symbols);
 
         const markets = structualizeMarkets(spotMarkets);
 
         return {
             markets,
-            responceBody,
+            responseBody,
         };
     }
 
@@ -68,7 +69,15 @@ class BinanceSpot extends BinanceBase {
     async createOrder(order) {
         this._checkInstanceHasKeys();
 
-        return order;
+        const createdOrder = await this.fetch('api/v3/order', {
+            method: 'POST',
+            searchParams: transformOrderForCreation(order),
+        });
+
+        return {
+            ...createdOrder,
+            responseBody: createdOrder,
+        };
     }
 }
 

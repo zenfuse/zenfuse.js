@@ -7,6 +7,9 @@ const isEnd2EndTest = process.env.MOCK_HTTP === 'false';
 
 const BINANCE_HOSTNAME = 'https://testnet.binance.vision';
 
+const API_PUBLIC_KEY = process.env.BINANCE_SPOT_TESTNET_PUBLIC_KEY;
+const API_SECRET_KEY = process.env.BINANCE_SPOT_TESTNET_SECRET_KEY;
+
 describe('Spot Wallet', () => {
     let binance;
 
@@ -52,13 +55,13 @@ describe('Spot Wallet', () => {
             result = await binance.fetchMarkets();
         });
 
-        it('should have valid responceBody', () => {
+        it('should have valid responseBody', () => {
             if (isEnd2EndTest) {
-                expect(result.responceBody).toBeInstanceOf(Object);
+                expect(result.responseBody).toBeInstanceOf(Object);
             }
 
             if (!isEnd2EndTest) {
-                expect(result.responceBody).toMatchObject(mockedMarkets);
+                expect(result.responseBody).toMatchObject(mockedMarkets);
             }
         });
 
@@ -114,13 +117,13 @@ describe('Spot Wallet', () => {
             });
         });
 
-        it('should have valid responceBody', () => {
+        it('should have valid responseBody', () => {
             if (isEnd2EndTest) {
-                expect(result.responceBody).toBeInstanceOf(Object);
+                expect(result.responseBody).toBeInstanceOf(Object);
             }
 
             if (!isEnd2EndTest) {
-                expect(result.responceBody).toMatchObject(mockedMarkets);
+                expect(result.responseBody).toMatchObject(mockedMarkets);
             }
         });
 
@@ -148,8 +151,8 @@ describe('Spot Wallet', () => {
 
         it('should pass keys to instance', () => {
             const keys = {
-                publicKey: 'public',
-                privateKey: 'secret',
+                publicKey: API_PUBLIC_KEY,
+                privateKey: API_SECRET_KEY,
             };
 
             binance.auth(keys);
@@ -158,7 +161,7 @@ describe('Spot Wallet', () => {
         });
     });
 
-    describe.skip('createOrder()', () => {
+    describe('createOrder()', () => {
         it('should be defined', () => {
             expect(binance.createOrder).toBeDefined();
         });
@@ -170,14 +173,20 @@ describe('Spot Wallet', () => {
                 symbol: 'BTC/USDT',
                 type: 'market',
                 side: 'sell',
+                amount: '1',
             };
 
-            const binanceRequestExpectation = {};
+            const binanceRequestExpectation = {
+                side: 'SELL',
+                type: 'MARKET',
+                quantity: '1',
+                symbol: 'BTCUSDT',
+            };
 
-            const mockedResponce = {
+            const mockedResponse = {
                 symbol: 'BTCUSDT',
                 orderId: 28,
-                orderListId: -1, //Unless OCO, value will be -1
+                orderListId: -1,
                 clientOrderId: '6gCrw2kRUAF9CvJDGP16IP',
                 transactTime: 1507725176595,
                 price: '0.00000000',
@@ -192,28 +201,31 @@ describe('Spot Wallet', () => {
             };
 
             const scope = nock(BINANCE_HOSTNAME)
-                .filteringRequestBody((body) => {
-                    return expect(body).toMatchObject(
-                        binanceRequestExpectation,
-                    );
-                })
+                .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
-                .matchHeader('accept ', 'application/json')
-                .reply(201, mockedResponce);
+                .query((q) => {
+                    expect(q).toMatchObject(binanceRequestExpectation);
+                    return true;
+                })
+                .reply(201, mockedResponse);
 
             afterAll(() => scope.done());
 
             it('should create order without errors', async () => {
                 result = await binance.createOrder(orderParams);
+                console.log(result);
             });
 
-            it('should have valid responceBody', () => {
+            it('should have valid responseBody', () => {
+                expect(result).toBeDefined();
+
                 if (isEnd2EndTest) {
-                    expect(result.responceBody).toBeInstanceOf(Object);
+                    expect(result.responseBody).toBeInstanceOf(Object);
                 }
 
                 if (!isEnd2EndTest) {
-                    expect(result.responceBody).toMatchObject(mockedResponce);
+                    expect(result).toBeDefined();
+                    expect(result.responseBody).toMatchObject(mockedResponse);
                 }
             });
         });

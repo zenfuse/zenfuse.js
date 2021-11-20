@@ -1,0 +1,25 @@
+const nock = require('nock');
+
+require('dotenv').config();
+
+module.exports = () => {
+    const isEnd2EndTest = process.env.MOCK_HTTP === 'false';
+
+    if (isEnd2EndTest) {
+        process.stdout.write(
+            '\n\n\x1b[43m\x1b[30m THIS IS E2E TEST \x1b[0m\n\n',
+        );
+
+        /** @see https://github.com/nock/nock#turning-nock-off-experimental */
+        process.env.NOCK_OFF = 'true';
+
+        nock.enableNetConnect();
+    } else {
+        nock.disableNetConnect();
+    }
+
+    process.on('unhandledRejection', (error) => {
+        console.error('unhandledRejection', error.message);
+        process.exit(1);
+    });
+};

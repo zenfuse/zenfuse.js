@@ -1,4 +1,3 @@
-const WebSocket = require('ws');
 const got = require('got');
 
 const pkg = require('../../package.json');
@@ -6,6 +5,7 @@ const pkg = require('../../package.json');
 class ExchangeBase {
     defaultHttpClientOptions = {
         responseType: 'json',
+        resolveBodyOnly: true,
         headers: {
             'user-agent': `${pkg.name}/${pkg.version} (${pkg.homepage})`,
         },
@@ -22,53 +22,6 @@ class ExchangeBase {
         );
 
         this.fetcher = got.extend(options);
-    }
-
-    /**
-     * Make http request based on constructor settings
-     *
-     * @param {URL} url
-     * @param {import('http').RequestOptions} options
-     * @returns {object};
-     */
-    fetch() {
-        return this.fetcher(...arguments)
-            .then((res) => {
-                // TODO: Log request
-                return res.body;
-            })
-            .catch(this._handleFetcherError);
-    }
-
-    /**
-     * Get websocket connection
-     *
-     * @param {*} url
-     * @param {WebSocket} onMessage
-     */
-    getWebSocketConnection(url, onMessage) {
-        const ws = new WebSocket(url);
-
-        ws.on('message', onMessage);
-
-        ws.on('error', this._handleWebSocketError.bind(this));
-    }
-
-    /**
-     * @param {WebSocket.ErrorEvent} err
-     * @private
-     */
-    _handleWebSocketError(err) {
-        throw err;
-    }
-
-    /**
-     *
-     * @param {Error} err
-     * @private
-     */
-    _handleFetcherError(err) {
-        throw new (class FetcherError extends err {})();
     }
 }
 
