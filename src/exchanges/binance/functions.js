@@ -15,6 +15,8 @@ const createHmacSignature = (data, key) => {
  * @link BinanceSpot.createOrder
  */
 const transformOrderForCreation = (order) => {
+    const shouldTransform = ['side', 'type', 'price', 'amount', 'symbol'];
+
     const newOrder = {
         side: order.side.toUpperCase(),
         type: order.type.toUpperCase(),
@@ -29,11 +31,19 @@ const transformOrderForCreation = (order) => {
         newOrder.quantity = toBN(order.amount).toString();
     }
 
-    if (order.price) {
-        newOrder.price = toBN(order.price).toString();
+    if (order.type === 'limit') {
+        if (!order.timeInForce) {
+            order.timeInForce = 'GTC'; // TODO: Reprecent deafult parameters
+        }
     }
 
     newOrder.symbol = order.symbol.replace('/', '');
+
+    for (const [key, value] of Object.entries(order)) {
+        if (!shouldTransform.includes(key)) {
+            newOrder[key] = value;
+        }
+    }
 
     return newOrder;
 };

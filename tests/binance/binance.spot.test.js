@@ -167,7 +167,7 @@ describe('Binance Spot Wallet', () => {
             expect(binance.createOrder).toBeDefined();
         });
 
-        describe('market order', () => {
+        describe('buy by market', () => {
             let result;
 
             const orderParams = {
@@ -185,19 +185,240 @@ describe('Binance Spot Wallet', () => {
             };
 
             const mockedCreatedOrder = {
-                symbol: 'BTCUSDT',
-                orderId: 28,
+                symbol: 'BNBUSDT',
+                orderId: 5114608,
                 orderListId: -1,
-                clientOrderId: '6gCrw2kRUAF9CvJDGP16IP',
-                transactTime: 1507725176595,
+                clientOrderId: 'nVuwTgVfxQtsMV9uuMMXxL',
+                transactTime: 1637596926709,
                 price: '0.00000000',
-                origQty: '10.00000000',
-                executedQty: '10.00000000',
-                cummulativeQuoteQty: '10.00000000',
+                origQty: '1.00000000',
+                executedQty: '1.00000000',
+                cummulativeQuoteQty: '576.46100000',
+                status: 'FILLED',
+                timeInForce: 'GTC',
+                type: 'MARKET',
+                side: 'BUY',
+                fills: [
+                    {
+                        price: '576.30000000',
+                        qty: '0.77000000',
+                        commission: '0.00000000',
+                        commissionAsset: 'BNB',
+                        tradeId: 239238,
+                    },
+                    {
+                        price: '577.00000000',
+                        qty: '0.23000000',
+                        commission: '0.00000000',
+                        commissionAsset: 'BNB',
+                        tradeId: 239239,
+                    },
+                ],
+            };
+
+            const scope = nock(BINANCE_HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
+                .post('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject(binanceRequestExpectation);
+                    return true;
+                })
+                .reply(201, mockedCreatedOrder);
+
+            afterAll(() => scope.done());
+
+            it('should create order without errors', async () => {
+                result = await binance.createOrder(orderParams);
+            });
+
+            it('should have valid responseBody', () => {
+                expect(result).toBeDefined();
+
+                if (isEnd2EndTest) {
+                    expect(result.responseBody).toBeInstanceOf(Object);
+                }
+
+                if (isIntegrationTest) {
+                    expect(result.responseBody).toMatchObject(
+                        mockedCreatedOrder,
+                    );
+                }
+            });
+        });
+        describe('sell by market', () => {
+            let result;
+
+            const orderParams = {
+                symbol: 'BNB/USDT',
+                type: 'market',
+                side: 'sell',
+                amount: '1',
+            };
+
+            const binanceRequestExpectation = {
+                side: 'SELL',
+                type: 'MARKET',
+                quantity: '1',
+                symbol: 'BNBUSDT',
+            };
+
+            const mockedCreatedOrder = {
+                symbol: 'BNBUSDT',
+                orderId: 5115833,
+                orderListId: -1,
+                clientOrderId: 'AWSXsBUMbl6XT0BpXeT0DN',
+                transactTime: 1637597292702,
+                price: '0.00000000',
+                origQty: '1.00000000',
+                executedQty: '1.00000000',
+                cummulativeQuoteQty: '573.44000000',
                 status: 'FILLED',
                 timeInForce: 'GTC',
                 type: 'MARKET',
                 side: 'SELL',
+                fills: [
+                    {
+                        price: '573.70000000',
+                        qty: '1.0000000',
+                        commission: '0.00000000',
+                        commissionAsset: 'USDT',
+                        tradeId: 239370,
+                    },
+                ],
+            };
+
+            const scope = nock(BINANCE_HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
+                .post('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject(binanceRequestExpectation);
+                    return true;
+                })
+                .reply(201, mockedCreatedOrder);
+
+            afterAll(() => scope.done());
+
+            it('should create order without errors', async () => {
+                result = await binance.createOrder(orderParams);
+            });
+
+            it('should have valid responseBody', () => {
+                expect(result).toBeDefined();
+
+                if (isEnd2EndTest) {
+                    expect(result.responseBody).toBeInstanceOf(Object);
+                }
+
+                if (isIntegrationTest) {
+                    expect(result.responseBody).toMatchObject(
+                        mockedCreatedOrder,
+                    );
+                }
+            });
+        });
+
+        describe('buy by limit', () => {
+            let result;
+
+            const orderParams = {
+                symbol: 'BNB/USDT',
+                type: 'limit',
+                side: 'buy',
+                amount: '1',
+                price: '500',
+            };
+
+            const binanceRequestExpectation = {
+                side: 'BUY',
+                type: 'LIMIT',
+                quantity: '1', // same as amount
+                price: '500',
+                symbol: 'BNBUSDT',
+                timeInForce: 'GTC',
+            };
+
+            const mockedCreatedOrder = {
+                symbol: 'BNBUSDT',
+                orderId: 5123847,
+                orderListId: -1,
+                clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
+                transactTime: 1637599759459,
+                price: '500.00000000',
+                origQty: '1.00000000',
+                executedQty: '0.00000000',
+                cummulativeQuoteQty: '0.00000000',
+                status: 'NEW',
+                timeInForce: 'GTC',
+                type: 'LIMIT',
+                side: 'BUY',
+                fills: [],
+            };
+
+            const scope = nock(BINANCE_HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
+                .post('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject(binanceRequestExpectation);
+                    return true;
+                })
+                .reply(201, mockedCreatedOrder);
+
+            afterAll(() => scope.done());
+
+            it('should create order without errors', async () => {
+                result = await binance.createOrder(orderParams);
+            });
+
+            it('should have valid responseBody', () => {
+                expect(result).toBeDefined();
+
+                if (isEnd2EndTest) {
+                    expect(result.responseBody).toBeInstanceOf(Object);
+                }
+
+                if (isIntegrationTest) {
+                    expect(result.responseBody).toMatchObject(
+                        mockedCreatedOrder,
+                    );
+                }
+            });
+        });
+
+        describe('sell by limit', () => {
+            let result;
+
+            const orderParams = {
+                symbol: 'BNB/USDT',
+                type: 'limit',
+                side: 'buy',
+                amount: '1',
+                price: '500',
+                timeInForce: 'IOC', // Not default parameter
+            };
+
+            const binanceRequestExpectation = {
+                side: 'BUY',
+                type: 'LIMIT',
+                quantity: '1', // same as amount
+                price: '500',
+                symbol: 'BNBUSDT',
+                timeInForce: 'IOC',
+            };
+
+            const mockedCreatedOrder = {
+                symbol: 'BNBUSDT',
+                orderId: 5123847,
+                orderListId: -1,
+                clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
+                transactTime: 1637599759459,
+                price: '500.00000000',
+                origQty: '1.00000000',
+                executedQty: '0.00000000',
+                cummulativeQuoteQty: '0.00000000',
+                status: 'NEW',
+                timeInForce: 'IOC',
+                type: 'LIMIT',
+                side: 'BUY',
                 fills: [],
             };
 
