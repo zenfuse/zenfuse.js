@@ -15,3 +15,62 @@ describe('createHmacSignature()', () => {
         );
     });
 });
+
+describe('transformOrderForCreation()', () => {
+    it('should upper case symbols and transform amount', () => {
+        const order = {
+            symbol: 'BTC/ETH',
+            side: 'seLL',
+            type: 'market',
+            amount: '0.000001',
+        };
+
+        const expectation = {
+            symbol: 'BTCETH',
+            side: 'SELL',
+            type: 'MARKET',
+            quantity: '0.000001',
+        };
+
+        expect(transformOrderForCreation(order)).toMatchObject(expectation);
+    });
+
+    it('should add default timeInForce for limit order', () => {
+        const order = {
+            symbol: 'BTC/ETH',
+            side: 'buy',
+            type: 'limit',
+            amount: '0.001',
+        };
+
+        const expectation = {
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'LIMIT',
+            quantity: '0.001',
+            timeInForce: 'GTC',
+        };
+
+        expect(transformOrderForCreation(order)).toMatchObject(expectation);
+    });
+
+    it('should pass custom timeInForce for limit order', () => {
+        const order = {
+            symbol: 'BTC/ETH',
+            side: 'buy',
+            type: 'limit',
+            amount: '0.001',
+            timeInForce: 'IOC',
+        };
+
+        const expectation = {
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'LIMIT',
+            quantity: '0.001',
+            timeInForce: 'IOC',
+        };
+
+        expect(transformOrderForCreation(order)).toMatchObject(expectation);
+    });
+});

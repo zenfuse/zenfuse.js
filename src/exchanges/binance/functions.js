@@ -2,7 +2,6 @@
  * This is list of clean functions for Binance data form an API
  */
 
-const { toBN } = require('web3-utils');
 const { createHmac } = require('crypto');
 
 const createHmacSignature = (data, key) => {
@@ -23,21 +22,21 @@ const transformOrderForCreation = (order) => {
     };
 
     if (order.price) {
-        newOrder.price = toBN(order.price).toString();
+        newOrder.price = order.price.toString();
     }
 
     if (order.amount) {
         // NOTE: "amount" should be "quantity" for binance
-        newOrder.quantity = toBN(order.amount).toString();
+        newOrder.quantity = order.amount.toString();
     }
 
-    if (order.type === 'limit') {
+    if (newOrder.type === 'LIMIT') {
         if (!order.timeInForce) {
-            order.timeInForce = 'GTC'; // TODO: Reprecent deafult parameters
+            order.timeInForce = 'GTC'; // TODO: Reprecent default parameters
         }
     }
 
-    newOrder.symbol = order.symbol.replace('/', '');
+    newOrder.symbol = order.symbol.replace('/', '').toUpperCase();
 
     for (const [key, value] of Object.entries(order)) {
         if (!shouldTransform.includes(key)) {
