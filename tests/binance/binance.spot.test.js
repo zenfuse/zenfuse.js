@@ -56,13 +56,13 @@ describe('Binance Spot Wallet', () => {
             result = await binance.fetchMarkets();
         });
 
-        it('should have valid responseBody', () => {
+        it('should have valid originalResponce', () => {
             if (isEnd2EndTest) {
-                expect(result.responseBody).toBeInstanceOf(Object);
+                expect(result.originalResponce).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.responseBody).toMatchObject(mockedMarkets);
+                expect(result.originalResponce).toMatchObject(mockedMarkets);
             }
         });
 
@@ -118,13 +118,13 @@ describe('Binance Spot Wallet', () => {
             });
         });
 
-        it('should have valid responseBody', () => {
+        it('should have valid originalResponce', () => {
             if (isEnd2EndTest) {
-                expect(result.responseBody).toBeInstanceOf(Object);
+                expect(result.originalResponce).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.responseBody).toMatchObject(mockedMarkets);
+                expect(result.originalResponce).toMatchObject(mockedMarkets);
             }
         });
 
@@ -231,15 +231,15 @@ describe('Binance Spot Wallet', () => {
                 result = await binance.createOrder(orderParams);
             });
 
-            it('should have valid responseBody', () => {
+            it('should have valid originalResponce', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.responseBody).toBeInstanceOf(Object);
+                    expect(result.originalResponce).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.responseBody).toMatchObject(
+                    expect(result.originalResponce).toMatchObject(
                         mockedCreatedOrder,
                     );
                 }
@@ -302,15 +302,15 @@ describe('Binance Spot Wallet', () => {
                 result = await binance.createOrder(orderParams);
             });
 
-            it('should have valid responseBody', () => {
+            it('should have valid originalResponce', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.responseBody).toBeInstanceOf(Object);
+                    expect(result.originalResponce).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.responseBody).toMatchObject(
+                    expect(result.originalResponce).toMatchObject(
                         mockedCreatedOrder,
                     );
                 }
@@ -369,15 +369,15 @@ describe('Binance Spot Wallet', () => {
                 result = await binance.createOrder(orderParams);
             });
 
-            it('should have valid responseBody', () => {
+            it('should have valid originalResponce', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.responseBody).toBeInstanceOf(Object);
+                    expect(result.originalResponce).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.responseBody).toMatchObject(
+                    expect(result.originalResponce).toMatchObject(
                         mockedCreatedOrder,
                     );
                 }
@@ -437,15 +437,15 @@ describe('Binance Spot Wallet', () => {
                 result = await binance.createOrder(orderParams);
             });
 
-            it('should have valid responseBody', () => {
+            it('should have valid originalResponce', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.responseBody).toBeInstanceOf(Object);
+                    expect(result.originalResponce).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.responseBody).toMatchObject(
+                    expect(result.originalResponce).toMatchObject(
                         mockedCreatedOrder,
                     );
                 }
@@ -498,13 +498,13 @@ describe('Binance Spot Wallet', () => {
             result = await binance.fetchBalances();
         });
 
-        it('should have valid responseBody', () => {
+        it('should have valid originalResponce', () => {
             if (isEnd2EndTest) {
-                expect(result.responseBody).toBeInstanceOf(Object);
+                expect(result.originalResponce).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.responseBody).toMatchObject(mockedBalances);
+                expect(result.originalResponce).toMatchObject(mockedBalances);
             }
         });
     });

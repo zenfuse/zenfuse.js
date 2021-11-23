@@ -20,19 +20,19 @@ class BinanceSpot extends BinanceBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const responseBody = await this.fetch('api/v3/exchangeInfo').catch(
+        const originalResponce = await this.fetch('api/v3/exchangeInfo').catch(
             (err) => {
                 throw err;
             },
         );
 
-        const spotMarkets = getOnlySpotMarkets(responseBody.symbols);
+        const spotMarkets = getOnlySpotMarkets(originalResponce.symbols);
 
         const tickers = getAllTickersFromSymbols(spotMarkets);
 
         return {
             tickers,
-            responseBody,
+            originalResponce,
         };
     }
 
@@ -40,19 +40,19 @@ class BinanceSpot extends BinanceBase {
      * @returns Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
-        const responseBody = await this.fetch('api/v3/exchangeInfo').catch(
+        const originalResponce = await this.fetch('api/v3/exchangeInfo').catch(
             (err) => {
                 throw err;
             },
         );
 
-        const spotMarkets = getOnlySpotMarkets(responseBody.symbols);
+        const spotMarkets = getOnlySpotMarkets(originalResponce.symbols);
 
         const markets = structualizeMarkets(spotMarkets);
 
         return {
             markets,
-            responseBody,
+            originalResponce,
         };
     }
 
@@ -76,7 +76,7 @@ class BinanceSpot extends BinanceBase {
 
         return {
             createdOrder,
-            responseBody: createdOrder,
+            originalResponce: createdOrder,
         };
     }
 
@@ -94,7 +94,7 @@ class BinanceSpot extends BinanceBase {
 
         return {
             balances,
-            responseBody: response,
+            originalResponce: response,
         };
     }
 }
