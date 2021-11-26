@@ -21,6 +21,7 @@ class ExchangeBase {
             httpClientOptions,
         );
 
+        this.options = options;
         this.fetcher = got.extend(options);
     }
 }

@@ -6,6 +6,7 @@ const {
     getAllTickersFromSymbols,
     transformOrderForCreation,
 } = require('../functions');
+const UserDataStream = require('../streams/userDataStream');
 
 /**
  * Binance class for spot wallet Api
@@ -20,11 +21,11 @@ class BinanceSpot extends BinanceBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const originalResponce = await this.fetch('api/v3/exchangeInfo').catch(
-            (err) => {
-                throw err;
-            },
-        );
+        const originalResponce = await this.publicFetch(
+            'api/v3/exchangeInfo',
+        ).catch((err) => {
+            throw err;
+        });
 
         const spotMarkets = getOnlySpotMarkets(originalResponce.symbols);
 
@@ -40,11 +41,11 @@ class BinanceSpot extends BinanceBase {
      * @returns Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
-        const originalResponce = await this.fetch('api/v3/exchangeInfo').catch(
-            (err) => {
-                throw err;
-            },
-        );
+        const originalResponce = await this.publicFetch(
+            'api/v3/exchangeInfo',
+        ).catch((err) => {
+            throw err;
+        });
 
         const spotMarkets = getOnlySpotMarkets(originalResponce.symbols);
 
@@ -67,9 +68,7 @@ class BinanceSpot extends BinanceBase {
      * @param {number|string} order.price New order object
      */
     async createOrder(order) {
-        this._checkInstanceHasKeys();
-
-        const createdOrder = await this.fetch('api/v3/order', {
+        const createdOrder = await this.privateFetch('api/v3/order', {
             method: 'POST',
             searchParams: transformOrderForCreation(order),
         });
@@ -81,9 +80,7 @@ class BinanceSpot extends BinanceBase {
     }
 
     async fetchBalances() {
-        this._checkInstanceHasKeys();
-
-        const response = await this.fetch('api/v3/account');
+        const response = await this.privateFetch('api/v3/account');
 
         const balances = response.balances.map((b) => {
             return {
@@ -96,6 +93,10 @@ class BinanceSpot extends BinanceBase {
             balances,
             originalResponce: response,
         };
+    }
+
+    getUserDataStream() {
+        return new UserDataStream(this);
     }
 }
 

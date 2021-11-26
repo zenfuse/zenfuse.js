@@ -6,18 +6,23 @@ const { Binance } = require('../../src'); // zenfuse itself
 const isEnd2EndTest = process.env.TEST_MODE === 'e2e';
 const isIntegrationTest = !isEnd2EndTest;
 
-const BINANCE_HOSTNAME = 'https://testnet.binance.vision';
+const INSTANCE_OPTIONS = {
+    prefixUrl: 'https://testnet.binance.vision',
+    websocketUrl: 'wss://testnet.binance.vision/ws',
+};
 
 const API_PUBLIC_KEY = process.env.BINANCE_SPOT_TESTNET_PUBLIC_KEY;
 const API_SECRET_KEY = process.env.BINANCE_SPOT_TESTNET_SECRET_KEY;
 
-describe('Binance Spot Wallet', () => {
+///////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////  BINANCE HTTP INTERFACE  ///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+describe('Binance Spot Wallet HTTP interface', () => {
     let binance;
 
     beforeAll(() => {
-        binance = new Binance('spot', {
-            prefixUrl: BINANCE_HOSTNAME,
-        });
+        binance = new Binance('spot', INSTANCE_OPTIONS);
     });
 
     describe('ping()', () => {
@@ -25,7 +30,7 @@ describe('Binance Spot Wallet', () => {
             expect(binance.ping).toBeDefined();
         });
         it('should pings :)', async () => {
-            const scope = nock(BINANCE_HOSTNAME)
+            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
                 .get('/api/v3/ping')
                 .reply(200, {});
 
@@ -40,7 +45,7 @@ describe('Binance Spot Wallet', () => {
 
         const mockFilePath = __dirname + '/mocks/exchangeInfo.json';
         const mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-        const scope = nock(BINANCE_HOSTNAME)
+        const scope = nock(INSTANCE_OPTIONS.prefixUrl)
             .get('/api/v3/exchangeInfo')
             .replyWithFile(200, mockFilePath, {
                 'Content-Type': 'application/json',
@@ -99,7 +104,7 @@ describe('Binance Spot Wallet', () => {
         if (isIntegrationTest) {
             mockFilePath = __dirname + '/mocks/exchangeInfo.json';
             mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-            scope = nock(BINANCE_HOSTNAME)
+            scope = nock(INSTANCE_OPTIONS.prefixUrl)
                 .get('/api/v3/exchangeInfo')
                 .replyWithFile(200, mockFilePath, {
                     'Content-Type': 'application/json',
@@ -216,7 +221,7 @@ describe('Binance Spot Wallet', () => {
                 ],
             };
 
-            const scope = nock(BINANCE_HOSTNAME)
+            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -287,7 +292,7 @@ describe('Binance Spot Wallet', () => {
                 ],
             };
 
-            const scope = nock(BINANCE_HOSTNAME)
+            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -354,7 +359,7 @@ describe('Binance Spot Wallet', () => {
                 fills: [],
             };
 
-            const scope = nock(BINANCE_HOSTNAME)
+            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -422,7 +427,7 @@ describe('Binance Spot Wallet', () => {
                 fills: [],
             };
 
-            const scope = nock(BINANCE_HOSTNAME)
+            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -483,7 +488,7 @@ describe('Binance Spot Wallet', () => {
             permissions: ['SPOT'],
         };
 
-        const scope = nock(BINANCE_HOSTNAME)
+        const scope = nock(INSTANCE_OPTIONS.prefixUrl)
             .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
             .get('/api/v3/account')
             .query((query) => {
@@ -506,6 +511,56 @@ describe('Binance Spot Wallet', () => {
             if (isIntegrationTest) {
                 expect(result.originalResponce).toMatchObject(mockedBalances);
             }
+        });
+    });
+});
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////   BINANCE WEBSOCKET INTERFACE   ///////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+const MOCKED_LISTEN_KEY = {
+    listenKey: 'hellositwhenairdropwhenbinance',
+};
+
+describe('Binance Spot Wallet UserDataStream', () => {
+    let userDataStream;
+    let binance;
+
+    nock(INSTANCE_OPTIONS.websocketUrl);
+
+    beforeAll(() => {
+        binance = new Binance('spot', INSTANCE_OPTIONS).auth({
+            publicKey: API_PUBLIC_KEY,
+            privateKey: API_SECRET_KEY,
+        });
+
+        userDataStream = binance.getUserDataStream();
+    });
+
+    afterAll(() => {
+        userDataStream.close();
+    });
+
+    describe('open()', () => {
+        const scope = nock(INSTANCE_OPTIONS.prefixUrl)
+            .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
+            .post('/api/v3/userDataStream')
+            .query((query) => {
+                expect(query.timestamp).toBeDefined();
+                expect(query.signature).toBeDefined();
+                return true;
+            })
+            .reply(200, MOCKED_LISTEN_KEY);
+
+        // TODO: Mock websocket
+
+        afterAll(() => scope.done());
+
+        it('should connect to websocket', async () => {
+            await userDataStream.open();
+
+            expect(userDataStream.socket.readyState).toBe(1);
         });
     });
 });

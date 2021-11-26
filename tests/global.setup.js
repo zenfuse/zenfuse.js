@@ -28,11 +28,6 @@ const validateEnvironment = () => {
 module.exports = () => {
     const testMode = process.env.TEST_MODE;
 
-    process.on('unhandledRejection', (error) => {
-        console.error('unhandledRejection', error.message);
-        process.exit(1);
-    });
-
     if (testMode === 'e2e') {
         process.stdout.write('\n\n\x1b[45m\x1b[30m E2E TEST \x1b[0m\n\n');
         validateEnvironment();
