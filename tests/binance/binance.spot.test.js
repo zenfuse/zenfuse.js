@@ -43,7 +43,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
     describe('fetchMarkets()', () => {
         let result;
 
-        const mockFilePath = __dirname + '/mocks/exchangeInfo.json';
+        const mockFilePath = __dirname + '/mocks/static/exchangeInfo.json';
         const mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
         const scope = nock(INSTANCE_OPTIONS.prefixUrl)
             .get('/api/v3/exchangeInfo')
@@ -102,7 +102,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         let scope = { done() {} };
 
         if (isIntegrationTest) {
-            mockFilePath = __dirname + '/mocks/exchangeInfo.json';
+            mockFilePath = __dirname + '/mocks/static/exchangeInfo.json';
             mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
             scope = nock(INSTANCE_OPTIONS.prefixUrl)
                 .get('/api/v3/exchangeInfo')
