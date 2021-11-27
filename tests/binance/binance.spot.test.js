@@ -524,6 +524,12 @@ const MOCKED_LISTEN_KEY = {
 };
 
 describe('Binance Spot Wallet UserDataStream', () => {
+    if (isIntegrationTest) {
+        // TODO: Mock websocket
+        console.warn('Websoket test skipped');
+        return;
+    }
+
     let userDataStream;
     let binance;
 
@@ -547,8 +553,7 @@ describe('Binance Spot Wallet UserDataStream', () => {
             .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
             .post('/api/v3/userDataStream')
             .query((query) => {
-                expect(query.timestamp).toBeDefined();
-                expect(query.signature).toBeDefined();
+                expect(query).toHaveLength(0);
                 return true;
             })
             .reply(200, MOCKED_LISTEN_KEY);
@@ -560,7 +565,28 @@ describe('Binance Spot Wallet UserDataStream', () => {
         it('should connect to websocket', async () => {
             await userDataStream.open();
 
-            expect(userDataStream.socket.readyState).toBe(1);
+            expect(userDataStream.isSocketConneted).toBe(true);
+        });
+
+        it('should emit events on order creation', async () => {
+            const orderParams = {
+                symbol: 'BNB/USDT',
+                type: 'market',
+                side: 'sell',
+                amount: '1',
+            };
+
+            const orderUpdate = new Promise((resolve) => {
+                userDataStream.once('orderUpdate', resolve);
+            });
+
+            const tickersChanged = new Promise((resolve) => {
+                userDataStream.once('tickersChanged', resolve);
+            });
+
+            binance.createOrder(orderParams);
+
+            return await Promise.all([orderUpdate, tickersChanged]);
         });
     });
 });
