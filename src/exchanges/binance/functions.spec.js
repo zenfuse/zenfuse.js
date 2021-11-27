@@ -1,9 +1,6 @@
 const {
     createHmacSignature,
     transformOrderForCreation,
-    getAllTickersFromSymbols,
-    getOnlySpotMarkets,
-    structualizeMarkets,
 } = require('./functions');
 
 describe('createHmacSignature()', () => {

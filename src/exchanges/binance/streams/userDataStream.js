@@ -22,13 +22,13 @@ class UserDataStream extends BinanceWebsocketBase {
 
         this._listenKey = listenKey;
 
-        this.socket = await this.getSocketConnection(`ws/${listenKey}`); // TODO: Catch network error
+        this.socket = await this.getSocketConnection(`ws/${listenKey}`);
 
         this.createRevalidateInterval();
 
         this.socket.on('message', this.serverMessageHandler.bind(this));
 
-        return this; // TODO: Promise<this>
+        return this;
     }
 
     /**
