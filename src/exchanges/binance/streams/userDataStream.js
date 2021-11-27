@@ -127,6 +127,8 @@ class UserDataStream extends BinanceWebsocketBase {
             default:
                 throw payload;
         }
+
+        this.emit('payload', payload);
     }
 
     emitOrderUpdateEvent(payload) {
