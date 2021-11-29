@@ -6,13 +6,22 @@ const { Binance } = require('../../src'); // zenfuse itself
 const isEnd2EndTest = process.env.TEST_MODE === 'e2e';
 const isIntegrationTest = !isEnd2EndTest;
 
+/**
+ * @type {import('../../src/base/exchange').BaseOptions}
+ */
 const INSTANCE_OPTIONS = {
-    prefixUrl: 'https://testnet.binance.vision',
-    websocketUrl: 'wss://testnet.binance.vision/ws',
+    httpClientOptions: {
+        prefixUrl: 'https://testnet.binance.vision/',
+    },
+    ws: {
+        prefixUrl: 'wss://testnet.binance.vision/',
+    },
 };
 
 const API_PUBLIC_KEY = process.env.BINANCE_SPOT_TESTNET_PUBLIC_KEY;
 const API_SECRET_KEY = process.env.BINANCE_SPOT_TESTNET_SECRET_KEY;
+
+const binanceHostname = INSTANCE_OPTIONS.httpClientOptions.prefixUrl;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////  BINANCE HTTP INTERFACE  ///////////////////////////////////
@@ -30,7 +39,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             expect(binance.ping).toBeDefined();
         });
         it('should pings :)', async () => {
-            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
+            const scope = nock(binanceHostname)
                 .get('/api/v3/ping')
                 .reply(200, {});
 
@@ -45,7 +54,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         const mockFilePath = __dirname + '/mocks/static/exchangeInfo.json';
         const mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-        const scope = nock(INSTANCE_OPTIONS.prefixUrl)
+        const scope = nock(binanceHostname)
             .get('/api/v3/exchangeInfo')
             .replyWithFile(200, mockFilePath, {
                 'Content-Type': 'application/json',
@@ -104,7 +113,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         if (isIntegrationTest) {
             mockFilePath = __dirname + '/mocks/static/exchangeInfo.json';
             mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-            scope = nock(INSTANCE_OPTIONS.prefixUrl)
+            scope = nock(binanceHostname)
                 .get('/api/v3/exchangeInfo')
                 .replyWithFile(200, mockFilePath, {
                     'Content-Type': 'application/json',
@@ -221,7 +230,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 ],
             };
 
-            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
+            const scope = nock(binanceHostname)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -292,7 +301,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 ],
             };
 
-            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
+            const scope = nock(binanceHostname)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -359,7 +368,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 fills: [],
             };
 
-            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
+            const scope = nock(binanceHostname)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -427,7 +436,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 fills: [],
             };
 
-            const scope = nock(INSTANCE_OPTIONS.prefixUrl)
+            const scope = nock(binanceHostname)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -488,7 +497,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             permissions: ['SPOT'],
         };
 
-        const scope = nock(INSTANCE_OPTIONS.prefixUrl)
+        const scope = nock(binanceHostname)
             .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
             .get('/api/v3/account')
             .query((query) => {
@@ -533,8 +542,6 @@ describe('Binance Spot Wallet UserDataStream', () => {
     let userDataStream;
     let binance;
 
-    nock(INSTANCE_OPTIONS.websocketUrl);
-
     beforeAll(() => {
         binance = new Binance('spot', INSTANCE_OPTIONS).auth({
             publicKey: API_PUBLIC_KEY,
@@ -549,7 +556,7 @@ describe('Binance Spot Wallet UserDataStream', () => {
     });
 
     describe('open()', () => {
-        const scope = nock(INSTANCE_OPTIONS.prefixUrl)
+        const scope = nock(binanceHostname)
             .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
             .post('/api/v3/userDataStream')
             .query((query) => {

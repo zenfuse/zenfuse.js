@@ -13,8 +13,8 @@ const UserDataStream = require('../streams/userDataStream');
  * @important should have same
  */
 class BinanceSpot extends BinanceBase {
-    constructor(httpClientOptions) {
-        super(httpClientOptions);
+    constructor(options) {
+        super(options);
     }
 
     /**

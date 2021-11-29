@@ -1,28 +1,40 @@
 const got = require('got');
+const mergeObjects = require('deepmerge');
 
 const pkg = require('../../package.json');
 
-class ExchangeBase {
-    defaultHttpClientOptions = {
+/**
+ * @typedef {{
+ *      httpClientOptions: import('got').ExtendOptions
+ *      ws: {
+ *          prefixUrl: string
+ *      }
+ * }} BaseOptions
+ */
+
+/**
+ * @type {BaseOptions}
+ */
+const DEFAULT_BASE_OPTIONS = {
+    httpClientOptions: {
         responseType: 'json',
         resolveBodyOnly: true,
         headers: {
             'user-agent': `${pkg.name}/${pkg.version} (${pkg.homepage})`,
         },
-    };
+    },
+};
 
+class ExchangeBase {
     /**
-     * @param {got.ExtendOptions} httpClientOptions
-     * @param {string | URL} agentOptions.prefixUrl
+     * @param {BaseOptions} options
      */
-    constructor(httpClientOptions) {
-        const options = Object.assign(
-            this.defaultHttpClientOptions,
-            httpClientOptions,
-        );
+    constructor(options) {
+        const assignedOptions = mergeObjects(DEFAULT_BASE_OPTIONS, options);
 
-        this.options = options;
-        this.fetcher = got.extend(options);
+        this.options = assignedOptions;
+
+        this.fetcher = got.extend(this.options.httpClientOptions);
     }
 }
 

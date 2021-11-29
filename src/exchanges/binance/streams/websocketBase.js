@@ -11,7 +11,7 @@ class BinanceWebsocketBase extends EventEmitter {
     }
 
     getSocketConnection(path) {
-        const url = new URL(path, this.base.options.websocketUrl);
+        const url = new URL(path, this.base.options.ws.prefixUrl);
 
         const socket = new WebSocket(url);
 

@@ -1,4 +1,5 @@
 const { HTTPError } = require('got');
+const mergeObjects = require('deepmerge');
 
 const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
@@ -7,13 +8,17 @@ const { createHmacSignature } = require('./functions');
 
 /**
  * Http client options specialy for Binance
- * @type {import('got').ExtendOptions}
+ * @type {import('../../base/exchange').BaseOptions}
  */
-const BINANCE_HTTP_CLIENT_OPTIONS = {
-    prefixUrl: 'https://api.binance.com/',
-    websocketUrl: 'wss://stream.binance.com:9443/',
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+const BINANCE_DEFAULT_OPTIONS = {
+    httpClientOptions: {
+        prefixUrl: 'https://api.binance.com/',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+    },
+    ws: {
+        prefixUrl: 'wss://stream.binance.com:9443/',
     },
 };
 
@@ -25,14 +30,11 @@ class BinanceBase extends ExchangeBase {
     _keys = null;
 
     /**
-     * @param {import('got').ExtendOptions} httpClientOptions User defined options for in http client lib
+     * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
-    constructor(httpClientOptions) {
-        const options = Object.assign(
-            BINANCE_HTTP_CLIENT_OPTIONS,
-            httpClientOptions,
-        );
-        super(options);
+    constructor(options) {
+        const assignedOptions = mergeObjects(BINANCE_DEFAULT_OPTIONS, options);
+        super(assignedOptions);
     }
 
     /**
@@ -44,7 +46,7 @@ class BinanceBase extends ExchangeBase {
      */
     publicFetch(url, options = {}) {
         if (this._keys) {
-            options = Object.assign(options, {
+            options = mergeObjects(options, {
                 headers: {
                     'X-MBX-APIKEY': this._keys.publicKey,
                 },
@@ -73,7 +75,7 @@ class BinanceBase extends ExchangeBase {
             this._keys.privateKey,
         );
 
-        options = Object.assign(options, {
+        options = mergeObjects(options, {
             headers: {
                 'X-MBX-APIKEY': this._keys.publicKey,
             },

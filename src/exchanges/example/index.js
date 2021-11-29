@@ -1,3 +1,5 @@
+const mergeObjects = require('deepmerge');
+
 const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 
@@ -23,7 +25,7 @@ class ExchangeName extends ExchangeBase {
      * @param {import('got').ExtendOptions} httpClientOptions User defined options for in lib http client
      */
     constructor(httpClientOptions) {
-        const options = Object.assign(
+        const options = mergeObjects(
             EXCHANGE_HTTP_CLIENT_OPTIONS,
             httpClientOptions,
         );
