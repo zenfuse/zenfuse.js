@@ -1,8 +1,8 @@
-const BinanceWebsocketBase = require('./websocketBase');
+const ExchangeWebsocketBase = require('./websocketBase');
 
 const REVALIDATE_INTERVAL_TIME = 1_800_000; // 30min
 
-class UserDataStream extends BinanceWebsocketBase {
+class UserDataStream extends ExchangeWebsocketBase {
     _listenKey = null;
     _validUntil = null;
 

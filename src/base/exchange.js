@@ -4,10 +4,16 @@ const mergeObjects = require('deepmerge');
 const pkg = require('../../package.json');
 
 /**
+ * @typedef {object} ExtraWsOptions
+ * @property {string} prefixUrl When specified, `prefixUrl` will be
+ *      prepended to websocket `url`.
+ *      **Note:** Path will be overwritten
+ */
+
+/**
  * @typedef {object} BaseOptions
- * @property {import('got').ExtendOptions} httpClientOptions
- * @property {object} ws
- * @property {string} ws.prefixUrl
+ * @property {import('got').ExtendOptions} httpClientOptions This object will be passed to `got.extend`
+ * @property {ExtraWsOptions & import('ws').ClientOptions} wsClientOptions Websocket client options based on `ws` lib with some extra parameters
  */
 
 /**
@@ -20,6 +26,12 @@ const DEFAULT_BASE_OPTIONS = {
         headers: {
             'user-agent': `${pkg.name}/${pkg.version} (${pkg.homepage})`,
         },
+    },
+    wsClientOptions: {
+        headers: {
+            'user-agent': `${pkg.name}/${pkg.version} (${pkg.homepage})`,
+        },
+        rejectUnauthorized: true,
     },
 };
 

@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const { WebSocket } = require('ws');
 
-class BinanceWebsocketBase extends EventEmitter {
+class ExchangeWebsocketBase extends EventEmitter {
     /**
      * @param {import('../base')} baseInstance
      */
@@ -11,9 +11,11 @@ class BinanceWebsocketBase extends EventEmitter {
     }
 
     getSocketConnection(path) {
-        const url = new URL(path, this.base.options.ws.prefixUrl);
+        const { wsClientOptions } = this.base.options;
 
-        const socket = new WebSocket(url);
+        const url = new URL(path, wsClientOptions.prefixUrl);
+
+        const socket = new WebSocket(url, wsClientOptions);
 
         return new Promise((resolve, reject) => {
             socket.once('error', (err) => reject(err));
@@ -31,4 +33,4 @@ class BinanceWebsocketBase extends EventEmitter {
     }
 }
 
-module.exports = BinanceWebsocketBase;
+module.exports = ExchangeWebsocketBase;

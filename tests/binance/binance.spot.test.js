@@ -13,7 +13,7 @@ const INSTANCE_OPTIONS = {
     httpClientOptions: {
         prefixUrl: 'https://testnet.binance.vision/',
     },
-    ws: {
+    wsClientOptions: {
         prefixUrl: 'wss://testnet.binance.vision/',
     },
 };
