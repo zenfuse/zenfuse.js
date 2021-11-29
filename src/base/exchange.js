@@ -4,12 +4,10 @@ const mergeObjects = require('deepmerge');
 const pkg = require('../../package.json');
 
 /**
- * @typedef {{
- *      httpClientOptions: import('got').ExtendOptions
- *      ws: {
- *          prefixUrl: string
- *      }
- * }} BaseOptions
+ * @typedef {object} BaseOptions
+ * @property {import('got').ExtendOptions} httpClientOptions
+ * @property {object} ws
+ * @property {string} ws.prefixUrl
  */
 
 /**
