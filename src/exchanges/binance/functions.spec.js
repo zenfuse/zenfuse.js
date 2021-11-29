@@ -1,6 +1,7 @@
 const {
     createHmacSignature,
-    transformOrderForCreation,
+    transformOrderValues,
+    insertDefaults,
 } = require('./functions');
 
 describe('createHmacSignature()', () => {
@@ -29,7 +30,7 @@ describe('transformOrderForCreation()', () => {
             quantity: '0.000001',
         };
 
-        expect(transformOrderForCreation(order)).toMatchObject(expectation);
+        expect(transformOrderValues(order)).toMatchObject(expectation);
     });
 
     it('should add default timeInForce for limit order', () => {
@@ -45,10 +46,9 @@ describe('transformOrderForCreation()', () => {
             side: 'BUY',
             type: 'LIMIT',
             quantity: '0.001',
-            timeInForce: 'GTC',
         };
 
-        expect(transformOrderForCreation(order)).toMatchObject(expectation);
+        expect(transformOrderValues(order)).toMatchObject(expectation);
     });
 
     it('should pass custom timeInForce for limit order', () => {
@@ -57,7 +57,7 @@ describe('transformOrderForCreation()', () => {
             side: 'buy',
             type: 'limit',
             amount: '0.001',
-            timeInForce: 'IOC',
+            extra: 'whenbinance',
         };
 
         const expectation = {
@@ -65,9 +65,61 @@ describe('transformOrderForCreation()', () => {
             side: 'BUY',
             type: 'LIMIT',
             quantity: '0.001',
-            timeInForce: 'IOC',
+            extra: 'whenbinance',
         };
 
-        expect(transformOrderForCreation(order)).toMatchObject(expectation);
+        expect(transformOrderValues(order)).toMatchObject(expectation);
+    });
+});
+
+describe('insertDefaults()', () => {
+    const DEFAULTS = {
+        limit: {
+            timeInForce: 'GTC',
+        },
+        market: {},
+    };
+
+    it('should add default timeInForce for limit order', () => {
+        const order = {
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'LIMIT',
+            quantity: '0.001',
+        };
+
+        const expectation = {
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'LIMIT',
+            quantity: '0.001',
+            timeInForce: 'GTC',
+        };
+
+        const output = insertDefaults(order, DEFAULTS);
+
+        expect(output).toMatchObject(expectation);
+        expect(output.timeInForce).toBe(expectation.timeInForce);
+    });
+
+    it('should add defaults for market order', () => {
+        const order = {
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'MARKET',
+            quantity: '0.001',
+        };
+
+        const expectation = {
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'MARKET',
+            quantity: '0.001',
+        };
+
+        const output = insertDefaults(order, DEFAULTS);
+
+        expect(output).toMatchObject(expectation);
+        expect(output.timeInForce).toBeUndefined();
     });
 });

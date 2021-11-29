@@ -1,12 +1,23 @@
 const BinanceBase = require('../base');
+const mergeObjects = require('deepmerge');
 
 const {
     getOnlySpotMarkets,
     structualizeMarkets,
     getAllTickersFromSymbols,
-    transformOrderForCreation,
+    transformOrderValues,
+    insertDefaults,
 } = require('../functions');
 const UserDataStream = require('../streams/userDataStream');
+
+const BINANCE_DEFAULT_SPOT_OPTIONS = {
+    defaults: {
+        limit: {
+            timeInForce: 'GTC',
+        },
+        market: {},
+    },
+};
 
 /**
  * Binance class for spot wallet Api
@@ -14,7 +25,8 @@ const UserDataStream = require('../streams/userDataStream');
  */
 class BinanceSpot extends BinanceBase {
     constructor(options) {
-        super(options);
+        const fullOptions = mergeObjects(BINANCE_DEFAULT_SPOT_OPTIONS, options);
+        super(fullOptions);
     }
 
     /**
@@ -68,9 +80,16 @@ class BinanceSpot extends BinanceBase {
      * @param {number|string} order.price New order object
      */
     async createOrder(order) {
+        const transformedOrder = transformOrderValues(order);
+
+        const fullOrderParams = insertDefaults(
+            transformedOrder,
+            this.options.defaults,
+        );
+
         const createdOrder = await this.privateFetch('api/v3/order', {
             method: 'POST',
-            searchParams: transformOrderForCreation(order),
+            searchParams: fullOrderParams,
         });
 
         return {

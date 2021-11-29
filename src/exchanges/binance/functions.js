@@ -1,6 +1,7 @@
 /**
  * This is list of clean functions for Binance data form an API
  */
+const mergeObjects = require('deepmerge');
 
 const { createHmac } = require('crypto');
 
@@ -10,41 +11,76 @@ const createHmacSignature = (data, key) => {
 };
 
 /**
- * Transforms order object for binance POST `/order` request interface
- * @link BinanceSpot.createOrder
+ * Insert default values for specific order type
+ *
+ * @param {object} order
+ * @param {object} defaults
+ * @param {object} defaults.limit
+ * @param {object} defaults.market
+ *
+ * @returns TODO: Order type
  */
-const transformOrderForCreation = (order) => {
-    const shouldTransform = ['side', 'type', 'price', 'amount', 'symbol'];
+const insertDefaults = (order, defaults) => {
+    let newOrder;
 
-    const newOrder = {
-        side: order.side.toUpperCase(),
-        type: order.type.toUpperCase(),
-    };
+    if (order.type === 'LIMIT') {
+        newOrder = mergeObjects(defaults.limit, order);
+    }
+
+    if (order.type === 'MARKET') {
+        newOrder = mergeObjects(defaults.market, order);
+    }
+
+    return newOrder;
+};
+
+/**
+ * Transforms order object for binance POST `/order` request interface
+ * @param {import('./wallets/spot').createOrder}
+ */
+const transformOrderValues = (order) => {
+    const shouldTransform = [
+        'side',
+        'type',
+        'price',
+        'amount',
+        'symbol',
+        'timeInForce',
+    ];
+
+    const transformedOrder = {};
+
+    if (order.type) {
+        transformedOrder.type = order.type.toUpperCase();
+    }
+
+    if (order.side) {
+        transformedOrder.side = order.side.toUpperCase();
+    }
 
     if (order.price) {
-        newOrder.price = order.price.toString();
+        transformedOrder.price = order.price.toString();
     }
 
     if (order.amount) {
         // NOTE: "amount" should be "quantity" for binance
-        newOrder.quantity = order.amount.toString();
+        transformedOrder.quantity = order.amount.toString();
     }
 
-    if (newOrder.type === 'LIMIT') {
-        if (!order.timeInForce) {
-            order.timeInForce = 'GTC'; // TODO: Reprecent default parameters
-        }
+    if (order.timeInForce) {
+        transformedOrder.timeInForce = order.timeInForce.toUpperCase();
     }
 
-    newOrder.symbol = order.symbol.replace('/', '').toUpperCase();
+    transformedOrder.symbol = order.symbol.replace('/', '').toUpperCase();
 
+    // Allow user extra keys
     for (const [key, value] of Object.entries(order)) {
         if (!shouldTransform.includes(key)) {
-            newOrder[key] = value;
+            transformedOrder[key] = value;
         }
     }
 
-    return newOrder;
+    return transformedOrder;
 };
 
 /**
@@ -92,7 +128,8 @@ const structualizeMarkets = (markets) => {
 
 module.exports = {
     createHmacSignature,
-    transformOrderForCreation,
+    insertDefaults,
+    transformOrderValues,
     getAllTickersFromSymbols,
     getOnlySpotMarkets,
     structualizeMarkets,
