@@ -7,6 +7,7 @@ const {
     getAllTickersFromSymbols,
     transformOrderValues,
     insertDefaults,
+    validateOrderForCanceling,
 } = require('../functions');
 const UserDataStream = require('../streams/userDataStream');
 
@@ -24,7 +25,7 @@ const BINANCE_DEFAULT_SPOT_OPTIONS = {
  * @important should have same
  */
 class BinanceSpot extends BinanceBase {
-    constructor(options) {
+    constructor(options = {}) {
         const fullOptions = mergeObjects(BINANCE_DEFAULT_SPOT_OPTIONS, options);
         super(fullOptions);
     }
@@ -95,6 +96,59 @@ class BinanceSpot extends BinanceBase {
         return {
             createdOrder,
             originalResponce: createdOrder,
+        };
+    }
+
+    /**
+     * Cancel an active order
+     *
+     * @important Binance required order symbol for canceling.
+     *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
+     *      So if you know order symbol, better pass it to didn't make unnecessary HTTP requests.
+     *
+     * @param {object} order Order object to delete
+     * @param {string} order.symbol Order ticker pair, for example `BTC/USDT`
+     * @param {string} order.id Binance order id
+     */
+    async cancelOrder(order) {
+        validateOrderForCanceling(order);
+
+        if (!order.symbol) {
+            // 	┬──┬ ノ(ò_óノ) Binance api kills nerve cells
+            const openOrders = await this.fetchOpenOrders();
+
+            const orderToDelete = openOrders.originalResponce.find((o) => {
+                return o.orderId === order.id;
+            });
+
+            if (!orderToDelete) {
+                throw new Error('Order symbol not found'); // TODO: Specific error desc
+            }
+
+            order.symbol = orderToDelete.symbol;
+        }
+
+        const deletedOrder = await this.privateFetch('api/v3/order', {
+            method: 'DELETE',
+            searchParams: {
+                symbol: order.symbol,
+                orderId: order.id.toString(),
+            },
+        });
+
+        return {
+            originalResponce: deletedOrder,
+        };
+    }
+
+    async fetchOpenOrders() {
+        const openOrders = await this.privateFetch('api/v3/openOrders');
+
+        // TODO: order status object
+
+        return {
+            openOrders,
+            originalResponce: openOrders,
         };
     }
 

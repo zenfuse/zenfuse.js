@@ -21,6 +21,11 @@ const INSTANCE_OPTIONS = {
 const API_PUBLIC_KEY = process.env.BINANCE_SPOT_TESTNET_PUBLIC_KEY;
 const API_SECRET_KEY = process.env.BINANCE_SPOT_TESTNET_SECRET_KEY;
 
+// const API_PUBLIC_KEY =
+// '5qD36aO5550ROVcpdizSYX71k3QNdgLjJ9bkORCRzXlCVEetYIZADLM11GCCKCfT';
+// const API_SECRET_KEY =
+// 'kqjIAjkYm2XybdEAevvBBmhNPpyFLVV9D2Vkxge7fcym6ucOwHKGKyM666GwzRow';
+
 const binanceHostname = INSTANCE_OPTIONS.httpClientOptions.prefixUrl;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +33,9 @@ const binanceHostname = INSTANCE_OPTIONS.httpClientOptions.prefixUrl;
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 describe('Binance Spot Wallet HTTP interface', () => {
+    /**
+     * @type {import('../../src/exchanges/binance/wallets/spot')}
+     */
     let binance;
 
     beforeAll(() => {
@@ -68,6 +76,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         it('should fetch without errors', async () => {
             result = await binance.fetchMarkets();
+            result;
         });
 
         it('should have valid originalResponce', () => {
@@ -159,7 +168,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
     ///////////////////////////////////////////////////////////////
 
-    describe('auth()', () => {
+    describe.only('auth()', () => {
         it('should bo defined', () => {
             expect(binance.auth).toBeDefined();
         });
@@ -519,6 +528,38 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
             if (isIntegrationTest) {
                 expect(result.originalResponce).toMatchObject(mockedBalances);
+            }
+        });
+    });
+
+    describe.only('cancelOrder()', () => {
+        let result;
+
+        // TODO: Testnet support
+
+        const orderParams = {
+            symbol: 'BUSD/USDT',
+            type: 'limit',
+            side: 'buy',
+            amount: '20',
+            price: '0.5',
+        };
+
+        it('shoud cancel order without errors', async () => {
+            const { createdOrder } = await binance.createOrder(orderParams);
+
+            result = await binance.cancelOrder({ id: createdOrder.orderId });
+
+            expect(result).toBeDefined();
+        });
+
+        it('should have valid originalResponce', () => {
+            if (isEnd2EndTest) {
+                expect(result.originalResponce).toBeInstanceOf(Object);
+            }
+
+            if (isIntegrationTest) {
+                // expect(result.originalResponce).toMatchObject();
             }
         });
     });
