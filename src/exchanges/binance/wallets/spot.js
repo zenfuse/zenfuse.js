@@ -3,6 +3,7 @@ const mergeObjects = require('deepmerge');
 
 const {
     getOnlySpotMarkets,
+    transformMarketString,
     structualizeMarkets,
     getAllTickersFromSymbols,
     transformOrderValues,
@@ -67,6 +68,29 @@ class BinanceSpot extends BinanceBase {
         return {
             markets,
             originalResponce,
+        };
+    }
+
+    /**
+     *
+     * @note If the symbol is not sent, prices for all symbols will be returned in an array.
+     *
+     * @param {string} market Ticker pair aka symbol
+     * @return Last price
+     */
+    async fetchPrice(market) {
+        const params = {};
+
+        if (market) {
+            params.symbol = transformMarketString(market);
+        }
+
+        const responce = await this.publicFetch('api/v3/ticker/price', {
+            searchParams: params,
+        });
+
+        return {
+            originalResponce: responce,
         };
     }
 

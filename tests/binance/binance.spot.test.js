@@ -21,11 +21,6 @@ const INSTANCE_OPTIONS = {
 const API_PUBLIC_KEY = process.env.BINANCE_SPOT_TESTNET_PUBLIC_KEY;
 const API_SECRET_KEY = process.env.BINANCE_SPOT_TESTNET_SECRET_KEY;
 
-// const API_PUBLIC_KEY =
-// '5qD36aO5550ROVcpdizSYX71k3QNdgLjJ9bkORCRzXlCVEetYIZADLM11GCCKCfT';
-// const API_SECRET_KEY =
-// 'kqjIAjkYm2XybdEAevvBBmhNPpyFLVV9D2Vkxge7fcym6ucOwHKGKyM666GwzRow';
-
 const binanceHostname = INSTANCE_OPTIONS.httpClientOptions.prefixUrl;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -162,13 +157,74 @@ describe('Binance Spot Wallet HTTP interface', () => {
         });
     });
 
+    describe.only('fetchPrice()', () => {
+        let result;
+
+        let mockFilePath;
+        let mockedPrices;
+
+        const mockedResponce = {
+            symbol: 'BNBBUSD',
+            price: '9999999.999999',
+        };
+
+        let scope = { done() {} };
+
+        if (isIntegrationTest) {
+            mockFilePath = __dirname + '/mocks/static/prices.json';
+            mockedPrices = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
+            scope = nock(binanceHostname)
+                .get('/api/v3/ticker/price')
+                .replyWithFile(200, mockFilePath, {
+                    'Content-Type': 'application/json',
+                })
+                .get('/api/v3/ticker/price')
+                .query({ symbol: mockedResponce.symbol })
+                .reply(200, mockedResponce);
+        }
+
+        afterAll(() => scope.done());
+
+        it('should be defined', () => {
+            expect(binance.fetchPrice).toBeDefined();
+        });
+
+        it('should fetch all prices without errors', async () => {
+            result = await binance.fetchPrice();
+        });
+
+        it('should have valid originalRespone', () => {
+            if (isEnd2EndTest) {
+                expect(Array.isArray(result.originalResponce)).toBe(true);
+            }
+
+            if (isIntegrationTest) {
+                expect(result.originalResponce).toMatchObject(mockedPrices);
+            }
+        });
+
+        it('should fetch specific price without errors', async () => {
+            result = await binance.fetchPrice('BNB/BUSD');
+        });
+
+        it('should have valid originalResponce', () => {
+            if (isEnd2EndTest) {
+                expect(result.originalResponce).toBeInstanceOf(Object);
+            }
+
+            if (isIntegrationTest) {
+                expect(result.originalResponce).toMatchObject(mockedResponce);
+            }
+        });
+    });
+
     ///////////////////////////////////////////////////////////////
 
     //// Private API Zone
 
     ///////////////////////////////////////////////////////////////
 
-    describe.only('auth()', () => {
+    describe('auth()', () => {
         it('should bo defined', () => {
             expect(binance.auth).toBeDefined();
         });
@@ -532,7 +588,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe.only('cancelOrder()', () => {
+    describe('cancelOrder()', () => {
         let result;
 
         // TODO: Testnet support
