@@ -11,6 +11,20 @@ const createHmacSignature = (data, key) => {
 };
 
 /**
+ * Transform market string specialy for Binance
+ *
+ * @example
+ * ```
+ * transformMarketString('btc/USDT') // returns'BTCUSDT'
+ * ```
+ *
+ * @param {string} libString Market string from lib interface
+ */
+const transformMarketString = (libString) => {
+    return libString.replace('/', '').toUpperCase();
+};
+
+/**
  * Validation function for {@link BinanceSpot.cancelOrder}
  *
  * @param {object} order order object to cancel
@@ -91,7 +105,7 @@ const transformOrderValues = (order) => {
         transformedOrder.timeInForce = order.timeInForce.toUpperCase();
     }
 
-    transformedOrder.symbol = order.symbol.replace('/', '').toUpperCase();
+    transformedOrder.symbol = transformMarketString(order.symbol);
 
     // Allow user extra keys
     for (const [key, value] of Object.entries(order)) {
@@ -148,6 +162,7 @@ const structualizeMarkets = (markets) => {
 
 module.exports = {
     createHmacSignature,
+    transformMarketString,
     validateOrderForCanceling,
     insertDefaults,
     transformOrderValues,

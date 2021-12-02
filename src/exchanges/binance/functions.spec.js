@@ -1,5 +1,6 @@
 const {
     createHmacSignature,
+    transformMarketString,
     transformOrderValues,
     insertDefaults,
 } = require('./functions');
@@ -11,6 +12,17 @@ describe('createHmacSignature()', () => {
         expect(createHmacSignature(data, 'testkey')).toBe(
             'e037a467e455d7847d50df4a6fa3b1c2ebfa4234b19cb7b2a220f1ffbfe9fdb8',
         );
+    });
+});
+
+describe('transformMarketString()', () => {
+    it('should delete slash', () => {
+        const result = transformMarketString('ETH/BUSD');
+        expect(result).toBe('ETHBUSD');
+    });
+    it('should upper case things', () => {
+        const result = transformMarketString('ethbusd');
+        expect(result).toBe('ETHBUSD');
     });
 });
 
