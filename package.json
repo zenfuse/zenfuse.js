@@ -10,7 +10,8 @@
         "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
-        "update-mocks": "bash ./scripts/download_mocks.sh"
+        "download-mocks": "bash ./scripts/download_mocks.sh",
+        "prepare": "npm run download-mocks"
     },
     "repository": {
         "type": "git",

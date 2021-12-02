@@ -20,3 +20,5 @@ echo
 echo 'FTX -----------'
 echo
 fetch https://ftx.com/api/markets ./tests/ftx/mocks/static/markets.json;
+echo
+echo
