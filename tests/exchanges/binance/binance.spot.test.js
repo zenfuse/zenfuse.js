@@ -1,8 +1,8 @@
 const { readFileSync } = require('fs');
 const nock = require('nock');
 
-const checkProcessHasVariables = require('../helpers/validateEnv');
-const { Binance } = require('../../src'); // zenfuse itself
+const checkProcessHasVariables = require('../../helpers/validateEnv');
+const { Binance } = require('../../../src'); // zenfuse itself
 
 const isEnd2EndTest = process.env.TEST_MODE === 'e2e';
 const isIntegrationTest = !isEnd2EndTest;
@@ -22,7 +22,7 @@ const HOSTNAME = 'https://api.binance.com/';
 
 describe('Binance Spot Wallet HTTP interface', () => {
     /**
-     * @type {import('../../src/exchanges/binance/wallets/spot.js')}
+     * @type {import('../../../src/exchanges/binance/wallets/spot.js')}
      */
     let binance;
 
