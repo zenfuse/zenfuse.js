@@ -10,7 +10,7 @@
         "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
-        "download-mocks": "bash ./scripts/download_mocks.sh", 
+        "download-mocks": "bash ./scripts/download_mocks.sh",
         "prepare": "npm run download-mocks"
     },
     "repository": {
@@ -49,13 +49,14 @@
     },
     "jest": {
         "slowTestThreshold": 30000,
-        "bail": true,
         "testMatch": [
             "**/tests/**/*.test.js"
         ],
         "setupFilesAfterEnv": [
             "<rootDir>tests/jest.setup.js"
         ],
-        "globalSetup": "<rootDir>tests/global.setup.js"
+        "globalSetup": "<rootDir>tests/global.setup.js",
+        "testRunner": "jest-circus/runner",
+        "testEnvironment": "<rootDir>tests/jest.environment.js"
     }
 }

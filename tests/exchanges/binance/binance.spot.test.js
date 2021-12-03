@@ -540,7 +540,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             updateTime: 1637431263247,
             accountType: 'SPOT',
             balances: [
-                { asset: 'BNB', free: '1002.00000000', locked: '0.0let 0000000' },
+                { asset: 'BNB', free: '1002.00000000', locked: '0.00000000' },
                 { asset: 'BTC', free: '0.00000000', locked: '0.00000000' },
                 { asset: 'BUSD', free: '9883.26000000', locked: '0.00000000' },
                 { asset: 'ETH', free: '100.00000000', locked: '0.00000000' },
