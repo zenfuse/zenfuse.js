@@ -35,19 +35,19 @@ class BinanceSpot extends BinanceBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const originalResponce = await this.publicFetch(
+        const originalResponse = await this.publicFetch(
             'api/v3/exchangeInfo',
         ).catch((err) => {
             throw err;
         });
 
-        const spotMarkets = getOnlySpotMarkets(originalResponce.symbols);
+        const spotMarkets = getOnlySpotMarkets(originalResponse.symbols);
 
         const tickers = getAllTickersFromSymbols(spotMarkets);
 
         return {
             tickers,
-            originalResponce,
+            originalResponse,
         };
     }
 
@@ -55,19 +55,19 @@ class BinanceSpot extends BinanceBase {
      * @returns Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
-        const originalResponce = await this.publicFetch(
+        const originalResponse = await this.publicFetch(
             'api/v3/exchangeInfo',
         ).catch((err) => {
             throw err;
         });
 
-        const spotMarkets = getOnlySpotMarkets(originalResponce.symbols);
+        const spotMarkets = getOnlySpotMarkets(originalResponse.symbols);
 
         const markets = structualizeMarkets(spotMarkets);
 
         return {
             markets,
-            originalResponce,
+            originalResponse,
         };
     }
 
@@ -90,7 +90,7 @@ class BinanceSpot extends BinanceBase {
         });
 
         return {
-            originalResponce: responce,
+            originalResponse: responce,
         };
     }
 
@@ -119,7 +119,7 @@ class BinanceSpot extends BinanceBase {
 
         return {
             createdOrder,
-            originalResponce: createdOrder,
+            originalResponse: createdOrder,
         };
     }
 
@@ -141,7 +141,7 @@ class BinanceSpot extends BinanceBase {
             // 	┬──┬ ノ(ò_óノ) Binance api kills nerve cells
             const openOrders = await this.fetchOpenOrders();
 
-            const orderToDelete = openOrders.originalResponce.find((o) => {
+            const orderToDelete = openOrders.originalResponse.find((o) => {
                 return o.orderId === order.id;
             });
 
@@ -161,7 +161,7 @@ class BinanceSpot extends BinanceBase {
         });
 
         return {
-            originalResponce: deletedOrder,
+            originalResponse: deletedOrder,
         };
     }
 
@@ -172,7 +172,7 @@ class BinanceSpot extends BinanceBase {
 
         return {
             openOrders,
-            originalResponce: openOrders,
+            originalResponse: openOrders,
         };
     }
 
@@ -188,7 +188,7 @@ class BinanceSpot extends BinanceBase {
 
         return {
             balances,
-            originalResponce: response,
+            originalResponse: response,
         };
     }
 

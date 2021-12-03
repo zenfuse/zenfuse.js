@@ -1,27 +1,20 @@
 const { readFileSync } = require('fs');
 const nock = require('nock');
 
+const checkProcessHasVariables = require('../helpers/validateEnv');
 const { Binance } = require('../../src'); // zenfuse itself
 
 const isEnd2EndTest = process.env.TEST_MODE === 'e2e';
 const isIntegrationTest = !isEnd2EndTest;
 
-/**
- * @type {import('../../src/base/exchange').BaseOptions}
- */
-const INSTANCE_OPTIONS = {
-    httpClientOptions: {
-        prefixUrl: 'https://testnet.binance.vision/',
-    },
-    wsClientOptions: {
-        prefixUrl: 'wss://testnet.binance.vision/',
-    },
-};
+if (isEnd2EndTest) {
+    checkProcessHasVariables(['BINANCE_PUBLIC_KEY', 'BINANCE_SECRET_KEY']);
+}
 
-const API_PUBLIC_KEY = process.env.BINANCE_SPOT_TESTNET_PUBLIC_KEY;
-const API_SECRET_KEY = process.env.BINANCE_SPOT_TESTNET_SECRET_KEY;
+const API_PUBLIC_KEY = process.env.BINANCE_PUBLIC_KEY;
+const API_SECRET_KEY = process.env.BINANCE_SECRET_KEY;
 
-const binanceHostname = INSTANCE_OPTIONS.httpClientOptions.prefixUrl;
+const HOSTNAME = 'https://api.binance.com/';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////  BINANCE HTTP INTERFACE  ///////////////////////////////////
@@ -29,12 +22,12 @@ const binanceHostname = INSTANCE_OPTIONS.httpClientOptions.prefixUrl;
 
 describe('Binance Spot Wallet HTTP interface', () => {
     /**
-     * @type {import('../../src/exchanges/binance/wallets/spot')}
+     * @type {import('../../src/exchanges/binance/wallets/spot.js')}
      */
     let binance;
 
     beforeAll(() => {
-        binance = new Binance('spot', INSTANCE_OPTIONS);
+        binance = new Binance('spot');
     });
 
     describe('ping()', () => {
@@ -42,9 +35,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             expect(binance.ping).toBeDefined();
         });
         it('should pings :)', async () => {
-            const scope = nock(binanceHostname)
-                .get('/api/v3/ping')
-                .reply(200, {});
+            const scope = nock(HOSTNAME).get('/api/v3/ping').reply(200, {});
 
             await binance.ping();
 
@@ -57,7 +48,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         const mockFilePath = __dirname + '/mocks/static/exchangeInfo.json';
         const mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-        const scope = nock(binanceHostname)
+        const scope = nock(HOSTNAME)
             .get('/api/v3/exchangeInfo')
             .replyWithFile(200, mockFilePath, {
                 'Content-Type': 'application/json',
@@ -71,16 +62,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         it('should fetch without errors', async () => {
             result = await binance.fetchMarkets();
-            result;
         });
 
-        it('should have valid originalResponce', () => {
+        it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponce).toBeInstanceOf(Object);
+                expect(result.originalResponse).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponce).toMatchObject(mockedMarkets);
+                expect(result.originalResponse).toMatchObject(mockedMarkets);
             }
         });
 
@@ -117,7 +107,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         if (isIntegrationTest) {
             mockFilePath = __dirname + '/mocks/static/exchangeInfo.json';
             mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-            scope = nock(binanceHostname)
+            scope = nock(HOSTNAME)
                 .get('/api/v3/exchangeInfo')
                 .replyWithFile(200, mockFilePath, {
                     'Content-Type': 'application/json',
@@ -136,13 +126,13 @@ describe('Binance Spot Wallet HTTP interface', () => {
             });
         });
 
-        it('should have valid originalResponce', () => {
+        it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponce).toBeInstanceOf(Object);
+                expect(result.originalResponse).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponce).toMatchObject(mockedMarkets);
+                expect(result.originalResponse).toMatchObject(mockedMarkets);
             }
         });
 
@@ -157,7 +147,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe.only('fetchPrice()', () => {
+    describe('fetchPrice()', () => {
         let result;
 
         let mockFilePath;
@@ -173,7 +163,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         if (isIntegrationTest) {
             mockFilePath = __dirname + '/mocks/static/prices.json';
             mockedPrices = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-            scope = nock(binanceHostname)
+            scope = nock(HOSTNAME)
                 .get('/api/v3/ticker/price')
                 .replyWithFile(200, mockFilePath, {
                     'Content-Type': 'application/json',
@@ -195,11 +185,11 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         it('should have valid originalRespone', () => {
             if (isEnd2EndTest) {
-                expect(Array.isArray(result.originalResponce)).toBe(true);
+                expect(Array.isArray(result.originalResponse)).toBe(true);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponce).toMatchObject(mockedPrices);
+                expect(result.originalResponse).toMatchObject(mockedPrices);
             }
         });
 
@@ -207,13 +197,13 @@ describe('Binance Spot Wallet HTTP interface', () => {
             result = await binance.fetchPrice('BNB/BUSD');
         });
 
-        it('should have valid originalResponce', () => {
+        it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponce).toBeInstanceOf(Object);
+                expect(result.originalResponse).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponce).toMatchObject(mockedResponce);
+                expect(result.originalResponse).toMatchObject(mockedResponce);
             }
         });
     });
@@ -224,7 +214,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
     ///////////////////////////////////////////////////////////////
 
-    describe('auth()', () => {
+    describe.only('auth()', () => {
         it('should bo defined', () => {
             expect(binance.auth).toBeDefined();
         });
@@ -295,7 +285,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 ],
             };
 
-            const scope = nock(binanceHostname)
+            const scope = nock(HOSTNAME)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -310,15 +300,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 result = await binance.createOrder(orderParams);
             });
 
-            it('should have valid originalResponce', () => {
+            it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.originalResponce).toBeInstanceOf(Object);
+                    expect(result.originalResponse).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.originalResponce).toMatchObject(
+                    expect(result.originalResponse).toMatchObject(
                         mockedCreatedOrder,
                     );
                 }
@@ -366,7 +356,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 ],
             };
 
-            const scope = nock(binanceHostname)
+            const scope = nock(HOSTNAME)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -381,15 +371,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 result = await binance.createOrder(orderParams);
             });
 
-            it('should have valid originalResponce', () => {
+            it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.originalResponce).toBeInstanceOf(Object);
+                    expect(result.originalResponse).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.originalResponce).toMatchObject(
+                    expect(result.originalResponse).toMatchObject(
                         mockedCreatedOrder,
                     );
                 }
@@ -433,7 +423,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 fills: [],
             };
 
-            const scope = nock(binanceHostname)
+            const scope = nock(HOSTNAME)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -448,15 +438,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 result = await binance.createOrder(orderParams);
             });
 
-            it('should have valid originalResponce', () => {
+            it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.originalResponce).toBeInstanceOf(Object);
+                    expect(result.originalResponse).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.originalResponce).toMatchObject(
+                    expect(result.originalResponse).toMatchObject(
                         mockedCreatedOrder,
                     );
                 }
@@ -501,7 +491,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 fills: [],
             };
 
-            const scope = nock(binanceHostname)
+            const scope = nock(HOSTNAME)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
@@ -516,15 +506,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 result = await binance.createOrder(orderParams);
             });
 
-            it('should have valid originalResponce', () => {
+            it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.originalResponce).toBeInstanceOf(Object);
+                    expect(result.originalResponse).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.originalResponce).toMatchObject(
+                    expect(result.originalResponse).toMatchObject(
                         mockedCreatedOrder,
                     );
                 }
@@ -562,7 +552,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             permissions: ['SPOT'],
         };
 
-        const scope = nock(binanceHostname)
+        const scope = nock(HOSTNAME)
             .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
             .get('/api/v3/account')
             .query((query) => {
@@ -577,31 +567,29 @@ describe('Binance Spot Wallet HTTP interface', () => {
             result = await binance.fetchBalances();
         });
 
-        it('should have valid originalResponce', () => {
+        it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponce).toBeInstanceOf(Object);
+                expect(result.originalResponse).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponce).toMatchObject(mockedBalances);
+                expect(result.originalResponse).toMatchObject(mockedBalances);
             }
         });
     });
 
-    describe('cancelOrder()', () => {
+    describe.only('cancelOrder()', () => {
         let result;
 
-        // TODO: Testnet support
-
-        const orderParams = {
-            symbol: 'BUSD/USDT',
-            type: 'limit',
-            side: 'buy',
-            amount: '20',
-            price: '0.5',
-        };
-
         it('shoud cancel order without errors', async () => {
+            const orderParams = {
+                symbol: 'BUSD/USDT',
+                type: 'limit',
+                side: 'buy',
+                amount: '20',
+                price: '0.5',
+            };
+
             const { createdOrder } = await binance.createOrder(orderParams);
 
             result = await binance.cancelOrder({ id: createdOrder.orderId });
@@ -609,13 +597,13 @@ describe('Binance Spot Wallet HTTP interface', () => {
             expect(result).toBeDefined();
         });
 
-        it('should have valid originalResponce', () => {
+        it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponce).toBeInstanceOf(Object);
+                expect(result.originalResponse).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                // expect(result.originalResponce).toMatchObject();
+                // expect(result.originalResponse).toMatchObject();
             }
         });
     });
@@ -629,7 +617,7 @@ const MOCKED_LISTEN_KEY = {
     listenKey: 'hellositwhenairdropwhenbinance',
 };
 
-describe('Binance Spot Wallet UserDataStream', () => {
+describe.skip('Binance Spot Wallet UserDataStream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
         console.warn('Websoket test skipped');
@@ -640,7 +628,7 @@ describe('Binance Spot Wallet UserDataStream', () => {
     let binance;
 
     beforeAll(() => {
-        binance = new Binance('spot', INSTANCE_OPTIONS).auth({
+        binance = new Binance('spot').auth({
             publicKey: API_PUBLIC_KEY,
             privateKey: API_SECRET_KEY,
         });
@@ -653,7 +641,7 @@ describe('Binance Spot Wallet UserDataStream', () => {
     });
 
     describe('open()', () => {
-        const scope = nock(binanceHostname)
+        const scope = nock(HOSTNAME)
             .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
             .post('/api/v3/userDataStream')
             .query((query) => {

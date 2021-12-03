@@ -44,7 +44,7 @@ class BinanceBase extends ExchangeBase {
      * @param {import('http').RequestOptions} options
      * @returns {object};
      */
-    publicFetch(url, options = {}) {
+    async publicFetch(url, options = {}) {
         if (this._keys) {
             options = mergeObjects(options, {
                 headers: {
@@ -53,7 +53,7 @@ class BinanceBase extends ExchangeBase {
             });
         }
 
-        return this.fetcher(url, options).catch(this._handleFetcherError);
+        return await this.fetcher(url, options).catch(this._handleFetcherError);
     }
 
     /**
@@ -63,7 +63,7 @@ class BinanceBase extends ExchangeBase {
      * @param {import('http').RequestOptions} options
      * @returns {object};
      */
-    privateFetch(url, options = {}) {
+    async privateFetch(url, options = {}) {
         this._checkInstanceHasKeys();
 
         if (!options.searchParams) options.searchParams = {};
@@ -81,7 +81,7 @@ class BinanceBase extends ExchangeBase {
             },
         });
 
-        return this.fetcher(url, options).catch(this._handleFetcherError);
+        return await this.fetcher(url, options).catch(this._handleFetcherError);
     }
 
     /**
@@ -120,7 +120,7 @@ class BinanceBase extends ExchangeBase {
      * @param {Error} err
      * @private
      */
-    async _handleFetcherError(err) {
+    _handleFetcherError(err) {
         if (err instanceof HTTPError) {
             throw new BinanceApiError(err);
         }
