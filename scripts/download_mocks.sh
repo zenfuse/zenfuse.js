@@ -12,13 +12,15 @@ wget $1 \
 echo '⬇ Downloading static mocks...'
 echo
 echo 'Binance -------'
+binancePath=./tests/exchanges/binance/mocks/static
 echo
-fetch https://api.binance.com/api/v3/exchangeInfo ./tests/binance/mocks/static/exchangeInfo.json;
-fetch https://api.binance.com/api/v3/ticker/price ./tests/binance/mocks/static/prices.json;
+fetch https://api.binance.com/api/v3/exchangeInfo ${binancePath}/exchangeInfo.json;
+fetch https://api.binance.com/api/v3/ticker/price ${binancePath}/prices.json;
 echo
 echo
 echo 'FTX -----------'
+ftxPath=./tests/ftx/mocks/static
 echo
-fetch https://ftx.com/api/markets ./tests/ftx/mocks/static/markets.json;
+fetch https://ftx.com/api/markets ${binancePath}/markets.json;
 echo
 echo
