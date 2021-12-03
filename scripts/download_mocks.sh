@@ -21,6 +21,6 @@ echo
 echo 'FTX -----------'
 ftxPath=./tests/ftx/mocks/static
 echo
-fetch https://ftx.com/api/markets ${binancePath}/markets.json;
+fetch https://ftx.com/api/markets ${ftxPath}/markets.json;
 echo
 echo
