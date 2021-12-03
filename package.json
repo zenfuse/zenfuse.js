@@ -6,11 +6,11 @@
     "scripts": {
         "test": "npm run test:unit && npm run test:integration",
         "test:e2e": "TEST_MODE=e2e node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand --expand",
-        "test:integration": "TEST_MODE=integration node --unhandled-rejections=strict node_modules/.bin/jest --expand",
+        "test:integration": "TEST_MODE=integration node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand --expand",
         "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
-        "download-mocks": "bash ./scripts/download_mocks.sh",
+        "download-mocks": "bash ./scripts/download_mocks.sh", 
         "prepare": "npm run download-mocks"
     },
     "repository": {
