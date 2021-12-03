@@ -30,10 +30,6 @@ describe('Binance Spot Wallet HTTP interface', () => {
         binance = new Binance('spot');
     });
 
-    afterEach(() => {
-        nock.isDone();
-    });
-
     describe('ping()', () => {
         it('should be defined', () => {
             expect(binance.ping).toBeDefined();
@@ -162,7 +158,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             price: '9999999.999999',
         };
 
-        let scope;
+        let scope = { done() {} };
 
         if (isIntegrationTest) {
             mockFilePath = __dirname + '/mocks/static/prices.json';
@@ -175,8 +171,9 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 .get('/api/v3/ticker/price')
                 .query({ symbol: mockedResponce.symbol })
                 .reply(200, mockedResponce);
-            afterAll(() => scope.done());
         }
+
+        afterAll(() => scope.done());
 
         it('should be defined', () => {
             expect(binance.fetchPrice).toBeDefined();
@@ -217,7 +214,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
     ///////////////////////////////////////////////////////////////
 
-    describe.only('auth()', () => {
+    describe('auth()', () => {
         it('should bo defined', () => {
             expect(binance.auth).toBeDefined();
         });
@@ -292,7 +289,8 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
                 .post('/api/v3/order')
                 .query((q) => {
-                    return expect(q).toMatchObject(binanceRequestExpectation);
+                    expect(q).toMatchObject(binanceRequestExpectation);
+                    return true;
                 })
                 .reply(201, mockedCreatedOrder);
 
@@ -388,7 +386,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             });
         });
 
-        describe.skip('buy by limit', () => {
+        describe('buy by limit', () => {
             let result;
 
             const orderParams = {
@@ -425,16 +423,16 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 fills: [],
             };
 
-            // const scope = nock(HOSTNAME)
-            //     .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
-            //     .post('/api/v3/order')
-            //     .query((q) => {
-            //         expect(q).toMatchObject(binanceRequestExpectation);
-            //         return true;
-            //     })
-            //     .reply(201, mockedCreatedOrder);
+            const scope = nock(HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
+                .post('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject(binanceRequestExpectation);
+                    return true;
+                })
+                .reply(201, mockedCreatedOrder);
 
-            // afterAll(() => scope.done());
+            afterAll(() => scope.done());
 
             it('should create order without errors', async () => {
                 result = await binance.createOrder(orderParams);
@@ -542,7 +540,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             updateTime: 1637431263247,
             accountType: 'SPOT',
             balances: [
-                { asset: 'BNB', free: '1002.00000000', locked: '0.00000000' },
+                { asset: 'BNB', free: '1002.00000000', locked: '0.0let 0000000' },
                 { asset: 'BTC', free: '0.00000000', locked: '0.00000000' },
                 { asset: 'BUSD', free: '9883.26000000', locked: '0.00000000' },
                 { asset: 'ETH', free: '100.00000000', locked: '0.00000000' },
@@ -580,7 +578,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe.only('cancelOrder()', () => {
+    describe('cancelOrder()', () => {
         let result;
 
         const binanceDeleteExpectation = {
@@ -666,68 +664,68 @@ const MOCKED_LISTEN_KEY = {
     listenKey: 'hellositwhenairdropwhenbinance',
 };
 
-// describe.skip('Binance Spot Wallet UserDataStream', () => {
-//     if (isIntegrationTest) {
-//         // TODO: Mock websocket
-//         console.warn('Websoket test skipped');
-//         return;
-//     }
+describe('Binance Spot Wallet UserDataStream', () => {
+    if (isIntegrationTest) {
+        // TODO: Mock websocket
+        console.warn('Websoket test skipped');
+        return;
+    }
 
-//     let userDataStream;
-//     let binance;
+    let userDataStream;
+    let binance;
 
-//     beforeAll(() => {
-//         binance = new Binance('spot').auth({
-//             publicKey: API_PUBLIC_KEY,
-//             privateKey: API_SECRET_KEY,
-//         });
+    beforeAll(() => {
+        binance = new Binance('spot').auth({
+            publicKey: API_PUBLIC_KEY,
+            privateKey: API_SECRET_KEY,
+        });
 
-//         userDataStream = binance.getUserDataStream();
-//     });
+        userDataStream = binance.getUserDataStream();
+    });
 
-//     afterAll(() => {
-//         userDataStream.close();
-//     });
+    afterAll(() => {
+        userDataStream.close();
+    });
 
-//     describe('open()', () => {
-//         const scope = nock(HOSTNAME)
-//             .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
-//             .post('/api/v3/userDataStream')
-//             .query((query) => {
-//                 expect(query).toHaveLength(0);
-//                 return true;
-//             })
-//             .reply(200, MOCKED_LISTEN_KEY);
+    describe('open()', () => {
+        const scope = nock(HOSTNAME)
+            .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
+            .post('/api/v3/userDataStream')
+            .query((query) => {
+                expect(query).toHaveLength(0);
+                return true;
+            })
+            .reply(200, MOCKED_LISTEN_KEY);
 
-//         // TODO: Mock websocket
+        // TODO: Mock websocket
 
-//         afterAll(() => scope.done());
+        afterAll(() => scope.done());
 
-//         it('should connect to websocket', async () => {
-//             await userDataStream.open();
+        it('should connect to websocket', async () => {
+            await userDataStream.open();
 
-//             expect(userDataStream.isSocketConneted).toBe(true);
-//         });
+            expect(userDataStream.isSocketConneted).toBe(true);
+        });
 
-//         it('should emit events on order creation', async () => {
-//             const orderParams = {
-//                 symbol: 'BNB/USDT',
-//                 type: 'market',
-//                 side: 'sell',
-//                 amount: '1',
-//             };
+        it('should emit events on order creation', async () => {
+            const orderParams = {
+                symbol: 'BNB/USDT',
+                type: 'market',
+                side: 'sell',
+                amount: '1',
+            };
 
-//             const orderUpdate = new Promise((resolve) => {
-//                 userDataStream.once('orderUpdate', resolve);
-//             });
+            const orderUpdate = new Promise((resolve) => {
+                userDataStream.once('orderUpdate', resolve);
+            });
 
-//             const tickersChanged = new Promise((resolve) => {
-//                 userDataStream.once('tickersChanged', resolve);
-//             });
+            const tickersChanged = new Promise((resolve) => {
+                userDataStream.once('tickersChanged', resolve);
+            });
 
-//             binance.createOrder(orderParams);
+            binance.createOrder(orderParams);
 
-//             return await Promise.all([orderUpdate, tickersChanged]);
-//         });
-//     });
-// });
+            return await Promise.all([orderUpdate, tickersChanged]);
+        });
+    });
+});
