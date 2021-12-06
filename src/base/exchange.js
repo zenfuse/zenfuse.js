@@ -21,7 +21,6 @@ const pkg = require('../../package.json');
  */
 const DEFAULT_BASE_OPTIONS = {
     httpClientOptions: {
-        responseType: 'json',
         resolveBodyOnly: true,
         headers: {
             'user-agent': `${pkg.name}/${pkg.version} (${pkg.homepage})`,
@@ -39,7 +38,7 @@ class ExchangeBase {
     /**
      * @param {BaseOptions} options
      */
-    constructor(options) {
+    constructor(options = {}) {
         const assignedOptions = mergeObjects(DEFAULT_BASE_OPTIONS, options);
 
         this.options = assignedOptions;

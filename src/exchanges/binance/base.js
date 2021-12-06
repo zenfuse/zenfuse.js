@@ -12,6 +12,7 @@ const { createHmacSignature } = require('./functions');
  */
 const BINANCE_DEFAULT_OPTIONS = {
     httpClientOptions: {
+        responseType: 'json',
         prefixUrl: 'https://api.binance.com/',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
