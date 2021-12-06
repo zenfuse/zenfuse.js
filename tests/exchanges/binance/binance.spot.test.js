@@ -667,10 +667,10 @@ const MOCKED_LISTEN_KEY = {
 };
 
 /**
- * @typedef {import('../../../src/exchanges/binance/streams/userDataStream.js')} UserDataStream
+ * @typedef {import('../../../src/exchanges/binance/streams/userDataStream.js')} AccountDataStream
  */
 
-describe('Binance Spot Wallet UserDataStream', () => {
+describe('Binance Spot Wallet Private Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
         console.warn('Websoket test skipped');
@@ -678,7 +678,7 @@ describe('Binance Spot Wallet UserDataStream', () => {
     }
 
     /**
-     * @type {UserDataStream}
+     * @type {AccountDataStream}
      */
     let userDataStream;
 
@@ -693,7 +693,7 @@ describe('Binance Spot Wallet UserDataStream', () => {
             privateKey: API_SECRET_KEY,
         });
 
-        userDataStream = binance.getUserDataStream();
+        userDataStream = binance.getAccountDataStream();
     });
 
     afterAll(() => {
@@ -761,7 +761,7 @@ describe('Binance Spot Wallet UserDataStream', () => {
 });
 
 /**
- * @typedef {import('../../../src/exchanges/binance/streams/publicStream.js')} PublicStream
+ * @typedef {import('../../../src/exchanges/binance/streams/publicStream.js')} MarketDataStream
  */
 
 describe('Binance Spot Wallet Public Stream', () => {
@@ -772,9 +772,9 @@ describe('Binance Spot Wallet Public Stream', () => {
     }
 
     /**
-     * @type {PublicStream}
+     * @type {MarketDataStream}
      */
-    let publicStream;
+    let marketDataStream;
 
     /**
      * @type {BinanceSpot}
@@ -787,14 +787,14 @@ describe('Binance Spot Wallet Public Stream', () => {
             privateKey: API_SECRET_KEY,
         });
 
-        publicStream = binance.getPublicStream();
+        marketDataStream = binance.getMarketDataStream();
     });
 
     describe('open()', () => {
         it('should connect to websocket', async () => {
-            await publicStream.open();
+            await marketDataStream.open();
 
-            expect(publicStream.isSocketConneted).toBe(true);
+            expect(marketDataStream.isSocketConneted).toBe(true);
         });
     });
 
@@ -802,11 +802,11 @@ describe('Binance Spot Wallet Public Stream', () => {
 
     describe('close()', () => {
         it('should close connection', () => {
-            expect(publicStream.isSocketConneted).toBe(true);
+            expect(marketDataStream.isSocketConneted).toBe(true);
 
-            publicStream.close();
+            marketDataStream.close();
 
-            expect(publicStream.isSocketConneted).toBe(false);
+            expect(marketDataStream.isSocketConneted).toBe(false);
         });
     });
 });

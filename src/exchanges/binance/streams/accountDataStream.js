@@ -2,7 +2,7 @@ const ExchangeWebsocketBase = require('./websocketBase');
 
 const REVALIDATE_INTERVAL_TIME = 1_800_000; // 30min
 
-class UserDataStream extends ExchangeWebsocketBase {
+class AccountDataStream extends ExchangeWebsocketBase {
     _listenKey = null;
     _validUntil = null;
 
@@ -153,4 +153,4 @@ class UserDataStream extends ExchangeWebsocketBase {
     }
 }
 
-module.exports = UserDataStream;
+module.exports = AccountDataStream;

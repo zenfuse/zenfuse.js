@@ -1,6 +1,6 @@
 const BinanceWebsocketBase = require('./websocketBase');
 
-class PublicStream extends BinanceWebsocketBase {
+class MarketDataStream extends BinanceWebsocketBase {
     lastPayloadId = 0;
 
     /**
@@ -127,4 +127,4 @@ class PublicStream extends BinanceWebsocketBase {
     }
 }
 
-module.exports = PublicStream;
+module.exports = MarketDataStream;

@@ -11,8 +11,8 @@ const {
     validateOrderForCanceling,
 } = require('../functions');
 
-const UserDataStream = require('../streams/userDataStream');
-const PublicStream = require('../streams/publicStream');
+const AccountDataStream = require('../streams/accountDataStream');
+const MarketDataStream = require('../streams/marketDataStream');
 
 const BINANCE_DEFAULT_SPOT_OPTIONS = {
     defaults: {
@@ -194,12 +194,12 @@ class BinanceSpot extends BinanceBase {
         };
     }
 
-    getUserDataStream() {
-        return new UserDataStream(this);
+    getAccountDataStream() {
+        return new AccountDataStream(this);
     }
 
-    getPublicStream() {
-        return new PublicStream(this);
+    getMarketDataStream() {
+        return new MarketDataStream(this);
     }
 }
 
