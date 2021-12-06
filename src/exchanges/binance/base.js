@@ -4,7 +4,7 @@ const mergeObjects = require('deepmerge');
 const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const BinanceApiError = require('./errors/api.error');
-const { createHmacSignature } = require('./functions');
+const { createHmacSignature } = require('./utils');
 
 /**
  * Http client options specialy for Binance

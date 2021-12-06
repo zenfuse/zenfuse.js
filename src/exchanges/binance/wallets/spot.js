@@ -1,15 +1,7 @@
 const BinanceBase = require('../base');
 const mergeObjects = require('deepmerge');
 
-const {
-    getOnlySpotMarkets,
-    transformMarketString,
-    structualizeMarkets,
-    getAllTickersFromSymbols,
-    transformOrderValues,
-    insertDefaults,
-    validateOrderForCanceling,
-} = require('../functions');
+const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
@@ -43,9 +35,9 @@ class BinanceSpot extends BinanceBase {
             throw err;
         });
 
-        const spotMarkets = getOnlySpotMarkets(originalResponse.symbols);
+        const spotMarkets = utils.getOnlySpotMarkets(originalResponse.symbols);
 
-        const tickers = getAllTickersFromSymbols(spotMarkets);
+        const tickers = utils.getAllTickersFromSymbols(spotMarkets);
 
         return {
             tickers,
@@ -63,9 +55,9 @@ class BinanceSpot extends BinanceBase {
             throw err;
         });
 
-        const spotMarkets = getOnlySpotMarkets(originalResponse.symbols);
+        const spotMarkets = utils.getOnlySpotMarkets(originalResponse.symbols);
 
-        const markets = structualizeMarkets(spotMarkets);
+        const markets = utils.structualizeMarkets(spotMarkets);
 
         return {
             markets,
@@ -84,7 +76,7 @@ class BinanceSpot extends BinanceBase {
         const params = {};
 
         if (market) {
-            params.symbol = transformMarketString(market);
+            params.symbol = utils.transformMarketString(market);
         }
 
         const responce = await this.publicFetch('api/v3/ticker/price', {
@@ -107,9 +99,9 @@ class BinanceSpot extends BinanceBase {
      * @param {number|string} order.price New order object
      */
     async createOrder(order) {
-        const transformedOrder = transformOrderValues(order);
+        const transformedOrder = utils.transformOrderValues(order);
 
-        const fullOrderParams = insertDefaults(
+        const fullOrderParams = utils.assignDefaultsInOrder(
             transformedOrder,
             this.options.defaults,
         );
@@ -137,7 +129,7 @@ class BinanceSpot extends BinanceBase {
      * @param {string} order.id Binance order id
      */
     async cancelOrder(order) {
-        validateOrderForCanceling(order);
+        utils.validateOrderForCanceling(order);
 
         if (!order.symbol) {
             // 	┬──┬ ノ(ò_óノ) Binance api kills nerve cells

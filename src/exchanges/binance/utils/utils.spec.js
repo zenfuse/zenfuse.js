@@ -1,11 +1,8 @@
-const {
-    createHmacSignature,
-    transformMarketString,
-    transformOrderValues,
-    insertDefaults,
-} = require('./functions');
+const utils = require('.');
 
 describe('createHmacSignature()', () => {
+    const { createHmacSignature } = utils;
+
     it('should return valid signature', () => {
         const data = { foo: 'bar' };
 
@@ -16,6 +13,8 @@ describe('createHmacSignature()', () => {
 });
 
 describe('transformMarketString()', () => {
+    const { transformMarketString } = utils;
+
     it('should delete slash', () => {
         const result = transformMarketString('ETH/BUSD');
         expect(result).toBe('ETHBUSD');
@@ -27,6 +26,8 @@ describe('transformMarketString()', () => {
 });
 
 describe('transformOrderForCreation()', () => {
+    const { transformOrderValues } = utils;
+
     it('should upper case symbols and transform amount', () => {
         const order = {
             symbol: 'BTC/ETH',
@@ -84,7 +85,9 @@ describe('transformOrderForCreation()', () => {
     });
 });
 
-describe('insertDefaults()', () => {
+describe('assignDefaultsInOrder()', () => {
+    const { assignDefaultsInOrder } = utils;
+
     const DEFAULTS = {
         limit: {
             timeInForce: 'GTC',
@@ -108,7 +111,7 @@ describe('insertDefaults()', () => {
             timeInForce: 'GTC',
         };
 
-        const output = insertDefaults(order, DEFAULTS);
+        const output = assignDefaultsInOrder(order, DEFAULTS);
 
         expect(output).toMatchObject(expectation);
         expect(output.timeInForce).toBe(expectation.timeInForce);
@@ -129,7 +132,7 @@ describe('insertDefaults()', () => {
             quantity: '0.001',
         };
 
-        const output = insertDefaults(order, DEFAULTS);
+        const output = assignDefaultsInOrder(order, DEFAULTS);
 
         expect(output).toMatchObject(expectation);
         expect(output.timeInForce).toBeUndefined();
