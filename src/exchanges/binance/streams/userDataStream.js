@@ -7,6 +7,11 @@ class UserDataStream extends ExchangeWebsocketBase {
     _validUntil = null;
 
     /**
+     * @type {import('ws').WebSocket}
+     */
+    socket;
+
+    /**
      * @param {import('../base')} baseInstance
      */
     constructor(baseInstance) {
@@ -22,7 +27,7 @@ class UserDataStream extends ExchangeWebsocketBase {
 
         this._listenKey = listenKey;
 
-        this.socket = await this.getSocketConnection(`ws/${listenKey}`);
+        this.socket = await this.getSocketConnection(`/ws/${listenKey}`);
 
         this.createRevalidateInterval();
 
@@ -35,7 +40,7 @@ class UserDataStream extends ExchangeWebsocketBase {
      *
      * @returns {this}
      */
-    async close() {
+    close() {
         if (this.isSocketConneted) {
             this.socket.close();
         }

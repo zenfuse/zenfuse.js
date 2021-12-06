@@ -3,7 +3,7 @@ const { readFileSync } = require('fs');
 const nock = require('nock');
 
 const checkProcessHasVariables = require('../../helpers/validateEnv');
-const { Binance } = require('../../../src'); // zenfuse itself
+const { Binance } = require('../../../src/index.js'); // zenfuse itself
 
 if (isEnd2EndTest) {
     checkProcessHasVariables(['BINANCE_PUBLIC_KEY', 'BINANCE_SECRET_KEY']);
@@ -14,13 +14,17 @@ const API_SECRET_KEY = process.env.BINANCE_SECRET_KEY;
 
 const HOSTNAME = 'https://api.binance.com/';
 
+/**
+ * @typedef {import('../../../src/exchanges/binance/wallets/spot.js')} BinanceSpot
+ */
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////  BINANCE HTTP INTERFACE  ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 describe('Binance Spot Wallet HTTP interface', () => {
     /**
-     * @type {import('../../../src/exchanges/binance/wallets/spot.js')}
+     * @type {BinanceSpot}
      */
     let binance;
 
@@ -229,7 +233,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe('createOrder()', () => {
+    describe.skip('createOrder()', () => {
         it('should be defined', () => {
             expect(binance.createOrder).toBeDefined();
         });
@@ -662,6 +666,10 @@ const MOCKED_LISTEN_KEY = {
     listenKey: 'hellositwhenairdropwhenbinance',
 };
 
+/**
+ * @typedef {import('../../../src/exchanges/binance/streams/userDataStream.js')} UserDataStream
+ */
+
 describe('Binance Spot Wallet UserDataStream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
@@ -669,7 +677,14 @@ describe('Binance Spot Wallet UserDataStream', () => {
         return;
     }
 
+    /**
+     * @type {UserDataStream}
+     */
     let userDataStream;
+
+    /**
+     * @type {BinanceSpot}
+     */
     let binance;
 
     beforeAll(() => {
@@ -682,7 +697,7 @@ describe('Binance Spot Wallet UserDataStream', () => {
     });
 
     afterAll(() => {
-        userDataStream.close();
+        expect(userDataStream.isSocketConneted).toBe(false);
     });
 
     describe('open()', () => {
@@ -707,23 +722,91 @@ describe('Binance Spot Wallet UserDataStream', () => {
 
         it('should emit events on order creation', async () => {
             const orderParams = {
-                symbol: 'BNB/USDT',
-                type: 'market',
-                side: 'sell',
-                amount: '1',
+                symbol: 'BUSD/USDT',
+                type: 'limit',
+                side: 'buy',
+                amount: '20',
+                price: '0.5',
             };
 
-            const orderUpdate = new Promise((resolve) => {
+            const orderUpdatePromice = new Promise((resolve) => {
                 userDataStream.once('orderUpdate', resolve);
             });
 
-            const tickersChanged = new Promise((resolve) => {
+            const tickersChangedPromice = new Promise((resolve) => {
                 userDataStream.once('tickersChanged', resolve);
             });
 
-            binance.createOrder(orderParams);
+            const { createdOrder } = await binance.createOrder(orderParams);
 
-            return await Promise.all([orderUpdate, tickersChanged]);
+            return await Promise.all([
+                orderUpdatePromice,
+                tickersChangedPromice,
+            ]).then(() => {
+                createdOrder.id = createdOrder.orderId;
+                return binance.cancelOrder(createdOrder);
+            });
+        });
+    });
+
+    describe('close()', () => {
+        it('should close connection', () => {
+            expect(userDataStream.isSocketConneted).toBe(true);
+
+            userDataStream.close();
+
+            expect(userDataStream.isSocketConneted).toBe(false);
+        });
+    });
+});
+
+/**
+ * @typedef {import('../../../src/exchanges/binance/streams/publicStream.js')} PublicStream
+ */
+
+describe('Binance Spot Wallet Public Stream', () => {
+    if (isIntegrationTest) {
+        // TODO: Mock websocket
+        console.warn('Websoket test skipped');
+        return;
+    }
+
+    /**
+     * @type {PublicStream}
+     */
+    let publicStream;
+
+    /**
+     * @type {BinanceSpot}
+     */
+    let binance;
+
+    beforeAll(() => {
+        binance = new Binance('spot').auth({
+            publicKey: API_PUBLIC_KEY,
+            privateKey: API_SECRET_KEY,
+        });
+
+        publicStream = binance.getPublicStream();
+    });
+
+    describe('open()', () => {
+        it('should connect to websocket', async () => {
+            await publicStream.open();
+
+            expect(publicStream.isSocketConneted).toBe(true);
+        });
+    });
+
+    describe.skip('subscribeOnEvent()', () => {});
+
+    describe('close()', () => {
+        it('should close connection', () => {
+            expect(publicStream.isSocketConneted).toBe(true);
+
+            publicStream.close();
+
+            expect(publicStream.isSocketConneted).toBe(false);
         });
     });
 });

@@ -18,7 +18,7 @@ const BINANCE_DEFAULT_OPTIONS = {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
     },
-    ws: {
+    wsClientOptions: {
         prefixUrl: 'wss://stream.binance.com:9443/',
     },
 };

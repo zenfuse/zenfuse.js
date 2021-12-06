@@ -4,10 +4,15 @@ class PublicStream extends BinanceWebsocketBase {
     lastPayloadId = 0;
 
     /**
+     * @type {import('ws').WebSocket}
+     */
+    socket;
+
+    /**
      * Messages that are waiting for a response with a specific id
      * @type {Map<string, [VoidFunction, VoidFunction]>}
      */
-    messageQueue;
+    messageQueue = new Map();
 
     /**
      * @param {import('../base')} baseInstance
@@ -19,6 +24,52 @@ class PublicStream extends BinanceWebsocketBase {
         this.messageQueue = new Map();
     }
 
+    /**
+     *
+     * @returns {this}
+     */
+    async open() {
+        this.socket = await this.getSocketConnection('ws');
+
+        this.socket.on('message', this.serverMessageHandler.bind(this));
+
+        return this;
+    }
+
+    /**
+     *
+     * @returns {this}
+     */
+    close() {
+        if (this.isSocketConneted) {
+            this.socket.close();
+        }
+
+        return this;
+    }
+
+    serverMessageHandler(payload) {
+        const msg = JSON.parse(payload);
+
+        if (!msg.id) {
+            throw new Error('Server payload does not have id');
+        }
+
+        if (!this.messageQueue.has(msg.id)) {
+            throw new Error('Mesage queue unsynced');
+        }
+
+        const [resolve, reject] = this.messageQueue.get(msg.id);
+
+        // code value has only error payload on binance
+        if (msg.code) {
+            reject(msg.msg);
+            return;
+        }
+
+        resolve(msg.result);
+    }
+
     async subscribeOnEvent(...eventNames) {
         this.checkSocketIsConneted();
 
@@ -26,6 +77,20 @@ class PublicStream extends BinanceWebsocketBase {
 
         const payload = {
             method: 'SUBSCRIBE',
+            params: [...eventNames],
+            id,
+        };
+
+        return await this.sendSocketMessage(payload);
+    }
+
+    async unsubscribeOnEvent(...eventNames) {
+        this.checkSocketIsConneted();
+
+        const id = this.getActualPayloadId();
+
+        const payload = {
+            method: 'UNSUBSCRIBE',
             params: [...eventNames],
             id,
         };
@@ -53,6 +118,12 @@ class PublicStream extends BinanceWebsocketBase {
     getActualPayloadId() {
         this.lastPayloadId = ++this.lastPayloadId;
         return this.lastPayloadId;
+    }
+
+    get isSocketConneted() {
+        if (!this.socket) return false;
+
+        return this.socket.readyState === 1;
     }
 }
 

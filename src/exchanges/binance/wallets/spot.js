@@ -10,7 +10,9 @@ const {
     insertDefaults,
     validateOrderForCanceling,
 } = require('../functions');
+
 const UserDataStream = require('../streams/userDataStream');
+const PublicStream = require('../streams/publicStream');
 
 const BINANCE_DEFAULT_SPOT_OPTIONS = {
     defaults: {
@@ -194,6 +196,10 @@ class BinanceSpot extends BinanceBase {
 
     getUserDataStream() {
         return new UserDataStream(this);
+    }
+
+    getPublicStream() {
+        return new PublicStream(this);
     }
 }
 
