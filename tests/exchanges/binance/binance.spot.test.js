@@ -1,11 +1,9 @@
+/* eslint-disable no-undef */
 const { readFileSync } = require('fs');
 const nock = require('nock');
 
 const checkProcessHasVariables = require('../../helpers/validateEnv');
 const { Binance } = require('../../../src'); // zenfuse itself
-
-const isEnd2EndTest = process.env.TEST_MODE === 'e2e';
-const isIntegrationTest = !isEnd2EndTest;
 
 if (isEnd2EndTest) {
     checkProcessHasVariables(['BINANCE_PUBLIC_KEY', 'BINANCE_SECRET_KEY']);
