@@ -87,8 +87,49 @@ const transformOrderValues = (order) => {
     return transformedOrder;
 };
 
+/**
+ * Transforms candlestick data from binance websocket
+ *
+ * @typedef {import('../../../../index.d.ts').kline} kline
+ *
+ * @param {object} k candlestick data from binance websocket
+ * @param {number} k.t Kline start time
+ * @param {number} k.T Kline close time
+ * @param {string} k.s Symbol
+ * @param {string} k.i Interval
+ * @param {number} k.f First trade ID
+ * @param {number} k.L Last trade ID
+ * @param {string} k.o Open price
+ * @param {string} k.c Close price
+ * @param {string} k.h High price
+ * @param {string} k.l Low price
+ * @param {string} k.v Base asset volume
+ * @param {number} k.n Number of trades
+ * @param {boolean} k.x Is this kline closed?
+ * @param {string} k.q Quote asset volume
+ * @param {string} k.V Taker buy base asset volume
+ * @param {string} k.Q Taker buy quote asset volume
+ * @param {string} k.B Ignore
+ *
+ * @returns {kline}
+ */
+const transfornCandlestick = (k) => {
+    return {
+        open: k.o,
+        hight: k.h,
+        low: k.l,
+        close: k.c,
+        timestamp: k.t,
+        interval: k.i,
+        isClosed: k.x,
+        symbol: k.s,
+        volume: k.v,
+    };
+};
+
 module.exports = {
     transformMarketString,
     assignDefaultsInOrder,
     transformOrderValues,
+    transfornCandlestick,
 };

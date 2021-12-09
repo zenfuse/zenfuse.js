@@ -787,6 +787,12 @@ describe.only('Binance Spot Wallet Public Stream', () => {
         marketDataStream = binance.getMarketDataStream();
     });
 
+    afterAll(() => {
+        if (marketDataStream.isSocketConneted) {
+            marketDataStream.close();
+        }
+    });
+
     describe('open()', () => {
         it('should connect to websocket', async () => {
             await marketDataStream.open();
@@ -804,10 +810,12 @@ describe.only('Binance Spot Wallet Public Stream', () => {
             });
 
             marketDataStream.on('OHLCV', (kline) => {
-                console.log('CB', kline);
+                expect(kline).toBeInstanceOf(Object);
+                // kline must be up to date for the last minute
+                expect(kline.timestamp).toBeCloseTo(Date.now(), -6);
                 done();
             });
-        }, 999999);
+        });
     });
 
     describe('close()', () => {

@@ -3,6 +3,8 @@ const nock = require('nock');
 require('dotenv').config();
 
 module.exports = () => {
+    process.env.ZENFUSE_DEBUG = 'true';
+
     const testMode = process.env.TEST_MODE;
 
     if (testMode === 'e2e') {
