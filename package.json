@@ -11,7 +11,9 @@
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
         "download-mocks": "bash ./scripts/download_mocks.sh",
-        "prepare": "npm run download-mocks"
+        "prepare": "npm run download-mocks",
+        "build:types": "tsc",
+        "build:docs": ""
     },
     "repository": {
         "type": "git",
@@ -39,6 +41,7 @@
         "jest-json-schema": "^5.0.0",
         "nock": "^13.2.1",
         "prettier": "^2.4.1",
+        "typescipt": "^1.0.0",
         "typescript": "^4.4.4"
     },
     "dependencies": {
