@@ -12,8 +12,7 @@
         "lint": "eslint .",
         "download-mocks": "bash ./scripts/download_mocks.sh",
         "prepare": "npm run download-mocks",
-        "build:types": "tsc",
-        "build:docs": ""
+        "build:types": "tsc"
     },
     "repository": {
         "type": "git",
