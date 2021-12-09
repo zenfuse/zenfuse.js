@@ -10,9 +10,16 @@ class MarketDataStream extends BinanceWebsocketBase {
 
     /**
      * Messages that are waiting for a response with a specific id
-     * @type {Map<string, [VoidFunction, VoidFunction]>}
+     * @type {Map<string, [typeof Promise.resolve, typeof Promise.reject]>}
      */
     messageQueue = new Map();
+
+    /**
+     *
+     */
+    state = {
+        watch: new Set(),
+    };
 
     /**
      * @param {import('../base')} baseInstance
@@ -21,17 +28,22 @@ class MarketDataStream extends BinanceWebsocketBase {
         super();
         this.base = baseInstance;
 
-        this.messageQueue = new Map();
+        this.setMaxListeners(Infinity);
+
+        this.on('newListener', this.handleNewListener.bind(this));
+        this.on('removeListener', this.handleRemoveListener.bind(this));
     }
 
     /**
-     *
      * @returns {this}
      */
     async open() {
         this.socket = await this.getSocketConnection('ws');
 
-        this.socket.on('message', this.serverMessageHandler.bind(this));
+        this.socket.addEventListener(
+            'message',
+            this.serverMessageHandler.bind(this),
+        );
 
         return this;
     }
@@ -48,28 +60,93 @@ class MarketDataStream extends BinanceWebsocketBase {
         return this;
     }
 
-    serverMessageHandler(payload) {
-        const msg = JSON.parse(payload);
+    /**
+     *
+     * @param {object} param
+     */
+    watchOn(param) {
+        if (param.channel === 'candle') {
+            const eventName = `${param.symbol}@kline_${param.interval}`;
 
-        if (!msg.id) {
-            throw new Error('Server payload does not have id');
-        }
+            this.subscribeOnEvent(eventName).catch((err) => {
+                throw err;
+            });
 
-        if (!this.messageQueue.has(msg.id)) {
-            throw new Error('Mesage queue unsynced');
-        }
-
-        const [resolve, reject] = this.messageQueue.get(msg.id);
-
-        // code value has only error payload on binance
-        if (msg.code) {
-            reject(msg.msg);
             return;
         }
 
-        resolve(msg.result);
+        throw new Error('Uknown channel name ' + param.channel);
     }
 
+    /**
+     * @private
+     * @param {string} eventName
+     * @param {function} listener
+     */
+    handleRemoveListener(eventName, listener) {}
+
+    /**
+     * @private
+     * @param {string} eventName
+     * @param {function} listener
+     */
+    handleNewListener(eventName, listener) {}
+
+    /**
+     * @private
+     * @param {import('ws').MessageEvent} msgEvent
+     */
+    serverMessageHandler(msgEvent) {
+        let msg;
+
+        try {
+            msg = JSON.parse(msgEvent.data);
+        } catch (error) {
+            this.emit('error', error);
+            require('inspector').console.error(error);
+            return;
+        }
+
+        if (msg.id) {
+            // this message is responce for specific request
+            if (!this.messageQueue.has(msg.id)) {
+                throw new Error('Mesage queue unsynced');
+            }
+
+            const [resolve, reject] = this.messageQueue.get(msg.id);
+
+            // code value has only error payload on binance
+            if (msg.code) {
+                reject(msg.msg);
+                return;
+            }
+
+            resolve(msg.result);
+            return;
+        }
+
+        require('inspector').console.log('<- IN');
+        require('inspector').console.log(msg);
+        require('inspector').console.log('');
+
+        switch (msg.e) {
+            case 'kline':
+                this.emit('OHLCV', msg.k);
+                break;
+
+            default:
+                require('inspector').console.error(
+                    'Unsupported event on payload:',
+                );
+                require('inspector').console.error(msg);
+        }
+    }
+
+    /**
+     * @private
+     * @param  {...string} eventNames
+     * @returns {Promise<object>} Server responce
+     */
     async subscribeOnEvent(...eventNames) {
         this.checkSocketIsConneted();
 
@@ -84,6 +161,11 @@ class MarketDataStream extends BinanceWebsocketBase {
         return await this.sendSocketMessage(payload);
     }
 
+    /**
+     * @private
+     * @param  {...string} eventNames
+     * @returns {Promise<object>} Server responce
+     */
     async unsubscribeOnEvent(...eventNames) {
         this.checkSocketIsConneted();
 
@@ -110,11 +192,19 @@ class MarketDataStream extends BinanceWebsocketBase {
 
         this.socket.send(msgString);
 
+        require('inspector').console.log('-> OUT');
+        require('inspector').console.log(msg);
+        require('inspector').console.log('');
+
         return new Promise((resolve, reject) => {
             this.messageQueue.set(msg.id, [resolve, reject]);
         });
     }
 
+    /**
+     * @private
+     * @returns {number} Actual payload id
+     */
     getActualPayloadId() {
         this.lastPayloadId = ++this.lastPayloadId;
         return this.lastPayloadId;
@@ -124,6 +214,12 @@ class MarketDataStream extends BinanceWebsocketBase {
         if (!this.socket) return false;
 
         return this.socket.readyState === 1;
+    }
+
+    checkSocketIsConneted() {
+        if (!this.isSocketConneted) {
+            throw new Error('Socket not connected'); // TODO: Specific error
+        }
     }
 }
 

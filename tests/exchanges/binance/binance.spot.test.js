@@ -764,7 +764,7 @@ describe('Binance Spot Wallet Private Stream', () => {
  * @typedef {import('../../../src/exchanges/binance/streams/publicStream.js')} MarketDataStream
  */
 
-describe('Binance Spot Wallet Public Stream', () => {
+describe.only('Binance Spot Wallet Public Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
         console.warn('Websoket test skipped');
@@ -782,10 +782,7 @@ describe('Binance Spot Wallet Public Stream', () => {
     let binance;
 
     beforeAll(() => {
-        binance = new Binance('spot').auth({
-            publicKey: API_PUBLIC_KEY,
-            privateKey: API_SECRET_KEY,
-        });
+        binance = new Binance('spot');
 
         marketDataStream = binance.getMarketDataStream();
     });
@@ -798,7 +795,20 @@ describe('Binance Spot Wallet Public Stream', () => {
         });
     });
 
-    describe.skip('subscribeOnEvent()', () => {});
+    describe('event subscribition', () => {
+        it('should watch on candle', (done) => {
+            marketDataStream.watchOn({
+                channel: 'candle',
+                symbol: 'btcusdt',
+                interval: '1m',
+            });
+
+            marketDataStream.on('OHLCV', (kline) => {
+                console.log('CB', kline);
+                done();
+            });
+        }, 999999);
+    });
 
     describe('close()', () => {
         it('should close connection', () => {

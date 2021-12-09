@@ -9,7 +9,7 @@
             "request": "launch",
             "runtimeArgs": ["run-script", "test:e2e"],
             "runtimeExecutable": "npm",
-            "skipFiles": ["<node_internals>/**"],
+            "skipFiles": ["<node_internals>/**/*"],
             "type": "node"
         },
         {
@@ -17,7 +17,7 @@
             "request": "launch",
             "runtimeArgs": ["run-script", "test:integration"],
             "runtimeExecutable": "npm",
-            "skipFiles": ["<node_internals>/**"],
+            "skipFiles": ["<node_internals>/**/*"],
             "type": "node"
         },
         {
@@ -25,7 +25,7 @@
             "request": "launch",
             "runtimeArgs": ["run-script", "test:unit"],
             "runtimeExecutable": "npm",
-            "skipFiles": ["<node_internals>/**"],
+            "skipFiles": ["<node_internals>/**/*"],
             "type": "node"
         }
     ]
