@@ -1,5 +1,7 @@
 const mergeObjects = require('deepmerge');
 
+const { timeIntervals } = require('../../metadata');
+
 /**
  * Transform market string specialy for Binance
  *
@@ -90,8 +92,6 @@ const transformOrderValues = (order) => {
 /**
  * Transforms candlestick data from binance websocket
  *
- * @typedef {import('../../../../index.d.ts').kline} kline
- *
  * @param {object} k candlestick data from binance websocket
  * @param {number} k.t Kline start time
  * @param {number} k.T Kline close time
@@ -111,7 +111,7 @@ const transformOrderValues = (order) => {
  * @param {string} k.Q Taker buy quote asset volume
  * @param {string} k.B Ignore
  *
- * @returns {kline}
+ * @returns {import('../../../../index').kline} Candlestick data
  */
 const transfornCandlestick = (k) => {
     return {
@@ -120,7 +120,7 @@ const transfornCandlestick = (k) => {
         low: k.l,
         close: k.c,
         timestamp: k.t,
-        interval: k.i,
+        interval: timeIntervals[k.i],
         isClosed: k.x,
         symbol: k.s,
         volume: k.v,

@@ -1,4 +1,5 @@
 const debug = require('../../../base/etc/debug');
+const { timeIntervals } = require('../metadata');
 const utils = require('../utils');
 
 const BinanceWebsocketBase = require('./websocketBase');
@@ -63,14 +64,19 @@ class MarketDataStream extends BinanceWebsocketBase {
     /**
      *
      * @param {object} param
+     * @param {string} channel
+     * @param {string} symbol
+     * @param {string} [interval] Required if channel is kline
+     * @param {string} channel
      */
-    watchOn(param) {
-        if (param.channel === 'candle') {
-            const eventName = `${param.symbol}@kline_${param.interval}`;
+    async watchOn(param) {
+        if (param.channel === 'kline') {
+            const symbol = utils
+                .transformMarketString(param.symbol)
+                .toLowerCase();
+            const interval = timeIntervals[param.interval];
 
-            this.subscribeOnEvent(eventName).catch((err) => {
-                throw err;
-            });
+            await this.subscribeOnEvent(`${symbol}@kline_${interval}`);
 
             return;
         }
@@ -127,15 +133,26 @@ class MarketDataStream extends BinanceWebsocketBase {
         }
     }
 
+    /**
+     * @fires MarketDataStream#kline
+     *
+     * @param {*} payload
+     */
     emitNewCandlestick(payload) {
         const kline = utils.transfornCandlestick(payload.k);
 
         kline[Symbol.for('zenfuse.originalPayload')] = payload;
 
-        debug.log('Emit OHLCV Event');
+        debug.log('Emit "kline" Event');
         debug.log(kline);
 
-        this.emit('OHLCV', kline);
+        /**
+         * Event represent new
+         *
+         * @event MarketDataStream#kline
+         * @type {import('../../..').kline}
+         */
+        this.emit('kline', kline);
     }
 
     /**

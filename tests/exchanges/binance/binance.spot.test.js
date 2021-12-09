@@ -802,14 +802,14 @@ describe.only('Binance Spot Wallet Public Stream', () => {
     });
 
     describe('event subscribition', () => {
-        it('should watch on candle', (done) => {
+        it('should watch on new candle', (done) => {
             marketDataStream.watchOn({
-                channel: 'candle',
-                symbol: 'btcusdt',
-                interval: '1m',
+                channel: 'kline',
+                symbol: 'BTC/USDT',
+                interval: '15m',
             });
 
-            marketDataStream.on('OHLCV', (kline) => {
+            marketDataStream.once('kline', (kline) => {
                 expect(kline).toBeInstanceOf(Object);
                 // kline must be up to date for the last minute
                 expect(kline.timestamp).toBeCloseTo(Date.now(), -6);
