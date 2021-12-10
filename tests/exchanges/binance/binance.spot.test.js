@@ -344,7 +344,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 if (isIntegrationTest) {
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
-                    ).toMatchObject(mockedCreatedOrder);
+                    ).toEqual(mockedCreatedOrder);
                 }
             });
         });
@@ -421,7 +421,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 if (isIntegrationTest) {
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
-                    ).toMatchObject(mockedCreatedOrder);
+                    ).toEqual(mockedCreatedOrder);
                 }
             });
         });
