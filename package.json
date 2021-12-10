@@ -5,7 +5,7 @@
     "main": "src/index.js",
     "scripts": {
         "test": "npm run test:unit --silent && npm run test:integration --silent",
-        "test:e2e": "TEST_MODE=e2e node npm run jest --silent",
+        "test:e2e": "TEST_MODE=e2e npm run jest --silent",
         "test:integration": "TEST_MODE=integration npm run jest --silent",
         "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
         "jest": "node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand --expand",
