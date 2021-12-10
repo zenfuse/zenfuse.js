@@ -13,12 +13,9 @@ declare class BinanceSpot extends BinanceBase {
      * @returns Array of ticker pairs on this exchange
      */
     fetchMarkets(): Promise<{
-        markets: {
-            symbol: string;
-            baseTicker: string;
-            quoteTicker: string;
-        };
-        originalResponse: any;
+        symbol: string;
+        baseTicker: string;
+        quoteTicker: string;
     }>;
     /**
      *
@@ -27,9 +24,7 @@ declare class BinanceSpot extends BinanceBase {
      * @param {string} market Ticker pair aka symbol
      * @return Last price
      */
-    fetchPrice(market: string): Promise<{
-        originalResponse: any;
-    }>;
+    fetchPrice(market: string): Promise<any>;
     /**
      * Create new spot order on Binance
      *
@@ -46,10 +41,7 @@ declare class BinanceSpot extends BinanceBase {
         type: 'market' | 'limit';
         amount: number | string;
         price: number | string;
-    }): Promise<{
-        createdOrder: any;
-        originalResponse: any;
-    }>;
+    }): Promise<any>;
     /**
      * Cancel an active order
      *
@@ -64,17 +56,9 @@ declare class BinanceSpot extends BinanceBase {
     cancelOrder(order: {
         symbol: string;
         id: string;
-    }): Promise<{
-        originalResponse: any;
-    }>;
-    fetchOpenOrders(): Promise<{
-        openOrders: any;
-        originalResponse: any;
-    }>;
-    fetchBalances(): Promise<{
-        balances: any;
-        originalResponse: any;
-    }>;
+    }): Promise<any>;
+    fetchOpenOrders(): Promise<any>;
+    fetchBalances(): Promise<any>;
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }

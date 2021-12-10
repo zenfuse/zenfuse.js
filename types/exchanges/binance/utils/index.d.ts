@@ -1,5 +1,6 @@
 declare const _exports: {
     createHmacSignature: (data: any, key: any) => string;
+    linkOriginalPayload: (object: any, originalPayload: any) => void;
     validateOrderForCanceling: (order: {
         id: string | number;
     }) => void;
