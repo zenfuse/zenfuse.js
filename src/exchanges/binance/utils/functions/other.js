@@ -5,11 +5,11 @@ const createHmacSignature = (data, key) => {
     return createHmac('sha256', key).update(params).digest('hex');
 };
 
-const linkOriginalResponse = (object, originalResponse) => {
-    object[Symbol.for('zenfuse.originalResponce')] = originalResponse;
+const linkOriginalPayload = (object, originalPayload) => {
+    object[Symbol.for('zenfuse.originalPayload')] = originalPayload;
 };
 
 module.exports = {
     createHmacSignature,
-    linkOriginalResponse,
+    linkOriginalPayload,
 };

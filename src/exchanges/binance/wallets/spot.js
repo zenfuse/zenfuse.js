@@ -176,11 +176,12 @@ class BinanceSpot extends BinanceBase {
         const balances = response.balances.map((b) => {
             return {
                 ticker: b.asset,
-                balance: b.free,
+                free: b.free,
+                used: b.locked,
             };
         });
 
-        utils.linkOriginalResponse(balances, response);
+        utils.linkOriginalPayload(balances, response);
 
         return balances;
     }
