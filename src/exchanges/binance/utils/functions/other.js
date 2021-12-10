@@ -6,7 +6,12 @@ const createHmacSignature = (data, key) => {
 };
 
 const linkOriginalPayload = (object, originalPayload) => {
-    object[Symbol.for('zenfuse.originalPayload')] = originalPayload;
+    Object.defineProperty(object, Symbol.for('zenfuse.originalPayload'), {
+        value: originalPayload,
+        enumerable: false,
+        configurable: false,
+        writable: false,
+    });
 };
 
 module.exports = {

@@ -56,7 +56,10 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 'Content-Type': 'application/json',
             });
 
-        afterAll(() => scope.done());
+        afterAll(() => {
+            if (isTestSuiteFailed) return;
+            scope.done();
+        });
 
         it('should be defined', () => {
             expect(binance.fetchMarkets).toBeDefined();
@@ -68,11 +71,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponse).toBeInstanceOf(Object);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponse).toMatchObject(mockedMarkets);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toMatchObject(mockedMarkets);
             }
         });
 
@@ -95,7 +102,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                     required: ['symbol', 'baseTicker', 'quoteTicker'],
                 },
             };
-            expect(result.markets).toMatchSchema(schema);
+            expect(result).toMatchSchema(schema);
         });
     });
 
@@ -116,7 +123,10 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 });
         }
 
-        afterAll(() => scope.done());
+        afterAll(() => {
+            if (isTestSuiteFailed) return;
+            scope.done();
+        });
 
         it('should be defined', () => {
             expect(binance.fetchTickers).toBeDefined();
@@ -130,11 +140,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponse).toBeInstanceOf(Object);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponse).toMatchObject(mockedMarkets);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toMatchObject(mockedMarkets);
             }
         });
 
@@ -145,7 +159,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                     type: 'string',
                 },
             };
-            expect(result.tickers).toMatchSchema(schema);
+            expect(result).toMatchSchema(schema);
         });
     });
 
@@ -175,7 +189,10 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 .reply(200, mockedResponce);
         }
 
-        afterAll(() => scope.done());
+        afterAll(() => {
+            if (isTestSuiteFailed) return;
+            scope.done();
+        });
 
         it('should be defined', () => {
             expect(binance.fetchPrice).toBeDefined();
@@ -187,11 +204,17 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         it('should have valid originalRespone', () => {
             if (isEnd2EndTest) {
-                expect(Array.isArray(result.originalResponse)).toBe(true);
+                expect(
+                    Array.isArray(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ),
+                ).toBe(true);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponse).toMatchObject(mockedPrices);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toHaveLength(mockedPrices.length);
             }
         });
 
@@ -201,11 +224,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponse).toBeInstanceOf(Object);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponse).toMatchObject(mockedResponce);
+                expect(result[Symbol.for('zenfuse.originalPayload')]).toEqual(
+                    mockedResponce,
+                );
             }
         });
     });
@@ -296,7 +323,10 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 })
                 .reply(201, mockedCreatedOrder);
 
-            afterAll(() => scope.done());
+            afterAll(() => {
+                if (isTestSuiteFailed) return;
+                scope.done();
+            });
 
             it('should create order without errors', async () => {
                 result = await binance.createOrder(orderParams);
@@ -306,13 +336,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.originalResponse).toBeInstanceOf(Object);
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.originalResponse).toMatchObject(
-                        mockedCreatedOrder,
-                    );
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toMatchObject(mockedCreatedOrder);
                 }
             });
         });
@@ -368,7 +400,10 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 })
                 .reply(201, mockedCreatedOrder);
 
-            afterAll(() => scope.done());
+            afterAll(() => {
+                if (isTestSuiteFailed) return;
+                scope.done();
+            });
 
             it('should create order without errors', async () => {
                 result = await binance.createOrder(orderParams);
@@ -378,13 +413,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.originalResponse).toBeInstanceOf(Object);
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.originalResponse).toMatchObject(
-                        mockedCreatedOrder,
-                    );
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toMatchObject(mockedCreatedOrder);
                 }
             });
         });
@@ -435,7 +472,10 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 })
                 .reply(201, mockedCreatedOrder);
 
-            afterAll(() => scope.done());
+            afterAll(() => {
+                if (isTestSuiteFailed) return;
+                scope.done();
+            });
 
             it('should create order without errors', async () => {
                 result = await binance.createOrder(orderParams);
@@ -445,13 +485,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.originalResponse).toBeInstanceOf(Object);
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.originalResponse).toMatchObject(
-                        mockedCreatedOrder,
-                    );
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toMatchObject(mockedCreatedOrder);
                 }
             });
         });
@@ -503,7 +545,10 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 })
                 .reply(201, mockedCreatedOrder);
 
-            afterAll(() => scope.done());
+            afterAll(() => {
+                if (isTestSuiteFailed) return;
+                scope.done();
+            });
 
             it('should create order without errors', async () => {
                 result = await binance.createOrder(orderParams);
@@ -513,13 +558,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 expect(result).toBeDefined();
 
                 if (isEnd2EndTest) {
-                    expect(result.originalResponse).toBeInstanceOf(Object);
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeInstanceOf(Object);
                 }
 
                 if (isIntegrationTest) {
-                    expect(result.originalResponse).toMatchObject(
-                        mockedCreatedOrder,
-                    );
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toMatchObject(mockedCreatedOrder);
                 }
             });
         });
@@ -564,7 +611,10 @@ describe('Binance Spot Wallet HTTP interface', () => {
             })
             .reply(200, mockedBalances);
 
-        afterAll(() => scope.done());
+        afterAll(() => {
+            if (isTestSuiteFailed) return;
+            scope.done();
+        });
 
         it('should fetch without errors', async () => {
             result = await binance.fetchBalances();
@@ -573,11 +623,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponse).toBeInstanceOf(Object);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponse).toMatchObject(mockedBalances);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toMatchObject(mockedBalances);
             }
         });
     });
@@ -625,7 +679,10 @@ describe('Binance Spot Wallet HTTP interface', () => {
             })
             .reply(200, mockedOrder);
 
-        afterAll(() => scope.done());
+        afterAll(() => {
+            if (isTestSuiteFailed) return;
+            scope.done();
+        });
 
         it('shoud cancel order without errors', async () => {
             const orderParams = {
@@ -650,11 +707,15 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
         it('should have valid originalResponse', () => {
             if (isEnd2EndTest) {
-                expect(result.originalResponse).toBeInstanceOf(Object);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeInstanceOf(Object);
             }
 
             if (isIntegrationTest) {
-                expect(result.originalResponse).toMatchObject(mockedOrder);
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toMatchObject(mockedOrder);
             }
         });
     });
@@ -682,7 +743,7 @@ describe('Binance Spot Wallet Private Stream', () => {
     /**
      * @type {AccountDataStream}
      */
-    let userDataStream;
+    let accountDataStream;
 
     /**
      * @type {BinanceSpot}
@@ -695,11 +756,11 @@ describe('Binance Spot Wallet Private Stream', () => {
             privateKey: API_SECRET_KEY,
         });
 
-        userDataStream = binance.getAccountDataStream();
+        accountDataStream = binance.getAccountDataStream();
     });
 
     afterAll(() => {
-        expect(userDataStream.isSocketConneted).toBe(false);
+        expect(accountDataStream.isSocketConneted).toBe(false);
     });
 
     describe('open()', () => {
@@ -714,12 +775,15 @@ describe('Binance Spot Wallet Private Stream', () => {
 
         // TODO: Mock websocket
 
-        afterAll(() => scope.done());
+        afterAll(() => {
+            if (isTestSuiteFailed) return;
+            scope.done();
+        });
 
         it('should connect to websocket', async () => {
-            await userDataStream.open();
+            await accountDataStream.open();
 
-            expect(userDataStream.isSocketConneted).toBe(true);
+            expect(accountDataStream.isSocketConneted).toBe(true);
         });
 
         it('should emit events on order creation', async () => {
@@ -732,11 +796,11 @@ describe('Binance Spot Wallet Private Stream', () => {
             };
 
             const orderUpdatePromice = new Promise((resolve) => {
-                userDataStream.once('orderUpdate', resolve);
+                accountDataStream.once('orderUpdate', resolve);
             });
 
             const tickersChangedPromice = new Promise((resolve) => {
-                userDataStream.once('tickersChanged', resolve);
+                accountDataStream.once('tickersChanged', resolve);
             });
 
             const { createdOrder } = await binance.createOrder(orderParams);
@@ -753,11 +817,11 @@ describe('Binance Spot Wallet Private Stream', () => {
 
     describe('close()', () => {
         it('should close connection', () => {
-            expect(userDataStream.isSocketConneted).toBe(true);
+            expect(accountDataStream.isSocketConneted).toBe(true);
 
-            userDataStream.close();
+            accountDataStream.close();
 
-            expect(userDataStream.isSocketConneted).toBe(false);
+            expect(accountDataStream.isSocketConneted).toBe(false);
         });
     });
 });

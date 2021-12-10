@@ -5,6 +5,8 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
+const { default: create } = require('got/dist/source/create');
+const { util } = require('prettier');
 
 const BINANCE_DEFAULT_SPOT_OPTIONS = {
     defaults: {
@@ -29,40 +31,30 @@ class BinanceSpot extends BinanceBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const originalResponse = await this.publicFetch(
-            'api/v3/exchangeInfo',
-        ).catch((err) => {
-            throw err;
-        });
+        const responce = await this.publicFetch('api/v3/exchangeInfo');
 
-        const spotMarkets = utils.getOnlySpotMarkets(originalResponse.symbols);
+        const spotMarkets = utils.getOnlySpotMarkets(responce.symbols);
 
         const tickers = utils.getAllTickersFromSymbols(spotMarkets);
 
-        return {
-            tickers,
-            originalResponse,
-        };
+        utils.linkOriginalPayload(tickers, responce);
+
+        return tickers;
     }
 
     /**
      * @returns Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
-        const originalResponse = await this.publicFetch(
-            'api/v3/exchangeInfo',
-        ).catch((err) => {
-            throw err;
-        });
+        const response = await this.publicFetch('api/v3/exchangeInfo');
 
-        const spotMarkets = utils.getOnlySpotMarkets(originalResponse.symbols);
+        const spotMarkets = utils.getOnlySpotMarkets(response.symbols);
 
         const markets = utils.structualizeMarkets(spotMarkets);
 
-        return {
-            markets,
-            originalResponse,
-        };
+        utils.linkOriginalPayload(markets, response);
+
+        return markets;
     }
 
     /**
@@ -79,13 +71,13 @@ class BinanceSpot extends BinanceBase {
             params.symbol = utils.transformMarketString(market);
         }
 
-        const responce = await this.publicFetch('api/v3/ticker/price', {
+        const response = await this.publicFetch('api/v3/ticker/price', {
             searchParams: params,
         });
 
-        return {
-            originalResponse: responce,
-        };
+        utils.linkOriginalPayload(response, response);
+
+        return response;
     }
 
     /**
@@ -111,10 +103,11 @@ class BinanceSpot extends BinanceBase {
             searchParams: fullOrderParams,
         });
 
-        return {
-            createdOrder,
-            originalResponse: createdOrder,
-        };
+        utils.linkOriginalPayload(createdOrder, createdOrder);
+
+        // TODO: Order type
+
+        return createdOrder;
     }
 
     /**
@@ -135,7 +128,9 @@ class BinanceSpot extends BinanceBase {
             // 	┬──┬ ノ(ò_óノ) Binance api kills nerve cells
             const openOrders = await this.fetchOpenOrders();
 
-            const orderToDelete = openOrders.originalResponse.find((o) => {
+            const responce = openOrders[Symbol.for('zenfuse.originalPayload')];
+
+            const orderToDelete = responce.find((o) => {
                 return o.orderId === order.id;
             });
 
@@ -146,7 +141,7 @@ class BinanceSpot extends BinanceBase {
             order.symbol = orderToDelete.symbol;
         }
 
-        const deletedOrder = await this.privateFetch('api/v3/order', {
+        const response = await this.privateFetch('api/v3/order', {
             method: 'DELETE',
             searchParams: {
                 symbol: order.symbol,
@@ -154,20 +149,21 @@ class BinanceSpot extends BinanceBase {
             },
         });
 
-        return {
-            originalResponse: deletedOrder,
-        };
+        // TODO: Order type
+
+        utils.linkOriginalPayload(response, response);
+
+        return response;
     }
 
     async fetchOpenOrders() {
-        const openOrders = await this.privateFetch('api/v3/openOrders');
+        const response = await this.privateFetch('api/v3/openOrders');
 
         // TODO: order status object
 
-        return {
-            openOrders,
-            originalResponse: openOrders,
-        };
+        utils.linkOriginalPayload(response, response);
+
+        return response;
     }
 
     async fetchBalances() {

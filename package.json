@@ -4,14 +4,15 @@
     "description": "Neat crypto exchanges connector",
     "main": "src/index.js",
     "scripts": {
-        "test": "npm run test:unit && npm run test:integration",
-        "test:e2e": "TEST_MODE=e2e node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand --expand",
-        "test:integration": "TEST_MODE=integration node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand --expand",
+        "test": "npm run test:unit --silent && npm run test:integration --silent",
+        "test:e2e": "TEST_MODE=e2e node npm run jest --silent",
+        "test:integration": "TEST_MODE=integration npm run jest --silent",
         "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
+        "jest": "node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand --expand",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
         "download-mocks": "bash ./scripts/download_mocks.sh",
-        "prepare": "npm run download-mocks",
+        "prepare": "npm run download-mocks --silent",
         "build:types": "tsc"
     },
     "repository": {
