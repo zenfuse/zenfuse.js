@@ -180,10 +180,9 @@ class BinanceSpot extends BinanceBase {
             };
         });
 
-        return {
-            balances,
-            originalResponse: response,
-        };
+        utils.linkOriginalResponse(balances, response);
+
+        return balances;
     }
 
     getAccountDataStream() {
