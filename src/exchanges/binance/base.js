@@ -60,7 +60,7 @@ class BinanceBase extends ExchangeBase {
             });
         }
 
-        return await this.fetcher(url, options).catch(this._handleFetcherError);
+        return await this.fetcher(url, options).catch(this.handleFetcherError);
     }
 
     /**
@@ -88,7 +88,7 @@ class BinanceBase extends ExchangeBase {
             },
         });
 
-        return await this.fetcher(url, options).catch(this._handleFetcherError);
+        return await this.fetcher(url, options).catch(this.handleFetcherError);
     }
 
     /**
@@ -99,10 +99,10 @@ class BinanceBase extends ExchangeBase {
      * @param {string} keys.privateKey Same as secret key
      * @returns {this}
      */
-    auth(keys) {
+    auth({ publicKey, privateKey }) {
         this[keysSymbol] = {};
-        this[keysSymbol].publicKey = keys.publicKey;
-        this[keysSymbol].privateKey = keys.privateKey;
+        this[keysSymbol].publicKey = publicKey;
+        this[keysSymbol].privateKey = privateKey;
         return this;
     }
 
@@ -121,6 +121,7 @@ class BinanceBase extends ExchangeBase {
 
     /**
      * Ping binance servers
+     * @public
      */
     async ping() {
         return await this.publicFetch('api/v3/ping');
@@ -130,7 +131,7 @@ class BinanceBase extends ExchangeBase {
      * @private
      */
     throwIfNotHasKeys() {
-        if (this.hasKeys) {
+        if (!this.hasKeys) {
             throw new NotAuathenticatedError();
         }
     }
@@ -140,7 +141,7 @@ class BinanceBase extends ExchangeBase {
      * @param {Error} err
      * @private
      */
-    _handleFetcherError(err) {
+    handleFetcherError(err) {
         if (err instanceof HTTPError) {
             throw new BinanceApiError(err);
         }
