@@ -150,7 +150,7 @@ class MarketDataStream extends BinanceWebsocketBase {
          * Event represent new
          *
          * @event MarketDataStream#kline
-         * @type {import('../../..').kline}
+         * @type {import('../../..').Kline}
          */
         this.emit('kline', kline);
     }

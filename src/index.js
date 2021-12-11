@@ -5,7 +5,33 @@ module.exports = {
 };
 
 /**
- * @typedef {object} kline
+ * @typedef {object} Order
+ * @property {string} id
+ * @property {number} timestamp
+ * @property {'open'|'closed'|'canceled'} status
+ * @property {string} symbol
+ * @property {string} type
+ * @property {string} [timeInForce]
+ * @property {'buy'|'sell'} side
+ * @property {string} [price] Required for limit orders
+ * @property {number|string} amount
+ * @property {number} filled
+ * @property {number} remaining
+ * @property {number} const
+ * @property {Trade[]} trades
+ * @property {number} lastTradeTimestamp
+ */
+
+/**
+ * @typedef {object} Trade
+ * @property {string} id Exchange trade id
+ * @property {number} timestamp Time when trade executed
+ * @property {number} amount Amount of base currency
+ * @property {number} price
+ */
+
+/**
+ * @typedef {object} Kline
  * @property {number} open
  * @property {number} hight
  * @property {number} close

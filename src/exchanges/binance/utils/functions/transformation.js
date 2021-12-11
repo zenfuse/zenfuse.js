@@ -111,7 +111,7 @@ const transformOrderValues = (order) => {
  * @param {string} k.Q Taker buy quote asset volume
  * @param {string} k.B Ignore
  *
- * @returns {import('../../../../index').kline} Candlestick data
+ * @returns {import('../../../../index').Kline} Candlestick data
  */
 const transfornCandlestick = (k) => {
     return {

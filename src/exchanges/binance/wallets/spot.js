@@ -5,8 +5,6 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const { default: create } = require('got/dist/source/create');
-const { util } = require('prettier');
 
 const BINANCE_DEFAULT_SPOT_OPTIONS = {
     defaults: {
