@@ -23,19 +23,25 @@ const BINANCE_DEFAULT_OPTIONS = {
     },
 };
 
+const keysSymbol = Symbol('keys');
+
 /**
  * Binance base class for method whitch included in any wallet type
  * @important Any class what extends ExchangeBase should have same public interface
  */
 class BinanceBase extends ExchangeBase {
-    _keys = null;
-
     /**
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options) {
         const assignedOptions = mergeObjects(BINANCE_DEFAULT_OPTIONS, options);
         super(assignedOptions);
+
+        this[keysSymbol] = null;
+
+        Object.defineProperty(this, keysSymbol, {
+            value: null,
+        });
     }
 
     /**
@@ -46,10 +52,10 @@ class BinanceBase extends ExchangeBase {
      * @returns {object};
      */
     async publicFetch(url, options = {}) {
-        if (this._keys) {
+        if (this.hasKeys) {
             options = mergeObjects(options, {
                 headers: {
-                    'X-MBX-APIKEY': this._keys.publicKey,
+                    'X-MBX-APIKEY': this[keysSymbol].publicKey,
                 },
             });
         }
@@ -65,7 +71,7 @@ class BinanceBase extends ExchangeBase {
      * @returns {object};
      */
     async privateFetch(url, options = {}) {
-        this._checkInstanceHasKeys();
+        this.throwIfNotHasKeys();
 
         if (!options.searchParams) options.searchParams = {};
 
@@ -73,12 +79,12 @@ class BinanceBase extends ExchangeBase {
 
         options.searchParams.signature = createHmacSignature(
             options.searchParams,
-            this._keys.privateKey,
+            this[keysSymbol].privateKey,
         );
 
         options = mergeObjects(options, {
             headers: {
-                'X-MBX-APIKEY': this._keys.publicKey,
+                'X-MBX-APIKEY': this[keysSymbol].publicKey,
             },
         });
 
@@ -94,10 +100,23 @@ class BinanceBase extends ExchangeBase {
      * @returns {this}
      */
     auth(keys) {
-        this._keys = {};
-        this._keys.publicKey = keys.publicKey;
-        this._keys.privateKey = keys.privateKey;
+        this[keysSymbol] = {};
+        this[keysSymbol].publicKey = keys.publicKey;
+        this[keysSymbol].privateKey = keys.privateKey;
         return this;
+    }
+
+    /**
+     * Is instanse has keys to authenticate on not
+     *
+     * @type {boolean}
+     */
+    get hasKeys() {
+        return (
+            !!this[keysSymbol] &&
+            !!this[keysSymbol].publicKey &&
+            !!this[keysSymbol].privateKey
+        );
     }
 
     /**
@@ -110,8 +129,8 @@ class BinanceBase extends ExchangeBase {
     /**
      * @private
      */
-    _checkInstanceHasKeys() {
-        if (this._keys === null) {
+    throwIfNotHasKeys() {
+        if (this.hasKeys) {
             throw new NotAuathenticatedError();
         }
     }

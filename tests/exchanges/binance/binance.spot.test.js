@@ -133,9 +133,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         });
 
         it('should fetch without errors', async () => {
-            result = await binance.fetchTickers().catch((err) => {
-                throw err;
-            });
+            result = await binance.fetchTickers();
         });
 
         it('should have valid originalResponse', () => {
@@ -254,9 +252,11 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 privateKey: API_SECRET_KEY,
             };
 
+            expect(binance.hasKeys).toBe(false);
+
             binance.auth(keys);
 
-            expect(binance._keys).toMatchObject(keys);
+            expect(binance.hasKeys).toBe(true);
         });
     });
 
