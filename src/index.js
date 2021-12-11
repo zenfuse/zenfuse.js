@@ -10,15 +10,13 @@ module.exports = {
  * @property {number} timestamp
  * @property {'open'|'closed'|'canceled'} status
  * @property {string} symbol
- * @property {string} type
- * @property {string} [timeInForce]
+ * @property {'market'|'limit'} type
  * @property {'buy'|'sell'} side
  * @property {string} [price] Required for limit orders
- * @property {number|string} amount
+ * @property {number|string} quantity
  * @property {number} filled
  * @property {number} remaining
  * @property {number} const
- * @property {Trade[]} trades
  * @property {number} lastTradeTimestamp
  */
 
