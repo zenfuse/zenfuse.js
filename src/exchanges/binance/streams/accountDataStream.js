@@ -2,10 +2,11 @@ const ExchangeWebsocketBase = require('./websocketBase');
 
 const REVALIDATE_INTERVAL_TIME = 1_800_000; // 30min
 
-class AccountDataStream extends ExchangeWebsocketBase {
-    _listenKey = null;
-    _validUntil = null;
+const listenKeySymbol = Symbol('listenKey');
+const validUntilSymbol = Symbol('validUntil');
+const intervalSymbol = Symbol('interval');
 
+class AccountDataStream extends ExchangeWebsocketBase {
     /**
      * @type {import('ws').WebSocket}
      */
@@ -16,6 +17,9 @@ class AccountDataStream extends ExchangeWebsocketBase {
      */
     constructor(baseInstance) {
         super(baseInstance);
+
+        this[listenKeySymbol] = null;
+        this[validUntilSymbol] = null;
     }
 
     /**
@@ -25,7 +29,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
     async open() {
         const listenKey = await this.fetchListenKey();
 
-        this._listenKey = listenKey;
+        this[listenKeySymbol] = listenKey;
 
         this.socket = await this.getSocketConnection(`/ws/${listenKey}`);
 
@@ -73,7 +77,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
      * @private
      */
     createRevalidateInterval() {
-        this._interval = setInterval(
+        this[intervalSymbol] = setInterval(
             this.extendListenKey.bind(this),
             REVALIDATE_INTERVAL_TIME,
         );
@@ -83,7 +87,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
      * @private
      */
     stopInterval() {
-        clearInterval(this._interval);
+        clearInterval(this[intervalSymbol]);
     }
 
     /**
@@ -93,7 +97,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
         await this.base.publicFetch('/api/v3/userDataStream', {
             method: 'PUT',
             searchParams: {
-                listenKey: this._listenKey,
+                listenKey: this[listenKeySymbol],
             },
         });
 
