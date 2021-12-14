@@ -2,7 +2,12 @@ const Binance = require('./exchanges/binance');
 
 module.exports = {
     Binance,
-    binance: Binance,
+    /**
+     * Object with lower case names for uid usage
+     */
+    exchanges: {
+        binance: Binance,
+    },
 };
 
 /**
