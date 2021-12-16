@@ -4,5 +4,5 @@ tasks:
     - name: Instaling deps
       init: npm install
       
-    - name: Login to npm
-      command: if [[ ! -z "${NPM_TOKEN}" ]]; thenprintf "//registry.npmjs.org/:_authToken=${NPM_TOKEN}\n" >> /home/gitpod/.npmrc; fi
+    - name: Login to npm registry
+      command: printf "//registry.npmjs.org/:_authToken=${$NPM_TOKEN}\n" >> /home/gitpod/.npmrc
