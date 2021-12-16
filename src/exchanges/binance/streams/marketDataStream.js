@@ -61,27 +61,88 @@ class MarketDataStream extends BinanceWebsocketBase {
         return this;
     }
 
+    async subscribeTo(event) {
+        return await this.editSubscribition(event, 'subscribe');
+    }
+
     /**
-     *
-     * @param {object} param
-     * @param {string} channel
-     * @param {string} symbol
-     * @param {string} [interval] Required if channel is kline
-     * @param {string} channel
+     * @param {string|WesocketEvent} event
      */
-    async watchOn(param) {
-        if (param.channel === 'kline') {
-            const symbol = utils
-                .transformMarketString(param.symbol)
-                .toLowerCase();
-            const interval = timeIntervals[param.interval];
+    async unsubscribeFrom(event) {
+        return await this.editSubscribition(event, 'unsubscribe');
+    }
 
-            await this.subscribeOnEvent(`${symbol}@kline_${interval}`);
+    /**
+     * @private
+     *
+     * @typedef {object} WebsocketEvent
+     * @property {string} channel
+     * @property {string} symbol
+     * @property {string} [interval] Required if channel is kline
+     * @property {string} channel
+     *
+     * @param {string|WebsocketEvent} arg
+     * @param {'subscribe'|'unsubscribe'} command
+     */
+    async editSubscribition(arg, command) {
+        const isJustSymbol = typeof arg === 'string';
 
-            return;
+        /**
+         * @type {WebsocketEvent}
+         */
+        let event = {};
+
+        if (isJustSymbol) {
+            if (command === 'unsubscribe') {
+                return await this.unsubscribeFromAllbySymbol(arg);
+            }
+
+            event.channel = 'kline';
+            event.symbol = arg;
+            event.interval = timeIntervals['1m']; // default
+        } else {
+            event = arg;
         }
 
-        throw new Error('Uknown channel name ' + param.channel);
+        if (event.channel === 'kline') {
+            const symbol = utils
+                .transformMarketString(event.symbol)
+                .toLowerCase();
+            const interval = timeIntervals[event.interval];
+
+            if (command === 'subscribe') {
+                await this.sendSocketSubscribe(`${symbol}@kline_${interval}`);
+                return;
+            }
+
+            if (command === 'unsubscribe') {
+                await this.sendSocketUnsubscribe(`${symbol}@kline_${interval}`);
+                return;
+            }
+
+            throw new TypeError('Uknown command argument ' + command);
+        }
+
+        throw new Error('Uknown channel name ' + arg.channel);
+    }
+
+    async unsubscribeFromAllbySymbol(symbol) {
+        const symbolToDelete = utils
+            .transformMarketString(symbol)
+            .toLowerCase();
+
+        const requestPayload = {
+            method: 'LIST_SUBSCRIPTIONS',
+            id: this.createPayloadId(),
+        };
+
+        const allSubs = await this.sendSocketMessage(requestPayload);
+
+        const subsToDelete = allSubs.filter((a) => a.includes(symbolToDelete));
+
+        await this.sendSocketUnsubscribe(...subsToDelete);
+
+        return;
     }
 
     /**
@@ -160,15 +221,13 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @param  {...string} eventNames
      * @returns {Promise<object>} Server responce
      */
-    async subscribeOnEvent(...eventNames) {
+    async sendSocketSubscribe(...eventNames) {
         this.checkSocketIsConneted();
-
-        const id = this.getActualPayloadId();
 
         const payload = {
             method: 'SUBSCRIBE',
             params: [...eventNames],
-            id,
+            id: this.createPayloadId(),
         };
 
         return await this.sendSocketMessage(payload);
@@ -176,13 +235,15 @@ class MarketDataStream extends BinanceWebsocketBase {
 
     /**
      * @private
-     * @param  {...string} eventNames
+     * @param  {string[]} eventNames
      * @returns {Promise<object>} Server responce
      */
-    async unsubscribeOnEvent(...eventNames) {
+    async sendSocketUnsubscribe(...eventNames) {
+        if (eventNames.lenght === 0) return; // nothing to do
+
         this.checkSocketIsConneted();
 
-        const id = this.getActualPayloadId();
+        const id = this.createPayloadId();
 
         const payload = {
             method: 'UNSUBSCRIBE',
@@ -217,7 +278,7 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @private
      * @returns {number} Actual payload id
      */
-    getActualPayloadId() {
+    createPayloadId() {
         this.lastPayloadId = ++this.lastPayloadId;
         return this.lastPayloadId;
     }

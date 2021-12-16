@@ -4,6 +4,7 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
     async handleTestEvent(event, state) {
         switch (event.name) {
             case 'setup':
+                this.global.testTimeout = state.testTimeout;
                 this.global.isTestSuiteFailed = false;
                 break;
             case 'hook_failure':

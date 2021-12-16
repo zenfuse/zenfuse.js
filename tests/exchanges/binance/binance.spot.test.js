@@ -830,7 +830,7 @@ describe.only('Binance Spot Wallet Private Stream', () => {
  * @typedef {import('../../../src/exchanges/binance/streams/publicStream.js')} MarketDataStream
  */
 
-describe.skip('Binance Spot Wallet Public Stream', () => {
+describe.only('Binance Spot Wallet Public Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
         console.warn('Websoket test skipped');
@@ -854,9 +854,7 @@ describe.skip('Binance Spot Wallet Public Stream', () => {
     });
 
     afterAll(() => {
-        if (marketDataStream.isSocketConneted) {
-            marketDataStream.close();
-        }
+        marketDataStream.close();
     });
 
     describe('open()', () => {
@@ -867,9 +865,19 @@ describe.skip('Binance Spot Wallet Public Stream', () => {
         });
     });
 
-    describe('event subscribition', () => {
-        it('should watch on new candle', (done) => {
-            marketDataStream.watchOn({
+    describe('subscribeTo()', () => {
+        beforeEach(async () => {
+            marketDataStream.close();
+            await marketDataStream.open();
+            expect(marketDataStream.isSocketConneted).toBe(true);
+        });
+
+        afterEach(() => {
+            marketDataStream.close();
+        });
+
+        it('should new on new candles', (done) => {
+            marketDataStream.subscribeTo({
                 channel: 'kline',
                 symbol: 'BTC/USDT',
                 interval: '15m',
@@ -880,6 +888,119 @@ describe.skip('Binance Spot Wallet Public Stream', () => {
                 // kline must be up to date for the last minute
                 expect(kline.timestamp).toBeCloseTo(Date.now(), -7);
                 done();
+            });
+        });
+        it('should watch on new candles from symbols', (done) => {
+            marketDataStream.subscribeTo('BTC/USDT');
+
+            marketDataStream.once('kline', (kline) => {
+                expect(kline).toBeInstanceOf(Object);
+                expect(kline.symbol).toBe('BTCUSDT'); // TODO: Add symbol transformation
+                // kline must be up to date for the last minute
+                expect(kline.timestamp).toBeCloseTo(Date.now(), -7);
+                done();
+            });
+        });
+    });
+
+    describe('unsubscribeFrom()', () => {
+        beforeEach(async () => {
+            await marketDataStream.open();
+            expect(marketDataStream.isSocketConneted).toBe(true);
+        });
+
+        afterEach(() => {
+            marketDataStream.close();
+        });
+
+        afterAll(async () => {
+            await marketDataStream.open();
+        });
+
+        it('should unsubsctibed from specific event', async () => {
+            expect(marketDataStream.isSocketConneted).toBe(true);
+
+            await marketDataStream.subscribeTo({
+                channel: 'kline',
+                symbol: 'BTC/USDT',
+                interval: '15m',
+            });
+
+            await marketDataStream.unsubscribeFrom({
+                channel: 'kline',
+                symbol: 'BTC/USDT',
+                interval: '15m',
+            });
+
+            const listener = jest.fn();
+
+            marketDataStream.once('kline', listener);
+
+            return await new Promise((resolve) => {
+                setTimeout(() => {
+                    expect(listener).not.toHaveBeenCalled();
+                    resolve();
+                }, 3000);
+            });
+        });
+
+        it('should unsubscribe by string', async () => {
+            expect(marketDataStream.isSocketConneted).toBe(true);
+
+            await marketDataStream.subscribeTo('BTC/USDT');
+
+            await marketDataStream.unsubscribeFrom('BTC/USDT');
+
+            const listener = jest.fn();
+
+            marketDataStream.once('kline', listener);
+
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    expect(listener).not.toHaveBeenCalled();
+                    resolve();
+                }, );global.testTimeout * 0.3
+            });
+        });
+
+        it('should unsubscribe by string from all events with the same symbol', async () => {
+            expect(marketDataStream.isSocketConneted).toBe(true);
+
+            await marketDataStream.subscribeTo({
+                channel: 'kline',
+                symbol: 'BTC/USDT',
+                interval: '15m',
+            });
+
+            await marketDataStream.subscribeTo({
+                channel: 'kline',
+                symbol: 'BTC/USDT',
+                interval: '1h',
+            });
+
+            await marketDataStream.subscribeTo({
+                channel: 'kline',
+                symbol: 'BNB/BUSD',
+                interval: '1m',
+            });
+
+            await marketDataStream.unsubscribeFrom('BTC/USDT');
+
+            const listener = jest.fn();
+
+            marketDataStream.once('kline', listener);
+
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    expect(listener).toHaveBeenCalled();
+                    listener.mock.calls.forEach((call) => {
+                        const kline = call[0];
+
+                        expect(kline.symbol).toBe('BNBBUSD');
+                        expect(kline.interval).toBe('1m');
+                    });
+                    resolve();
+                }, global.testTimeout * 0.3);
             });
         });
     });
