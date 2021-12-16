@@ -16,6 +16,8 @@ const pkg = require('../../package.json');
  * @property {ExtraWsOptions & import('ws').ClientOptions} wsClientOptions Websocket client options based on `ws` lib with some extra parameters
  */
 
+const userAgent = `${pkg.name}/${pkg.version} (${pkg.homepage}) node/${process.version} ${process.platform} ${process.arch}`;
+
 /**
  * @type {BaseOptions}
  */
@@ -23,12 +25,12 @@ const DEFAULT_BASE_OPTIONS = {
     httpClientOptions: {
         resolveBodyOnly: true,
         headers: {
-            'user-agent': `${pkg.name}/${pkg.version} (${pkg.homepage})`,
+            'user-agent': userAgent,
         },
     },
     wsClientOptions: {
         headers: {
-            'user-agent': `${pkg.name}/${pkg.version} (${pkg.homepage})`,
+            'user-agent': userAgent,
         },
         rejectUnauthorized: true,
     },
