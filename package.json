@@ -29,6 +29,9 @@
         "url": "https://github.com/zenfuse/zenfuse.js/issues"
     },
     "homepage": "https://zenfuse.js",
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com"
+    },
     "types": "./types",
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.3.1",
