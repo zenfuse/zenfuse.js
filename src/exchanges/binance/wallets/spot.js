@@ -16,10 +16,17 @@ const BINANCE_DEFAULT_SPOT_OPTIONS = {
 };
 
 /**
+ * @typedef {import('../../../base/exchange').BaseOptions}
+ */
+
+/**
  * Binance class for spot wallet Api
  * @important should have same
  */
 class BinanceSpot extends BinanceBase {
+    /**
+     * @param {BaseOptions} options
+     */
     constructor(options = {}) {
         const fullOptions = mergeObjects(BINANCE_DEFAULT_SPOT_OPTIONS, options);
         super(fullOptions);

@@ -29,7 +29,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
     let binance;
 
     beforeAll(() => {
-        binance = new Binance('spot');
+        binance = new Binance['spot']();
     });
 
     describe('ping()', () => {
@@ -751,7 +751,7 @@ describe.only('Binance Spot Wallet Private Stream', () => {
     let binance;
 
     beforeAll(() => {
-        binance = new Binance('spot').auth({
+        binance = new Binance['spot']().auth({
             publicKey: API_PUBLIC_KEY,
             privateKey: API_SECRET_KEY,
         });
@@ -848,7 +848,7 @@ describe.only('Binance Spot Wallet Public Stream', () => {
     let binance;
 
     beforeAll(() => {
-        binance = new Binance('spot');
+        binance = new Binance['spot']();
 
         marketDataStream = binance.getMarketDataStream();
     });
@@ -959,7 +959,8 @@ describe.only('Binance Spot Wallet Public Stream', () => {
                 setTimeout(() => {
                     expect(listener).not.toHaveBeenCalled();
                     resolve();
-                }, );global.testTimeout * 0.3
+                });
+                global.testTimeout * 0.3;
             });
         });
 
