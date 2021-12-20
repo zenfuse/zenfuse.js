@@ -260,7 +260,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe.skip('createOrder()', () => {
+    describe('createOrder()', () => {
         it('should be defined', () => {
             expect(binance.createOrder).toBeDefined();
         });
@@ -272,7 +272,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 symbol: 'BNB/USDT',
                 type: 'market',
                 side: 'buy',
-                amount: '1',
+                quantity: '1',
             };
 
             const binanceRequestExpectation = {
@@ -356,7 +356,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 symbol: 'BNB/USDT',
                 type: 'market',
                 side: 'sell',
-                amount: '1',
+                quantity: '1',
             };
 
             const binanceRequestExpectation = {
@@ -433,7 +433,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 symbol: 'BNB/USDT',
                 type: 'limit',
                 side: 'buy',
-                amount: '1',
+                quantity: '1',
                 price: '500',
             };
 
@@ -505,7 +505,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 symbol: 'BNB/USDT',
                 type: 'limit',
                 side: 'buy',
-                amount: '1',
+                quantity: '1',
                 price: '500',
                 timeInForce: 'IOC', // Not default parameter
             };
@@ -733,7 +733,7 @@ const MOCKED_LISTEN_KEY = {
  * @typedef {import('../../../src/exchanges/binance/streams/userDataStream.js')} AccountDataStream
  */
 
-describe.only('Binance Spot Wallet Private Stream', () => {
+describe('Binance Spot Wallet Private Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
         console.warn('Websoket test skipped');
@@ -830,7 +830,7 @@ describe.only('Binance Spot Wallet Private Stream', () => {
  * @typedef {import('../../../src/exchanges/binance/streams/publicStream.js')} MarketDataStream
  */
 
-describe.only('Binance Spot Wallet Public Stream', () => {
+describe('Binance Spot Wallet Public Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
         console.warn('Websoket test skipped');

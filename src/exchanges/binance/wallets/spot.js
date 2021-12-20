@@ -86,33 +86,32 @@ class BinanceSpot extends BinanceBase {
     }
 
     /**
+     * @typedef {import('../utils/functions/transformation').Order} Order
+     */
+
+    /**
      * Create new spot order on Binance
      *
-     * @param {object} order New order object
-     * @param {object} order.symbol Order ticker pair, for example `BTC/USDT`
-     * @param {'buy'|'sell'} order.side Buy or Sell
-     * @param {'market'|'limit'} order.type Market or Limit
-     * @param {number|string} order.amount
-     * @param {number|string} order.price New order object
+     * @param {Order} order Order to create
      */
     async createOrder(order) {
-        const transformedOrder = utils.transformOrderValues(order);
-
-        const fullOrderParams = utils.assignDefaultsInOrder(
-            transformedOrder,
+        const assignedOrder = utils.assignDefaultsInOrder(
+            order,
             this.options.defaults,
         );
 
-        const createdOrder = await this.privateFetch('api/v3/order', {
+        const bOrder = utils.transfromZenfuseOrder(assignedOrder);
+
+        const bCreatedOrder = await this.privateFetch('api/v3/order', {
             method: 'POST',
-            searchParams: fullOrderParams,
+            searchParams: bOrder,
         });
 
-        utils.linkOriginalPayload(createdOrder, createdOrder);
+        // TODO: Transform B -> Z
 
-        // TODO: Order type
+        utils.linkOriginalPayload(bCreatedOrder, bCreatedOrder);
 
-        return createdOrder;
+        return bCreatedOrder;
     }
 
     /**

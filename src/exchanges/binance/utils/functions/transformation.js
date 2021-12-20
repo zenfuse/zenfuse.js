@@ -19,6 +19,8 @@ const transformMarketString = (libString) => {
 /**
  * Insert default values for specific order type
  *
+ * @important All values should be for zenfuse interface
+ *
  * @param {object} order
  * @param {object} defaults
  * @param {object} defaults.limit
@@ -29,11 +31,11 @@ const transformMarketString = (libString) => {
 const assignDefaultsInOrder = (order, defaults) => {
     let newOrder;
 
-    if (order.type === 'LIMIT') {
+    if (order.type.toLowerCase() === 'limit') {
         newOrder = mergeObjects(defaults.limit, order);
     }
 
-    if (order.type === 'MARKET') {
+    if (order.type.toLowerCase() === 'market') {
         newOrder = mergeObjects(defaults.market, order);
     }
 
@@ -41,52 +43,66 @@ const assignDefaultsInOrder = (order, defaults) => {
 };
 
 /**
- * Transforms order object for binance POST `/order` request interface
- * @param {import('../wallets/spot').createOrder}
+ * @typedef {import('../../../../index').Order} Order
  */
-const transformOrderValues = (order) => {
-    const shouldTransform = [
+
+/**
+ * Zenfuse -> Binance
+ * @important This function does not assign defaults values
+ *
+ * @param {Order} zOrder Order from
+ * @returns Order for binance api
+ */
+const transfromZenfuseOrder = (zOrder) => {
+    const TRANSFORM_LIST = [
         'side',
         'type',
         'price',
-        'amount',
+        'quantity',
         'symbol',
         'timeInForce',
     ];
+    const bOrder = {};
 
-    const transformedOrder = {};
+    bOrder.symbol = zOrder.symbol.replace('/', '').toUpperCase();
 
-    if (order.type) {
-        transformedOrder.type = order.type.toUpperCase();
+    if (zOrder.type) {
+        bOrder.type = zOrder.type.toUpperCase();
     }
 
-    if (order.side) {
-        transformedOrder.side = order.side.toUpperCase();
+    if (zOrder.side) {
+        bOrder.side = zOrder.side.toUpperCase();
     }
 
-    if (order.price) {
-        transformedOrder.price = order.price.toString();
+    if (zOrder.price) {
+        bOrder.price = zOrder.price.toString();
     }
 
-    if (order.amount) {
-        // NOTE: "amount" should be "quantity" for binance
-        transformedOrder.quantity = order.amount.toString();
+    if (zOrder.quantity) {
+        bOrder.quantity = zOrder.quantity.toString();
     }
 
-    if (order.timeInForce) {
-        transformedOrder.timeInForce = order.timeInForce.toUpperCase();
+    if (zOrder.timeInForce) {
+        bOrder.timeInForce = zOrder.timeInForce.toUpperCase();
     }
-
-    transformedOrder.symbol = transformMarketString(order.symbol);
 
     // Allow user extra keys
-    for (const [key, value] of Object.entries(order)) {
-        if (!shouldTransform.includes(key)) {
-            transformedOrder[key] = value;
+    for (const [key, value] of Object.entries(zOrder)) {
+        if (!TRANSFORM_LIST.includes(key)) {
+            bOrder[key] = value;
         }
     }
 
-    return transformedOrder;
+    return bOrder;
+};
+
+/**
+ * Binance -> Zenfuse
+ * @param {*} bOrder Order from
+ * @returns Order for binance api
+ */
+const transfromBinanceOrder = (bOrder) => {
+    return bOrder;
 };
 
 /**
@@ -130,6 +146,7 @@ const transfornCandlestick = (k) => {
 module.exports = {
     transformMarketString,
     assignDefaultsInOrder,
-    transformOrderValues,
+    transfromZenfuseOrder,
+    transfromBinanceOrder,
     transfornCandlestick,
 };

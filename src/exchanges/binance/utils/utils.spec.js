@@ -26,14 +26,14 @@ describe('transformMarketString()', () => {
 });
 
 describe('transformOrderForCreation()', () => {
-    const { transformOrderValues } = utils;
+    const { transfromZenfuseOrder } = utils;
 
     it('should upper case symbols and transform amount', () => {
         const order = {
             symbol: 'BTC/ETH',
             side: 'seLL',
             type: 'market',
-            amount: '0.000001',
+            quantity: '0.000001',
         };
 
         const expectation = {
@@ -43,7 +43,7 @@ describe('transformOrderForCreation()', () => {
             quantity: '0.000001',
         };
 
-        expect(transformOrderValues(order)).toMatchObject(expectation);
+        expect(transfromZenfuseOrder(order)).toEqual(expectation);
     });
 
     it('should add default timeInForce for limit order', () => {
@@ -51,7 +51,7 @@ describe('transformOrderForCreation()', () => {
             symbol: 'BTC/ETH',
             side: 'buy',
             type: 'limit',
-            amount: '0.001',
+            quantity: '0.001',
         };
 
         const expectation = {
@@ -61,7 +61,7 @@ describe('transformOrderForCreation()', () => {
             quantity: '0.001',
         };
 
-        expect(transformOrderValues(order)).toMatchObject(expectation);
+        expect(transfromZenfuseOrder(order)).toEqual(expectation);
     });
 
     it('should pass custom timeInForce for limit order', () => {
@@ -69,7 +69,7 @@ describe('transformOrderForCreation()', () => {
             symbol: 'BTC/ETH',
             side: 'buy',
             type: 'limit',
-            amount: '0.001',
+            quantity: '0.001',
             extra: 'whenbinance',
         };
 
@@ -81,7 +81,7 @@ describe('transformOrderForCreation()', () => {
             extra: 'whenbinance',
         };
 
-        expect(transformOrderValues(order)).toMatchObject(expectation);
+        expect(transfromZenfuseOrder(order)).toEqual(expectation);
     });
 });
 
@@ -97,16 +97,16 @@ describe('assignDefaultsInOrder()', () => {
 
     it('should add default timeInForce for limit order', () => {
         const order = {
-            symbol: 'BTCETH',
-            side: 'BUY',
-            type: 'LIMIT',
+            symbol: 'BTC/ETH',
+            side: 'buy',
+            type: 'limit',
             quantity: '0.001',
         };
 
         const expectation = {
-            symbol: 'BTCETH',
-            side: 'BUY',
-            type: 'LIMIT',
+            symbol: 'BTC/ETH',
+            side: 'buy',
+            type: 'limit',
             quantity: '0.001',
             timeInForce: 'GTC',
         };
