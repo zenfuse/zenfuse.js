@@ -18,12 +18,8 @@ module.exports = {
  * @property {string} symbol
  * @property {'market'|'limit'} type
  * @property {'buy'|'sell'} side
- * @property {string} [price] Required for limit orders
+ * @property {number|string} [price] Required for limit orders
  * @property {number|string} quantity
- * @property {number} filled
- * @property {number} remaining
- * @property {number} const
- * @property {number} lastTradeTimestamp
  */
 
 /**

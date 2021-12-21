@@ -98,11 +98,27 @@ const transfromZenfuseOrder = (zOrder) => {
 
 /**
  * Binance -> Zenfuse
- * @param {*} bOrder Order from
- * @returns Order for binance api
+ * @param {*} bOrder Order fromf
+ * @returns {Order} Zenfuse Order
  */
 const transfromBinanceOrder = (bOrder) => {
-    return bOrder;
+    /**
+     * @type {Order}
+     */
+    const zOrder = {};
+
+    zOrder.id = bOrder.orderId.toString();
+    zOrder.timestamp = bOrder.transactTime;
+    zOrder.status = bOrder.status.toLowerCase();
+    zOrder.timeInForce = bOrder.timeInForce;
+    zOrder.type = bOrder.type.toLowerCase();
+    zOrder.symbol = bOrder.symbol; // TODO: Binance symbol transformation
+    // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+    zOrder.side = bOrder.side.toLowerCase();
+    zOrder.price = parseFloat(bOrder.price);
+    zOrder.quantity = parseFloat(bOrder.origQty);
+
+    return zOrder;
 };
 
 /**

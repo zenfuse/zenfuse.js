@@ -265,6 +265,53 @@ describe('Binance Spot Wallet HTTP interface', () => {
             expect(binance.createOrder).toBeDefined();
         });
 
+        const orderSchema = {
+            type: 'object',
+            properties: {
+                id: {
+                    type: 'string',
+                },
+                timestamp: {
+                    type: 'number',
+                },
+                status: {
+                    type: 'string',
+                    tags: ['open', 'close', 'canceled'],
+                },
+                symbol: {
+                    type: 'string',
+                },
+                type: {
+                    type: 'string',
+                    tags: ['market', 'limit'],
+                },
+                side: {
+                    type: 'string',
+                    tags: ['buy', 'sell'],
+                },
+                price: {
+                    type: ['number', 'string'],
+                },
+                quantity: {
+                    type: ['number', 'string'],
+                },
+                filled: {
+                    type: 'number',
+                },
+                remaining: {
+                    type: 'number',
+                },
+                cosnt: {
+                    type: 'number',
+                },
+                lastTradeTimestamp: {
+                    type: 'number',
+                },
+            },
+            additionalProperties: false,
+            minProperties: 11,
+        };
+
         describe('buy by market', () => {
             let result;
 
@@ -334,6 +381,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
+                expect(result).toMatchSchema(orderSchema);
 
                 if (isEnd2EndTest) {
                     expect(

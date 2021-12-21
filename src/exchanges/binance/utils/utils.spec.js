@@ -25,7 +25,7 @@ describe('transformMarketString()', () => {
     });
 });
 
-describe('transformOrderForCreation()', () => {
+describe('transfromZenfuseOrder()', () => {
     const { transfromZenfuseOrder } = utils;
 
     it('should upper case symbols and transform amount', () => {
@@ -82,6 +82,93 @@ describe('transformOrderForCreation()', () => {
         };
 
         expect(transfromZenfuseOrder(order)).toEqual(expectation);
+    });
+});
+
+describe('transformBinanceOrder()', () => {
+    const { transfromBinanceOrder } = utils;
+
+    const orderSchema = {
+        type: 'object',
+        properties: {
+            id: {
+                type: 'string',
+            },
+            timestamp: {
+                type: 'number',
+            },
+            status: {
+                type: 'string',
+                tags: ['open', 'close', 'canceled'],
+            },
+            symbol: {
+                type: 'string',
+            },
+            type: {
+                type: 'string',
+                tags: ['market', 'limit'],
+            },
+            side: {
+                type: 'string',
+                tags: ['buy', 'sell'],
+            },
+            timeInForce: {
+                type: 'string',
+            },
+            price: {
+                type: ['number', 'string'],
+            },
+            quantity: {
+                type: ['number', 'string'],
+            },
+            // trades: {
+            //     type: 'object',
+            // },
+            // remaining: {
+            //     type: 'number',
+            // },
+        },
+        additionalProperties: false,
+        minProperties: 9,
+    };
+
+    it('should transform order', () => {
+        const binanceCreatedOrder = {
+            symbol: 'BNBUSDT',
+            orderId: 5114608,
+            orderListId: -1,
+            clientOrderId: 'nVuwTgVfxQtsMV9uuMMXxL',
+            transactTime: 1637596926709,
+            price: '0.00000000',
+            origQty: '1.00000000',
+            executedQty: '1.00000000',
+            cummulativeQuoteQty: '1.00000000',
+            status: 'FILLED',
+            timeInForce: 'GTC',
+            type: 'MARKET',
+            side: 'BUY',
+            fills: [
+                {
+                    price: '576.30000000',
+                    qty: '0.77000000',
+                    commission: '0.00000000',
+                    commissionAsset: 'BNB',
+                    tradeId: 239238,
+                },
+                {
+                    price: '577.00000000',
+                    qty: '0.23000000',
+                    commission: '0.00000000',
+                    commissionAsset: 'BNB',
+                    tradeId: 239239,
+                },
+            ],
+        };
+
+        const result = transfromBinanceOrder(binanceCreatedOrder);
+
+        expect(result).toMatchSchema(orderSchema);
+        console.log(result);
     });
 });
 
