@@ -10,7 +10,10 @@
             "runtimeArgs": ["run-script", "test:e2e"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**/*"],
-            "type": "node"
+            "type": "node",
+            "env": {
+                "DEBUG": "*"
+            }
         },
         {
             "name": "Integration Tests",
@@ -18,7 +21,10 @@
             "runtimeArgs": ["run-script", "test:integration"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**/*"],
-            "type": "node"
+            "type": "node",
+            "env": {
+                "DEBUG": "nock:*"
+            }
         },
         {
             "name": "Unit Tests",
@@ -26,7 +32,10 @@
             "runtimeArgs": ["run-script", "test:unit"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**/*"],
-            "type": "node"
+            "type": "node",
+            "env": {
+                "DEBUG": "*"
+            }
         }
     ]
 }

@@ -14,6 +14,7 @@ const getAllTickersFromSymbols = (symbols) => {
 };
 
 /**
+ * TODO: Rename to extract spot markets
  * @param {array} symbols List of symbols from `api/v3/exchangeInfo` endpoint
  * @returns {array} Symbols only with spot type
  */

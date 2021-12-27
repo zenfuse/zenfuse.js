@@ -23,4 +23,5 @@ module.exports = {
     log: new Proxy(inspector.console.log, consoleHandler),
     warn: new Proxy(inspector.console.warn, consoleHandler),
     error: new Proxy(inspector.console.error, consoleHandler),
+    trace: new Proxy(inspector.console.trace, consoleHandler),
 };

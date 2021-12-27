@@ -4,6 +4,7 @@ const mergeObjects = require('deepmerge');
 const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const BinanceApiError = require('./errors/api.error');
+const BinanceCache = require('./etc/cache');
 const { createHmacSignature } = require('./utils');
 
 /**
@@ -31,17 +32,20 @@ const keysSymbol = Symbol('keys');
  */
 class BinanceBase extends ExchangeBase {
     /**
+     * @type {BinanceCache}
+     */
+    cache;
+
+    /**
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options) {
         const assignedOptions = mergeObjects(BINANCE_DEFAULT_OPTIONS, options);
         super(assignedOptions);
 
-        this[keysSymbol] = null;
+        this[keysSymbol] = {};
 
-        Object.defineProperty(this, keysSymbol, {
-            value: null,
-        });
+        this.cache = new BinanceCache(this);
     }
 
     /**

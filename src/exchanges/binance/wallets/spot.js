@@ -5,6 +5,7 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
+const BinanceCache = require('../etc/cache');
 
 const BINANCE_DEFAULT_SPOT_OPTIONS = {
     defaults: {

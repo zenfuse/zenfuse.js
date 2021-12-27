@@ -168,7 +168,6 @@ describe('transformBinanceOrder()', () => {
         const result = transfromBinanceOrder(binanceCreatedOrder);
 
         expect(result).toMatchSchema(orderSchema);
-        console.log(result);
     });
 });
 

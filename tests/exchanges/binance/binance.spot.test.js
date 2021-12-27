@@ -18,6 +18,49 @@ const HOSTNAME = 'https://api.binance.com/';
  * @typedef {import('../../../src/exchanges/binance/wallets/spot.js')} BinanceSpot
  */
 
+describe('Binance Options usage', () => {
+    /**
+     * @type {BinanceSpot}
+     */
+    let binance;
+
+    describe('useCache', () => {
+        afterEach(() => {
+            if (!isTestSuiteFailed) {
+                binance.cache.purge();
+            }
+        });
+
+        it('should use cache by default', async () => {
+            const mockFilePath = __dirname + '/mocks/static/exchangeInfo.json';
+            const scope = nock(HOSTNAME)
+                .get('/api/v3/exchangeInfo')
+                .replyWithFile(200, mockFilePath, {
+                    'Content-Type': 'application/json',
+                });
+
+            binance = new Binance['spot']();
+
+            await binance.cache.cacheSingleton.updatingPromice;
+
+            // TODO: Find beter way to check cache
+            expect(binance.cache.cacheSingleton.tickers).toBeDefined();
+            expect(binance.cache.cacheSingleton.symbols).toBeDefined();
+            expect(binance.cache.cacheSingleton.optimizedTickers).toBeDefined();
+
+            // scope.done(); TODO: Somehow this thing not working
+        });
+
+        it.skip('should not use when `useCache: false` specified', () => {
+            binance = new Binance['spot']({
+                useCache: false,
+            });
+
+            expect(binance.cache).toBeUndefined();
+        });
+    });
+});
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////  BINANCE HTTP INTERFACE  ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -784,7 +827,7 @@ const MOCKED_LISTEN_KEY = {
 describe('Binance Spot Wallet Private Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
-        console.warn('Websoket test skipped');
+        // console.warn('Websoket test skipped');
         return;
     }
 
@@ -881,7 +924,7 @@ describe('Binance Spot Wallet Private Stream', () => {
 describe('Binance Spot Wallet Public Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
-        console.warn('Websoket test skipped');
+        // console.warn('Websoket test skipped');
         return;
     }
 
