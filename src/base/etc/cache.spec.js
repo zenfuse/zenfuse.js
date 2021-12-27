@@ -1,25 +1,52 @@
-const { getCacheInstance } = require('./cache');
+const BaseGlobalCache = require('./cache');
 
-describe('Zenfuse global cache', () => {
+describe('BaseGlobalCache class', () => {
     it('create a new instance', () => {
-        const globalCache = getCacheInstance('jest');
+        const instance = new BaseGlobalCache('jest');
 
-        expect(globalCache).toBeDefined();
+        expect(instance).toBeDefined();
+        expect(instance.globalCache).toBeDefined();
+        expect(instance.globalCache).toBeInstanceOf(Map);
     });
 
     it('should refer to same instance', () => {
-        const first = getCacheInstance('jest');
-        const second = getCacheInstance('jest');
+        const first = new BaseGlobalCache('jest');
+        const second = new BaseGlobalCache('jest');
 
-        expect(first).toBe(second);
+        expect(first.globalCache).toBe(second.globalCache);
 
-        first.foo = 'foo';
+        first.globalCache.foo = 'foo';
 
-        expect(first.foo).toBe(second.foo);
-        expect(second.foo).toBe('foo');
+        expect(first.globalCache.foo).toBe(second.globalCache.foo);
+        expect(second.globalCache.foo).toBe('foo');
 
-        second.foo = 'bar';
+        second.globalCache.foo = 'bar';
 
-        expect(first.foo).toBe('bar');
+        expect(first.globalCache.foo).toBe('bar');
+    });
+
+    it('should update timestamp on update', () => {
+        const time = new Date('2001-04-16').getTime();
+        jest.useFakeTimers().setSystemTime(time);
+
+        const instance = new BaseGlobalCache('jest');
+
+        expect(instance.globalCache.lastUpdateTimestamp).toBe(0);
+
+        instance.globalCache.set('jest', 'somevalue');
+
+        expect(instance.globalCache.get('jest')).toBe('somevalue');
+
+        expect(instance.globalCache.lastUpdateTimestamp).toBe(time);
+    });
+
+    it('should use isExpired', () => {
+        const instance = new BaseGlobalCache('isExpired');
+
+        expect(instance.isExpired).toBe(true);
+
+        instance.globalCache.set('jest', 'jest');
+
+        expect(instance.isExpired).toBe(false);
     });
 });

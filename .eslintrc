@@ -12,5 +12,8 @@
     "plugins": ["prettier", "@typescript-eslint", "jest"],
     "rules": {
         "prettier/prettier": "error"
+    },
+    "globals": {
+        "Proxy": true
     }
 }

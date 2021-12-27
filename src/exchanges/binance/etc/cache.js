@@ -1,7 +1,6 @@
-const { getCacheInstance } = require('../../../base/etc/cache');
-const debug = require('../../../base/etc/debug');
+const BaseGlobalCache = require('../../../base/etc/cache');
 
-class BinanceCache {
+class BinanceCache extends BaseGlobalCache {
     /**
      * @typedef {import('./../base')} BinanceBase
      * @type {BinanceBase}
@@ -9,27 +8,20 @@ class BinanceCache {
     base;
 
     /**
-     * Global cache binance namespace
-     * @type {import('../../../base/etc/cache.js').GlobalCacheNamespace}
-     * @private
-     */
-    cacheSingleton;
-
-    /**
      * @param {BinanceBase} baseInstance
      */
     constructor(baseInstance) {
-        this.cacheSingleton = getCacheInstance('binance');
+        super('binance');
         this.base = baseInstance;
         this.updateSelfIfRequired();
     }
 
-    async updateSelfIfRequired() {
-        // If self updating in progress
-        if (this.cacheSingleton.updatingPromice) return;
+    updateSelfIfRequired() {
+        // If cache updating in progress
+        if (this.globalCache.updatingPromise) return;
 
-        if (this.cacheSingleton.isExpired) {
-            this.cacheSingleton.updatingPromice = this.base
+        if (this.isExpired) {
+            this.globalCache.updatingPromise = this.base
                 .publicFetch('api/v3/exchangeInfo')
                 .then(this.updateCache.bind(this));
         }
@@ -41,7 +33,7 @@ class BinanceCache {
      */
     get tickers() {
         this.updateSelfIfRequired();
-        return this.cacheSingleton.tickers;
+        return this.globalCache.tickers;
     }
 
     /**
@@ -50,7 +42,7 @@ class BinanceCache {
      */
     get symbols() {
         this.updateSelfIfRequired();
-        return this.cacheSingleton.symbols;
+        return this.globalCache.get('symbols');
     }
 
     /**
@@ -61,13 +53,14 @@ class BinanceCache {
      */
     get optimizedTickers() {
         this.updateSelfIfRequired();
-        return this.cacheSingleton.optimizedTickers;
+        return this.globalCache.get('optimizedTickers');
     }
 
+    /**
+     * Updating global cache using raw binance data
+     * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint
+     */
     updateCache(exchageInfo) {
-        debug.log('Updating cache');
-        debug.log(exchageInfo);
-
         let tickers = new Set();
         let symbols = new Set();
 
@@ -104,22 +97,10 @@ class BinanceCache {
                 optimizedTickers[baseTicker] = allQuoteTickers;
             }
         }
-        this;
 
-        this.cacheSingleton.optimizedTickers = optimizedTickers;
-        this.cacheSingleton.tickers = tickers;
-        this.cacheSingleton.symbols = symbols;
-
-        this.cacheSingleton.lastUpdateTimestamp = Date.now();
-        debug.log('Cache updated', this.cacheSingleton);
-    }
-
-    purge() {
-        delete this.cacheSingleton.optimizedTickers;
-        delete this.cacheSingleton.tickers;
-        delete this.cacheSingleton.symbols;
-
-        this.cacheSingleton.lastUpdateTimestamp = 0;
+        this.globalCache.set('optimizedTickers', optimizedTickers);
+        this.globalCache.set('tickers', tickers);
+        this.globalCache.set('symbols', symbols);
     }
 }
 

@@ -27,7 +27,7 @@ describe('Binance Options usage', () => {
     describe('useCache', () => {
         afterEach(() => {
             if (!isTestSuiteFailed) {
-                binance.cache.purge();
+                binance.cache.globalCache.clear();
             }
         });
 
@@ -41,12 +41,12 @@ describe('Binance Options usage', () => {
 
             binance = new Binance['spot']();
 
-            await binance.cache.cacheSingleton.updatingPromice;
+            await binance.cache.globalCache.updatingPromise;
 
             // TODO: Find beter way to check cache
-            expect(binance.cache.cacheSingleton.tickers).toBeDefined();
-            expect(binance.cache.cacheSingleton.symbols).toBeDefined();
-            expect(binance.cache.cacheSingleton.optimizedTickers).toBeDefined();
+            expect(binance.cache.globalCache.has('globalCache'));
+            expect(binance.cache.globalCache.has('symbols'));
+            expect(binance.cache.globalCache.has('optimizedTickers'));
 
             // scope.done(); TODO: Somehow this thing not working
         });

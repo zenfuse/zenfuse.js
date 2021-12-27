@@ -23,7 +23,7 @@ const BINANCE_DEFAULT_SPOT_OPTIONS = {
  */
 
 /**
- * Binance class for spot wallet Api
+ * Binance class for spot wallet API
  * @important should have same
  */
 class BinanceSpot extends BinanceBase {

@@ -1,38 +1,67 @@
-const GLOBAL_CACHE_VALID_TIME = 21_000_000; // 6 hours
+/**
+ * This is global
+ */
+class BaseGlobalCache {
+    static VALID_TIME = 21_000_000; // 6 hours
 
-class GlobalCacheNamespace {
     /**
-     * UNIX Time when cache is updated
+     * Created cache namespace, should be the same in diferent instances
+     * @type {Map<any, any>}
      */
-    lastUpdateTimestamp = 0;
+    globalCache;
+
+    /**
+     * @param {string} namespace
+     */
+    constructor(namespace) {
+        const cacheSymbol = Symbol.for('zenfuse.globalCache');
+
+        if (!global[cacheSymbol]) {
+            global[cacheSymbol] = {};
+        }
+
+        const isNamespaceExists = !!global[cacheSymbol][namespace];
+
+        if (!isNamespaceExists) {
+            global[cacheSymbol][namespace] = this.createNamespace();
+        }
+
+        this.globalCache = global[cacheSymbol][namespace];
+    }
+
+    /**
+     * @private
+     * @returns {Map<any, any>}
+     */
+    createNamespace() {
+        const namespaceInstance = new Map();
+
+        /**
+         * @type {ProxyHandler}
+         */
+        const updateHandler = {
+            apply: (setMethod, globalCache, argumentsList) => {
+                globalCache.lastUpdateTimestamp = Date.now();
+                return setMethod(...argumentsList);
+            },
+        };
+
+        namespaceInstance.set = new Proxy(
+            namespaceInstance.set.bind(namespaceInstance),
+            updateHandler,
+        );
+
+        namespaceInstance.lastUpdateTimestamp = 0;
+
+        return namespaceInstance;
+    }
 
     get isExpired() {
-        return Date.now() - this.lastUpdateTimestamp > GLOBAL_CACHE_VALID_TIME;
+        return (
+            Date.now() - this.globalCache.lastUpdateTimestamp >
+            BaseGlobalCache.VALID_TIME
+        );
     }
 }
 
-/**
- * TODO: Rewrite this to class
- *
- * @param {string} namespace
- * @returns {GlobalCacheNamespace}
- */
-const getCacheInstance = (namespace) => {
-    const cacheSymbol = Symbol.for('zenfuse.globalCache');
-
-    if (!global[cacheSymbol]) {
-        global[cacheSymbol] = {};
-    }
-
-    if (!global[cacheSymbol][namespace]) {
-        global[cacheSymbol][namespace] = new GlobalCacheNamespace();
-    }
-
-    return global[cacheSymbol][namespace];
-};
-
-module.exports = {
-    GlobalCacheNamespace,
-    getCacheInstance,
-    GLOBAL_CACHE_VALID_TIME,
-};
+module.exports = BaseGlobalCache;
