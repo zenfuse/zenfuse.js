@@ -93,14 +93,15 @@ class BinanceSpot extends BinanceBase {
     /**
      * Create new spot order on Binance
      *
-     * @param {Order} order Order to create
+     * @param {Order} zOrder Order to create
      */
-    async createOrder(order) {
+    async createOrder(zOrder) {
         const assignedOrder = utils.assignDefaultsInOrder(
-            order,
+            zOrder,
             this.options.defaults,
         );
 
+        // TODO: Assign defaults in transformation
         const bOrder = utils.transfromZenfuseOrder(assignedOrder);
 
         const bCreatedOrder = await this.privateFetch('api/v3/order', {
@@ -108,11 +109,11 @@ class BinanceSpot extends BinanceBase {
             searchParams: bOrder,
         });
 
-        // TODO: Transform B -> Z
+        const zCreadedOrder = utils.transfromBinanceOrder(bCreatedOrder);
 
-        utils.linkOriginalPayload(bCreatedOrder, bCreatedOrder);
+        utils.linkOriginalPayload(zCreadedOrder, bCreatedOrder);
 
-        return bCreatedOrder;
+        return zCreadedOrder;
     }
 
     /**

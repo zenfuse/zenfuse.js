@@ -110,7 +110,7 @@ const transfromBinanceOrder = (bOrder) => {
     zOrder.id = bOrder.orderId.toString();
     zOrder.timestamp = bOrder.transactTime;
     zOrder.status = bOrder.status.toLowerCase();
-    zOrder.timeInForce = bOrder.timeInForce;
+    // zOrder.timeInForce = bOrder.timeInForce;
     zOrder.type = bOrder.type.toLowerCase();
     zOrder.symbol = bOrder.symbol; // TODO: Binance symbol transformation
     // zOrder.trades = bOrder.fills; // TODO: Fill commision counter

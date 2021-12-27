@@ -33,7 +33,7 @@ describe('Binance Options usage', () => {
 
         it('should use cache by default', async () => {
             const mockFilePath = __dirname + '/mocks/static/exchangeInfo.json';
-            const scope = nock(HOSTNAME)
+            nock(HOSTNAME)
                 .get('/api/v3/exchangeInfo')
                 .replyWithFile(200, mockFilePath, {
                     'Content-Type': 'application/json',
@@ -338,21 +338,9 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 quantity: {
                     type: ['number', 'string'],
                 },
-                filled: {
-                    type: 'number',
-                },
-                remaining: {
-                    type: 'number',
-                },
-                cosnt: {
-                    type: 'number',
-                },
-                lastTradeTimestamp: {
-                    type: 'number',
-                },
             },
             additionalProperties: false,
-            minProperties: 11,
+            minProperties: 8,
         };
 
         describe('buy by market', () => {
