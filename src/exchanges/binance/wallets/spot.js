@@ -5,8 +5,10 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const BinanceCache = require('../etc/cache');
 
+/**
+ * Default parameters for orders
+ */
 const BINANCE_DEFAULT_SPOT_OPTIONS = {
     defaults: {
         limit: {
@@ -39,9 +41,9 @@ class BinanceSpot extends BinanceBase {
     async fetchTickers() {
         const responce = await this.publicFetch('api/v3/exchangeInfo');
 
-        const spotMarkets = utils.getOnlySpotMarkets(responce.symbols);
+        const spotMarkets = utils.extractSpotMarkets(responce.symbols);
 
-        const tickers = utils.getAllTickersFromSymbols(spotMarkets);
+        const tickers = utils.extractTickersFromSymbols(spotMarkets);
 
         utils.linkOriginalPayload(tickers, responce);
 
@@ -54,7 +56,7 @@ class BinanceSpot extends BinanceBase {
     async fetchMarkets() {
         const response = await this.publicFetch('api/v3/exchangeInfo');
 
-        const spotMarkets = utils.getOnlySpotMarkets(response.symbols);
+        const spotMarkets = utils.extractSpotMarkets(response.symbols);
 
         const markets = utils.structualizeMarkets(spotMarkets);
 

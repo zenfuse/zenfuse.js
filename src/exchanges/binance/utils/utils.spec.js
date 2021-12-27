@@ -112,24 +112,15 @@ describe('transformBinanceOrder()', () => {
                 type: 'string',
                 tags: ['buy', 'sell'],
             },
-            timeInForce: {
-                type: 'string',
-            },
             price: {
                 type: ['number', 'string'],
             },
             quantity: {
                 type: ['number', 'string'],
             },
-            // trades: {
-            //     type: 'object',
-            // },
-            // remaining: {
-            //     type: 'number',
-            // },
         },
         additionalProperties: false,
-        minProperties: 9,
+        minProperties: 8,
     };
 
     it('should transform order', () => {

@@ -2,7 +2,7 @@
  * @param {array} symbols Array of symbols from `api/v3/exchangeInfo`
  * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
  */
-const getAllTickersFromSymbols = (symbols) => {
+const extractTickersFromSymbols = (symbols) => {
     const tickers = new Set();
 
     symbols.forEach((market) => {
@@ -14,11 +14,10 @@ const getAllTickersFromSymbols = (symbols) => {
 };
 
 /**
- * TODO: Rename to extract spot markets
  * @param {array} symbols List of symbols from `api/v3/exchangeInfo` endpoint
  * @returns {array} Symbols only with spot type
  */
-const getOnlySpotMarkets = (symbols) => {
+const extractSpotMarkets = (symbols) => {
     return symbols.filter((market) => market.permissions.includes('SPOT'));
 };
 
@@ -43,7 +42,7 @@ const structualizeMarkets = (markets) => {
 };
 
 module.exports = {
-    getAllTickersFromSymbols,
-    getOnlySpotMarkets,
+    extractTickersFromSymbols,
+    extractSpotMarkets,
     structualizeMarkets,
 };
