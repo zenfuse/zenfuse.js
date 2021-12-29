@@ -7,19 +7,7 @@ const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 
 /**
- * Default parameters for orders
- */
-const BINANCE_DEFAULT_SPOT_OPTIONS = {
-    defaults: {
-        limit: {
-            timeInForce: 'GTC',
-        },
-        market: {},
-    },
-};
-
-/**
- * @typedef {import('../../../base/exchange').BaseOptions}
+ * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
  */
 
 /**
@@ -27,11 +15,20 @@ const BINANCE_DEFAULT_SPOT_OPTIONS = {
  * @important should have same
  */
 class BinanceSpot extends BinanceBase {
+    static DEFAULT_OPTIONS = {
+        defaults: {
+            limit: {
+                timeInForce: 'GTC',
+            },
+            market: {},
+        },
+    };
+
     /**
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
-        const fullOptions = mergeObjects(BINANCE_DEFAULT_SPOT_OPTIONS, options);
+        const fullOptions = mergeObjects(BinanceSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
     }
 

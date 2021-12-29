@@ -1,12 +1,15 @@
 const ExchangeWebsocketBase = require('./websocketBase');
 
-const REVALIDATE_INTERVAL_TIME = 1_800_000; // 30min
-
 const listenKeySymbol = Symbol('listenKey');
 const validUntilSymbol = Symbol('validUntil');
 const intervalSymbol = Symbol('interval');
 
 class AccountDataStream extends ExchangeWebsocketBase {
+    /**
+     * Time interval when zenfuse should revalidate listen key
+     */
+    static REVALIDATE_INTERVAL = 1_800_000; // 30min
+
     /**
      * @type {import('ws').WebSocket}
      */
@@ -79,7 +82,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
     createRevalidateInterval() {
         this[intervalSymbol] = setInterval(
             this.extendListenKey.bind(this),
-            REVALIDATE_INTERVAL_TIME,
+            AccountDataStream.REVALIDATE_INTERVAL,
         );
     }
 

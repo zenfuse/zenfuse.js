@@ -18,30 +18,33 @@ const pkg = require('../../package.json');
 
 const userAgent = `${pkg.name}/${pkg.version} (${pkg.homepage}) node/${process.version} ${process.platform} ${process.arch}`;
 
-/**
- * @type {BaseOptions}
- */
-const DEFAULT_BASE_OPTIONS = {
-    httpClientOptions: {
-        resolveBodyOnly: true,
-        headers: {
-            'user-agent': userAgent,
-        },
-    },
-    wsClientOptions: {
-        headers: {
-            'user-agent': userAgent,
-        },
-        rejectUnauthorized: true,
-    },
-};
-
 class ExchangeBase {
+    /**
+     * @type {BaseOptions}
+     */
+    static DEFAULT_OPTIONS = {
+        httpClientOptions: {
+            resolveBodyOnly: true,
+            headers: {
+                'user-agent': userAgent,
+            },
+        },
+        wsClientOptions: {
+            headers: {
+                'user-agent': userAgent,
+            },
+            rejectUnauthorized: true,
+        },
+    };
+
     /**
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
-        const assignedOptions = mergeObjects(DEFAULT_BASE_OPTIONS, options);
+        const assignedOptions = mergeObjects(
+            ExchangeBase.DEFAULT_OPTIONS,
+            options,
+        );
 
         this.options = assignedOptions;
 

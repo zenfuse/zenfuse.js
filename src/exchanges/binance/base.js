@@ -7,23 +7,6 @@ const BinanceApiError = require('./errors/api.error');
 const BinanceCache = require('./etc/cache');
 const { createHmacSignature } = require('./utils');
 
-/**
- * Http client options specialy for Binance
- * @type {import('../../base/exchange').BaseOptions}
- */
-const BINANCE_DEFAULT_OPTIONS = {
-    httpClientOptions: {
-        responseType: 'json',
-        prefixUrl: 'https://api.binance.com/',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-    },
-    wsClientOptions: {
-        prefixUrl: 'wss://stream.binance.com:9443/',
-    },
-};
-
 const keysSymbol = Symbol('keys');
 
 /**
@@ -31,6 +14,22 @@ const keysSymbol = Symbol('keys');
  * @important Any class what extends ExchangeBase should have same public interface
  */
 class BinanceBase extends ExchangeBase {
+    /**
+     * Http client options specialy for Binance
+     * @type {import('../../base/exchange').BaseOptions}
+     */
+    static DEFAULT_OPTIONS = {
+        httpClientOptions: {
+            responseType: 'json',
+            prefixUrl: 'https://api.binance.com/',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        },
+        wsClientOptions: {
+            prefixUrl: 'wss://stream.binance.com:9443/',
+        },
+    };
     /**
      * @type {BinanceCache}
      */
@@ -40,7 +39,10 @@ class BinanceBase extends ExchangeBase {
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options) {
-        const assignedOptions = mergeObjects(BINANCE_DEFAULT_OPTIONS, options);
+        const assignedOptions = mergeObjects(
+            BinanceBase.DEFAULT_OPTIONS,
+            options,
+        );
         super(assignedOptions);
 
         this[keysSymbol] = {};
@@ -141,7 +143,6 @@ class BinanceBase extends ExchangeBase {
     }
 
     /**
-     *
      * @param {Error} err
      * @private
      */
