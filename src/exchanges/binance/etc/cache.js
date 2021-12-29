@@ -33,7 +33,7 @@ class BinanceCache extends BaseGlobalCache {
      */
     get tickers() {
         this.updateSelfIfRequired();
-        return this.globalCache.tickers;
+        return this.globalCache.get('tickers');
     }
 
     /**
@@ -101,7 +101,6 @@ class BinanceCache extends BaseGlobalCache {
         this.globalCache.set('optimizedPairs', optimizedPairs);
         this.globalCache.set('tickers', tickers);
         this.globalCache.set('symbols', symbols);
-        debugger;
     }
 }
 

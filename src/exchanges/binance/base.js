@@ -27,7 +27,7 @@ const BINANCE_DEFAULT_OPTIONS = {
 const keysSymbol = Symbol('keys');
 
 /**
- * Binance base class for method whitch included in any wallet type
+ * Binance base class for method which included in any wallet type
  * @important Any class what extends ExchangeBase should have same public interface
  */
 class BinanceBase extends ExchangeBase {

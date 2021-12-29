@@ -113,6 +113,15 @@ class BinanceSpot extends BinanceBase {
 
         const zCreadedOrder = utils.transfromBinanceOrder(bCreatedOrder);
 
+        const binanceCache = {
+            tickers: this.cache.tickers,
+            optimizedPairs: this.cache.optimizedPairs,
+        };
+
+        zCreadedOrder.symbol = utils
+            .parseBinanceSymbol(bCreatedOrder.symbol, binanceCache)
+            .join('/');
+
         utils.linkOriginalPayload(zCreadedOrder, bCreatedOrder);
 
         return zCreadedOrder;

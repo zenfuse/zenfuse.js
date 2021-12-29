@@ -23,10 +23,7 @@ const linkOriginalPayload = (object, originalPayload) => {
  * @param {{
  *      [ticker:string]: string[]
  * }} binanceCache.optimizedPairs All tickers with pairs
- * @returns {{
- *      baseTicker: string,
- *      quoteTicker: string
- * }}
+ * @returns {[string, string]} Base and quote ticker
  */
 const parseBinanceSymbol = (bSymbol, { tickers, optimizedPairs }) => {
     let quoteTicker;
@@ -49,10 +46,7 @@ const parseBinanceSymbol = (bSymbol, { tickers, optimizedPairs }) => {
         );
     }
 
-    return {
-        baseTicker,
-        quoteTicker,
-    };
+    return [baseTicker, quoteTicker];
 };
 
 module.exports = {

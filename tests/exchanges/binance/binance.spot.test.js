@@ -25,12 +25,6 @@ describe('Binance Options usage', () => {
     let binance;
 
     describe('useCache', () => {
-        afterEach(() => {
-            if (!isTestSuiteFailed) {
-                binance.cache.globalCache.clear();
-            }
-        });
-
         it('should use cache by default', async () => {
             const mockFilePath = __dirname + '/mocks/static/exchangeInfo.json';
             nock(HOSTNAME)

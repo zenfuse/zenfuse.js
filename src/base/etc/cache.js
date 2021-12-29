@@ -40,15 +40,35 @@ class BaseGlobalCache {
          * @type {ProxyHandler}
          */
         const updateHandler = {
-            apply: (setMethod, globalCache, argumentsList) => {
+            apply: (target, globalCache, argumentsList) => {
                 globalCache.lastUpdateTimestamp = Date.now();
-                return setMethod(...argumentsList);
+                return target(...argumentsList);
+            },
+        };
+
+        /**
+         * @type {ProxyHandler}
+         */
+        const deleteHandler = {
+            apply: (terget, globalCache, argumentsList) => {
+                globalCache.lastUpdateTimestamp = 0;
+                return terget(...argumentsList);
             },
         };
 
         namespaceInstance.set = new Proxy(
             namespaceInstance.set.bind(namespaceInstance),
             updateHandler,
+        );
+
+        namespaceInstance.clear = new Proxy(
+            namespaceInstance.clear.bind(namespaceInstance),
+            deleteHandler,
+        );
+
+        namespaceInstance.delete = new Proxy(
+            namespaceInstance.delete.bind(namespaceInstance),
+            deleteHandler,
         );
 
         namespaceInstance.lastUpdateTimestamp = 0;

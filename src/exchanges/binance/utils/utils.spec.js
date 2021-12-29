@@ -311,18 +311,22 @@ describe('parseBinanceSymbols()', () => {
     };
 
     it('should parse binance symbol', () => {
-        expect(parseBinanceSymbol('BTCUSDC', binanceCache)).toStrictEqual({
-            baseTicker: 'BTC',
-            quoteTicker: 'USDC',
-        });
-        expect(parseBinanceSymbol('BNBRUB', binanceCache)).toStrictEqual({
-            baseTicker: 'BNB',
-            quoteTicker: 'RUB',
-        });
+        expect(parseBinanceSymbol('BTCUSDC', binanceCache)).toStrictEqual([
+            'BTC',
+            'USDC',
+        ]);
+        expect(parseBinanceSymbol('BNBRUB', binanceCache)).toStrictEqual([
+            'BNB',
+            'RUB',
+        ]);
     });
 
     it('should throw error on invalid symbol', () => {
-        expect(() => parseBinanceSymbol('AIAIAI', binanceCache)).toThrow();
-        expect(() => parseBinanceSymbol('BTCIIIIII', binanceCache)).toThrow();
+        expect(() => parseBinanceSymbol('AIAIAI', binanceCache)).toThrow(
+            'Zenfuse cannot find base ticker in AIAIAI symbol',
+        );
+        expect(() => parseBinanceSymbol('BTCIIIIII', binanceCache)).toThrow(
+            'Zenfuse cannot find quote ticker of BTC in BTCIIIIII symbol',
+        );
     });
 });
