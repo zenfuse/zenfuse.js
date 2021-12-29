@@ -39,13 +39,15 @@ class BinanceSpot extends BinanceBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const responce = await this.publicFetch('api/v3/exchangeInfo');
+        const exchangeInfo = await this.publicFetch('api/v3/exchangeInfo');
 
-        const spotMarkets = utils.extractSpotMarkets(responce.symbols);
+        this.cache.updateCache(exchangeInfo);
+
+        const spotMarkets = utils.extractSpotMarkets(exchangeInfo.symbols);
 
         const tickers = utils.extractTickersFromSymbols(spotMarkets);
 
-        utils.linkOriginalPayload(tickers, responce);
+        utils.linkOriginalPayload(tickers, exchangeInfo);
 
         return tickers;
     }
@@ -54,13 +56,15 @@ class BinanceSpot extends BinanceBase {
      * @returns Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
-        const response = await this.publicFetch('api/v3/exchangeInfo');
+        const exchangeInfo = await this.publicFetch('api/v3/exchangeInfo');
 
-        const spotMarkets = utils.extractSpotMarkets(response.symbols);
+        this.cache.updateCache(exchangeInfo);
+
+        const spotMarkets = utils.extractSpotMarkets(exchangeInfo.symbols);
 
         const markets = utils.structualizeMarkets(spotMarkets);
 
-        utils.linkOriginalPayload(markets, response);
+        utils.linkOriginalPayload(markets, exchangeInfo);
 
         return markets;
     }
