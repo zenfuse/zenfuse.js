@@ -84,9 +84,46 @@ class BinanceSpot extends BinanceBase {
             searchParams: params,
         });
 
-        utils.linkOriginalPayload(response, response);
+        if (market) {
+            const price = {
+                symbol: market,
+                price: parseInt(response.price),
+            };
 
-        return response;
+            utils.linkOriginalPayload(price, response);
+
+            return price;
+        }
+
+        const binanceCache = {
+            tickers: this.cache.tickers,
+            optimizedPairs: this.cache.optimizedPairs,
+        };
+
+        const createSymbol = (symbol) => {
+            return utils.parseBinanceSymbol(symbol, binanceCache).join('/');
+        };
+
+        const prices = response
+            .map((bPrice) => {
+                let symbol;
+                try {
+                    symbol = createSymbol(bPrice.symbol);
+                } catch {
+                    // TODO: Get symbol for hiden market
+                    return;
+                }
+
+                return {
+                    symbol,
+                    price: parseInt(bPrice.price),
+                };
+            })
+            .filter(Boolean);
+
+        utils.linkOriginalPayload(prices, response);
+
+        return prices;
     }
 
     /**

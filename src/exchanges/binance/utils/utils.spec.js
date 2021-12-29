@@ -315,9 +315,9 @@ describe('parseBinanceSymbols()', () => {
             'BTC',
             'USDC',
         ]);
-        expect(parseBinanceSymbol('BNBRUB', binanceCache)).toStrictEqual([
-            'BNB',
-            'RUB',
+        expect(parseBinanceSymbol('VIBEBTC', binanceCache)).toStrictEqual([
+            'VIBE',
+            'BTC ',
         ]);
     });
 

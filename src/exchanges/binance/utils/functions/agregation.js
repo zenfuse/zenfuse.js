@@ -34,7 +34,7 @@ const extractSpotMarkets = (symbols) => {
 const structualizeMarkets = (markets) => {
     return markets.map((market) => {
         return {
-            symbol: market.symbol,
+            symbol: `${market.baseAsset}/${market.quoteAsset}`,
             baseTicker: market.baseAsset,
             quoteTicker: market.quoteAsset,
         };

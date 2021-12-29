@@ -27,26 +27,31 @@ const linkOriginalPayload = (object, originalPayload) => {
  */
 const parseBinanceSymbol = (bSymbol, { tickers, optimizedPairs }) => {
     let quoteTicker;
+    let baseTicker;
 
-    const baseTicker = tickers.find((ticker) => bSymbol.startsWith(ticker));
+    while (!quoteTicker) {
+        baseTicker = tickers.find((ticker) => bSymbol.startsWith(ticker));
 
-    if (!baseTicker) {
-        throw new Error(`Zenfuse cannot find base ticker in ${bSymbol} symbol`);
+        if (!baseTicker) {
+            throw new Error(
+                `Zenfuse cannot find base ticker in ${bSymbol} symbol`,
+            );
+        }
+
+        quoteTicker = bSymbol.substring(baseTicker.length);
+
+        const isQuoteTickerExists = optimizedPairs[baseTicker].some((quote) => {
+            return quoteTicker === quote;
+        });
+
+        if (!isQuoteTickerExists) continue;
+
+        return [baseTicker, quoteTicker];
     }
 
-    quoteTicker = bSymbol.substring(baseTicker.length);
-
-    const isQuoteTickerExists = optimizedPairs[baseTicker].some((quote) => {
-        return quoteTicker === quote;
-    });
-
-    if (!isQuoteTickerExists) {
-        throw new Error(
-            `Zenfuse cannot find quote ticker of ${baseTicker} in ${bSymbol} symbol`,
-        );
-    }
-
-    return [baseTicker, quoteTicker];
+    throw new Error(
+        `Zenfuse cannot find quote ticker of ${baseTicker} in ${bSymbol} symbol`,
+    );
 };
 
 module.exports = {
