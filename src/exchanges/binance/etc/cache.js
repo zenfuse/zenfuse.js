@@ -101,6 +101,7 @@ class BinanceCache extends BaseGlobalCache {
         this.globalCache.set('optimizedTickers', optimizedTickers);
         this.globalCache.set('tickers', tickers);
         this.globalCache.set('symbols', symbols);
+        debugger;
     }
 }
 

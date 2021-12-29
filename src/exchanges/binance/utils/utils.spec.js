@@ -215,3 +215,114 @@ describe('assignDefaultsInOrder()', () => {
         expect(output.timeInForce).toBeUndefined();
     });
 });
+
+describe('parseBinanceSymbols()', () => {
+    const { parseBinanceSymbol } = utils;
+    const binanceCache = {
+        optimizedPairs: {
+            ETH: [
+                'BTC',
+                'USDT',
+                'TUSD',
+                'PAX',
+                'USDC',
+                'BUSD',
+                'RUB',
+                'TRY',
+                'EUR',
+                'ZAR',
+                'BKRW',
+                'GBP',
+                'BIDR',
+                'AUD',
+                'DAI',
+                'NGN',
+                'BRL',
+                'UAH',
+                'USDP',
+            ],
+            BTC: [
+                'USDT',
+                'TUSD',
+                'PAX',
+                'USDC',
+                'USDS',
+                'BUSD',
+                'NGN',
+                'RUB',
+                'TRY',
+                'EUR',
+                'ZAR',
+                'BKRW',
+                'IDRT',
+                'GBP',
+                'UAH',
+                'BIDR',
+                'AUD',
+                'DAI',
+                'BRL',
+                'VAI',
+                'GYEN',
+                'USDP',
+            ],
+            LTC: [
+                'BTC',
+                'ETH',
+                'USDT',
+                'BNB',
+                'TUSD',
+                'PAX',
+                'USDC',
+                'BUSD',
+                'EUR',
+                'NGN',
+                'RUB',
+                'BRL',
+                'GBP',
+                'UAH',
+            ],
+            BNB: [
+                'BTC',
+                'ETH',
+                'USDT',
+                'PAX',
+                'TUSD',
+                'USDC',
+                'USDS',
+                'BUSD',
+                'NGN',
+                'RUB',
+                'TRY',
+                'EUR',
+                'ZAR',
+                'BKRW',
+                'IDRT',
+                'GBP',
+                'BIDR',
+                'AUD',
+                'DAI',
+                'BRL',
+                'UAH',
+                'USDP',
+            ],
+            UST: ['BTC', 'BUSD', 'USDT'],
+        },
+        tickers: ['ETH', 'BTC', 'LTC', 'BNB', 'UST'],
+    };
+
+    it('should parse binance symbol', () => {
+        expect(parseBinanceSymbol('BTCUSDC', binanceCache)).toStrictEqual({
+            baseTicker: 'BTC',
+            quoteTicker: 'USDC',
+        });
+        expect(parseBinanceSymbol('BNBRUB', binanceCache)).toStrictEqual({
+            baseTicker: 'BNB',
+            quoteTicker: 'RUB',
+        });
+    });
+
+    it('should throw error on invalid symbol', () => {
+        expect(() => parseBinanceSymbol('AIAIAI', binanceCache)).toThrow();
+        expect(() => parseBinanceSymbol('BTCIIIIII', binanceCache)).toThrow();
+    });
+});

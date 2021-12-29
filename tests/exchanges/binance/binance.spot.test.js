@@ -48,6 +48,8 @@ describe('Binance Options usage', () => {
             expect(binance.cache.globalCache.has('symbols'));
             expect(binance.cache.globalCache.has('optimizedTickers'));
 
+            console.log(binance.cache.globalCache.get('optimizedTickers'));
+
             // scope.done(); TODO: Somehow this thing not working
         });
 
