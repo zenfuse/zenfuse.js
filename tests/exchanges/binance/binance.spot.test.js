@@ -44,11 +44,9 @@ describe('Binance Options usage', () => {
             await binance.cache.globalCache.updatingPromise;
 
             // TODO: Find beter way to check cache
-            expect(binance.cache.globalCache.has('globalCache'));
-            expect(binance.cache.globalCache.has('symbols'));
-            expect(binance.cache.globalCache.has('optimizedTickers'));
-
-            console.log(binance.cache.globalCache.get('optimizedTickers'));
+            expect(binance.cache.globalCache.has('tickers')).toBe(true);
+            expect(binance.cache.globalCache.has('symbols')).toBe(true);
+            expect(binance.cache.globalCache.has('optimizedPairs')).toBe(true);
 
             // scope.done(); TODO: Somehow this thing not working
         });

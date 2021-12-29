@@ -51,9 +51,9 @@ class BinanceCache extends BaseGlobalCache {
      *     [ticker:string]: string[]
      * }}
      */
-    get optimizedTickers() {
+    get optimizedPairs() {
         this.updateSelfIfRequired();
-        return this.globalCache.get('optimizedTickers');
+        return this.globalCache.get('optimizedPairs');
     }
 
     /**
@@ -78,7 +78,7 @@ class BinanceCache extends BaseGlobalCache {
         tickers = [...tickers];
         symbols = [...symbols];
 
-        const optimizedTickers = [];
+        const optimizedPairs = [];
 
         // Create optimized tickers
         for (const baseTicker of tickers) {
@@ -94,11 +94,11 @@ class BinanceCache extends BaseGlobalCache {
 
             // Write to cache if base ticker has any quote tickers
             if (allQuoteTickers.length > 0) {
-                optimizedTickers[baseTicker] = allQuoteTickers;
+                optimizedPairs[baseTicker] = allQuoteTickers;
             }
         }
 
-        this.globalCache.set('optimizedTickers', optimizedTickers);
+        this.globalCache.set('optimizedPairs', optimizedPairs);
         this.globalCache.set('tickers', tickers);
         this.globalCache.set('symbols', symbols);
         debugger;
