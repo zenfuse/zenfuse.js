@@ -8,7 +8,7 @@
         "test:e2e": "TEST_MODE=e2e npm run jest --silent",
         "test:integration": "TEST_MODE=integration npm run jest --silent",
         "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
-        "jest": "node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand --expand",
+        "jest": "node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
         "download-mocks": "bash ./scripts/download_mocks.sh",
@@ -42,7 +42,6 @@
         "jest-json-schema": "^5.0.0",
         "nock": "^13.2.1",
         "prettier": "^2.4.1",
-        "typescipt": "^1.0.0",
         "typescript": "^4.4.4"
     },
     "dependencies": {
