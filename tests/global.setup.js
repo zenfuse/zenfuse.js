@@ -2,7 +2,7 @@ const nock = require('nock');
 
 require('dotenv').config();
 
-module.exports = () => {
+module.exports = async () => {
     process.env.ZENFUSE_DEBUG = 'true';
 
     const testMode = process.env.TEST_MODE;
