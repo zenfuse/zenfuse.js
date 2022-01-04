@@ -2,7 +2,7 @@ const BaseGlobalCache = require('../../../base/etc/cache');
 
 class BinanceCache extends BaseGlobalCache {
     /**
-     * @typedef {import('./../base')} BinanceBase
+     * @typedef {import('../base')} BinanceBase
      * @type {BinanceBase}
      */
     base;
@@ -51,9 +51,9 @@ class BinanceCache extends BaseGlobalCache {
      *     [ticker:string]: string[]
      * }}
      */
-    get optimizedPairs() {
+    get parsedSymbols() {
         this.updateSelfIfRequired();
-        return this.globalCache.get('optimizedPairs');
+        return this.globalCache.get('parsedSymbols');
     }
 
     /**
@@ -78,7 +78,7 @@ class BinanceCache extends BaseGlobalCache {
         tickers = [...tickers];
         symbols = [...symbols];
 
-        const optimizedPairs = [];
+        const parsedSymbols = [];
 
         // Create optimized tickers
         for (const baseTicker of tickers) {
@@ -94,11 +94,16 @@ class BinanceCache extends BaseGlobalCache {
 
             // Write to cache if base ticker has any quote tickers
             if (allQuoteTickers.length > 0) {
-                optimizedPairs[baseTicker] = allQuoteTickers;
+                allQuoteTickers.forEach((quoteTicker) => {
+                    parsedSymbols[baseTicker + quoteTicker] = [
+                        baseTicker,
+                        quoteTicker,
+                    ];
+                });
             }
         }
 
-        this.globalCache.set('optimizedPairs', optimizedPairs);
+        this.globalCache.set('parsedSymbols', parsedSymbols);
         this.globalCache.set('tickers', tickers);
         this.globalCache.set('symbols', symbols);
     }

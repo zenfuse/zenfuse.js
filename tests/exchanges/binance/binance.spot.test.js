@@ -40,7 +40,7 @@ describe('Binance Options usage', () => {
             // TODO: Find beter way to check cache
             expect(binance.cache.globalCache.has('tickers')).toBe(true);
             expect(binance.cache.globalCache.has('symbols')).toBe(true);
-            expect(binance.cache.globalCache.has('optimizedPairs')).toBe(true);
+            expect(binance.cache.globalCache.has('parsedSymbols')).toBe(true);
 
             // scope.done(); TODO: Somehow this thing not working
         });

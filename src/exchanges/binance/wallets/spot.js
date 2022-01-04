@@ -97,11 +97,11 @@ class BinanceSpot extends BinanceBase {
 
         const binanceCache = {
             tickers: this.cache.tickers,
-            optimizedPairs: this.cache.optimizedPairs,
+            parsedSymbols: this.cache.parsedSymbols,
         };
 
         const createSymbol = (symbol) => {
-            return utils.parseBinanceSymbol(symbol, binanceCache).join('/');
+            return this.cache.parsedSymbols[symbol].join('/');
         };
 
         const prices = response
@@ -151,14 +151,8 @@ class BinanceSpot extends BinanceBase {
 
         const zCreadedOrder = utils.transfromBinanceOrder(bCreatedOrder);
 
-        const binanceCache = {
-            tickers: this.cache.tickers,
-            optimizedPairs: this.cache.optimizedPairs,
-        };
-
-        zCreadedOrder.symbol = utils
-            .parseBinanceSymbol(bCreatedOrder.symbol, binanceCache)
-            .join('/');
+        zCreadedOrder.symbol =
+            this.cache.parsedSymbols[bCreatedOrder.symbol].join('/');
 
         utils.linkOriginalPayload(zCreadedOrder, bCreatedOrder);
 

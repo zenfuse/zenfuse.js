@@ -22,10 +22,10 @@ const linkOriginalPayload = (object, originalPayload) => {
  * @param {string[]} binanceCache.ticker All binance tickers
  * @param {{
  *      [ticker:string]: string[]
- * }} binanceCache.optimizedPairs All tickers with pairs
+ * }} binanceCache.parsedSymbols All tickers with pairs
  * @returns {[string, string]} Base and quote ticker
  */
-const parseBinanceSymbol = (bSymbol, { tickers, optimizedPairs }) => {
+const parseBinanceSymbol = (bSymbol, { tickers, parsedSymbols }) => {
     let quoteTicker;
     let baseTicker;
 
@@ -40,7 +40,7 @@ const parseBinanceSymbol = (bSymbol, { tickers, optimizedPairs }) => {
 
         quoteTicker = bSymbol.substring(baseTicker.length);
 
-        const isQuoteTickerExists = optimizedPairs[baseTicker].some((quote) => {
+        const isQuoteTickerExists = parsedSymbols[baseTicker].some((quote) => {
             return quoteTicker === quote;
         });
 
