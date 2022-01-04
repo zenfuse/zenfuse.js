@@ -21,13 +21,13 @@ class FtxBase extends ExchangeBase {
     static DEFAULT_OPTIONS = {
         httpClientOptions: {
             responseType: 'json',
-            prefixUrl: 'https://api.ftx.com/',
+            prefixUrl: 'https://ftx.com/api',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
             },
         },
         wsClientOptions: {
-            prefixUrl: 'wss://stream.ftx.com:9443/',
+            prefixUrl: 'wss://ftx.com/ws/',
         },
     };
     /**

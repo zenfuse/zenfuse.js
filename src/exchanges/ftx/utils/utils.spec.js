@@ -12,7 +12,7 @@ describe('createHmacSignature()', () => {
     });
 });
 
-describe('transformMarketString()', () => {
+describe.skip('transformMarketString()', () => {
     const { transformMarketString } = utils;
 
     it('should delete slash', () => {
@@ -85,7 +85,7 @@ describe('transfromZenfuseOrder()', () => {
     });
 });
 
-describe('transformBinanceOrder()', () => {
+describe.skip('transformBinanceOrder()', () => {
     const { transfromBinanceOrder } = utils;
 
     const orderSchema = {
