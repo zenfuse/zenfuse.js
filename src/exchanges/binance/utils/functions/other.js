@@ -5,15 +5,6 @@ const createHmacSignature = (data, key) => {
     return createHmac('sha256', key).update(params).digest('hex');
 };
 
-const linkOriginalPayload = (object, originalPayload) => {
-    Object.defineProperty(object, Symbol.for('zenfuse.originalPayload'), {
-        value: originalPayload,
-        enumerable: false,
-        configurable: false,
-        writable: false,
-    });
-};
-
 /**
  * Parse binance symbol from `BTCETH` and returns base an quote ticker from it
  *
@@ -56,6 +47,5 @@ const parseBinanceSymbol = (bSymbol, { tickers, parsedSymbols }) => {
 
 module.exports = {
     createHmacSignature,
-    linkOriginalPayload,
     parseBinanceSymbol,
 };
