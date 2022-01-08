@@ -5,34 +5,11 @@ const utils = require('../utils');
 const FtxWebsocketBase = require('./websocketBase');
 
 class MarketDataStream extends FtxWebsocketBase {
-    lastPayloadId = 0;
-
-    /**
-     * @type {import('ws').WebSocket}
-     */
-    socket;
-
-    /**
-     * Messages that are waiting for a response with a specific id
-     * @type {Map<string, [typeof Promise.resolve, typeof Promise.reject]>}
-     */
-    messageQueue = new Map();
-
-    /**
-     *
-     */
-    state = {
-        watch: new Set(),
-    };
-
     /**
      * @param {import('../base')} baseInstance
      */
     constructor(baseInstance) {
-        super();
-        this.base = baseInstance;
-
-        this.setMaxListeners(Infinity);
+        super(baseInstance);
     }
 
     /**
@@ -49,24 +26,12 @@ class MarketDataStream extends FtxWebsocketBase {
         return this;
     }
 
-    /**
-     *
-     * @returns {this}
-     */
-    close() {
-        if (this.isSocketConneted) {
-            this.socket.close();
-        }
-
-        return this;
-    }
-
     async subscribeTo(event) {
         return await this.editSubscribition(event, 'subscribe');
     }
 
     /**
-     * @param {string|WesocketEvent} event
+     * @param {string|WebsocketEvent} event
      */
     async unsubscribeFrom(event) {
         return await this.editSubscribition(event, 'unsubscribe');
@@ -281,12 +246,6 @@ class MarketDataStream extends FtxWebsocketBase {
     createPayloadId() {
         this.lastPayloadId = ++this.lastPayloadId;
         return this.lastPayloadId;
-    }
-
-    get isSocketConneted() {
-        if (!this.socket) return false;
-
-        return this.socket.readyState === 1;
     }
 
     checkSocketIsConneted() {
