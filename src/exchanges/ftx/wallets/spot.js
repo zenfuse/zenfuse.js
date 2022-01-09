@@ -77,21 +77,15 @@ class FtxSpot extends FtxBase {
      * @param {string} market Ticker pair aka symbol
      * @return Last price
      */
-    async fetchPrice(market) {
-        const params = {};
+    async fetchPrice(market = '') {
+        const requestPath = market ? `markets/${market}` : 'markets';
 
-        if (market) {
-            params.symbol = utils.transformMarketString(market);
-        }
-
-        const response = await this.publicFetch('api/v3/ticker/price', {
-            searchParams: params,
-        });
+        const response = await this.publicFetch(requestPath);
 
         if (market) {
             const price = {
                 symbol: market,
-                price: parseInt(response.price),
+                price: response.result.price,
             };
 
             utils.linkOriginalPayload(price, response);
@@ -99,26 +93,12 @@ class FtxSpot extends FtxBase {
             return price;
         }
 
-        const createSymbol = (symbol) => {
-            return this.cache.parsedSymbols[symbol].join('/');
-        };
-
-        const prices = response
-            .map((bPrice) => {
-                let symbol;
-                try {
-                    symbol = createSymbol(bPrice.symbol);
-                } catch {
-                    // TODO: Get symbol for hiden market
-                    return;
-                }
-
-                return {
-                    symbol,
-                    price: parseInt(bPrice.price),
-                };
-            })
-            .filter(Boolean);
+        const prices = response.result.map((market) => {
+            return {
+                symbol: market.name,
+                price: market.price,
+            };
+        });
 
         utils.linkOriginalPayload(prices, response);
 
