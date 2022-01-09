@@ -34,7 +34,7 @@ class FtxSpot extends FtxBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const markets = await this.publicFetch('markets');
+        const markets = await this.publicFetch('api/markets');
 
         // TODO: Cache update here
 
@@ -51,7 +51,7 @@ class FtxSpot extends FtxBase {
      * @returns {string[]} Array of ticker pairs on FTX
      */
     async fetchMarkets() {
-        const response = await this.publicFetch('markets');
+        const response = await this.publicFetch('api/markets');
 
         // TODO: Cache update here
 
@@ -78,7 +78,7 @@ class FtxSpot extends FtxBase {
      * @return Last price
      */
     async fetchPrice(market = '') {
-        const requestPath = market ? `markets/${market}` : 'markets';
+        const requestPath = market ? `api/markets/${market}` : 'api/markets';
 
         const response = await this.publicFetch(requestPath);
 
@@ -170,13 +170,13 @@ class FtxSpot extends FtxBase {
     }
 
     async fetchBalances() {
-        const response = await this.privateFetch('api/v3/account');
+        const response = await this.privateFetch('api/wallet/balances');
 
-        const balances = response.balances.map((b) => {
+        const balances = response.result.map((b) => {
             return {
-                ticker: b.asset,
+                ticker: b.coin,
                 free: b.free,
-                used: b.locked,
+                used: b.total - b.free,
             };
         });
 

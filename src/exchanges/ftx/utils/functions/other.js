@@ -9,7 +9,7 @@ const { createHmac } = require('crypto');
  * @param {string} params.path URL request path
  * @param {object} [params.body] Request body
  * @param {string} key HMAC Key
- * @returns {stting} Hex HMAC Signature
+ * @returns {string} Hex HMAC Signature
  */
 const createHmacSignature = ({ts, method, path, body = ''}, key) => {
     const signaturePayload = [ts, method, path, body].join('');

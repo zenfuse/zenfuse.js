@@ -262,11 +262,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
 
         it('should have valid originalRespone', () => {
             if (isEnd2EndTest) {
-                expect(
-                    Array.isArray(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ),
-                ).toBe(true);
+                expect(result[Symbol.for('zenfuse.originalPayload')]).toBeDefined()
             }
 
             if (isIntegrationTest) {
@@ -301,7 +297,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
 
     ///////////////////////////////////////////////////////////////
 
-    describe.skip('auth()', () => {
+    describe('auth()', () => {
         it('should bo defined', () => {
             expect(ftx.auth).toBeDefined();
         });
@@ -668,7 +664,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe.skip('fetchBalances()', () => {
+    describe('fetchBalances()', () => {
         it('should be defined', () => {
             expect(ftx.fetchBalances).toBeDefined();
         });
@@ -676,35 +672,24 @@ describe('FTX Spot Wallet HTTP interface', () => {
         let result;
 
         const mockedBalances = {
-            makerCommission: 0,
-            takerCommission: 0,
-            buyerCommission: 0,
-            sellerCommission: 0,
-            canTrade: true,
-            canWithdraw: false,
-            canDeposit: false,
-            updateTime: 1637431263247,
-            accountType: 'SPOT',
-            balances: [
-                { asset: 'BNB', free: '1002.00000000', locked: '0.00000000' },
-                { asset: 'BTC', free: '0.00000000', locked: '0.00000000' },
-                { asset: 'BUSD', free: '9883.26000000', locked: '0.00000000' },
-                { asset: 'ETH', free: '100.00000000', locked: '0.00000000' },
-                { asset: 'LTC', free: '500.00000000', locked: '0.00000000' },
-                { asset: 'TRX', free: '500000.00000000', locked: '0.00000000' },
-                { asset: 'USDT', free: '57080.70341854', locked: '0.00000000' },
-                { asset: 'XRP', free: '50000.00000000', locked: '0.00000000' },
+            success: true,
+            result: [
+                {
+                    coin: 'USDTBEAR',
+                    free: 2320.2,
+                    spotBorrow: 0.0,
+                    total: 2340.2,
+                    usdValue: 2340.2,
+                    availableWithoutBorrow: 2320.2,
+                },
             ],
-            permissions: ['SPOT'],
         };
 
         const scope = nock(HOSTNAME)
-            .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
-            .get('/api/v3/account')
-            .query((query) => {
-                expect(query.timestamp).toBeDefined();
-                return true;
-            })
+            .matchHeader('FTX-KEY', API_PUBLIC_KEY)
+            .matchHeader('FTX-SIGN', expect)
+            .matchHeader('FTX-TS', expect)
+            .get('/api/wallet/balances')
             .reply(200, mockedBalances);
 
         afterAll(() => {
@@ -714,7 +699,6 @@ describe('FTX Spot Wallet HTTP interface', () => {
 
         it('should fetch without errors', async () => {
             result = await ftx.fetchBalances();
-            result;
         });
 
         it('should have valid originalResponse', () => {

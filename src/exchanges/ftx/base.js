@@ -21,13 +21,13 @@ class FtxBase extends ExchangeBase {
     static DEFAULT_OPTIONS = {
         httpClientOptions: {
             responseType: 'json',
-            prefixUrl: 'https://ftx.com/api',
+            prefixUrl: 'https://ftx.com/',
             headers: {
                 'Content-Type': 'application/json',
             },
         },
         wsClientOptions: {
-            prefixUrl: 'wss://ftx.com/ws/',
+            prefixUrl: 'wss://ftx.com/',
         },
     };
     /**
@@ -55,35 +55,39 @@ class FtxBase extends ExchangeBase {
      * @returns {object};
      */
     async publicFetch(url, options = {}) {
-        return await this.fetcher(url, options)
-            .catch(this.handleFetcherError);
-            // TODO: FTX Responce checker
+        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        // TODO: FTX Responce checker
     }
 
     /**
      * Make authenticated http request based on constructor settings
      *
-     * @param {URL} url
+     * @param {string} url
      * @param {import('http').RequestOptions} options
-     * @returns {object};
+     * @returns {any}
      */
     async privateFetch(url, options = {}) {
-        throw 'Not implemented'
-
         this.throwIfNotHasKeys();
 
-        if (!options.searchParams) options.searchParams = {};
+        const timestamp = Date.now();
 
-        options.searchParams.timestamp = Date.now();
+        const sigParams = {
+            ts: timestamp,
+            method: options.method || 'GET',
+            path: `/${url}`,
+            body: options.body,
+        };
 
-        options.searchParams.signature = createHmacSignature(
-            options.searchParams,
+        const signature = createHmacSignature(
+            sigParams,
             this[keysSymbol].privateKey,
         );
 
         options = mergeObjects(options, {
             headers: {
-                'X-MBX-APIKEY': this[keysSymbol].publicKey,
+                'FTX-KEY': this[keysSymbol].publicKey,
+                'FTX-TS': timestamp,
+                'FTX-SIGN': signature,
             },
         });
 
@@ -123,7 +127,7 @@ class FtxBase extends ExchangeBase {
      * @public
      */
     async ping() {
-        throw 'Not implemented'
+        throw 'Not implemented';
     }
 
     /**
