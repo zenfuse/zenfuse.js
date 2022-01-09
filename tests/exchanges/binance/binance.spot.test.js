@@ -9,8 +9,8 @@ if (isEnd2EndTest) {
     checkProcessHasVariables(['BINANCE_PUBLIC_KEY', 'BINANCE_SECRET_KEY']);
 }
 
-const API_PUBLIC_KEY = process.env.BINANCE_PUBLIC_KEY;
-const API_SECRET_KEY = process.env.BINANCE_SECRET_KEY;
+const API_PUBLIC_KEY = process.env.BINANCE_PUBLIC_KEY || 'DUMMY_PUBLIC_KEY';
+const API_SECRET_KEY = process.env.BINANCE_SECRET_KEY || 'DUMMY_SECRET_KEY';
 
 const HOSTNAME = 'https://api.binance.com/';
 
