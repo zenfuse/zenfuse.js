@@ -12,7 +12,7 @@ if (isEnd2EndTest) {
 const API_PUBLIC_KEY = process.env.FTX_PUBLIC_KEY;
 const API_SECRET_KEY = process.env.FTX_SECRET_KEY;
 
-const HOSTNAME = 'https://ftx.com/api';
+const HOSTNAME = 'https://ftx.com/';
 
 /**
  * @typedef {import('../../src/exchanges/ftx/wallets/spot.js')} FtxSpot
@@ -84,13 +84,13 @@ describe('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe.skip('fetchMarkets()', () => {
+    describe('fetchMarkets()', () => {
         let result;
 
         const mockFilePath = __dirname + '/mocks/static/markets.json';
         const mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
         const scope = nock(HOSTNAME)
-            .get('/api/v3/exchangeInfo')
+            .get('/api/markets')
             .replyWithFile(200, mockFilePath, {
                 'Content-Type': 'application/json',
             });
@@ -156,7 +156,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
             mockFilePath = __dirname + '/mocks/static/markets.json';
             mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
             scope = nock(HOSTNAME)
-                .get('/markets')
+                .get('/api/markets')
                 .replyWithFile(200, mockFilePath, {
                     'Content-Type': 'application/json',
                 });

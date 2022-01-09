@@ -36,7 +36,7 @@ class FtxSpot extends FtxBase {
     async fetchTickers() {
         const markets = await this.publicFetch('markets');
 
-        // TODO: Cache update
+        // TODO: Cache update here
 
         const spotMarkets = utils.extractSpotMarkets(markets.result);
 
@@ -48,18 +48,24 @@ class FtxSpot extends FtxBase {
     }
 
     /**
-     * @returns Array of ticker pairs on this exchange
+     * @returns {string[]} Array of ticker pairs on FTX
      */
     async fetchMarkets() {
-        const exchangeInfo = await this.publicFetch('api/v3/exchangeInfo');
+        const response = await this.publicFetch('markets');
 
-        this.cache.updateCache(exchangeInfo);
+        // TODO: Cache update here
 
-        const spotMarkets = utils.extractSpotMarkets(exchangeInfo.symbols);
+        const spotMarkets = utils.extractSpotMarkets(response.result);
 
-        const markets = utils.structualizeMarkets(spotMarkets);
+        const markets = spotMarkets.map((m) => {
+            return {
+                symbol: m.name,
+                baseTicker: m.baseCurrency,
+                quoteTicker: m.quoteCurrency,
+            };
+        });
 
-        utils.linkOriginalPayload(markets, exchangeInfo);
+        utils.linkOriginalPayload(markets, response);
 
         return markets;
     }
