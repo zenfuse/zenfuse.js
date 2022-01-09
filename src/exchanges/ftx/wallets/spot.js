@@ -17,9 +17,7 @@ const MarketDataStream = require('../streams/marketDataStream');
 class FtxSpot extends FtxBase {
     static DEFAULT_OPTIONS = {
         defaults: {
-            limit: {
-                timeInForce: 'GTC',
-            },
+            limit: {},
             market: {},
         },
     };
@@ -36,15 +34,15 @@ class FtxSpot extends FtxBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const exchangeInfo = await this.publicFetch('api/v3/exchangeInfo');
+        const markets = await this.publicFetch('markets');
 
-        this.cache.updateCache(exchangeInfo);
+        // TODO: Cache update
 
-        const spotMarkets = utils.extractSpotMarkets(exchangeInfo.symbols);
+        const spotMarkets = utils.extractSpotMarkets(markets.result);
 
-        const tickers = utils.extractTickersFromSymbols(spotMarkets);
+        const tickers = utils.extractTickersFromMarkets(spotMarkets);
 
-        utils.linkOriginalPayload(tickers, exchangeInfo);
+        utils.linkOriginalPayload(tickers, markets);
 
         return tickers;
     }

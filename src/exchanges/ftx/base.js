@@ -39,10 +39,7 @@ class FtxBase extends ExchangeBase {
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options) {
-        const assignedOptions = mergeObjects(
-            FtxBase.DEFAULT_OPTIONS,
-            options,
-        );
+        const assignedOptions = mergeObjects(FtxBase.DEFAULT_OPTIONS, options);
         super(assignedOptions);
 
         this[keysSymbol] = {};
@@ -58,15 +55,9 @@ class FtxBase extends ExchangeBase {
      * @returns {object};
      */
     async publicFetch(url, options = {}) {
-        if (this.hasKeys) {
-            options = mergeObjects(options, {
-                headers: {
-                    'X-MBX-APIKEY': this[keysSymbol].publicKey,
-                },
-            });
-        }
-
-        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        return await this.fetcher(url, options)
+            .catch(this.handleFetcherError);
+            // TODO: FTX Responce checker
     }
 
     /**
@@ -77,6 +68,8 @@ class FtxBase extends ExchangeBase {
      * @returns {object};
      */
     async privateFetch(url, options = {}) {
+        throw 'Not implemented'
+
         this.throwIfNotHasKeys();
 
         if (!options.searchParams) options.searchParams = {};
@@ -130,7 +123,7 @@ class FtxBase extends ExchangeBase {
      * @public
      */
     async ping() {
-        return await this.publicFetch('api/v3/ping');
+        throw 'Not implemented'
     }
 
     /**

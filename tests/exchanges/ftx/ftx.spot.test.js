@@ -61,17 +61,17 @@ describe.skip('Ftx Options usage', () => {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: Make test for FTX
-describe.skip('FTX Spot Wallet HTTP interface', () => {
+describe('FTX Spot Wallet HTTP interface', () => {
     /**
      * @type {FtxSpot}
      */
     let ftx;
 
     beforeAll(() => {
-        ftx = new Binance['spot']();
+        ftx = new FTX['spot']();
     });
 
-    describe('ping()', () => {
+    describe.skip('ping()', () => {
         it('should be defined', () => {
             expect(ftx.ping).toBeDefined();
         });
@@ -84,7 +84,7 @@ describe.skip('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe('fetchMarkets()', () => {
+    describe.skip('fetchMarkets()', () => {
         let result;
 
         const mockFilePath = __dirname + '/mocks/static/markets.json';
@@ -156,7 +156,7 @@ describe.skip('FTX Spot Wallet HTTP interface', () => {
             mockFilePath = __dirname + '/mocks/static/markets.json';
             mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
             scope = nock(HOSTNAME)
-                .get('/api/v3/exchangeInfo')
+                .get('/markets')
                 .replyWithFile(200, mockFilePath, {
                     'Content-Type': 'application/json',
                 });
@@ -200,7 +200,7 @@ describe.skip('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe('fetchPrice()', () => {
+    describe.skip('fetchPrice()', () => {
         let result;
 
         let mockFilePath;
@@ -280,7 +280,7 @@ describe.skip('FTX Spot Wallet HTTP interface', () => {
 
     ///////////////////////////////////////////////////////////////
 
-    describe('auth()', () => {
+    describe.skip('auth()', () => {
         it('should bo defined', () => {
             expect(ftx.auth).toBeDefined();
         });
@@ -299,7 +299,7 @@ describe.skip('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe('createOrder()', () => {
+    describe.skip('createOrder()', () => {
         it('should be defined', () => {
             expect(ftx.createOrder).toBeDefined();
         });
@@ -647,7 +647,7 @@ describe.skip('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe('fetchBalances()', () => {
+    describe.skip('fetchBalances()', () => {
         it('should be defined', () => {
             expect(ftx.fetchBalances).toBeDefined();
         });
@@ -711,7 +711,7 @@ describe.skip('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe('cancelOrder()', () => {
+    describe.skip('cancelOrder()', () => {
         let result;
 
         const binanceDeleteExpectation = {
@@ -827,7 +827,7 @@ describe.skip('Ftx Spot Wallet Private Stream', () => {
     let binance;
 
     beforeAll(() => {
-        binance = new Binance['spot']().auth({
+        binance = new FTX['spot']().auth({
             publicKey: API_PUBLIC_KEY,
             privateKey: API_SECRET_KEY,
         });
@@ -922,12 +922,12 @@ describe.skip('Ftx Spot Wallet Public Stream', () => {
     /**
      * @type {BinanceSpot}
      */
-    let binance;
+    let ftx;
 
     beforeAll(() => {
-        binance = new Binance['spot']();
+        ftx = new FTX['spot']();
 
-        marketDataStream = binance.getMarketDataStream();
+        marketDataStream = ftx.getMarketDataStream();
     });
 
     afterAll(() => {

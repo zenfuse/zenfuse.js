@@ -13,7 +13,6 @@ class FtxCache extends BaseGlobalCache {
     constructor(baseInstance) {
         super('ftx');
         this.base = baseInstance;
-        this.updateSelfIfRequired();
     }
 
     updateSelfIfRequired() {
@@ -21,9 +20,7 @@ class FtxCache extends BaseGlobalCache {
         if (this.globalCache.updatingPromise) return;
 
         if (this.isExpired) {
-            this.globalCache.updatingPromise = this.base
-                .publicFetch('api/v3/exchangeInfo')
-                .then(this.updateCache.bind(this));
+            this.globalCache.updatingPromise = {} // TODO: Cache update
         }
     }
 
@@ -32,7 +29,7 @@ class FtxCache extends BaseGlobalCache {
      * @type {string[]}
      */
     get tickers() {
-        this.updateSelfIfRequired();
+        // this.updateSelfIfRequired();
         return this.globalCache.get('tickers');
     }
 
@@ -41,7 +38,7 @@ class FtxCache extends BaseGlobalCache {
      * @type {string[]}
      */
     get symbols() {
-        this.updateSelfIfRequired();
+        // this.updateSelfIfRequired();
         return this.globalCache.get('symbols');
     }
 
@@ -52,7 +49,7 @@ class FtxCache extends BaseGlobalCache {
      * }}
      */
     get parsedSymbols() {
-        this.updateSelfIfRequired();
+        // this.updateSelfIfRequired();
         return this.globalCache.get('parsedSymbols');
     }
 
