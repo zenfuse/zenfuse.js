@@ -1,7 +1,7 @@
 const { createHmac } = require('crypto');
 
 /**
- * Create HMAC sicnature specific for FTX
+ * Create HMAC signature specific for FTX
  *
  * @param {object} params
  * @param {number} params.ts UNIX Timestapm
@@ -11,8 +11,8 @@ const { createHmac } = require('crypto');
  * @param {string} key HMAC Key
  * @returns {stting} Hex HMAC Signature
  */
-const createHmacSignature = (params, key) => {
-    const signaturePayload = Object.values(params).join('');
+const createHmacSignature = ({ts, method, path, body = ''}, key) => {
+    const signaturePayload = [ts, method, path, body].join('');
 
     return createHmac('sha256', key).update(signaturePayload).digest('hex');
 };
