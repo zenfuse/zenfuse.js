@@ -299,7 +299,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
 
     ///////////////////////////////////////////////////////////////
 
-    describe.only('auth()', () => {
+    describe('auth()', () => {
         it('should bo defined', () => {
             expect(ftx.auth).toBeDefined();
         });
@@ -710,7 +710,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe.only('cancelOrder()', () => {
+    describe('cancelOrder()', () => {
         let result;
 
         const mockedOrder = {

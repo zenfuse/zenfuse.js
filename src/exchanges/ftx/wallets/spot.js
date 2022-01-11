@@ -122,11 +122,7 @@ class FtxSpot extends FtxBase {
             json: fOrder,
         });
 
-        console.log(fCreatedOrder);
-
         const zCreatedOrder = utils.transfromFtxOrder(fCreatedOrder.result);
-
-        console.log(zCreatedOrder);
 
         utils.linkOriginalPayload(zCreatedOrder, fCreatedOrder);
 
