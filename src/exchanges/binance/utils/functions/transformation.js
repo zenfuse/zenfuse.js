@@ -50,7 +50,7 @@ const assignDefaultsInOrder = (order, defaults) => {
  * Zenfuse -> Binance
  * @important This function does not assign defaults values
  *
- * @param {Order} zOrder Order from
+ * @param {Order} zOrder Zenfuse order
  * @returns Order for binance api
  */
 const transfromZenfuseOrder = (zOrder) => {
