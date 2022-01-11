@@ -20,14 +20,24 @@ describe('createHmacSignature()', () => {
     it('should return valid signature with body', () => {
         const params = {
             method: 'POST',
-            body: '{"market": "BTC-PERP", "side": "buy", "price": 8500, "size": 1, "type": "limit", "reduceOnly": false, "ioc": false, "postOnly": false, "clientId": null}',
+            body: {
+                market: 'BTC-PERP',
+                side: 'buy',
+                price: 8500,
+                size: 1,
+                type: 'limit',
+                reduceOnly: false,
+                ioc: false,
+                postOnly: false,
+                clientId: null,
+            },
             path: '/api/orders',
             ts: 1588591856950,
         };
 
         const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
         const signature =
-            'c4fbabaf178658a59d7bbf57678d44c369382f3da29138f04cd46d3d582ba4ba';
+            '2832d853e55db715f59aaadd966cdc51913967da8bf687aad8457a5ac609313e';
 
         expect(createHmacSignature(params, key)).toBe(signature);
     });
