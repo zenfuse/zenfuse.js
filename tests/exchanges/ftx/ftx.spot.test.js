@@ -710,48 +710,42 @@ describe('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe.skip('cancelOrder()', () => {
+    describe.only('cancelOrder()', () => {
         let result;
 
-        const binanceDeleteExpectation = {
-            symbol: 'BUSDUSDT',
-            orderId: '5123847',
-        };
-
         const mockedOrder = {
-            symbol: 'BUSDUSDT',
-            orderId: 5123847,
-            orderListId: -1,
-            clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
-            transactTime: 1637599759459,
-            price: '500.00000000',
-            origQty: '1.00000000',
-            executedQty: '0.00000000',
-            cummulativeQuoteQty: '0.00000000',
-            status: 'NEW',
-            timeInForce: 'GTC',
-            type: 'LIMIT',
-            side: 'BUY',
-            fills: [],
+            success: true,
+            result: {
+                id: 112590877630,
+                clientId: null,
+                market: 'USDT/USD',
+                type: 'limit',
+                side: 'buy',
+                price: 0.5,
+                size: 20,
+                status: 'new',
+                filledSize: 0,
+                remainingSize: 20,
+                reduceOnly: false,
+                liquidation: null,
+                avgFillPrice: null,
+                postOnly: false,
+                ioc: false,
+                createdAt: '2022-01-11T18:21:19.188847+00:00',
+                future: null,
+            },
         };
 
         const scope = nock(HOSTNAME)
-            .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
-            // Order creation
-            .get('/api/v3/openOrders')
-            .query((q) => {
-                expect(q.timestamp).toBeDefined();
-                expect(q.signature).toBeDefined();
-                return true;
-            })
-            .reply(200, [mockedOrder])
+            .matchHeader('FTX-KEY', API_PUBLIC_KEY)
+            .matchHeader('FTX-TS', expect)
+            .matchHeader('FTX-SIGN', expect)
+            // // Order creation
+            // .post('/api/orders')
+            // .reply(200, mockedOrder)
             // Order deletion
-            .delete('/api/v3/order')
-            .query((q) => {
-                expect(q).toMatchObject(binanceDeleteExpectation);
-                return true;
-            })
-            .reply(200, mockedOrder);
+            .delete(`/api/orders/112590877630`)
+            .reply(200);
 
         afterAll(() => {
             if (isTestSuiteFailed) return;
@@ -760,21 +754,21 @@ describe('FTX Spot Wallet HTTP interface', () => {
 
         it('shoud cancel order without errors', async () => {
             const orderParams = {
-                symbol: 'BUSD/USDT',
+                symbol: 'USDT/USD',
                 type: 'limit',
                 side: 'buy',
-                amount: '20',
+                quantity: '20',
                 price: '0.5',
             };
 
-            let createdOrder = mockedOrder;
+            let createdOrder = mockedOrder.result;
 
             if (isEnd2EndTest) {
                 const newOrder = await ftx.createOrder(orderParams);
-                createdOrder = newOrder.createdOrder;
+                createdOrder = newOrder;
             }
 
-            result = await ftx.cancelOrder({ id: createdOrder.orderId });
+            result = await ftx.cancelOrder(createdOrder);
 
             expect(result).toBeDefined();
         });
@@ -789,7 +783,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
             if (isIntegrationTest) {
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
-                ).toMatchObject(mockedOrder);
+                ).toBe('');
             }
         });
     });

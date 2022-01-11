@@ -117,13 +117,10 @@ class FtxSpot extends FtxBase {
     async createOrder(zOrder) {
         const fOrder = utils.transfromZenfuseOrder(zOrder);
 
-        const fCreatedOrder = await this.privateFetch(
-            'api/orders',
-            {
-                method: 'POST',
-                json: fOrder,
-            },
-        );
+        const fCreatedOrder = await this.privateFetch('api/orders', {
+            method: 'POST',
+            json: fOrder,
+        });
 
         console.log(fCreatedOrder);
 
@@ -140,23 +137,21 @@ class FtxSpot extends FtxBase {
      * Cancel an active order
      *
      * @param {object} order Order object to delete
-     * @param {string} order.symbol Order ticker pair, for example `BTC/USDT`
      * @param {string} order.id Ftx order id
      */
     async cancelOrder(order) {
-        const response = await this.privateFetch('api/v3/order', {
+        const response = await this.privateFetch(`api/orders/${order.id}`, {
             method: 'DELETE',
-            searchParams: {
-                symbol: order.symbol,
-                orderId: order.id.toString(),
-            },
         });
 
-        utils.linkOriginalPayload(response, response);
+        const deletedOrder = Object.assign({}, order);
 
-        return response;
+        utils.linkOriginalPayload(deletedOrder, response);
+
+        return deletedOrder;
     }
 
+    // TODO: Test for this
     async fetchOpenOrders() {
         const response = await this.privateFetch('api/v3/openOrders');
 
