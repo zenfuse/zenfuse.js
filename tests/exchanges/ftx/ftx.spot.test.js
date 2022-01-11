@@ -934,7 +934,7 @@ describe('Ftx Spot Wallet Public Stream', () => {
         });
     });
 
-    describe.only('subscribeTo()', () => {
+    describe('subscribeTo()', () => {
         beforeEach(async () => {
             marketDataStream.close();
             await marketDataStream.open();
@@ -952,8 +952,8 @@ describe('Ftx Spot Wallet Public Stream', () => {
             });
 
             marketDataStream.once('newPrice', ({ symbol, price }) => {
-                expect(symbol).toBe('BTC/USD')
-                expect(typeof price).toBe('number')
+                expect(symbol).toBe('BTC/USD');
+                expect(typeof price).toBe('number');
                 done();
             });
         });
@@ -977,15 +977,13 @@ describe('Ftx Spot Wallet Public Stream', () => {
             expect(marketDataStream.isSocketConneted).toBe(true);
 
             await marketDataStream.subscribeTo({
-                channel: 'kline',
-                symbol: 'BTC/USDT',
-                interval: '15m',
+                channel: 'price',
+                symbol: 'BTC/USD',
             });
 
             await marketDataStream.unsubscribeFrom({
-                channel: 'kline',
-                symbol: 'BTC/USDT',
-                interval: '15m',
+                channel: 'price',
+                symbol: 'BTC/USD',
             });
 
             const listener = jest.fn();
@@ -1000,7 +998,9 @@ describe('Ftx Spot Wallet Public Stream', () => {
             });
         });
 
-        it('should unsubscribe by string', async () => {
+        // TODO: FTX Websocket subscription list memory
+        // Should be skipped for now, FTX websocket doesnt have "get subscription" support
+        it.skip('should unsubscribe by string', async () => {
             expect(marketDataStream.isSocketConneted).toBe(true);
 
             await marketDataStream.subscribeTo('BTC/USDT');
@@ -1020,7 +1020,7 @@ describe('Ftx Spot Wallet Public Stream', () => {
             });
         });
 
-        it('should unsubscribe by string from all events with the same symbol', async () => {
+        it.skip('should unsubscribe by string from all events with the same symbol', async () => {
             expect(marketDataStream.isSocketConneted).toBe(true);
 
             await marketDataStream.subscribeTo({

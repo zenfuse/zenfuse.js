@@ -59,7 +59,7 @@ class MarketDataStream extends FtxWebsocketBase {
         let event = {};
 
         if (isJustSymbol) {
-            throw 'Not implemented';
+            throw 'Not implemented'; // TODO: Full symbol subscribition
             if (command === 'unsubscribe') {
                 return await this.unsubscribeFromAllbySymbol(arg);
             }
