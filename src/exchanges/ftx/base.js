@@ -75,7 +75,7 @@ class FtxBase extends ExchangeBase {
             ts: timestamp,
             method: options.method || 'GET',
             path: `/${url}`,
-            body: options.body,
+            body: options.json,
         };
 
         const signature = createHmacSignature(
@@ -145,7 +145,7 @@ class FtxBase extends ExchangeBase {
      */
     handleFetcherError(err) {
         if (err instanceof HTTPError) {
-            throw new FtxApiError(err);
+            throw new FtxApiError(err);            
         }
 
         throw err;

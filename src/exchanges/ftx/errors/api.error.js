@@ -5,8 +5,7 @@ class FtxApiError extends BaseConnectorError {
      * @param {import('got').HTTPError} err
      */
     constructor(err) {
-        super(err.response.body.msg);
-        this.code = err.response.body.code;
+        super(err.response.body.error);
         this.response = err.response.body;
         this.httpError = err;
     }

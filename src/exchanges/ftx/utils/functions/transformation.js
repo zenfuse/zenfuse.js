@@ -18,6 +18,10 @@ const transfromZenfuseOrder = (zOrder) => {
         fOrder.price = zOrder.price;
     }
 
+    if (zOrder.type === 'market') {
+        fOrder.price = null;
+    }
+
     // Allow user extra keys
     for (const [key, value] of Object.entries(zOrder)) {
         if (!TRANSFORM_LIST.includes(key)) {
@@ -46,7 +50,7 @@ const transfromZenfuseOrder = (zOrder) => {
     zOrder.type = fOrder.type;
     zOrder.side = fOrder.side;
     zOrder.quantity = parseFloat(fOrder.size);
-    zOrder.price = parseFloat(fOrder.price);
+    zOrder.price = fOrder.price ? parseFloat(fOrder.price) : undefined;
     // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
 
     return zOrder;

@@ -15,7 +15,7 @@ const API_SECRET_KEY = process.env.FTX_SECRET_KEY || 'DUMMY_SECRET_KEY';
 const HOSTNAME = 'https://ftx.com/';
 
 /**
- * @typedef {import('../../src/exchanges/ftx/wallets/spot.js')} FtxSpot
+ * @typedef {import('../../../src/exchanges/ftx/wallets/spot.js')} FtxSpot
  */
 
 // TODO: Make test for FTX
@@ -262,7 +262,9 @@ describe('FTX Spot Wallet HTTP interface', () => {
 
         it('should have valid originalRespone', () => {
             if (isEnd2EndTest) {
-                expect(result[Symbol.for('zenfuse.originalPayload')]).toBeDefined()
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeDefined();
             }
 
             if (isIntegrationTest) {
@@ -297,7 +299,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
 
     ///////////////////////////////////////////////////////////////
 
-    describe('auth()', () => {
+    describe.only('auth()', () => {
         it('should bo defined', () => {
             expect(ftx.auth).toBeDefined();
         });
@@ -316,7 +318,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
         });
     });
 
-    describe.skip('createOrder()', () => {
+    describe('createOrder()', () => {
         it('should be defined', () => {
             expect(ftx.createOrder).toBeDefined();
         });
@@ -360,58 +362,48 @@ describe('FTX Spot Wallet HTTP interface', () => {
             let result;
 
             const orderParams = {
-                symbol: 'BNB/USDT',
+                symbol: 'BTC/USDT',
                 type: 'market',
                 side: 'buy',
-                quantity: '1',
+                quantity: 0.0004,
             };
 
-            const binanceRequestExpectation = {
-                side: 'BUY',
-                type: 'MARKET',
-                quantity: '1',
-                symbol: 'BNBUSDT',
+            const bodyExpectation = {
+                market: 'BTC/USDT',
+                side: 'buy',
+                type: 'market',
+                price: null,
+                size: 0.0004,
             };
 
             const mockedCreatedOrder = {
-                symbol: 'BNBUSDT',
-                orderId: 5114608,
-                orderListId: -1,
-                clientOrderId: 'nVuwTgVfxQtsMV9uuMMXxL',
-                transactTime: 1637596926709,
-                price: '0.00000000',
-                origQty: '1.00000000',
-                executedQty: '1.00000000',
-                cummulativeQuoteQty: '576.46100000',
-                status: 'FILLED',
-                timeInForce: 'GTC',
-                type: 'MARKET',
-                side: 'BUY',
-                fills: [
-                    {
-                        price: '576.30000000',
-                        qty: '0.77000000',
-                        commission: '0.00000000',
-                        commissionAsset: 'BNB',
-                        tradeId: 239238,
-                    },
-                    {
-                        price: '577.00000000',
-                        qty: '0.23000000',
-                        commission: '0.00000000',
-                        commissionAsset: 'BNB',
-                        tradeId: 239239,
-                    },
-                ],
+                success: true,
+                result: {
+                    id: 112582179056,
+                    clientId: null,
+                    market: 'BTC/USDT',
+                    type: 'market',
+                    side: 'buy',
+                    price: null,
+                    size: 0.0004,
+                    status: 'new',
+                    filledSize: 0,
+                    remainingSize: 0.0004,
+                    reduceOnly: false,
+                    liquidation: null,
+                    avgFillPrice: null,
+                    postOnly: false,
+                    ioc: true,
+                    createdAt: '2022-01-11T17:41:47.235109+00:00',
+                    future: null,
+                },
             };
 
             const scope = nock(HOSTNAME)
-                .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
-                .post('/api/v3/order')
-                .query((q) => {
-                    expect(q).toMatchObject(binanceRequestExpectation);
-                    return true;
-                })
+                .matchHeader('FTX-KEY', API_PUBLIC_KEY)
+                .matchHeader('FTX-TS', expect)
+                .matchHeader('FTX-SIGN', expect)
+                .post('/api/orders', bodyExpectation)
                 .reply(201, mockedCreatedOrder);
 
             afterAll(() => {
@@ -445,51 +437,48 @@ describe('FTX Spot Wallet HTTP interface', () => {
             let result;
 
             const orderParams = {
-                symbol: 'BNB/USDT',
+                symbol: 'BTC/USDT',
                 type: 'market',
                 side: 'sell',
-                quantity: '1',
+                quantity: 0.0004,
             };
 
-            const binanceRequestExpectation = {
-                side: 'SELL',
-                type: 'MARKET',
-                quantity: '1',
-                symbol: 'BNBUSDT',
+            const bodyExpectation = {
+                market: 'BTC/USDT',
+                side: 'sell',
+                type: 'market',
+                price: null,
+                size: 0.0004,
             };
 
             const mockedCreatedOrder = {
-                symbol: 'BNBUSDT',
-                orderId: 5115833,
-                orderListId: -1,
-                clientOrderId: 'AWSXsBUMbl6XT0BpXeT0DN',
-                transactTime: 1637597292702,
-                price: '0.00000000',
-                origQty: '1.00000000',
-                executedQty: '1.00000000',
-                cummulativeQuoteQty: '573.44000000',
-                status: 'FILLED',
-                timeInForce: 'GTC',
-                type: 'MARKET',
-                side: 'SELL',
-                fills: [
-                    {
-                        price: '573.70000000',
-                        qty: '1.0000000',
-                        commission: '0.00000000',
-                        commissionAsset: 'USDT',
-                        tradeId: 239370,
-                    },
-                ],
+                success: true,
+                result: {
+                    id: 112587218515,
+                    clientId: null,
+                    market: 'BTC/USDT',
+                    type: 'market',
+                    side: 'sell',
+                    price: null,
+                    size: 0.0004,
+                    status: 'new',
+                    filledSize: 0,
+                    remainingSize: 0.0004,
+                    reduceOnly: false,
+                    liquidation: null,
+                    avgFillPrice: null,
+                    postOnly: false,
+                    ioc: true,
+                    createdAt: '2022-01-11T18:04:55.627232+00:00',
+                    future: null,
+                },
             };
 
             const scope = nock(HOSTNAME)
-                .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
-                .post('/api/v3/order')
-                .query((q) => {
-                    expect(q).toMatchObject(binanceRequestExpectation);
-                    return true;
-                })
+                .matchHeader('FTX-KEY', API_PUBLIC_KEY)
+                .matchHeader('FTX-TS', expect)
+                .matchHeader('FTX-SIGN', expect)
+                .post('/api/orders', bodyExpectation)
                 .reply(201, mockedCreatedOrder);
 
             afterAll(() => {
@@ -522,46 +511,49 @@ describe('FTX Spot Wallet HTTP interface', () => {
             let result;
 
             const orderParams = {
-                symbol: 'BNB/USDT',
+                symbol: 'BTC/USDT',
                 type: 'limit',
                 side: 'buy',
-                quantity: '1',
-                price: '500',
+                quantity: 0.0004,
+                price: 35000,
             };
 
-            const binanceRequestExpectation = {
-                side: 'BUY',
-                type: 'LIMIT',
-                quantity: '1', // same as amount
-                price: '500',
-                symbol: 'BNBUSDT',
-                timeInForce: 'GTC',
+            const bodyExpectation = {
+                market: 'BTC/USDT',
+                type: 'limit',
+                side: 'buy',
+                size: 0.0004,
+                price: 35000,
             };
 
             const mockedCreatedOrder = {
-                symbol: 'BNBUSDT',
-                orderId: 5123847,
-                orderListId: -1,
-                clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
-                transactTime: 1637599759459,
-                price: '500.00000000',
-                origQty: '1.00000000',
-                executedQty: '0.00000000',
-                cummulativeQuoteQty: '0.00000000',
-                status: 'NEW',
-                timeInForce: 'GTC',
-                type: 'LIMIT',
-                side: 'BUY',
-                fills: [],
+                success: true,
+                result: {
+                    id: 112588036315,
+                    clientId: null,
+                    market: 'BTC/USDT',
+                    type: 'limit',
+                    side: 'buy',
+                    price: 35000,
+                    size: 0.0004,
+                    status: 'new',
+                    filledSize: 0,
+                    remainingSize: 0.0004,
+                    reduceOnly: false,
+                    liquidation: null,
+                    avgFillPrice: null,
+                    postOnly: false,
+                    ioc: false,
+                    createdAt: '2022-01-11T18:08:16.731842+00:00',
+                    future: null,
+                },
             };
 
             const scope = nock(HOSTNAME)
-                .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
-                .post('/api/v3/order')
-                .query((q) => {
-                    expect(q).toMatchObject(binanceRequestExpectation);
-                    return true;
-                })
+                .matchHeader('FTX-KEY', API_PUBLIC_KEY)
+                .matchHeader('FTX-TS', expect)
+                .matchHeader('FTX-SIGN', expect)
+                .post('/api/orders', bodyExpectation)
                 .reply(201, mockedCreatedOrder);
 
             afterAll(() => {
@@ -594,47 +586,49 @@ describe('FTX Spot Wallet HTTP interface', () => {
             let result;
 
             const orderParams = {
-                symbol: 'BNB/USDT',
+                symbol: 'BTC/USDT',
                 type: 'limit',
-                side: 'buy',
-                quantity: '1',
-                price: '500',
-                timeInForce: 'IOC', // Not default parameter
+                side: 'sell',
+                quantity: 0.0004,
+                price: 55000,
             };
 
-            const binanceRequestExpectation = {
-                side: 'BUY',
-                type: 'LIMIT',
-                quantity: '1', // same as amount
-                price: '500',
-                symbol: 'BNBUSDT',
-                timeInForce: 'IOC',
+            const bodyExpectation = {
+                market: 'BTC/USDT',
+                type: 'limit',
+                side: 'sell',
+                size: 0.0004,
+                price: 55000,
             };
 
             const mockedCreatedOrder = {
-                symbol: 'BNBUSDT',
-                orderId: 5123847,
-                orderListId: -1,
-                clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
-                transactTime: 1637599759459,
-                price: '500.00000000',
-                origQty: '1.00000000',
-                executedQty: '0.00000000',
-                cummulativeQuoteQty: '0.00000000',
-                status: 'NEW',
-                timeInForce: 'IOC',
-                type: 'LIMIT',
-                side: 'BUY',
-                fills: [],
+                success: true,
+                result: {
+                    id: 112589159471,
+                    clientId: null,
+                    market: 'BTC/USDT',
+                    type: 'limit',
+                    side: 'sell',
+                    price: 55000,
+                    size: 0.0004,
+                    status: 'new',
+                    filledSize: 0,
+                    remainingSize: 0.0004,
+                    reduceOnly: false,
+                    liquidation: null,
+                    avgFillPrice: null,
+                    postOnly: false,
+                    ioc: false,
+                    createdAt: '2022-01-11T18:13:38.138876+00:00',
+                    future: null,
+                },
             };
 
             const scope = nock(HOSTNAME)
-                .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
-                .post('/api/v3/order')
-                .query((q) => {
-                    expect(q).toMatchObject(binanceRequestExpectation);
-                    return true;
-                })
+                .matchHeader('FTX-KEY', API_PUBLIC_KEY)
+                .matchHeader('FTX-TS', expect)
+                .matchHeader('FTX-SIGN', expect)
+                .post('/api/orders', bodyExpectation)
                 .reply(201, mockedCreatedOrder);
 
             afterAll(() => {

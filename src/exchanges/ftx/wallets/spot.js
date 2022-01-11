@@ -115,27 +115,25 @@ class FtxSpot extends FtxBase {
      * @param {Order} zOrder Order to create
      */
     async createOrder(zOrder) {
-        const assignedOrder = utils.assignDefaultsInOrder(
-            zOrder,
-            this.options.defaults,
+        const fOrder = utils.transfromZenfuseOrder(zOrder);
+
+        const fCreatedOrder = await this.privateFetch(
+            'api/orders',
+            {
+                method: 'POST',
+                json: fOrder,
+            },
         );
 
-        // TODO: Assign defaults in transformation
-        const bOrder = utils.transfromZenfuseOrder(assignedOrder);
+        console.log(fCreatedOrder);
 
-        const bCreatedOrder = await this.privateFetch('api/v3/order', {
-            method: 'POST',
-            searchParams: bOrder,
-        });
+        const zCreatedOrder = utils.transfromFtxOrder(fCreatedOrder.result);
 
-        const zCreadedOrder = utils.transfromFtxOrder(bCreatedOrder);
+        console.log(zCreatedOrder);
 
-        zCreadedOrder.symbol =
-            this.cache.parsedSymbols[bCreatedOrder.symbol].join('/');
+        utils.linkOriginalPayload(zCreatedOrder, fCreatedOrder);
 
-        utils.linkOriginalPayload(zCreadedOrder, bCreatedOrder);
-
-        return zCreadedOrder;
+        return zCreatedOrder;
     }
 
     /**
