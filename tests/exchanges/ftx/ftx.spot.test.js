@@ -61,7 +61,7 @@ describe.skip('Ftx Options usage', () => {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: Make test for FTX
-describe('FTX Spot Wallet HTTP interface', () => {
+describe.skip('FTX Spot Wallet HTTP interface', () => {
     /**
      * @type {FtxSpot}
      */
@@ -896,11 +896,10 @@ describe.skip('Ftx Spot Wallet Private Stream', () => {
 });
 
 /**
- * @typedef {import('../../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
+ * @typedef {import('../../../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
  */
 
-// TODO: Make test for FTX
-describe.skip('Ftx Spot Wallet Public Stream', () => {
+describe('Ftx Spot Wallet Public Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
         // console.warn('Websoket test skipped');
@@ -913,7 +912,7 @@ describe.skip('Ftx Spot Wallet Public Stream', () => {
     let marketDataStream;
 
     /**
-     * @type {BinanceSpot}
+     * @type {FtxSpot}
      */
     let ftx;
 
@@ -935,7 +934,7 @@ describe.skip('Ftx Spot Wallet Public Stream', () => {
         });
     });
 
-    describe('subscribeTo()', () => {
+    describe.only('subscribeTo()', () => {
         beforeEach(async () => {
             marketDataStream.close();
             await marketDataStream.open();
@@ -946,28 +945,15 @@ describe.skip('Ftx Spot Wallet Public Stream', () => {
             marketDataStream.close();
         });
 
-        it('should new on new candles', (done) => {
+        it('should subscribe for price', (done) => {
             marketDataStream.subscribeTo({
-                channel: 'kline',
-                symbol: 'BTC/USDT',
-                interval: '15m',
+                channel: 'price',
+                symbol: 'BTC/USD',
             });
 
-            marketDataStream.once('kline', (kline) => {
-                expect(kline).toBeInstanceOf(Object);
-                // kline must be up to date for the last minute
-                expect(kline.timestamp).toBeCloseTo(Date.now(), -7);
-                done();
-            });
-        });
-        it('should watch on new candles from symbols', (done) => {
-            marketDataStream.subscribeTo('BTC/USDT');
-
-            marketDataStream.once('kline', (kline) => {
-                expect(kline).toBeInstanceOf(Object);
-                expect(kline.symbol).toBe('BTCUSDT'); // TODO: Add symbol transformation
-                // kline must be up to date for the last minute
-                expect(kline.timestamp).toBeCloseTo(Date.now(), -7);
+            marketDataStream.once('newPrice', ({ symbol, price }) => {
+                expect(symbol).toBe('BTC/USD')
+                expect(typeof price).toBe('number')
                 done();
             });
         });

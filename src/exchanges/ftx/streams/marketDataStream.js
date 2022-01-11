@@ -1,3 +1,4 @@
+const { util } = require('prettier');
 const debug = require('../../../base/etc/debug');
 const { timeIntervals } = require('../metadata');
 const utils = require('../utils');
@@ -16,7 +17,7 @@ class MarketDataStream extends FtxWebsocketBase {
      * @returns {this}
      */
     async open() {
-        this.socket = await this.getSocketConnection('ws');
+        await super.open();
 
         this.socket.addEventListener(
             'message',
@@ -58,56 +59,31 @@ class MarketDataStream extends FtxWebsocketBase {
         let event = {};
 
         if (isJustSymbol) {
+            throw 'Not implemented';
             if (command === 'unsubscribe') {
                 return await this.unsubscribeFromAllbySymbol(arg);
             }
 
-            event.channel = 'kline';
+            event.channel = 'trades';
             event.symbol = arg;
-            event.interval = timeIntervals['1m']; // default
         } else {
             event = arg;
         }
 
-        if (event.channel === 'kline') {
-            const symbol = utils
-                .transformMarketString(event.symbol)
-                .toLowerCase();
-            const interval = timeIntervals[event.interval];
-
-            if (command === 'subscribe') {
-                await this.sendSocketSubscribe(`${symbol}@kline_${interval}`);
-                return;
-            }
-
-            if (command === 'unsubscribe') {
-                await this.sendSocketUnsubscribe(`${symbol}@kline_${interval}`);
-                return;
-            }
-
-            throw new TypeError('Uknown command argument ' + command);
+        if (event.channel === 'price') {
+            return this.sendSocketMessage({
+                op: command,
+                channel: 'ticker',
+                market: event.symbol,
+            });
         }
 
-        throw new Error('Uknown channel name ' + arg.channel);
+        throw new Error('Uknown channel name ' + event.channel);
     }
 
+    // TODO: Save all subscribition
     async unsubscribeFromAllbySymbol(symbol) {
-        const symbolToDelete = utils
-            .transformMarketString(symbol)
-            .toLowerCase();
-
-        const requestPayload = {
-            method: 'LIST_SUBSCRIPTIONS',
-            id: this.createPayloadId(),
-        };
-
-        const allSubs = await this.sendSocketMessage(requestPayload);
-
-        const subsToDelete = allSubs.filter((a) => a.includes(symbolToDelete));
-
         await this.sendSocketUnsubscribe(...subsToDelete);
-
-        return;
     }
 
     /**
@@ -115,48 +91,20 @@ class MarketDataStream extends FtxWebsocketBase {
      * @param {import('ws').MessageEvent} msgEvent
      */
     serverMessageHandler(msgEvent) {
-        let payload;
+        const payload = JSON.parse(msgEvent.data);
 
-        try {
-            payload = JSON.parse(msgEvent.data);
-        } catch (error) {
-            this.emit('error', error);
-            debug.error(error);
-            return;
+        if (payload.type === 'error') {
+            require('inspector').console.error(msgEvent);
+            debugger;
         }
 
-        if (payload.id) {
-            // this message is responce for specific request
-            if (!this.messageQueue.has(payload.id)) {
-                throw new Error('Mesage queue unsynced');
+        if (payload.type === 'update') {
+            if (payload.channel === 'ticker') {
+                this.emitNewPrice(payload);
             }
-
-            const [resolve, reject] = this.messageQueue.get(payload.id);
-
-            const isErrorMsg = !!payload.code; ///
-
-            if (isErrorMsg) {
-                reject(payload.msg);
-                return;
-            }
-
-            resolve(payload.result);
-            return;
         }
 
-        debug.log('<- IN');
-        debug.log(payload);
-        debug.log('');
-
-        switch (payload.e) {
-            case 'kline':
-                this.emitNewCandlestick(payload);
-                break;
-
-            default:
-                debug.error('Unsupported event on payload:');
-                debug.error(payload);
-        }
+        require('inspector').console.log(payload);
     }
 
     /**
@@ -164,38 +112,29 @@ class MarketDataStream extends FtxWebsocketBase {
      *
      * @param {*} payload
      */
-    emitNewCandlestick(payload) {
-        const kline = utils.transfornCandlestick(payload.k);
+    emitNewPrice(payload) {
+        const priceObject = {
+            symbol: payload.market,
+            price: payload.data.last,
+            timestamp: payload.data.time
+        };
 
-        kline[Symbol.for('zenfuse.originalPayload')] = payload;
+        utils.linkOriginalPayload(priceObject, payload);
 
-        debug.log('Emit "kline" Event');
-        debug.log(kline);
+        debug.log('Emit "newPrice" Event');
+        debug.log(priceObject);
 
         /**
          * Event represent new
          *
-         * @event MarketDataStream#kline
-         * @type {import('../../..').Kline}
+         * @event MarketDataStream#newPrice
+         * @type {{
+         *      symbol: string,
+         *      price: number,
+         *      timestamp: number
+         * }}
          */
-        this.emit('kline', kline);
-    }
-
-    /**
-     * @private
-     * @param  {...string} eventNames
-     * @returns {Promise<object>} Server responce
-     */
-    async sendSocketSubscribe(...eventNames) {
-        this.checkSocketIsConneted();
-
-        const payload = {
-            method: 'SUBSCRIBE',
-            params: [...eventNames],
-            id: this.createPayloadId(),
-        };
-
-        return await this.sendSocketMessage(payload);
+        this.emit('newPrice', priceObject);
     }
 
     /**
@@ -221,7 +160,7 @@ class MarketDataStream extends FtxWebsocketBase {
 
     /**
      * @param {object} msg
-     * @returns {Promise<object>}
+     * @returns {void}
      */
     sendSocketMessage(msg) {
         // TODO: Rename this shit
@@ -233,10 +172,6 @@ class MarketDataStream extends FtxWebsocketBase {
 
         debug.log('-> OUT');
         debug.log(msg);
-
-        return new Promise((resolve, reject) => {
-            this.messageQueue.set(msg.id, [resolve, reject]);
-        });
     }
 
     /**
