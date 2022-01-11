@@ -127,7 +127,7 @@ class FtxBase extends ExchangeBase {
      * @public
      */
     async ping() {
-        throw 'Not implemented';
+        await this.publicFetch('api');
     }
 
     /**

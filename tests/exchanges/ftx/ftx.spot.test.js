@@ -71,12 +71,14 @@ describe('FTX Spot Wallet HTTP interface', () => {
         ftx = new FTX['spot']();
     });
 
-    describe.skip('ping()', () => {
+    describe('ping()', () => {
         it('should be defined', () => {
             expect(ftx.ping).toBeDefined();
         });
         it('should pings :)', async () => {
-            const scope = nock(HOSTNAME).get('/api/v3/ping').reply(200, {});
+            const responceBody = { success: true, result: true };
+
+            const scope = nock(HOSTNAME).get('/api').reply(200, responceBody);
 
             await ftx.ping();
 
@@ -781,9 +783,7 @@ describe('FTX Spot Wallet HTTP interface', () => {
             }
 
             if (isIntegrationTest) {
-                expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
-                ).toBe('');
+                expect(result[Symbol.for('zenfuse.originalPayload')]).toBe('');
             }
         });
     });
