@@ -793,16 +793,12 @@ describe.skip('FTX Spot Wallet HTTP interface', () => {
 /////////////////////////////////   FTX WEBSOCKET INTERFACE   /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-const MOCKED_LISTEN_KEY = {
-    listenKey: 'hellositwhenairdropwhenftx',
-};
-
 /**
- * @typedef {import('../../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
+ * @typedef {import('../../../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
  */
 
 // TODO: Make test for FTX
-describe.skip('Ftx Spot Wallet Private Stream', () => {
+describe('Ftx Spot Wallet Private Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
         // console.warn('Websoket test skipped');
@@ -815,38 +811,31 @@ describe.skip('Ftx Spot Wallet Private Stream', () => {
     let accountDataStream;
 
     /**
-     * @type {BinanceSpot}
+     * @type {FtxSpot}
      */
-    let binance;
+    let ftx;
 
     beforeAll(() => {
-        binance = new FTX['spot']().auth({
+        ftx = new FTX['spot']().auth({
             publicKey: API_PUBLIC_KEY,
             privateKey: API_SECRET_KEY,
         });
 
-        accountDataStream = binance.getAccountDataStream();
+        accountDataStream = ftx.getAccountDataStream();
     });
 
     afterAll(() => {
+        if (isTestSuiteFailed) {
+            accountDataStream.close();
+        }
         expect(accountDataStream.isSocketConneted).toBe(false);
     });
 
     describe('open()', () => {
-        const scope = nock(HOSTNAME)
-            .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)
-            .post('/api/v3/userDataStream')
-            .query((query) => {
-                expect(query).toHaveLength(0);
-                return true;
-            })
-            .reply(200, MOCKED_LISTEN_KEY);
-
         // TODO: Mock websocket
 
         afterAll(() => {
             if (isTestSuiteFailed) return;
-            scope.done();
         });
 
         it('should connect to websocket', async () => {
@@ -855,12 +844,12 @@ describe.skip('Ftx Spot Wallet Private Stream', () => {
             expect(accountDataStream.isSocketConneted).toBe(true);
         });
 
-        it.skip('should emit events on order creation', async () => {
+        it('should emit "orderUpdate"', async () => {
             const orderParams = {
-                symbol: 'BUSD/USDT',
+                symbol: 'USDT/USD',
                 type: 'limit',
                 side: 'buy',
-                amount: '20',
+                quantity: '20',
                 price: '0.5',
             };
 
@@ -868,19 +857,11 @@ describe.skip('Ftx Spot Wallet Private Stream', () => {
                 accountDataStream.once('orderUpdate', resolve);
             });
 
-            const tickersChangedPromice = new Promise((resolve) => {
-                accountDataStream.once('tickersChanged', resolve);
-            });
+            const createdOrder = await ftx.createOrder(orderParams);
 
-            const { createdOrder } = await binance.createOrder(orderParams);
-
-            return await Promise.all([
-                orderUpdatePromice,
-                tickersChangedPromice,
-            ]).then(() => {
-                createdOrder.id = createdOrder.orderId;
-                return binance.cancelOrder(createdOrder);
-            });
+            return await orderUpdatePromice.then(() =>
+                ftx.cancelOrder(createdOrder),
+            );
         });
     });
 

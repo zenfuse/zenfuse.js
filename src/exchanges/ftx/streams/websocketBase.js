@@ -80,27 +80,16 @@ class FtxWebsocketBase extends EventEmitter {
     }
 
     /**
-     * @typedef {object} WebsocketEvent
-     * @property {string} channel
-     * @property {string} symbol
-     * @property {string} [interval] Required if channel is kline
-     * @property {string} channel
-     *
-     * @param {string|WebsocketEvent} event
+     * @param {object} msg
+     * @returns {void}
      */
-    async subscribeTo(event) {
+    sendSocketMessage(msg) {
         this.checkSocketIsConneted();
 
-        if (event.channel === 'kline') {
-        }
+        const msgString = JSON.stringify(msg);
 
-        throw new Error('Unsupported channel' + event.channel);
+        this.socket.send(msgString);
     }
-
-    /**
-     * @param {string|WebsocketEvent} event
-     */
-    async unsubscribeFrom(event) {}
 }
 
 module.exports = FtxWebsocketBase;

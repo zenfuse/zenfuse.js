@@ -7,7 +7,7 @@ const FtxApiError = require('./errors/api.error');
 const FtxCache = require('./etc/cache');
 const { createHmacSignature } = require('./utils');
 
-const keysSymbol = Symbol('keys');
+const keysSymbol = Symbol.for('zenfuse.keyVault');
 
 /**
  * FTX base class for method which included in any wallet type
@@ -30,6 +30,7 @@ class FtxBase extends ExchangeBase {
             prefixUrl: 'wss://ftx.com/',
         },
     };
+
     /**
      * @type {FtxCache}
      */
@@ -145,7 +146,7 @@ class FtxBase extends ExchangeBase {
      */
     handleFetcherError(err) {
         if (err instanceof HTTPError) {
-            throw new FtxApiError(err);            
+            throw new FtxApiError(err);
         }
 
         throw err;

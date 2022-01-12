@@ -83,6 +83,7 @@ class MarketDataStream extends FtxWebsocketBase {
 
     // TODO: Save all subscribition
     async unsubscribeFromAllbySymbol(symbol) {
+        throw 'Not implemented'
         await this.sendSocketUnsubscribe(...subsToDelete);
     }
 
@@ -104,7 +105,7 @@ class MarketDataStream extends FtxWebsocketBase {
             }
         }
 
-        require('inspector').console.log(payload);
+        this.emit('payload', payload);
     }
 
     /**
@@ -156,31 +157,6 @@ class MarketDataStream extends FtxWebsocketBase {
         };
 
         return await this.sendSocketMessage(payload);
-    }
-
-    /**
-     * @param {object} msg
-     * @returns {void}
-     */
-    sendSocketMessage(msg) {
-        // TODO: Rename this shit
-        this.checkSocketIsConneted();
-
-        const msgString = JSON.stringify(msg);
-
-        this.socket.send(msgString);
-
-        debug.log('-> OUT');
-        debug.log(msg);
-    }
-
-    /**
-     * @private
-     * @returns {number} Actual payload id
-     */
-    createPayloadId() {
-        this.lastPayloadId = ++this.lastPayloadId;
-        return this.lastPayloadId;
     }
 
     checkSocketIsConneted() {

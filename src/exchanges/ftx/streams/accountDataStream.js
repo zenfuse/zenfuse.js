@@ -1,15 +1,10 @@
-const ExchangeWebsocketBase = require('./websocketBase');
+const { createHmac } = require('crypto');
+const util = require('util');
 
-const listenKeySymbol = Symbol('listenKey');
-const validUntilSymbol = Symbol('validUntil');
-const intervalSymbol = Symbol('interval');
+const utils = require('../utils');
+const FtxWebsocketBase = require('./websocketBase');
 
-class AccountDataStream extends ExchangeWebsocketBase {
-    /**
-     * Time interval when zenfuse should revalidate listen key
-     */
-    static REVALIDATE_INTERVAL = 1_800_000; // 30min
-
+class AccountDataStream extends FtxWebsocketBase {
     /**
      * @type {import('ws').WebSocket}
      */
@@ -20,9 +15,6 @@ class AccountDataStream extends ExchangeWebsocketBase {
      */
     constructor(baseInstance) {
         super(baseInstance);
-
-        this[listenKeySymbol] = null;
-        this[validUntilSymbol] = null;
     }
 
     /**
@@ -30,133 +22,49 @@ class AccountDataStream extends ExchangeWebsocketBase {
      * @returns {this}
      */
     async open() {
-        const listenKey = await this.fetchListenKey();
-
-        this[listenKeySymbol] = listenKey;
-
-        this.socket = await this.getSocketConnection(`/ws/${listenKey}`);
-
-        this.createRevalidateInterval();
+        await super.open();
 
         this.socket.on('message', this.serverMessageHandler.bind(this));
 
-        return this;
-    }
+        const keysSymbol = Symbol.for('zenfuse.keyVault');
+        const { publicKey, privateKey } = this.base[keysSymbol];
+        const timestamp = Date.now();
+        const signature = createHmac('sha256', privateKey)
+            .update(`${timestamp}websocket_login`)
+            .digest('hex');
 
-    /**
-     *
-     * @returns {this}
-     */
-    close() {
-        if (this.isSocketConneted) {
-            this.socket.close();
-        }
-
-        this.stopInterval();
-        return this;
-    }
-
-    get isSocketConneted() {
-        if (!this.socket) return false;
-
-        return this.socket.readyState === 1;
-    }
-
-    /**
-     * @private
-     */
-    async fetchListenKey() {
-        const { listenKey } = await this.base.publicFetch(
-            'api/v3/userDataStream',
-            {
-                method: 'POST',
-            },
-        );
-
-        return listenKey;
-    }
-
-    /**
-     * @private
-     */
-    createRevalidateInterval() {
-        this[intervalSymbol] = setInterval(
-            this.extendListenKey.bind(this),
-            AccountDataStream.REVALIDATE_INTERVAL,
-        );
-    }
-
-    /**
-     * @private
-     */
-    stopInterval() {
-        clearInterval(this[intervalSymbol]);
-    }
-
-    /**
-     * @private
-     */
-    async extendListenKey() {
-        await this.base.publicFetch('/api/v3/userDataStream', {
-            method: 'PUT',
-            searchParams: {
-                listenKey: this[listenKeySymbol],
+        this.sendSocketMessage({
+            op: 'login',
+            args: {
+                key: publicKey,
+                sign: signature,
+                time: timestamp,
             },
         });
 
-        this.extendValidityTime();
-    }
+        this.sendSocketMessage({ op: 'subscribe', channel: 'orders' });
 
-    /**
-     * @private
-     */
-    extendValidityTime() {
-        this._validUntil = Date.now() + 3_600_000; // 60min
-    }
-
-    checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
-            throw new Error('Socket not connected'); // TODO: Specific error
-        }
+        return this;
     }
 
     serverMessageHandler(msgString) {
         const payload = JSON.parse(msgString);
 
-        const eventName = payload.e;
-
-        // TODO: listStatus event support
-
-        // TODO: balanceChanged event
-
-        switch (eventName) {
-            case 'executionReport':
+        if (payload.type === 'update') {
+            if (payload.channel === 'orders') {
                 this.emitOrderUpdateEvent(payload);
-                break;
-            case 'outboundAccountPosition':
-                this.emitTickersChangedEvent(payload);
-                break;
-            default:
-                throw payload;
+            }
         }
 
         this.emit('payload', payload);
     }
 
     emitOrderUpdateEvent(payload) {
-        const eventObject = {
-            originalPayload: payload, // TODO: Same interface
-        };
+        const order = utils.transfromFtxOrder(payload.data);
 
-        this.emit('orderUpdate', eventObject);
-    }
+        utils.linkOriginalPayload(order, payload);
 
-    emitTickersChangedEvent(payload) {
-        const eventObject = {
-            originalPayload: payload, // TODO: Same interface
-        };
-
-        this.emit('tickersChanged', eventObject);
+        this.emit('orderUpdate', order);
     }
 }
 
