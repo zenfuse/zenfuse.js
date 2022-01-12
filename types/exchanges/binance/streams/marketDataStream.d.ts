@@ -4,7 +4,7 @@ declare class MarketDataStream extends BinanceWebsocketBase {
     /**
      * @type {import('ws').WebSocket}
      */
-    socket: any;
+    socket: import('ws').WebSocket;
     /**
      * Messages that are waiting for a response with a specific id
      * @type {Map<string, [typeof Promise.resolve, typeof Promise.reject]>}
@@ -25,15 +25,25 @@ declare class MarketDataStream extends BinanceWebsocketBase {
      * @returns {this}
      */
     close(): this;
+    subscribeTo(event: any): Promise<void>;
     /**
-     *
-     * @param {object} param
-     * @param {string} channel
-     * @param {string} symbol
-     * @param {string} [interval] Required if channel is kline
-     * @param {string} channel
+     * @param {string|WesocketEvent} event
      */
-    watchOn(param: object): Promise<void>;
+    unsubscribeFrom(event: string | any): Promise<void>;
+    /**
+     * @private
+     *
+     * @typedef {object} WebsocketEvent
+     * @property {string} channel
+     * @property {string} symbol
+     * @property {string} [interval] Required if channel is kline
+     * @property {string} channel
+     *
+     * @param {string|WebsocketEvent} arg
+     * @param {'subscribe'|'unsubscribe'} command
+     */
+    private editSubscribition;
+    unsubscribeFromAllbySymbol(symbol: any): Promise<void>;
     /**
      * @private
      * @param {import('ws').MessageEvent} msgEvent
@@ -50,13 +60,13 @@ declare class MarketDataStream extends BinanceWebsocketBase {
      * @param  {...string} eventNames
      * @returns {Promise<object>} Server responce
      */
-    private subscribeOnEvent;
+    private sendSocketSubscribe;
     /**
      * @private
-     * @param  {...string} eventNames
+     * @param  {string[]} eventNames
      * @returns {Promise<object>} Server responce
      */
-    private unsubscribeOnEvent;
+    private sendSocketUnsubscribe;
     /**
      * @param {object} msg
      * @returns {Promise<object>}
@@ -66,7 +76,7 @@ declare class MarketDataStream extends BinanceWebsocketBase {
      * @private
      * @returns {number} Actual payload id
      */
-    private getActualPayloadId;
+    private createPayloadId;
     get isSocketConneted(): boolean;
     checkSocketIsConneted(): void;
 }

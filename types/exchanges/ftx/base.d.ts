@@ -1,17 +1,17 @@
-export = BinanceBase;
+export = FtxBase;
 /**
- * Binance base class for method which included in any wallet type
+ * FTX base class for method which included in any wallet type
  * @important Any class what extends ExchangeBase should have same public interface
  */
-declare class BinanceBase extends ExchangeBase {
+declare class FtxBase extends ExchangeBase {
     /**
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options: import('../../base/exchange').BaseOptions);
     /**
-     * @type {BinanceCache}
+     * @type {FtxCache}
      */
-    cache: BinanceCache;
+    cache: FtxCache;
     /**
      * Make http request based on constructor settings
      *
@@ -23,11 +23,11 @@ declare class BinanceBase extends ExchangeBase {
     /**
      * Make authenticated http request based on constructor settings
      *
-     * @param {URL} url
+     * @param {string} url
      * @param {import('http').RequestOptions} options
-     * @returns {object};
+     * @returns {any}
      */
-    privateFetch(url: URL, options?: import('http').RequestOptions): object;
+    privateFetch(url: string, options?: import('http').RequestOptions): any;
     /**
      * Connect to authentificated API
      *
@@ -47,10 +47,10 @@ declare class BinanceBase extends ExchangeBase {
      */
     get hasKeys(): boolean;
     /**
-     * Ping binance servers
+     * Ping ftx servers
      * @public
      */
-    public ping(): Promise<any>;
+    public ping(): Promise<void>;
     /**
      * @private
      */
@@ -63,5 +63,5 @@ declare class BinanceBase extends ExchangeBase {
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");
-import BinanceCache = require("./etc/cache");
+import FtxCache = require("./etc/cache");
 declare const keysSymbol: unique symbol;

@@ -1,8 +1,6 @@
-export = Binance;
-declare class Binance {
-    /**
-     * @param {string} wallet
-     * @param {import('../../base/exchange').BaseOptions} options
-     */
-    constructor(wallet: string, options: import('../../base/exchange').BaseOptions);
+export = BinanceWallets;
+type BinanceWallets = BinanceSpot;
+declare namespace BinanceWallets {
+    export { BinanceSpot as spot };
 }
+import BinanceSpot = require("./wallets/spot");

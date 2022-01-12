@@ -1,3 +1,4 @@
+export type Order = import('../../../../index').Order;
 /**
  * Transform market string specialy for Binance
  *
@@ -12,6 +13,8 @@ export function transformMarketString(libString: string): string;
 /**
  * Insert default values for specific order type
  *
+ * @important All values should be for zenfuse interface
+ *
  * @param {object} order
  * @param {object} defaults
  * @param {object} defaults.limit
@@ -24,17 +27,29 @@ export function assignDefaultsInOrder(order: object, defaults: {
     market: object;
 }): any;
 /**
- * Transforms order object for binance POST `/order` request interface
- * @param {import('../wallets/spot').createOrder}
+ * @typedef {import('../../../../index').Order} Order
  */
-export function transformOrderValues(order: any): {
-    type: any;
-    side: any;
-    price: any;
-    quantity: any;
-    timeInForce: any;
+/**
+ * Zenfuse -> Binance
+ * @important This function does not assign defaults values
+ *
+ * @param {Order} zOrder Zenfuse order
+ * @returns Order for binance api
+ */
+export function transfromZenfuseOrder(zOrder: Order): {
     symbol: string;
+    type: string;
+    side: string;
+    price: string;
+    quantity: string;
+    timeInForce: any;
 };
+/**
+ * Binance -> Zenfuse
+ * @param {*} bOrder Order fromf
+ * @returns {Order} Zenfuse Order
+ */
+export function transfromBinanceOrder(bOrder: any): Order;
 /**
  * Transforms candlestick data from binance websocket
  *
@@ -57,7 +72,7 @@ export function transformOrderValues(order: any): {
  * @param {string} k.Q Taker buy quote asset volume
  * @param {string} k.B Ignore
  *
- * @returns {import('../../../../index').kline} Candlestick data
+ * @returns {import('../../../../index').Kline} Candlestick data
  */
 export function transfornCandlestick(k: {
     t: number;
@@ -77,4 +92,4 @@ export function transfornCandlestick(k: {
     V: string;
     Q: string;
     B: string;
-}): import('../../../../index').kline;
+}): import('../../../../index').Kline;

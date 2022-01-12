@@ -1,6 +1,11 @@
 declare const _exports: {
     createHmacSignature: (data: any, key: any) => string;
-    linkOriginalPayload: (object: any, originalPayload: any) => void;
+    parseBinanceSymbol: (bSymbol: string, { tickers, parsedSymbols }: {
+        ticker: string[];
+        parsedSymbols: {
+            [ticker: string]: string[];
+        };
+    }) => [string, string];
     validateOrderForCanceling: (order: {
         id: string | number;
     }) => void;
@@ -9,14 +14,15 @@ declare const _exports: {
         limit: any;
         market: any;
     }) => any;
-    transformOrderValues: (order: any) => {
-        type: any;
-        side: any;
-        price: any;
-        quantity: any;
-        timeInForce: any;
+    transfromZenfuseOrder: (zOrder: import("../../..").Order) => {
         symbol: string;
+        type: string;
+        side: string;
+        price: string;
+        quantity: string;
+        timeInForce: any;
     };
+    transfromBinanceOrder: (bOrder: any) => import("../../..").Order;
     transfornCandlestick: (k: {
         t: number;
         T: number;
@@ -35,13 +41,14 @@ declare const _exports: {
         V: string;
         Q: string;
         B: string;
-    }) => import("../../..").kline;
-    getAllTickersFromSymbols: (symbols: any[]) => string[];
-    getOnlySpotMarkets: (symbols: any[]) => any[];
+    }) => import("../../..").Kline;
+    extractTickersFromSymbols: (symbols: any[]) => string[];
+    extractSpotMarkets: (symbols: any[]) => any[];
     structualizeMarkets: (markets: any[]) => {
         symbol: string;
         baseTicker: string;
         quoteTicker: string;
     };
+    linkOriginalPayload: (object: any, originalPayload: any) => void;
 };
 export = _exports;

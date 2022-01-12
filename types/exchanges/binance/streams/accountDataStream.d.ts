@@ -1,11 +1,13 @@
 export = AccountDataStream;
 declare class AccountDataStream extends ExchangeWebsocketBase {
-    _listenKey: any;
-    _validUntil: any;
+    /**
+     * Time interval when zenfuse should revalidate listen key
+     */
+    static REVALIDATE_INTERVAL: number;
     /**
      * @type {import('ws').WebSocket}
      */
-    socket: any;
+    socket: import('ws').WebSocket;
     /**
      *
      * @returns {this}
@@ -25,7 +27,6 @@ declare class AccountDataStream extends ExchangeWebsocketBase {
      * @private
      */
     private createRevalidateInterval;
-    _interval: NodeJS.Timer;
     /**
      * @private
      */
@@ -38,9 +39,16 @@ declare class AccountDataStream extends ExchangeWebsocketBase {
      * @private
      */
     private extendValidityTime;
+    _validUntil: number;
     checkSocketIsConneted(): void;
     serverMessageHandler(msgString: any): void;
     emitOrderUpdateEvent(payload: any): void;
     emitTickersChangedEvent(payload: any): void;
+    [listenKeySymbol]: any;
+    [validUntilSymbol]: any;
+    [intervalSymbol]: NodeJS.Timer;
 }
 import ExchangeWebsocketBase = require("./websocketBase");
+declare const listenKeySymbol: unique symbol;
+declare const validUntilSymbol: unique symbol;
+declare const intervalSymbol: unique symbol;

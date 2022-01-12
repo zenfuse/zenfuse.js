@@ -2,12 +2,12 @@
  * @param {array} symbols Array of symbols from `api/v3/exchangeInfo`
  * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
  */
-export function getAllTickersFromSymbols(symbols: any[]): string[];
+export function extractTickersFromSymbols(symbols: any[]): string[];
 /**
  * @param {array} symbols List of symbols from `api/v3/exchangeInfo` endpoint
  * @returns {array} Symbols only with spot type
  */
-export function getOnlySpotMarkets(symbols: any[]): any[];
+export function extractSpotMarkets(symbols: any[]): any[];
 /**
  * Structualizing all markets to one interface
  *

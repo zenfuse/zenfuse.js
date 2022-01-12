@@ -1,17 +1,15 @@
-export = BinanceSpot;
+export = FtxSpot;
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
  */
 /**
- * Binance class for spot wallet API
+ * FTX class for spot wallet API
  * @important should have same
  */
-declare class BinanceSpot extends BinanceBase {
+declare class FtxSpot extends FtxBase {
     static DEFAULT_OPTIONS: {
         defaults: {
-            limit: {
-                timeInForce: string;
-            };
+            limit: {};
             market: {};
         };
     };
@@ -24,13 +22,9 @@ declare class BinanceSpot extends BinanceBase {
      */
     fetchTickers(): string[];
     /**
-     * @returns Array of ticker pairs on this exchange
+     * @returns {string[]} Array of ticker pairs on FTX
      */
-    fetchMarkets(): Promise<{
-        symbol: string;
-        baseTicker: string;
-        quoteTicker: string;
-    }>;
+    fetchMarkets(): string[];
     /**
      *
      * @note If the symbol is not sent, prices for all symbols will be returned in an array.
@@ -38,40 +32,36 @@ declare class BinanceSpot extends BinanceBase {
      * @param {string} market Ticker pair aka symbol
      * @return Last price
      */
-    fetchPrice(market: string): Promise<any>;
+    fetchPrice(market?: string): Promise<any>;
     /**
      * @typedef {import('../utils/functions/transformation').Order} Order
      */
     /**
-     * Create new spot order on Binance
+     * Create new spot order on FTX
      *
      * @param {Order} zOrder Order to create
      */
-    createOrder(zOrder: import("../../..").Order): Promise<import("../../..").Order>;
+    createOrder(zOrder: any): Promise<any>;
     /**
      * Cancel an active order
      *
-     * @important Binance required order symbol for canceling.
-     *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
-     *      So if you know order symbol, better pass it to didn't make unnecessary HTTP requests.
-     *
      * @param {object} order Order object to delete
-     * @param {string} order.symbol Order ticker pair, for example `BTC/USDT`
-     * @param {string} order.id Binance order id
+     * @param {string} order.id Ftx order id
      */
     cancelOrder(order: {
-        symbol: string;
         id: string;
-    }): Promise<any>;
+    }): Promise<{
+        id: string;
+    }>;
     fetchOpenOrders(): Promise<any>;
     fetchBalances(): Promise<any>;
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }
-declare namespace BinanceSpot {
+declare namespace FtxSpot {
     export { BaseOptions };
 }
-import BinanceBase = require("../base");
+import FtxBase = require("../base");
 import AccountDataStream = require("../streams/accountDataStream");
 import MarketDataStream = require("../streams/marketDataStream");
 type BaseOptions = import('../../../base/exchange').BaseOptions;
