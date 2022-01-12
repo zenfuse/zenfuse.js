@@ -85,6 +85,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
 
             it('should have valid originalResponse', () => {
+                expect(result).toBeDefined();
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
                 ).toBeDefined();
@@ -125,6 +126,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
 
             it('should have valid originalResponse', () => {
+                expect(result).toBeDefined();
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
                 ).toBeDefined();
@@ -153,6 +155,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
 
             it('should have valid originalRespone', () => {
+                expect(result).toBeDefined();
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
                 ).toBeDefined();
@@ -163,6 +166,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
 
             it('should have valid originalResponse', () => {
+                expect(result).toBeDefined();
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
                 ).toBeDefined();
@@ -170,9 +174,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
         });
 
         ///////////////////////////////////////////////////////////////
-
         //// Private API Zone
-
         ///////////////////////////////////////////////////////////////
 
         describe('auth()', () => {
@@ -237,15 +239,13 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             describe('buy by market', () => {
                 let result;
 
-                const orderParams = {
-                    symbol: 'BTC/USDT',
-                    type: 'market',
-                    side: 'buy',
-                    quantity: 0.0004,
-                };
-
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(orderParams);
+                    result = await exchange.createOrder({
+                        symbol: 'BTC/USDT',
+                        type: 'market',
+                        side: 'buy',
+                        quantity: 0.0004,
+                    });
                 });
 
                 it('should have valid originalResponse', () => {
@@ -261,15 +261,13 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             describe('sell by market', () => {
                 let result;
 
-                const orderParams = {
-                    symbol: 'BTC/USDT',
-                    type: 'market',
-                    side: 'sell',
-                    quantity: 0.0004,
-                };
-
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(orderParams);
+                    result = await exchange.createOrder({
+                        symbol: 'BTC/USDT',
+                        type: 'market',
+                        side: 'sell',
+                        quantity: 0.0004,
+                    });
                 });
 
                 it('should have valid originalResponse', () => {
@@ -284,16 +282,14 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             describe('buy by limit', () => {
                 let result;
 
-                const orderParams = {
-                    symbol: 'BTC/USDT',
-                    type: 'limit',
-                    side: 'buy',
-                    quantity: 0.0004,
-                    price: 35000,
-                };
-
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(orderParams);
+                    result = await exchange.createOrder({
+                        symbol: 'BTC/USDT',
+                        type: 'limit',
+                        side: 'buy',
+                        quantity: 0.0004,
+                        price: 35000,
+                    });
                 });
 
                 it('should have valid originalResponse', () => {
@@ -309,16 +305,14 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             describe('sell by limit', () => {
                 let result;
 
-                const orderParams = {
-                    symbol: 'BTC/USDT',
-                    type: 'limit',
-                    side: 'sell',
-                    quantity: 0.0004,
-                    price: 55000,
-                };
-
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(orderParams);
+                    result = await exchange.createOrder({
+                        symbol: 'BTC/USDT',
+                        type: 'limit',
+                        side: 'sell',
+                        quantity: 0.0004,
+                        price: 55000,
+                    });
                 });
 
                 it('should have valid originalResponse', () => {
@@ -341,10 +335,11 @@ module.exports = function masterTest(Exchange, httpScope, env) {
 
             it('should fetch without errors', async () => {
                 result = await exchange.fetchBalances();
-                expect(result).toBeDefined();
+                
             });
 
             it('should have valid originalResponse', () => {
+                expect(result).toBeDefined();
                 // TODO: Test output
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
