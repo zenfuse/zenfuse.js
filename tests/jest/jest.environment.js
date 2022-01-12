@@ -16,10 +16,12 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
                 if (this.global.isTestSuiteFailed) {
                     event.test.mode = 'skip';
                 }
-                this.openHttpMockingScope(event.test);
                 break;
-            case 'test_fn_done':
-                this.closeHttpMockingScope(event.test, state);
+            case 'run_describe_start':
+                this.openHttpMockingScope(event.describeBlock);
+                break;
+            case 'run_describe_stop':
+                this.closeHttpMockingScope(event.describeBlock);
                 break;
         }
 
@@ -29,14 +31,14 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
     }
 
     openHttpMockingScope(test) {
-        const scope = this.getScopeNamespace(test);
+        const scope = this.getScopeOfBlock(test);
         if (scope) {
             this.context.openScopes.set(scope, scope());
         }
     }
 
     closeHttpMockingScope(test) {
-        const scope = this.getScopeNamespace(test);
+        const scope = this.getScopeOfBlock(test);
         if (scope) {
             const nockScope = this.context.openScopes.get(scope);
 
@@ -44,12 +46,12 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
                 nockScope.done();
             } catch (nockAssertionError) {
                 // TODO: Beautify this error output
-                throw test.name + '\n' + nockAssertionError.message
+                throw test.name + '\n' + nockAssertionError.message;
             }
         }
     }
 
-    getScopeNamespace(test) {
+    getScopeOfBlock(block) {
         let objectPath = [];
 
         const recursiveWritePath = (test) => {
@@ -60,7 +62,9 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
             objectPath.push(test.name);
         };
 
-        recursiveWritePath(test);
+        recursiveWritePath(block);
+
+        if (objectPath.length === 0) return;
 
         let scope = this.context.httpScope;
 
@@ -73,7 +77,9 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
             }
         }
 
-        return scope;
+        if (typeof scope === 'function') {
+            return scope;
+        }
     }
 }
 
