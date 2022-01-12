@@ -60,8 +60,7 @@ describe.skip('Ftx Options usage', () => {
 ////////////////////////////////////  FTX HTTP INTERFACE  /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: Make test for FTX
-describe.skip('FTX Spot Wallet HTTP interface', () => {
+describe('FTX Spot Wallet HTTP interface', () => {
     /**
      * @type {FtxSpot}
      */
@@ -797,7 +796,6 @@ describe.skip('FTX Spot Wallet HTTP interface', () => {
  * @typedef {import('../../../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
  */
 
-// TODO: Make test for FTX
 describe('Ftx Spot Wallet Private Stream', () => {
     if (isIntegrationTest) {
         // TODO: Mock websocket
