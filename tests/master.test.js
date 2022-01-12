@@ -258,7 +258,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
                 });
             });
 
-            describe.skip('sell by market', () => {
+            describe('sell by market', () => {
                 let result;
 
                 const orderParams = {
@@ -268,71 +268,20 @@ module.exports = function masterTest(Exchange, httpScope, env) {
                     quantity: 0.0004,
                 };
 
-                const bodyExpectation = {
-                    market: 'BTC/USDT',
-                    side: 'sell',
-                    type: 'market',
-                    price: null,
-                    size: 0.0004,
-                };
-
-                const mockedCreatedOrder = {
-                    success: true,
-                    result: {
-                        id: 112587218515,
-                        clientId: null,
-                        market: 'BTC/USDT',
-                        type: 'market',
-                        side: 'sell',
-                        price: null,
-                        size: 0.0004,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 0.0004,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: true,
-                        createdAt: '2022-01-11T18:04:55.627232+00:00',
-                        future: null,
-                    },
-                };
-
-                const scope = nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', expect)
-                    .matchHeader('FTX-SIGN', expect)
-                    .post('/api/orders', bodyExpectation)
-                    .reply(201, mockedCreatedOrder);
-
-                afterAll(() => {
-                    if (isTestSuiteFailed) return;
-                    scope.done();
-                });
-
                 it('should create order without errors', async () => {
                     result = await exchange.createOrder(orderParams);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-
-                    if (isEnd2EndTest) {
-                        expect(
-                            result[Symbol.for('zenfuse.originalPayload')],
-                        ).toBeInstanceOf(Object);
-                    }
-
-                    if (isIntegrationTest) {
-                        expect(
-                            result[Symbol.for('zenfuse.originalPayload')],
-                        ).toEqual(mockedCreatedOrder);
-                    }
+                    expect(result).toMatchSchema(orderSchema);
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeDefined();
                 });
             });
 
-            describe.skip('buy by limit', () => {
+            describe('buy by limit', () => {
                 let result;
 
                 const orderParams = {
@@ -343,71 +292,21 @@ module.exports = function masterTest(Exchange, httpScope, env) {
                     price: 35000,
                 };
 
-                const bodyExpectation = {
-                    market: 'BTC/USDT',
-                    type: 'limit',
-                    side: 'buy',
-                    size: 0.0004,
-                    price: 35000,
-                };
-
-                const mockedCreatedOrder = {
-                    success: true,
-                    result: {
-                        id: 112588036315,
-                        clientId: null,
-                        market: 'BTC/USDT',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 35000,
-                        size: 0.0004,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 0.0004,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:08:16.731842+00:00',
-                        future: null,
-                    },
-                };
-
-                const scope = nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', expect)
-                    .matchHeader('FTX-SIGN', expect)
-                    .post('/api/orders', bodyExpectation)
-                    .reply(201, mockedCreatedOrder);
-
-                afterAll(() => {
-                    if (isTestSuiteFailed) return;
-                    scope.done();
-                });
-
                 it('should create order without errors', async () => {
                     result = await exchange.createOrder(orderParams);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
+                    expect(result).toMatchSchema(orderSchema);
 
-                    if (isEnd2EndTest) {
-                        expect(
-                            result[Symbol.for('zenfuse.originalPayload')],
-                        ).toBeInstanceOf(Object);
-                    }
-
-                    if (isIntegrationTest) {
-                        expect(
-                            result[Symbol.for('zenfuse.originalPayload')],
-                        ).toMatchObject(mockedCreatedOrder);
-                    }
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeDefined();
                 });
             });
 
-            describe.skip('sell by limit', () => {
+            describe('sell by limit', () => {
                 let result;
 
                 const orderParams = {
@@ -418,198 +317,61 @@ module.exports = function masterTest(Exchange, httpScope, env) {
                     price: 55000,
                 };
 
-                const bodyExpectation = {
-                    market: 'BTC/USDT',
-                    type: 'limit',
-                    side: 'sell',
-                    size: 0.0004,
-                    price: 55000,
-                };
-
-                const mockedCreatedOrder = {
-                    success: true,
-                    result: {
-                        id: 112589159471,
-                        clientId: null,
-                        market: 'BTC/USDT',
-                        type: 'limit',
-                        side: 'sell',
-                        price: 55000,
-                        size: 0.0004,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 0.0004,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:13:38.138876+00:00',
-                        future: null,
-                    },
-                };
-
-                const scope = nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', expect)
-                    .matchHeader('FTX-SIGN', expect)
-                    .post('/api/orders', bodyExpectation)
-                    .reply(201, mockedCreatedOrder);
-
-                afterAll(() => {
-                    if (isTestSuiteFailed) return;
-                    scope.done();
-                });
-
                 it('should create order without errors', async () => {
                     result = await exchange.createOrder(orderParams);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
+                    expect(result).toMatchSchema(orderSchema);
 
-                    if (isEnd2EndTest) {
-                        expect(
-                            result[Symbol.for('zenfuse.originalPayload')],
-                        ).toBeInstanceOf(Object);
-                    }
-
-                    if (isIntegrationTest) {
-                        expect(
-                            result[Symbol.for('zenfuse.originalPayload')],
-                        ).toMatchObject(mockedCreatedOrder);
-                    }
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeDefined();
                 });
             });
         });
 
-        describe.skip('fetchBalances()', () => {
+        describe('fetchBalances()', () => {
             it('should be defined', () => {
                 expect(exchange.fetchBalances).toBeDefined();
             });
 
             let result;
 
-            const mockedBalances = {
-                success: true,
-                result: [
-                    {
-                        coin: 'USDTBEAR',
-                        free: 2320.2,
-                        spotBorrow: 0.0,
-                        total: 2340.2,
-                        usdValue: 2340.2,
-                        availableWithoutBorrow: 2320.2,
-                    },
-                ],
-            };
-
-            const scope = nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-SIGN', expect)
-                .matchHeader('FTX-TS', expect)
-                .get('/api/wallet/balances')
-                .reply(200, mockedBalances);
-
-            afterAll(() => {
-                if (isTestSuiteFailed) return;
-                scope.done();
-            });
-
             it('should fetch without errors', async () => {
                 result = await exchange.fetchBalances();
+                expect(result).toBeDefined();
             });
 
             it('should have valid originalResponse', () => {
-                if (isEnd2EndTest) {
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeInstanceOf(Object);
-                }
-
-                if (isIntegrationTest) {
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toMatchObject(mockedBalances);
-                }
+                // TODO: Test output
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeDefined();
             });
         });
 
-        describe.skip('cancelOrder()', () => {
+        describe('cancelOrder()', () => {
             let result;
 
-            const mockedOrder = {
-                success: true,
-                result: {
-                    id: 112590877630,
-                    clientId: null,
-                    market: 'USDT/USD',
-                    type: 'limit',
-                    side: 'buy',
-                    price: 0.5,
-                    size: 20,
-                    status: 'new',
-                    filledSize: 0,
-                    remainingSize: 20,
-                    reduceOnly: false,
-                    liquidation: null,
-                    avgFillPrice: null,
-                    postOnly: false,
-                    ioc: false,
-                    createdAt: '2022-01-11T18:21:19.188847+00:00',
-                    future: null,
-                },
-            };
-
-            const scope = nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-TS', expect)
-                .matchHeader('FTX-SIGN', expect)
-                // // Order creation
-                // .post('/api/orders')
-                // .reply(200, mockedOrder)
-                // Order deletion
-                .delete(`/api/orders/112590877630`)
-                .reply(200);
-
-            afterAll(() => {
-                if (isTestSuiteFailed) return;
-                scope.done();
-            });
-
             it('shoud cancel order without errors', async () => {
-                const orderParams = {
+                const createdOrder = await exchange.createOrder({
                     symbol: 'USDT/USD',
                     type: 'limit',
                     side: 'buy',
                     quantity: '20',
                     price: '0.5',
-                };
-
-                let createdOrder = mockedOrder.result;
-
-                if (isEnd2EndTest) {
-                    const newOrder = await exchange.createOrder(orderParams);
-                    createdOrder = newOrder;
-                }
+                });
 
                 result = await exchange.cancelOrder(createdOrder);
-
-                expect(result).toBeDefined();
             });
 
             it('should have valid originalResponse', () => {
-                if (isEnd2EndTest) {
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeInstanceOf(Object);
-                }
-
-                if (isIntegrationTest) {
-                    expect(result[Symbol.for('zenfuse.originalPayload')]).toBe(
-                        '',
-                    );
-                }
+                expect(result).toBeDefined();
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeDefined();
             });
         });
     });
