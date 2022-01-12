@@ -1,54 +1,47 @@
-// TODO: Delete this
-const { readFileSync } = require('fs');
-const nock = require('nock');
-const HOSTNAME = 'https://ftx.com';
-// TODO: Delete this
-
-module.exports = function masterTest(Exchange, httpScope, env) {
-    this.httpScope = httpScope;
-
+module.exports = function masterTest(Exchange, env) {
     /**
      * @typedef {import('../src/exchanges/ftx/wallets/spot.js')} FtxSpot
      */
 
-    // TODO: Make test for FTX
-    describe.skip('Options usage', () => {
-        /**
-         * @type {FtxSpot}
-         */
-        let ftx;
+    // TODO: Rewrite this
 
-        describe('useCache', () => {
-            it('should use cache by default', async () => {
-                const mockFilePath =
-                    __dirname + '/exchanges/ftx/mocks/static/markets.json';
-                nock(HOSTNAME)
-                    .get('/api/v3/exchangeInfo')
-                    .replyWithFile(200, mockFilePath, {
-                        'Content-Type': 'application/json',
-                    });
+    // describe.skip('Options usage', () => {
+    //     /**
+    //      * @type {FtxSpot}
+    //      */
+    //     let ftx;
 
-                ftx = new FTX['spot']();
+    //     describe('useCache', () => {
+    //         it('should use cache by default', async () => {
+    //             const mockFilePath =
+    //                 __dirname + '/exchanges/ftx/mocks/static/markets.json';
+    //             nock(HOSTNAME)
+    //                 .get('/api/v3/exchangeInfo')
+    //                 .replyWithFile(200, mockFilePath, {
+    //                     'Content-Type': 'application/json',
+    //                 });
 
-                await ftx.cache.globalCache.updatingPromise;
+    //             ftx = new FTX['spot']();
 
-                // TODO: Find beter way to check cache
-                expect(ftx.cache.globalCache.has('tickers')).toBe(true);
-                expect(ftx.cache.globalCache.has('symbols')).toBe(true);
-                expect(ftx.cache.globalCache.has('parsedSymbols')).toBe(true);
+    //             await ftx.cache.globalCache.updatingPromise;
 
-                // scope.done(); TODO: Somehow this thing not working
-            });
+    //             // TODO: Find beter way to check cache
+    //             expect(ftx.cache.globalCache.has('tickers')).toBe(true);
+    //             expect(ftx.cache.globalCache.has('symbols')).toBe(true);
+    //             expect(ftx.cache.globalCache.has('parsedSymbols')).toBe(true);
 
-            it.skip('should not use when `useCache: false` specified', () => {
-                ftx = new FTX['spot']({
-                    useCache: false,
-                });
+    //             // scope.done(); TODO: Somehow this thing not working
+    //         });
 
-                expect(ftx.cache).toBeUndefined();
-            });
-        });
-    });
+    //         it.skip('should not use when `useCache: false` specified', () => {
+    //             ftx = new FTX['spot']({
+    //                 useCache: false,
+    //             });
+
+    //             expect(ftx.cache).toBeUndefined();
+    //         });
+    //     });
+    // });
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////  HTTP INTERFACE  ///////////////////////////////////////
@@ -335,7 +328,6 @@ module.exports = function masterTest(Exchange, httpScope, env) {
 
             it('should fetch without errors', async () => {
                 result = await exchange.fetchBalances();
-                
             });
 
             it('should have valid originalResponse', () => {

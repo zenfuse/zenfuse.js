@@ -1,7 +1,4 @@
 const nock = require('nock');
-const assert = require('assert');
-const util = require('util');
-const utils = require('../../../src/exchanges/ftx/utils');
 
 const HOSTNAME = 'https://ftx.com/';
 
@@ -13,6 +10,7 @@ const marketsFilePath = __dirname + '/mocks/static/markets.json';
  * Should be as
  */
 module.exports = (env) => ({
+    init: null,
     'Spot Wallet HTTP interface': {
         'ping()': () =>
             nock(HOSTNAME)

@@ -204,10 +204,6 @@ describe('Binance Spot Wallet HTTP interface', () => {
         let mockFilePath;
         let mockedPrices;
 
-        const mockedResponce = {
-            symbol: 'BNBBUSD',
-            price: '9999999.999999',
-        };
 
         let scope = { done() {} };
 
@@ -354,37 +350,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 symbol: 'BNBUSDT',
             };
 
-            const mockedCreatedOrder = {
-                symbol: 'BNBUSDT',
-                orderId: 5114608,
-                orderListId: -1,
-                clientOrderId: 'nVuwTgVfxQtsMV9uuMMXxL',
-                transactTime: 1637596926709,
-                price: '0.00000000',
-                origQty: '1.00000000',
-                executedQty: '1.00000000',
-                cummulativeQuoteQty: '576.46100000',
-                status: 'FILLED',
-                timeInForce: 'GTC',
-                type: 'MARKET',
-                side: 'BUY',
-                fills: [
-                    {
-                        price: '576.30000000',
-                        qty: '0.77000000',
-                        commission: '0.00000000',
-                        commissionAsset: 'BNB',
-                        tradeId: 239238,
-                    },
-                    {
-                        price: '577.00000000',
-                        qty: '0.23000000',
-                        commission: '0.00000000',
-                        commissionAsset: 'BNB',
-                        tradeId: 239239,
-                    },
-                ],
-            };
+            // const mockedCreatedOrder = ;
 
             const scope = nock(HOSTNAME)
                 .matchHeader('X-MBX-APIKEY', API_PUBLIC_KEY)

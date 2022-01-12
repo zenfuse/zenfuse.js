@@ -12,6 +12,6 @@ const env = {
     API_SECRET_KEY: process.env.FTX_SECRET_KEY || 'DUMMY_SECRET_KEY',
 };
 
-const scope = createScope(env);
+global.httpScope = createScope(env);
 
-runMasterTest(FTX, scope, env);
+runMasterTest(FTX, env);

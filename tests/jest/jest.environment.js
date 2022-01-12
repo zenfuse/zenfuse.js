@@ -51,8 +51,18 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
         }
     }
 
+    /**
+     * omg
+     * @todo refactor this cheap fuck
+     */
     getScopeOfBlock(block) {
         let objectPath = [];
+
+        if (block.name === 'ROOT_DESCRIBE_BLOCK') {
+            if (this.context.httpScope) {
+                return this.context.httpScope.init;
+            }
+        }
 
         const recursiveWritePath = (test) => {
             if (test.name === 'ROOT_DESCRIBE_BLOCK') return;
@@ -66,7 +76,7 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
 
         if (objectPath.length === 0) return;
 
-        let scope = this.context.httpScope;
+        let scope = this.context.httpScope || {};
 
         for (const key of objectPath) {
             if (!scope[key]) {
