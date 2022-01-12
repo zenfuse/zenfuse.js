@@ -12,13 +12,13 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
             case 'test_fn_failure':
                 this.global.isTestSuiteFailed = true;
                 break;
-            case 'test_start':
+            case 'test_fn_start':
                 if (this.global.isTestSuiteFailed) {
                     event.test.mode = 'skip';
                 }
                 this.openHttpMockingScope(event.test);
                 break;
-            case 'test_done':
+            case 'test_fn_done':
                 this.closeHttpMockingScope(event.test, state);
                 break;
         }

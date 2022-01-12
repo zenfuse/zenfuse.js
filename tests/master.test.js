@@ -64,7 +64,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             exchange = new Exchange['spot']();
         });
 
-        describe.only('ping()', () => {
+        describe('ping()', () => {
             it('should be defined', () => {
                 expect(exchange.ping).toBeDefined();
             });
@@ -73,7 +73,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
         });
 
-        describe.only('fetchMarkets()', () => {
+        describe('fetchMarkets()', () => {
             let result;
 
             it('should be defined', () => {
@@ -116,26 +116,6 @@ module.exports = function masterTest(Exchange, httpScope, env) {
         describe('fetchTickers()', () => {
             let result;
 
-            let mockFilePath;
-            let mockedMarkets;
-            let scope = { done() {} };
-
-            if (isIntegrationTest) {
-                mockFilePath =
-                    __dirname + '/exchanges/ftx/mocks/static/markets.json';
-                mockedMarkets = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-                scope = nock(HOSTNAME)
-                    .get('/api/markets')
-                    .replyWithFile(200, mockFilePath, {
-                        'Content-Type': 'application/json',
-                    });
-            }
-
-            afterAll(() => {
-                if (isTestSuiteFailed) return;
-                scope.done();
-            });
-
             it('should be defined', () => {
                 expect(exchange.fetchTickers).toBeDefined();
             });
@@ -145,17 +125,9 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
 
             it('should have valid originalResponse', () => {
-                if (isEnd2EndTest) {
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeInstanceOf(Object);
-                }
-
-                if (isIntegrationTest) {
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toMatchObject(mockedMarkets);
-                }
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeDefined();
             });
 
             it('should return valid schema', () => {
@@ -172,56 +144,6 @@ module.exports = function masterTest(Exchange, httpScope, env) {
         describe('fetchPrice()', () => {
             let result;
 
-            let mockFilePath;
-            let mockedPrices;
-
-            const mockedResponce = {
-                success: true,
-                result: {
-                    name: 'BTC/USDT',
-                    enabled: true,
-                    postOnly: false,
-                    priceIncrement: 1.0,
-                    sizeIncrement: 0.0001,
-                    minProvideSize: 0.0001,
-                    last: 41577.0,
-                    bid: 41573.0,
-                    ask: 41575.0,
-                    price: 41575.0,
-                    type: 'spot',
-                    baseCurrency: 'BTC',
-                    quoteCurrency: 'USDT',
-                    underlying: null,
-                    restricted: false,
-                    highLeverageFeeExempt: true,
-                    change1h: 0.00009622092323975848,
-                    change24h: 0.0012764317711092914,
-                    changeBod: -0.0002885517108711857,
-                    quoteVolume24h: 116192699.7696,
-                    volumeUsd24h: 116191540.1664563,
-                },
-            };
-
-            let scope = { done() {} };
-
-            if (isIntegrationTest) {
-                mockFilePath =
-                    __dirname + '/exchanges/ftx/mocks/static/markets.json';
-                mockedPrices = JSON.parse(readFileSync(mockFilePath, 'utf-8'));
-                scope = nock(HOSTNAME)
-                    .get('/api/markets')
-                    .replyWithFile(200, mockFilePath, {
-                        'Content-Type': 'application/json',
-                    })
-                    .get('/api/markets/BTC/USDT')
-                    .reply(200, mockedResponce);
-            }
-
-            afterAll(() => {
-                if (isTestSuiteFailed) return;
-                scope.done();
-            });
-
             it('should be defined', () => {
                 expect(exchange.fetchPrice).toBeDefined();
             });
@@ -231,17 +153,9 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
 
             it('should have valid originalRespone', () => {
-                if (isEnd2EndTest) {
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeDefined();
-                }
-
-                if (isIntegrationTest) {
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toStrictEqual(mockedPrices);
-                }
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeDefined();
             });
 
             it('should fetch specific price without errors', async () => {
@@ -249,17 +163,9 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
 
             it('should have valid originalResponse', () => {
-                if (isEnd2EndTest) {
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeInstanceOf(Object);
-                }
-
-                if (isIntegrationTest) {
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toEqual(mockedResponce);
-                }
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeDefined();
             });
         });
 
@@ -269,7 +175,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
 
         ///////////////////////////////////////////////////////////////
 
-        describe('auth()', () => {
+        describe.skip('auth()', () => {
             it('should bo defined', () => {
                 expect(exchange.auth).toBeDefined();
             });
@@ -288,7 +194,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
         });
 
-        describe('createOrder()', () => {
+        describe.skip('createOrder()', () => {
             it('should be defined', () => {
                 expect(exchange.createOrder).toBeDefined();
             });
@@ -628,7 +534,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
         });
 
-        describe('fetchBalances()', () => {
+        describe.skip('fetchBalances()', () => {
             it('should be defined', () => {
                 expect(exchange.fetchBalances).toBeDefined();
             });
@@ -680,7 +586,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
             });
         });
 
-        describe('cancelOrder()', () => {
+        describe.skip('cancelOrder()', () => {
             let result;
 
             const mockedOrder = {
@@ -767,7 +673,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
      * @typedef {import('../../../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
      */
 
-    describe('Spot Wallet Private Stream', () => {
+    describe.skip('Spot Wallet Private Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -849,7 +755,7 @@ module.exports = function masterTest(Exchange, httpScope, env) {
      * @typedef {import('../../../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
      */
 
-    describe('Spot Wallet Public Stream', () => {
+    describe.skip('Spot Wallet Public Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
