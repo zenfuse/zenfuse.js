@@ -60,7 +60,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
     get isSocketConneted() {
         if (!this.socket) return false;
 
-        return this.socket.readyState === 1;
+        return this.socket.readyState === WebSocket.OPEN;
     }
 
     /**
@@ -134,7 +134,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = this.transfromBinanceOrder(payload);
+        const order = this.transfromWebsocketOrder(payload);
         this.emit('orderUpdate', order);
     }
 
@@ -146,11 +146,11 @@ class AccountDataStream extends ExchangeWebsocketBase {
      * @private
      * @returns {Order} Zenfuse Order
      */
-    transfromBinanceOrder(wsOrder) {
+    transfromWebsocketOrder(wsOrder) {
         const parsedSymbol = this.base.parseBinanceSymbol(wsOrder.s);
 
         return {
-            id: wsOrder.i,
+            id: wsOrder.i.toString(),
             timestamp: wsOrder.E,
             status: wsOrder.X.toLowerCase(),
             symbol: parsedSymbol,

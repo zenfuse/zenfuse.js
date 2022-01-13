@@ -1,6 +1,9 @@
 const Binance = require('./exchanges/binance');
 const FTX = require('./exchanges/ftx');
 
+/**
+ * @enum
+ */
 module.exports = {
     Binance,
     FTX,

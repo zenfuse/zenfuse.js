@@ -1,47 +1,20 @@
+/**
+ * @typedef {object} MasterTestEnvironment
+ * @property {string} API_PUBLIC_KEY
+ * @property {string} API_SECRET_KEY
+ * @property {import('../src/index.js').Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usualy a pair of stablecoins for less than one.
+ */
+
+/**
+ * @param {object} Exchange
+ * @param {MasterTestEnvironment} env
+ */
 module.exports = function masterTest(Exchange, env) {
     /**
      * @typedef {import('../src/exchanges/ftx/wallets/spot.js')} FtxSpot
      */
 
-    // TODO: Rewrite this
-
-    // describe.skip('Options usage', () => {
-    //     /**
-    //      * @type {FtxSpot}
-    //      */
-    //     let ftx;
-
-    //     describe('useCache', () => {
-    //         it('should use cache by default', async () => {
-    //             const mockFilePath =
-    //                 __dirname + '/exchanges/ftx/mocks/static/markets.json';
-    //             nock(HOSTNAME)
-    //                 .get('/api/v3/exchangeInfo')
-    //                 .replyWithFile(200, mockFilePath, {
-    //                     'Content-Type': 'application/json',
-    //                 });
-
-    //             ftx = new FTX['spot']();
-
-    //             await ftx.cache.globalCache.updatingPromise;
-
-    //             // TODO: Find beter way to check cache
-    //             expect(ftx.cache.globalCache.has('tickers')).toBe(true);
-    //             expect(ftx.cache.globalCache.has('symbols')).toBe(true);
-    //             expect(ftx.cache.globalCache.has('parsedSymbols')).toBe(true);
-
-    //             // scope.done(); TODO: Somehow this thing not working
-    //         });
-
-    //         it.skip('should not use when `useCache: false` specified', () => {
-    //             ftx = new FTX['spot']({
-    //                 useCache: false,
-    //             });
-
-    //             expect(ftx.cache).toBeUndefined();
-    //         });
-    //     });
-    // });
+    // TODO: Options usage tests
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////  HTTP INTERFACE  ///////////////////////////////////////
@@ -368,10 +341,10 @@ module.exports = function masterTest(Exchange, env) {
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @typedef {import('../../../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
+     * @typedef {import('../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
      */
 
-    describe.skip('Spot Wallet Private Stream', () => {
+    describe.only('Spot Wallet Private Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -397,18 +370,10 @@ module.exports = function masterTest(Exchange, env) {
             accountDataStream = exchange.getAccountDataStream();
         });
 
-        afterAll(() => {
-            if (isTestSuiteFailed) {
-                accountDataStream.close();
-            }
-            expect(accountDataStream.isSocketConneted).toBe(false);
-        });
-
         describe('open()', () => {
             // TODO: Mock websocket
-
             afterAll(() => {
-                if (isTestSuiteFailed) return;
+                accountDataStream.close();
             });
 
             it('should connect to websocket', async () => {
@@ -418,30 +383,25 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should emit "orderUpdate"', async () => {
-                const orderParams = {
-                    symbol: 'USDC/USDT',
-                    type: 'limit',
-                    side: 'buy',
-                    quantity: '20',
-                    price: '0.8',
-                };
-
-                const orderUpdatePromice = new Promise((resolve) => {
-                    accountDataStream.once('orderUpdate', (o) => {
-                        console.log(o);
+                const eventPromice = new Promise((resolve) => {
+                    accountDataStream.once('orderUpdate', ({ id }) => {
+                        expect(id).toBe(createdOrder.id);
                         resolve();
                     });
                 });
 
-                const createdOrder = await exchange.createOrder(orderParams);
+                const createdOrder = await exchange.createOrder(
+                    env.NOT_EXECUTABLE_ORDER,
+                );
 
-                return await orderUpdatePromice.then(() =>
+                return await eventPromice.then(() =>
                     exchange.cancelOrder(createdOrder),
                 );
             });
         });
 
         describe('close()', () => {
+            beforeAll(() => accountDataStream.open());
             it('should close connection', () => {
                 expect(accountDataStream.isSocketConneted).toBe(true);
 
@@ -471,12 +431,12 @@ module.exports = function masterTest(Exchange, env) {
         /**
          * @type {FtxSpot}
          */
-        let ftx;
+        let exchange;
 
         beforeAll(() => {
-            ftx = new FTX['spot']();
+            exchange = new Exchange['spot']();
 
-            marketDataStream = ftx.getMarketDataStream();
+            marketDataStream = exchange.getMarketDataStream();
         });
 
         afterAll(() => {

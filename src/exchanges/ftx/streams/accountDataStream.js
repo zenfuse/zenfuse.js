@@ -1,5 +1,4 @@
 const { createHmac } = require('crypto');
-const util = require('util');
 
 const utils = require('../utils');
 const FtxWebsocketBase = require('./websocketBase');

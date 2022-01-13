@@ -76,7 +76,7 @@ class FtxWebsocketBase extends EventEmitter {
     get isSocketConneted() {
         if (!this.socket) return false;
 
-        return this.socket.readyState === 1;
+        return this.socket.readyState === WebSocket.OPEN;
     }
 
     /**
