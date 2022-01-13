@@ -1,3 +1,4 @@
+const utils = require('../utils');
 const ExchangeWebsocketBase = require('./websocketBase');
 
 const listenKeySymbol = Symbol('listenKey');
@@ -125,38 +126,39 @@ class AccountDataStream extends ExchangeWebsocketBase {
 
         const eventName = payload.e;
 
-        // TODO: listStatus event support
-
-        // TODO: balanceChanged event
-
-        switch (eventName) {
-            case 'executionReport':
-                this.emitOrderUpdateEvent(payload);
-                break;
-            case 'outboundAccountPosition':
-                this.emitTickersChangedEvent(payload);
-                break;
-            default:
-                throw payload;
+        if (eventName === 'executionReport') {
+            this.emitOrderUpdateEvent(payload);
         }
 
         this.emit('payload', payload);
     }
 
     emitOrderUpdateEvent(payload) {
-        const eventObject = {
-            originalPayload: payload, // TODO: Same interface
-        };
-
-        this.emit('orderUpdate', eventObject);
+        const order = this.transfromBinanceOrder(payload);
+        this.emit('orderUpdate', order);
     }
 
-    emitTickersChangedEvent(payload) {
-        const eventObject = {
-            originalPayload: payload, // TODO: Same interface
-        };
+    /**
+     * Transforms websocket order from binance
+     * Binance -> Zenfuse
+     *
+     * @typedef {import('../../..').Order} Order
+     * @private
+     * @returns {Order} Zenfuse Order
+     */
+    transfromBinanceOrder(wsOrder) {
+        const parsedSymbol = this.base.parseBinanceSymbol(wsOrder.s);
 
-        this.emit('tickersChanged', eventObject);
+        return {
+            id: wsOrder.i,
+            timestamp: wsOrder.E,
+            status: wsOrder.X.toLowerCase(),
+            symbol: parsedSymbol,
+            type: wsOrder.o.toLowerCase(),
+            side: wsOrder.S.toLowerCase(),
+            price: parseFloat(wsOrder.p),
+            quantity: parseFloat(wsOrder.q),
+        };
     }
 }
 

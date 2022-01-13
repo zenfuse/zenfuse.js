@@ -1,6 +1,6 @@
-const BaseConnectorError = require('../../../base/errors/base.error');
+const ZenfuseError = require('../../../base/errors/base.error');
 
-class BinanceApiError extends BaseConnectorError {
+class BinanceApiError extends ZenfuseError {
     /**
      * @param {import('got').HTTPError} err
      */

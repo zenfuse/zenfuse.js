@@ -151,8 +151,7 @@ class BinanceSpot extends BinanceBase {
 
         const zCreadedOrder = utils.transfromBinanceOrder(bCreatedOrder);
 
-        zCreadedOrder.symbol =
-            this.cache.parsedSymbols[bCreatedOrder.symbol].join('/');
+        zCreadedOrder.symbol = this.parseBinanceSymbol(bCreatedOrder.symbol);
 
         utils.linkOriginalPayload(zCreadedOrder, bCreatedOrder);
 
@@ -193,7 +192,7 @@ class BinanceSpot extends BinanceBase {
         const response = await this.privateFetch('api/v3/order', {
             method: 'DELETE',
             searchParams: {
-                symbol: order.symbol,
+                symbol: order.symbol.replace('/', ''),
                 orderId: order.id.toString(),
             },
         });

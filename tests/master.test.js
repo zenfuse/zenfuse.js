@@ -47,7 +47,7 @@ module.exports = function masterTest(Exchange, env) {
     //////////////////////////////////////  HTTP INTERFACE  ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    describe('Spot Wallet HTTP interface', () => {
+    describe.skip('Spot Wallet HTTP interface', () => {
         /**
          * @type {FtxSpot}
          */
@@ -386,15 +386,15 @@ module.exports = function masterTest(Exchange, env) {
         /**
          * @type {FtxSpot}
          */
-        let ftx;
+        let exchange;
 
         beforeAll(() => {
-            ftx = new FTX['spot']().auth({
+            exchange = new Exchange['spot']().auth({
                 publicKey: env.API_PUBLIC_KEY,
                 privateKey: env.API_SECRET_KEY,
             });
 
-            accountDataStream = ftx.getAccountDataStream();
+            accountDataStream = exchange.getAccountDataStream();
         });
 
         afterAll(() => {
@@ -419,21 +419,24 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should emit "orderUpdate"', async () => {
                 const orderParams = {
-                    symbol: 'USDT/USD',
+                    symbol: 'USDC/USDT',
                     type: 'limit',
                     side: 'buy',
                     quantity: '20',
-                    price: '0.5',
+                    price: '0.8',
                 };
 
                 const orderUpdatePromice = new Promise((resolve) => {
-                    accountDataStream.once('orderUpdate', resolve);
+                    accountDataStream.once('orderUpdate', (o) => {
+                        console.log(o);
+                        resolve();
+                    });
                 });
 
-                const createdOrder = await ftx.createOrder(orderParams);
+                const createdOrder = await exchange.createOrder(orderParams);
 
                 return await orderUpdatePromice.then(() =>
-                    ftx.cancelOrder(createdOrder),
+                    exchange.cancelOrder(createdOrder),
                 );
             });
         });

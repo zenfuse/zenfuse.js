@@ -78,7 +78,7 @@ class BinanceCache extends BaseGlobalCache {
         tickers = [...tickers];
         symbols = [...symbols];
 
-        const parsedSymbols = [];
+        const parsedSymbols = new Map();
 
         // Create optimized tickers
         for (const baseTicker of tickers) {
@@ -95,10 +95,8 @@ class BinanceCache extends BaseGlobalCache {
             // Write to cache if base ticker has any quote tickers
             if (allQuoteTickers.length > 0) {
                 allQuoteTickers.forEach((quoteTicker) => {
-                    parsedSymbols[baseTicker + quoteTicker] = [
-                        baseTicker,
-                        quoteTicker,
-                    ];
+                    const rawSymbol = baseTicker + quoteTicker;
+                    parsedSymbols.set(rawSymbol, [baseTicker, quoteTicker]);
                 });
             }
         }

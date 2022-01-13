@@ -6,6 +6,7 @@ const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error
 const BinanceApiError = require('./errors/api.error');
 const BinanceCache = require('./etc/cache');
 const { createHmacSignature } = require('./utils');
+const ZenfuseError = require('../../base/errors/base.error');
 
 const keysSymbol = Symbol('keys');
 
@@ -152,6 +153,39 @@ class BinanceBase extends ExchangeBase {
         }
 
         throw err;
+    }
+
+    /**
+     * Parses Binance symbol using cache
+     *
+     * @param {string} bSymbol Binance symbol without separator
+     * @returns {string} Normal symbol with separator
+     */
+    parseBinanceSymbol(bSymbol) {
+        const isSymbolCached = this.cache.parsedSymbols.get(bSymbol);
+
+        let rawSymbol = '';
+
+        if (!isSymbolCached) {
+            const errorMsg = `Unnable to parse binance ${bSymbol} symbol`;
+
+            // 6 length symbol can devided by 2 pieces
+            if (bSymbol.length === 6) {
+                const base = bSymbol.slice(0, 3);
+                const quote = bSymbol.slice(3);
+                rawSymbol = [base, quote];
+                process.emitWarning(errorMsg, {
+                    code: 'ZEFU_CACHE_UNSYNC',
+                    detail: `Zenfuse cannot find a symbol in the global cache. This is a warning because this symbol can be guessed.`,
+                });
+            } else {
+                throw new ZenfuseError(errorMsg, 'ZEFU_CACHE_UNSYNC');
+            }
+        }
+
+        rawSymbol = this.cache.parsedSymbols.get(bSymbol);
+
+        return rawSymbol.join('/');
     }
 }
 
