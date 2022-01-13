@@ -94,7 +94,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             });
 
         afterAll(() => {
-            if (isTestSuiteFailed) return;
+            if (isMasterTestFailed) return;
             scope.done();
         });
 
@@ -161,7 +161,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         }
 
         afterAll(() => {
-            if (isTestSuiteFailed) return;
+            if (isMasterTestFailed) return;
             scope.done();
         });
 
@@ -221,7 +221,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
         }
 
         afterAll(() => {
-            if (isTestSuiteFailed) return;
+            if (isMasterTestFailed) return;
             scope.done();
         });
 
@@ -362,7 +362,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 .reply(201, mockedCreatedOrder);
 
             afterAll(() => {
-                if (isTestSuiteFailed) return;
+                if (isMasterTestFailed) return;
                 scope.done();
             });
 
@@ -440,7 +440,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 .reply(201, mockedCreatedOrder);
 
             afterAll(() => {
-                if (isTestSuiteFailed) return;
+                if (isMasterTestFailed) return;
                 scope.done();
             });
 
@@ -512,7 +512,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 .reply(201, mockedCreatedOrder);
 
             afterAll(() => {
-                if (isTestSuiteFailed) return;
+                if (isMasterTestFailed) return;
                 scope.done();
             });
 
@@ -585,7 +585,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
                 .reply(201, mockedCreatedOrder);
 
             afterAll(() => {
-                if (isTestSuiteFailed) return;
+                if (isMasterTestFailed) return;
                 scope.done();
             });
 
@@ -651,7 +651,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             .reply(200, mockedBalances);
 
         afterAll(() => {
-            if (isTestSuiteFailed) return;
+            if (isMasterTestFailed) return;
             scope.done();
         });
 
@@ -719,7 +719,7 @@ describe('Binance Spot Wallet HTTP interface', () => {
             .reply(200, mockedOrder);
 
         afterAll(() => {
-            if (isTestSuiteFailed) return;
+            if (isMasterTestFailed) return;
             scope.done();
         });
 
@@ -815,7 +815,7 @@ describe('Binance Spot Wallet Private Stream', () => {
         // TODO: Mock websocket
 
         afterAll(() => {
-            if (isTestSuiteFailed) return;
+            if (isMasterTestFailed) return;
             scope.done();
         });
 

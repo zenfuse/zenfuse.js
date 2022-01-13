@@ -1,5 +1,4 @@
 const debug = require('../../../base/etc/debug');
-const { timeIntervals } = require('../metadata');
 const utils = require('../utils');
 
 const BinanceWebsocketBase = require('./websocketBase');
@@ -81,49 +80,29 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @property {string} [interval] Required if channel is kline
      * @property {string} channel
      *
-     * @param {string|WebsocketEvent} arg
+     * @param {WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
-    async editSubscribition(arg, command) {
-        const isJustSymbol = typeof arg === 'string';
-
-        /**
-         * @type {WebsocketEvent}
-         */
-        let event = {};
-
-        if (isJustSymbol) {
-            if (command === 'unsubscribe') {
-                return await this.unsubscribeFromAllbySymbol(arg);
-            }
-
-            event.channel = 'kline';
-            event.symbol = arg;
-            event.interval = timeIntervals['1m']; // default
-        } else {
-            event = arg;
-        }
-
-        if (event.channel === 'kline') {
+    async editSubscribition(event, command) {
+        if (event.channel === 'price') {
             const symbol = utils
                 .transformMarketString(event.symbol)
                 .toLowerCase();
-            const interval = timeIntervals[event.interval];
 
             if (command === 'subscribe') {
-                await this.sendSocketSubscribe(`${symbol}@kline_${interval}`);
+                await this.sendSocketSubscribe(`${symbol}@kline_1m`);
                 return;
             }
 
             if (command === 'unsubscribe') {
-                await this.sendSocketUnsubscribe(`${symbol}@kline_${interval}`);
+                await this.sendSocketUnsubscribe(`${symbol}@kline_1m`);
                 return;
             }
 
             throw new TypeError('Uknown command argument ' + command);
         }
 
-        throw new Error('Uknown channel name ' + arg.channel);
+        throw new TypeError(`Uknown channel name ${arg.channel}`);
     }
 
     async unsubscribeFromAllbySymbol(symbol) {
@@ -141,8 +120,6 @@ class MarketDataStream extends BinanceWebsocketBase {
         const subsToDelete = allSubs.filter((a) => a.includes(symbolToDelete));
 
         await this.sendSocketUnsubscribe(...subsToDelete);
-
-        return;
     }
 
     /**
@@ -161,7 +138,7 @@ class MarketDataStream extends BinanceWebsocketBase {
         }
 
         if (payload.id) {
-            // this message is responce for specific request
+            // this message is response for specific request
             if (!this.messageQueue.has(payload.id)) {
                 throw new Error('Mesage queue unsynced');
             }
@@ -183,15 +160,11 @@ class MarketDataStream extends BinanceWebsocketBase {
         debug.log(payload);
         debug.log('');
 
-        switch (payload.e) {
-            case 'kline':
-                this.emitNewCandlestick(payload);
-                break;
-
-            default:
-                debug.error('Unsupported event on payload:');
-                debug.error(payload);
+        if (payload.e === 'kline') {
+            this.emitNewPrice(payload);
         }
+
+        this.emit('payload', payload);
     }
 
     /**
@@ -199,21 +172,19 @@ class MarketDataStream extends BinanceWebsocketBase {
      *
      * @param {*} payload
      */
-    emitNewCandlestick(payload) {
+    emitNewPrice(payload) {
         const kline = utils.transfornCandlestick(payload.k);
+        const parsedSymbol = this.base.parseBinanceSymbol(kline.symbol);
 
-        kline[Symbol.for('zenfuse.originalPayload')] = payload;
-
-        debug.log('Emit "kline" Event');
+        debug.log('Emit "price" Event');
         debug.log(kline);
 
-        /**
-         * Event represent new
-         *
-         * @event MarketDataStream#kline
-         * @type {import('../../..').Kline}
-         */
-        this.emit('kline', kline);
+        // TODO: Return type
+        this.emit('newPrice', {
+            symbol: parsedSymbol,
+            price: parseFloat(kline.close),
+            timestamp: kline.timestamp,
+        });
     }
 
     /**

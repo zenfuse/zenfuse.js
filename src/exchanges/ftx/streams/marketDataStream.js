@@ -17,6 +17,8 @@ class MarketDataStream extends FtxWebsocketBase {
      * @returns {this}
      */
     async open() {
+        if (this.isSocketConneted) return this;
+
         await super.open();
 
         this.socket.addEventListener(
@@ -83,7 +85,7 @@ class MarketDataStream extends FtxWebsocketBase {
 
     // TODO: Save all subscribition
     async unsubscribeFromAllbySymbol(symbol) {
-        throw 'Not implemented'
+        throw 'Not implemented';
         await this.sendSocketUnsubscribe(...subsToDelete);
     }
 
@@ -117,7 +119,7 @@ class MarketDataStream extends FtxWebsocketBase {
         const priceObject = {
             symbol: payload.market,
             price: payload.data.last,
-            timestamp: payload.data.time
+            timestamp: payload.data.time,
         };
 
         utils.linkOriginalPayload(priceObject, payload);

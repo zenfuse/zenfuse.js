@@ -146,6 +146,7 @@ const transfromBinanceOrder = (bOrder) => {
  * @returns {import('../../../../index').Kline} Candlestick data
  */
 const transfornCandlestick = (k) => {
+    
     return {
         open: k.o,
         hight: k.h,

@@ -5,15 +5,15 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
         switch (event.name) {
             case 'setup':
                 this.global.testTimeout = state.testTimeout;
-                this.global.isTestSuiteFailed = false;
+                this.global.isMasterTestFailed = false;
                 this.context.openScopes = new Map();
                 break;
             case 'hook_failure':
             case 'test_fn_failure':
-                this.global.isTestSuiteFailed = true;
+                this.global.isMasterTestFailed = true;
                 break;
             case 'test_fn_start':
-                if (this.global.isTestSuiteFailed) {
+                if (this.global.isMasterTestFailed) {
                     event.test.mode = 'skip';
                 }
                 break;

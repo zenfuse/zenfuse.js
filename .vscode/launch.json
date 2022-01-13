@@ -5,9 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Full E2E Tests",
+            "name": "Binance E2E Tests",
             "request": "launch",
-            "runtimeArgs": ["run-script", "test:e2e"],
+            "runtimeArgs": ["run-script", "test:e2e", "binance"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**/*"],
             "type": "node",
@@ -30,6 +30,17 @@
             "name": "Full Integration Tests",
             "request": "launch",
             "runtimeArgs": ["run-script", "test:integration"],
+            "runtimeExecutable": "npm",
+            "skipFiles": ["<node_internals>/**/*"],
+            "type": "node",
+            "env": {
+                "NODE_DEBUG": "zenfuse*"
+            }
+        },
+        {
+            "name": "Binance Integration Tests",
+            "request": "launch",
+            "runtimeArgs": ["run-script", "test:integration", "binance"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**/*"],
             "type": "node",
