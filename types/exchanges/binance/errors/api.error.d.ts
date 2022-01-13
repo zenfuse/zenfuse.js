@@ -1,11 +1,10 @@
 export = BinanceApiError;
-declare class BinanceApiError extends BaseConnectorError {
+declare class BinanceApiError extends ZenfuseError {
     /**
      * @param {import('got').HTTPError} err
      */
     constructor(err: import('got').HTTPError);
-    code: any;
     response: unknown;
     httpError: import("got").HTTPError;
 }
-import BaseConnectorError = require("../../../base/errors/base.error");
+import ZenfuseError = require("../../../base/errors/base.error");

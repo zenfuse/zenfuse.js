@@ -1,3 +1,4 @@
+export type exports = any;
 export type Order = {
     id: string;
     timestamp: number;

@@ -1,5 +1,5 @@
 export = FtxApiError;
-declare class FtxApiError extends BaseConnectorError {
+declare class FtxApiError extends ZenfuseError {
     /**
      * @param {import('got').HTTPError} err
      */
@@ -7,4 +7,4 @@ declare class FtxApiError extends BaseConnectorError {
     response: unknown;
     httpError: import("got").HTTPError;
 }
-import BaseConnectorError = require("../../../base/errors/base.error");
+import ZenfuseError = require("../../../base/errors/base.error");

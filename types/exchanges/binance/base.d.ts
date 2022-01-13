@@ -60,6 +60,13 @@ declare class BinanceBase extends ExchangeBase {
      * @private
      */
     private handleFetcherError;
+    /**
+     * Parses Binance symbol using cache
+     *
+     * @param {string} bSymbol Binance symbol without separator
+     * @returns {string} Normal symbol with separator
+     */
+    parseBinanceSymbol(bSymbol: string): string;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");

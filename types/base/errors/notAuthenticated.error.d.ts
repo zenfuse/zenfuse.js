@@ -1,5 +1,5 @@
 export = NotAuthenticatedError;
-declare class NotAuthenticatedError extends BaseConnectorError {
+declare class NotAuthenticatedError extends ZenfuseError {
     constructor();
 }
-import BaseConnectorError = require("./base.error");
+import ZenfuseError = require("./base.error");

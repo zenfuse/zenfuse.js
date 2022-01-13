@@ -1,4 +1,16 @@
-export = BaseConnectorError;
-declare class BaseConnectorError extends Error {
-    constructor(msg: any);
+export = ZenfuseError;
+declare class ZenfuseError extends Error {
+    /**
+     * Descriptions by error code
+     */
+    static details: {
+        ZEFU_CACHE_UNSYNC: string;
+    };
+    /**
+     * @param {string} msg Error massage
+     * @param {string} [code] Optional error code
+     */
+    constructor(msg: string, code?: string);
+    code: string;
+    details: any;
 }

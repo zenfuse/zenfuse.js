@@ -39,7 +39,7 @@ declare class MarketDataStream extends BinanceWebsocketBase {
      * @property {string} [interval] Required if channel is kline
      * @property {string} channel
      *
-     * @param {string|WebsocketEvent} arg
+     * @param {WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
     private editSubscribition;
@@ -54,7 +54,7 @@ declare class MarketDataStream extends BinanceWebsocketBase {
      *
      * @param {*} payload
      */
-    emitNewCandlestick(payload: any): void;
+    emitNewPrice(payload: any): void;
     /**
      * @private
      * @param  {...string} eventNames

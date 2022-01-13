@@ -62,7 +62,10 @@ declare class BinanceSpot extends BinanceBase {
     cancelOrder(order: {
         symbol: string;
         id: string;
-    }): Promise<any>;
+    }): Promise<{
+        symbol: string;
+        id: string;
+    }>;
     fetchOpenOrders(): Promise<any>;
     fetchBalances(): Promise<any>;
     getAccountDataStream(): AccountDataStream;
