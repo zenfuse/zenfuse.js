@@ -170,6 +170,7 @@ class BinanceSpot extends BinanceBase {
      * @param {string} order.id Binance order id
      */
     async cancelOrder(order) {
+        // TODO: Delete this shit
         utils.validateOrderForCanceling(order);
 
         if (!order.symbol) {
@@ -197,11 +198,11 @@ class BinanceSpot extends BinanceBase {
             },
         });
 
-        // TODO: Order type
+        const deletedOrder = Object.assign({}, order);
 
-        utils.linkOriginalPayload(response, response);
+        utils.linkOriginalPayload(deletedOrder, response);
 
-        return response;
+        return deletedOrder;
     }
 
     async fetchOpenOrders() {

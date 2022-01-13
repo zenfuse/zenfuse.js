@@ -20,7 +20,7 @@ module.exports = function masterTest(Exchange, env) {
     //////////////////////////////////////  HTTP INTERFACE  ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    describe.skip('Spot Wallet HTTP interface', () => {
+    describe('Spot Wallet HTTP interface', () => {
         /**
          * @type {FtxSpot}
          */
@@ -344,7 +344,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
      */
 
-    describe.skip('Spot Wallet Private Stream', () => {
+    describe('Spot Wallet Private Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -422,7 +422,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
      */
 
-    describe.only('Spot Wallet Public Stream', () => {
+    describe('Spot Wallet Public Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');

@@ -300,7 +300,7 @@ module.exports = (env) => ({
                 .delete('/api/v3/order')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        symbol: 'BUSD/USDT',
+                        symbol: 'BUSDUSDT',
                         orderId: '5123847',
                     });
                     expect(q.signature).toBeDefined();
