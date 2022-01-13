@@ -54,13 +54,13 @@
     "jest": {
         "slowTestThreshold": 30000,
         "testMatch": [
-            "**/tests/**/*.test.js"
+            "<rootDir>tests/exchanges/**/*.test.js"
         ],
         "setupFilesAfterEnv": [
-            "<rootDir>tests/jest.setup.js"
+            "<rootDir>tests/jest/jest.setup.js"
         ],
-        "globalSetup": "<rootDir>tests/global.setup.js",
+        "globalSetup": "<rootDir>tests/jest/global.setup.js",
         "testRunner": "jest-circus/runner",
-        "testEnvironment": "<rootDir>tests/jest.environment.js"
+        "testEnvironment": "<rootDir>tests/jest/jest.environment.js"
     }
 }
