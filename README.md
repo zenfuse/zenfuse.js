@@ -427,6 +427,8 @@ Features:
 - [ ] Add `getOrderById` method
 
 Internal:
+- [ ] Add full API doc wiki based on jsdoc
+- [ ] Add a lot of use cases example in github wiki
 - [ ] Add [zod](https://github.com/colinhacks/zod) integration with testing output and argument validation
 - [ ] Add mocked websocket testing (big thing)
  
