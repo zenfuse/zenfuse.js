@@ -416,4 +416,18 @@ const ftx = new FTX['spot'](options);
 ftx; // All HTTP requests will be proxied, except websockets
 ```
 
+## THE BIG TODO
+
+Features:
+- [ ] Add Okex exchange
+- [ ] Add Huobi exchange
+- [ ] Add `orderbook` event in `MarketDataStream`
+- [ ] Add more order types
+- [ ] Add futures support (big thing)
+- [ ] Add `getOrderById` method
+
+Internal:
+- [ ] Add [zod](https://github.com/colinhacks/zod) integration with testing output and argument validation
+- [ ] Add mocked websocket testing (big thing)
+ 
 [`got.extendoptions`]: https://github.com/sindresorhus/got/blob/3a84454208e39aae7f2bae0bf68b7ede2872f317/source/types.ts#L54
