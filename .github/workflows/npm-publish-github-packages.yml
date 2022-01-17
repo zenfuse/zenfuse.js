@@ -6,17 +6,13 @@ name: Publish Package
 on:
     release:
         types: [created]
-    workflow_run:
-        workflows: ['CI']
-        branches: [main]
-        types:
-            - completed
 
 jobs:
     ci:
         uses: zenfuse/zenfuse.js/.github/workflows/node.js.yml@main
 
     publish-gpr:
+        needs: ci
         runs-on: ubuntu-latest
         permissions:
             contents: read
