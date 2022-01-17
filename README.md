@@ -1,5 +1,7 @@
 # zenfuse.js
 
+[![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/node.js.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/node.js.yml)
+
 NodeJS connector for Binance and FTX. Currently in development.
 
 ### Feachures:
