@@ -4,17 +4,17 @@
 ![Lines of code](https://img.shields.io/tokei/lines/github/zenfuse/zenfuse.js)
 ![Version](https://badgen.net/npm/v/zenfuse)
 
-NodeJS connector for Binance and FTX. Currently in development.
+NodeJS connector for Binance and FTX. Currently, in development.
 
-### Feachures:
+### Features:
 
 -   Account orders manipulating
 -   Fetching public markets data
--   Real time events
+-   Real-time events
     -   Public markets price
     -   Account orders updating
 
-## Instalation
+## Installation
 
 ```
 npm install zenfuse
@@ -183,7 +183,7 @@ This method resolves created order from exchange, this is `ZenfuseOrder` with so
 
 `ZenfuseOrder` order parameters:
 
-| Param      | Type                | Example     | Description                                      |
+| Parameter  | Type                | Example     | Description                                      |
 | ---------- | ------------------- | ----------- | ------------------------------------------------ |
 | `symbol`   | `string`            | `CAKE/USDT` | Aka market aka ticker pair with `/` separator    |
 | `type`     | `'market'\|'limit'` | `market`    | The most common order type. Currently, only two. |
@@ -191,7 +191,7 @@ This method resolves created order from exchange, this is `ZenfuseOrder` with so
 | `quantity` | `number`            | `1.337`     | Quantity of base ticker in order                 |
 | `price`    | `number`            | `0.0069`    | The price for limit order                        |
 
-**NOTE:** Any other parameters passed to `createOrder` will be append to request
+**NOTE:** AAny other parameters passed to createOrder will be appended to request
 
 ### `cancelOrder(order: ZenfuseOrder)`
 
@@ -234,17 +234,17 @@ _Returns:_
 ];
 ```
 
-## Realtime events
+## Real-time events
 
-Zenfuse.js uses [EventEmiter](https://nodejs.org/api/events.html#class-eventemitter) for realtime data. Uses websocket connections. By default can handle unlimited listeners.
+Zenfuse.js uses [EventEmiter](https://nodejs.org/api/events.html#class-eventemitter) for real-time data. Uses websocket connections.  By default, can handle unlimited listeners.
 
 ### Public events
 
-Any public events providing `MarketDataStream` inteface. Right now only `newPrice` event suppots.
+Any public events providing `MarketDataStream` inteface. Currently, only `newPrice` event supports.
 
 #### `getMarketDataStream()`
 
-Exchange instance method witch return `MarketDataStream` interface. One instance for one websocket connection.
+Exchange instance method which return `MarketDataStream` interface. One instance for one websocket connection.
 
 ```js
 binance.hasKeys; // false
@@ -253,7 +253,7 @@ const marketDataStream = binance.getMarketDataStream();
 
 #### `open()`
 
-Opens websocket connection. Makes possible to recieve events.
+Opens websocket connection. Makes possible to receive events.
 
 ```js
 await marketDataStream.open();
@@ -274,7 +274,7 @@ await marketDataStream.subscribeTo({
 
 #### `unsubscribeFrom({ channel: 'price', symbol: string })`
 
-Unubscribes from specific event.
+Unsubscribes from specific event.
 
 ```js
 await marketDataStream.unsubscribeFrom({
@@ -303,11 +303,11 @@ await marketDataStream.close();
 
 ### Account events
 
-Any public events providing `AccountDataStream` inteface. Right now only `orderUpdate` event suppots.
+Any public events providing `AccountDataStream` interface. Currently, only `orderUpdate` event supports.
 
 #### `getAccountDataStream()`
 
-Exchange instance method witch return `AccountDataStream` interface. One instance for one websocket connection. Instance with keys required.
+Exchange instance method which return `AccountDataStream` interface. One instance for one websocket connection. Instance with keys required.
 
 ```js
 ftx.hasKeys; // true
@@ -316,7 +316,7 @@ const accountDataStream = ftx.getAccountDataStream();
 
 #### `open()`
 
-Opens websocket connection. Starting emit events emidiatly. Returns self for chaining.
+Opens websocket connection. Starting emit events immediately. Returns self for chaining.
 
 ```js
 await accountDataStream.open();
@@ -363,7 +363,7 @@ const b = new Binance['spot'](options);
 
 ### All options
 
-| Param               | Type                                  | Description                                                                                        |
+| Parameter           | Type                                  | Description                                                                                        |
 | ------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `httpClientOptions` | [`got.ExtendOptions`]                 | [`got.ExtendOptions`] are [got](https://github.com/sindresorhus/got) optins, witch uses as fetcher |
 | `wsClientOptions`   | [`ExtraWsOptions & ws.ClientOptions`] | [ws](https://github.com/websockets/ws) options with `prefixUrl` support                            |
@@ -374,7 +374,7 @@ const b = new Binance['spot'](options);
 
 ## Full use cases
 
-### Create order on binance
+### Create order on Binance
 
 ```js
 const { Binance } = require('zenfuse');
@@ -434,7 +434,7 @@ Features:
 Internal:
 
 -   [ ] Add full API doc wiki based on jsdoc
--   [ ] Add a lot of use cases example in github wiki
+-   [ ] Add a lot of use cases example in GitHub wiki
 -   [ ] Add [zod](https://github.com/colinhacks/zod) integration with testing output and argument validation
 -   [ ] Add mocked websocket testing (big thing)
 
