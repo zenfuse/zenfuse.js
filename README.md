@@ -1,6 +1,6 @@
 # zenfuse.js
 
-[![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/node.js.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/node.js.yml)
+[![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml)
 ![Lines of code](https://img.shields.io/tokei/lines/github/zenfuse/zenfuse.js)
 ![Version](https://badgen.net/npm/v/zenfuse)
 
