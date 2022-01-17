@@ -10,15 +10,18 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-
+  lint:
     runs-on: ubuntu-latest
-
+    steps:
+      - uses: actions/setup-node@v2
+      - run: npm i eslint && npm run lint
+      
+  test:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -28,6 +31,4 @@ jobs:
         cache: 'npm'
 
     - run: npm ci
-    # TODO: Full linter support
-#     - run: npm run lint
     - run: npm test
