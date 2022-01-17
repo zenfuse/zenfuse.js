@@ -20,7 +20,7 @@ class FtxCache extends BaseGlobalCache {
         if (this.globalCache.updatingPromise) return;
 
         if (this.isExpired) {
-            this.globalCache.updatingPromise = {} // TODO: Cache update
+            this.globalCache.updatingPromise = {}; // TODO: Cache update
         }
     }
 

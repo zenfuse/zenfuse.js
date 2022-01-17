@@ -204,7 +204,6 @@ describe('Binance Spot Wallet HTTP interface', () => {
         let mockFilePath;
         let mockedPrices;
 
-
         let scope = { done() {} };
 
         if (isIntegrationTest) {

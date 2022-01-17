@@ -95,11 +95,6 @@ class BinanceSpot extends BinanceBase {
             return price;
         }
 
-        const binanceCache = {
-            tickers: this.cache.tickers,
-            parsedSymbols: this.cache.parsedSymbols,
-        };
-
         const createSymbol = (symbol) => {
             return this.cache.parsedSymbols[symbol].join('/');
         };

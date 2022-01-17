@@ -1,4 +1,4 @@
-const utils = require('../utils');
+const WebSocket = require('ws');
 const ExchangeWebsocketBase = require('./websocketBase');
 
 const listenKeySymbol = Symbol('listenKey');

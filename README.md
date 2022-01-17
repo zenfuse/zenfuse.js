@@ -363,10 +363,10 @@ const b = new Binance['spot'](options);
 
 ### All options
 
-| Param               | Type                                  | Description                                                                                       |
-| ------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Param               | Type                                  | Description                                                                                        |
+| ------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `httpClientOptions` | [`got.ExtendOptions`]                 | [`got.ExtendOptions`] are [got](https://github.com/sindresorhus/got) optins, witch uses as fetcher |
-| `wsClientOptions`   | [`ExtraWsOptions & ws.ClientOptions`] | [ws](https://github.com/websockets/ws) options with `prefixUrl` support                           |
+| `wsClientOptions`   | [`ExtraWsOptions & ws.ClientOptions`] | [ws](https://github.com/websockets/ws) options with `prefixUrl` support                            |
 
 ## Advanced things
 
@@ -423,17 +423,19 @@ ftx; // All HTTP requests will be proxied, except websockets
 ## THE BIG TODO
 
 Features:
-- [ ] Add Okex exchange
-- [ ] Add Huobi exchange
-- [ ] Add `orderbook` event in `MarketDataStream`
-- [ ] Add more order types
-- [ ] Add futures support (big thing)
-- [ ] Add `getOrderById` method
+
+-   [ ] Add Okex exchange
+-   [ ] Add Huobi exchange
+-   [ ] Add `orderbook` event in `MarketDataStream`
+-   [ ] Add more order types
+-   [ ] Add futures support (big thing)
+-   [ ] Add `getOrderById` method
 
 Internal:
-- [ ] Add full API doc wiki based on jsdoc
-- [ ] Add a lot of use cases example in github wiki
-- [ ] Add [zod](https://github.com/colinhacks/zod) integration with testing output and argument validation
-- [ ] Add mocked websocket testing (big thing)
- 
+
+-   [ ] Add full API doc wiki based on jsdoc
+-   [ ] Add a lot of use cases example in github wiki
+-   [ ] Add [zod](https://github.com/colinhacks/zod) integration with testing output and argument validation
+-   [ ] Add mocked websocket testing (big thing)
+
 [`got.extendoptions`]: https://github.com/sindresorhus/got/blob/3a84454208e39aae7f2bae0bf68b7ede2872f317/source/types.ts#L54

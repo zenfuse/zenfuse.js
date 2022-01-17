@@ -1,6 +1,4 @@
-const { util } = require('prettier');
 const debug = require('../../../base/etc/debug');
-const { timeIntervals } = require('../metadata');
 const utils = require('../utils');
 
 const FtxWebsocketBase = require('./websocketBase');
@@ -62,12 +60,6 @@ class MarketDataStream extends FtxWebsocketBase {
 
         if (isJustSymbol) {
             throw 'Not implemented'; // TODO: Full symbol subscribition
-            if (command === 'unsubscribe') {
-                return await this.unsubscribeFromAllbySymbol(arg);
-            }
-
-            event.channel = 'trades';
-            event.symbol = arg;
         } else {
             event = arg;
         }
@@ -84,9 +76,8 @@ class MarketDataStream extends FtxWebsocketBase {
     }
 
     // TODO: Save all subscribition
-    async unsubscribeFromAllbySymbol(symbol) {
+    async unsubscribeFromAllbySymbol() {
         throw 'Not implemented';
-        await this.sendSocketUnsubscribe(...subsToDelete);
     }
 
     /**
@@ -95,11 +86,6 @@ class MarketDataStream extends FtxWebsocketBase {
      */
     serverMessageHandler(msgEvent) {
         const payload = JSON.parse(msgEvent.data);
-
-        if (payload.type === 'error') {
-            require('inspector').console.error(msgEvent);
-            debugger;
-        }
 
         if (payload.type === 'update') {
             if (payload.channel === 'ticker') {

@@ -14,6 +14,9 @@
         "prettier/prettier": "error"
     },
     "globals": {
-        "Proxy": true
+        "Proxy": true,
+        "isEnd2EndTest": true,
+        "isIntegrationTest": true,
+        "isMasterTestFailed": true
     }
 }

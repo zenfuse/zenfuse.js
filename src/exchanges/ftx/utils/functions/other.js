@@ -11,7 +11,7 @@ const { createHmac } = require('crypto');
  * @param {string} key HMAC Key
  * @returns {string} Hex HMAC Signature
  */
-const createHmacSignature = ({ts, method, path, body = ''}, key) => {
+const createHmacSignature = ({ ts, method, path, body = '' }, key) => {
     if (body !== '') {
         body = JSON.stringify(body);
     }

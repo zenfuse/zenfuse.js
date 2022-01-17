@@ -102,7 +102,7 @@ class MarketDataStream extends BinanceWebsocketBase {
             throw new TypeError('Uknown command argument ' + command);
         }
 
-        throw new TypeError(`Uknown channel name ${arg.channel}`);
+        throw new TypeError(`Uknown channel name ${event.channel}`);
     }
 
     async unsubscribeFromAllbySymbol(symbol) {

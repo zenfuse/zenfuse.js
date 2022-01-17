@@ -6,7 +6,7 @@
  */
 const transfromZenfuseOrder = (zOrder) => {
     const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
-    
+
     const fOrder = {
         market: zOrder.symbol,
         type: zOrder.type,
@@ -37,7 +37,7 @@ const transfromZenfuseOrder = (zOrder) => {
  * @param {*} fOrder Order from FTX
  * @returns {Order} Zenfuse Order
  */
- const transfromFtxOrder = (fOrder) => {
+const transfromFtxOrder = (fOrder) => {
     /**
      * @type {Order}
      */
@@ -58,5 +58,5 @@ const transfromZenfuseOrder = (zOrder) => {
 
 module.exports = {
     transfromZenfuseOrder,
-    transfromFtxOrder
+    transfromFtxOrder,
 };
