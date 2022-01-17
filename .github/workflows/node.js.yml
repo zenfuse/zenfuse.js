@@ -28,5 +28,6 @@ jobs:
         cache: 'npm'
 
     - run: npm ci
-    - run: npm run lint
+    # TODO: Full linter support
+#     - run: npm run lint
     - run: npm test
