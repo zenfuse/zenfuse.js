@@ -273,7 +273,7 @@ await marketDataStream.subscribeTo({
 Unubscribes from specific event.
 
 ```js
-await marketDataStream.subscribeTo({
+await marketDataStream.unsubscribeFrom({
     channel: 'price',
     symbol: 'BTC/USDT',
 });
