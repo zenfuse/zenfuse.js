@@ -13,13 +13,15 @@ on:
       - completed
 
 jobs:
+  ci:
+    uses: zenfuse/zenfuse.js/.github/workflows/node.js.yml@main
+  
   publish-gpr:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
-      - uses: zenfuse/zenfuse.js/.github/workflows/node.js.yml@main
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
