@@ -13,10 +13,15 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-      - run: npm i eslint && npm run lint
+        with:
+          cache: 'npm'
+      - run: npm install --only=dev
+      - run: npm run lint
       
   test:
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
