@@ -33,4 +33,5 @@ jobs:
                   cache: 'npm'
 
             - run: npm ci
+            - run: npm run download-mocks
             - run: npm test
