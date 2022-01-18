@@ -19,6 +19,10 @@
         "type": "git",
         "url": "git+https://github.com/zenfuse/zenfuse.js.git"
     },
+    "files": [
+        "src",
+        "types"
+    ],
     "author": "zenfuse.io",
     "license": "AGPL-3.0-or-later",
     "engines": {
