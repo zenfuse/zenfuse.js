@@ -1,7 +1,7 @@
 const runMasterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
-const { Binance } = require('../../../src/index.js'); // zenfuse itself
+const { Binance } = require('zenfuse');
 
 if (isEnd2EndTest) {
     checkProcessHasVariables(['BINANCE_PUBLIC_KEY', 'BINANCE_SECRET_KEY']);
