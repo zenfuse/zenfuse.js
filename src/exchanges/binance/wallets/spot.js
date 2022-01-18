@@ -5,6 +5,7 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
+const ZenfuseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -96,18 +97,20 @@ class BinanceSpot extends BinanceBase {
         }
 
         const createSymbol = (symbol) => {
-            return this.cache.parsedSymbols[symbol].join('/');
+            if (!this.cache.parsedSymbols.has(symbol)) {
+                throw new ZenfuseError(
+                    `Cannot find ${symbol} in binance cache`,
+                    'ZEFU_CACHE_UNSYNC',
+                );
+            }
+            return this.cache.parsedSymbols.get(symbol).join('/');
         };
 
         const prices = response
             .map((bPrice) => {
                 let symbol;
-                try {
-                    symbol = createSymbol(bPrice.symbol);
-                } catch {
-                    // TODO: Get symbol for hiden market
-                    return;
-                }
+
+                symbol = createSymbol(bPrice.symbol);
 
                 return {
                     symbol,
@@ -227,11 +230,11 @@ class BinanceSpot extends BinanceBase {
     }
 
     /**
-     * 
-     * @param {string} id Order id 
+     *
+     * @param {string} orderId
      */
-     async fetchOrderById(id) {
-        throw 'Not implemented'
+    async fetchOrderById(orderId) {
+        const responce = this.privateFetch('api/v3/order');
     }
 
     getAccountDataStream() {
