@@ -40,7 +40,7 @@
         "eslint-plugin-jest": "^25.2.4",
         "eslint-plugin-prettier": "^4.0.0",
         "jest": "^27.3.1",
-        "jest-json-schema": "^5.0.0",
+        "jest-json-schema": "^6.0.0",
         "nock": "^13.2.1",
         "prettier": "^2.4.1",
         "tasuku": "^1.0.2",
