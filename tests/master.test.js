@@ -143,7 +143,7 @@ module.exports = function masterTest(Exchange, env) {
         //// Private API Zone
         ///////////////////////////////////////////////////////////////
 
-        describe.only('auth()', () => {
+        describe('auth()', () => {
             it('should bo defined', () => {
                 expect(exchange.auth).toBeDefined();
             });
@@ -312,7 +312,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('cancelOrder()', () => {
+        describe('cancelOrderById()', () => {
             let result;
 
             it('shoud cancel order without errors', async () => {
@@ -324,7 +324,7 @@ module.exports = function masterTest(Exchange, env) {
                     price: '0.5',
                 });
 
-                result = await exchange.cancelOrder(createdOrder);
+                result = await exchange.cancelOrderById(createdOrder.id);
             });
 
             it('should have valid originalResponse', () => {
@@ -335,7 +335,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe.only('fetchOrderById()', () => {
+        describe.skip('fetchOrderById()', () => {
             let result;
 
             afterAll(() => {

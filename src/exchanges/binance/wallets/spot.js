@@ -151,6 +151,8 @@ class BinanceSpot extends BinanceBase {
 
         zCreadedOrder.symbol = this.parseBinanceSymbol(bCreatedOrder.symbol);
 
+        this.cache.cacheOrder(zCreadedOrder);
+
         utils.linkOriginalPayload(zCreadedOrder, bCreatedOrder);
 
         return zCreadedOrder;
@@ -163,21 +165,26 @@ class BinanceSpot extends BinanceBase {
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
      *      So if you know order symbol, better pass it to didn't make unnecessary HTTP requests.
      *
-     * @param {object} order Order object to delete
-     * @param {string} order.symbol Order ticker pair, for example `BTC/USDT`
-     * @param {string} order.id Binance order id
+     * @param {string} orderId Binance order id
      */
-    async cancelOrder(order) {
-        // TODO: Delete this shit
-        utils.validateOrderForCanceling(order);
+    async cancelOrderById(orderId) {
+        let openOrder = this.cache.getCachedOrderById(orderId);
 
-        if (!order.symbol) {
+        if (!openOrder) {
+            process.emitWarning(
+                `Cannot find ${orderId} binance order in local cache`,
+                {
+                    code: 'ZEFU_CACHE_UNSYNC',
+                    detail: 'This is a warning because zenfuse smart enough to handle unsynced cache. But this should be reported',
+                },
+            );
+
             // 	┬──┬ ノ(ò_óノ) Binance api kills nerve cells
             const openOrders = await this.fetchOpenOrders();
 
-            const responce = openOrders[Symbol.for('zenfuse.originalPayload')];
+            const response = openOrders[Symbol.for('zenfuse.originalPayload')];
 
-            const orderToDelete = responce.find((o) => {
+            const orderToDelete = response.find((o) => {
                 return o.orderId === order.id;
             });
 
@@ -185,18 +192,18 @@ class BinanceSpot extends BinanceBase {
                 throw new Error('Order symbol not found'); // TODO: Specific error desc
             }
 
-            order.symbol = orderToDelete.symbol;
+            openOrder = orderToDelete.symbol;
         }
 
         const response = await this.privateFetch('api/v3/order', {
             method: 'DELETE',
             searchParams: {
-                symbol: order.symbol.replace('/', ''),
-                orderId: order.id.toString(),
+                symbol: openOrder.symbol.replace('/', ''),
+                orderId: openOrder.id.toString(),
             },
         });
 
-        const deletedOrder = Object.assign({}, order);
+        const deletedOrder = utils.transfromBinanceOrder(response);
 
         utils.linkOriginalPayload(deletedOrder, response);
 

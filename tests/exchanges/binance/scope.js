@@ -262,7 +262,7 @@ module.exports = (env) => ({
                     ],
                     permissions: ['SPOT'],
                 }),
-        'cancelOrder()': () =>
+        'cancelOrderById()': () =>
             nock(HOSTNAME)
                 .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
                 // Order creation
