@@ -18,10 +18,18 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
                 }
                 break;
             case 'run_describe_start':
-                this.openHttpMockingScope(event.describeBlock);
+                if (!this.global.isMasterTestFailed) {
+                    this.openHttpMockingScope(event.describeBlock);
+                } else {
+                    event.describeBlock.mode = 'skip';
+                }
                 break;
             case 'run_describe_stop':
-                this.closeHttpMockingScope(event.describeBlock);
+                if (!this.global.isMasterTestFailed) {
+                    this.closeHttpMockingScope(event.describeBlock);
+                } else {
+                    event.describeBlock.mode = 'skip';
+                }
                 break;
         }
 

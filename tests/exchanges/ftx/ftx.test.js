@@ -1,4 +1,4 @@
-const runMasterTest = require('../../master.test');
+const masterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
 const { FTX } = require('zenfuse');
@@ -24,4 +24,4 @@ const env = {
 
 global.httpScope = createScope(env);
 
-runMasterTest(FTX, env);
+masterTest(FTX, env);
