@@ -36,11 +36,10 @@ module.exports = function masterTest(Exchange, env) {
             });
             it('should pings :)', async () => {
                 await exchange.ping();
-                
             });
         });
 
-        describe('fetchMarkets()', () => {            
+        describe('fetchMarkets()', () => {
             let result;
 
             it('should be defined', () => {
