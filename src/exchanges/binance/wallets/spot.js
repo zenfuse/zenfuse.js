@@ -170,6 +170,10 @@ class BinanceSpot extends BinanceBase {
     async cancelOrderById(orderId) {
         let openOrder = this.cache.getCachedOrderById(orderId);
 
+        if (openOrder) {
+            this.cache.deleteCachedOrderById(orderId);
+        }
+
         if (!openOrder) {
             process.emitWarning(
                 `Cannot find ${orderId} binance order in local cache`,

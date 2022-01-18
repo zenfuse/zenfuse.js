@@ -36,6 +36,15 @@ class FtxCache extends BaseGlobalCache {
     getCachedOrderById(orderId) {
         return this.localCache.openOrders.get(orderId);
     }
+
+    /**
+     * 
+     * @param {string} orderId
+     * @returns {boolead}
+     */
+    deleteCachedOrderById(orderId) {
+        return this.localCache.openOrders.delete(orderId);
+    }
 }
 
 module.exports = FtxCache;

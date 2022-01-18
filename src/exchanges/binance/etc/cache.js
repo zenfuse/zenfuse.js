@@ -79,6 +79,15 @@ class BinanceCache extends BaseGlobalCache {
     }
 
     /**
+     *
+     * @param {string} orderId
+     * @returns {boolead}
+     */
+    deleteCachedOrderById(orderId) {
+        return this.localCache.openOrders.delete(orderId);
+    }
+
+    /**
      * Updating global cache using raw binance data
      * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint
      */

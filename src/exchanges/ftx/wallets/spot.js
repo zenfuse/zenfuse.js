@@ -141,7 +141,13 @@ class FtxSpot extends FtxBase {
             method: 'DELETE',
         });
 
-        const deletedOrder = this.cache.getCachedOrderById(orderId);
+        let deletedOrder = this.cache.getCachedOrderById(orderId);
+
+        if (!deletedOrder) {
+            deletedOrder = this.fetchOrderById(orderId);
+        }
+
+        this.cache.deleteCachedOrderById(orderId);
 
         utils.linkOriginalPayload(deletedOrder, response);
 
