@@ -143,7 +143,7 @@ module.exports = function masterTest(Exchange, env) {
         //// Private API Zone
         ///////////////////////////////////////////////////////////////
 
-        describe('auth()', () => {
+        describe.only('auth()', () => {
             it('should bo defined', () => {
                 expect(exchange.auth).toBeDefined();
             });
@@ -332,6 +332,33 @@ module.exports = function masterTest(Exchange, env) {
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
                 ).toBeDefined();
+            });
+        });
+
+        describe.only('fetchOrderById()', () => {
+            let result;
+
+            afterAll(() => {
+                exchange.cancelOrder(createdOrder);
+            });
+
+            it('should be defined', () => {
+                expect(exchange.fetchOrderById).toBeDefined();
+            });
+
+            it('should fetch without errors', async () => {
+                createdOrder = await exchange.createOrder(
+                    env.NOT_EXECUTABLE_ORDER,
+                );
+
+                result = await exchange.fetchOrderById(createdOrder.id);
+            });
+
+            it('should return exact order', () => {
+                expect(createdOrder).toBeDefined();
+                expect(result).toBeDefined();
+
+                expect(result).toEqual(createdOrder);
             });
         });
     });

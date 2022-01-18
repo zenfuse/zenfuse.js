@@ -257,5 +257,68 @@ module.exports = (env) => ({
                 // Order deletion
                 .delete(`/api/orders/112590877630`)
                 .reply(200),
+
+        'fetchOrderById()': () =>
+            nock(HOSTNAME)
+                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('FTX-TS', Boolean)
+                .matchHeader('FTX-SIGN', Boolean)
+                // Order creation
+                .post('/api/orders', {
+                    market: 'USDT/USD',
+                    type: 'limit',
+                    side: 'buy',
+                    size: 20,
+                    price: 0.5,
+                })
+                .reply(200, {
+                    success: true,
+                    result: {
+                        id: 112590877631,
+                        clientId: null,
+                        market: 'USDT/USD',
+                        type: 'limit',
+                        side: 'buy',
+                        price: 0.5,
+                        size: 20,
+                        status: 'new',
+                        filledSize: 0,
+                        remainingSize: 20,
+                        reduceOnly: false,
+                        liquidation: null,
+                        avgFillPrice: null,
+                        postOnly: false,
+                        ioc: false,
+                        createdAt: '2022-01-11T18:21:19.188847+00:00',
+                        future: null,
+                    },
+                })
+                // Order status fetch
+                .get('/api/orders/112590877631')
+                .reply(200, {
+                    success: true,
+                    result: {
+                        id: 112590877631,
+                        clientId: null,
+                        market: 'USDT/USD',
+                        type: 'limit',
+                        side: 'buy',
+                        price: 0.5,
+                        size: 20,
+                        status: 'new',
+                        filledSize: 0,
+                        remainingSize: 20,
+                        reduceOnly: false,
+                        liquidation: null,
+                        avgFillPrice: null,
+                        postOnly: false,
+                        ioc: false,
+                        createdAt: '2022-01-11T18:21:19.188847+00:00',
+                        future: null,
+                    },
+                })
+                // Order deletion
+                .delete(`/api/orders/112590877631`)
+                .reply(200),
     },
 });

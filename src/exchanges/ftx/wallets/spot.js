@@ -149,13 +149,7 @@ class FtxSpot extends FtxBase {
 
     // TODO: Test for this
     async fetchOpenOrders() {
-        const response = await this.privateFetch('api/v3/openOrders');
-
-        // TODO: order status object
-
-        utils.linkOriginalPayload(response, response);
-
-        return response;
+        throw 'Not implemented';
     }
 
     async fetchBalances() {
@@ -172,6 +166,18 @@ class FtxSpot extends FtxBase {
         utils.linkOriginalPayload(balances, response);
 
         return balances;
+    }
+
+    /**
+     *
+     * @param {string} orderId
+     */
+    async fetchOrderById(orderId) {
+        const responce = await this.privateFetch(`api/orders/${orderId}`);
+
+        const zOrder = utils.transfromFtxOrder(responce.result);
+
+        return zOrder;
     }
 
     getAccountDataStream() {

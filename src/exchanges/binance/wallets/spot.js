@@ -226,6 +226,14 @@ class BinanceSpot extends BinanceBase {
         return balances;
     }
 
+    /**
+     * 
+     * @param {string} id Order id 
+     */
+     async fetchOrderById(id) {
+        throw 'Not implemented'
+    }
+
     getAccountDataStream() {
         return new AccountDataStream(this);
     }
