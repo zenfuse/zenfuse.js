@@ -191,11 +191,11 @@ This method resolves created order from exchange, this is `ZenfuseOrder` with so
 | `quantity` | `number`            | `1.337`     | Quantity of base ticker in order                 |
 | `price`    | `number`            | `0.0069`    | The price for limit order                        |
 
-**NOTE:** AAny other parameters passed to createOrder will be appended to request
+**NOTE:** Any other parameters passed to createOrder will be appended to request
 
-### `cancelOrder(order: ZenfuseOrder)`
+### `cancelOrderById(orderId: string)`
 
-Cancels order using order object itself.
+Cancels order using order id.
 
 ```js
 // Recieve created order
@@ -207,10 +207,9 @@ const order = await binance.createOrder({
     quantity: 10000,
 });
 
-await binance.cancelOrder(order);
+const deletedOrder = await binance.cancelOrderById(order.id);
 
-// If only id passed, zenfuse will make required requests to delete this order by id
-await binance.cancelOrder({ id: order.id });
+order.id === deletedOrder.id; // true
 ```
 
 ### `fetchBalances()`
@@ -429,7 +428,7 @@ Features:
 -   [ ] Add `orderbook` event in `MarketDataStream`
 -   [ ] Add more order types
 -   [ ] Add futures support (big thing)
--   [ ] Add `getOrderById` method
+-   [x] Add `fetchOrderById` method
 
 Internal:
 
