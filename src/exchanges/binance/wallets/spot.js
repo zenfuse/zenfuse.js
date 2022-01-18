@@ -245,7 +245,28 @@ class BinanceSpot extends BinanceBase {
      * @param {string} orderId
      */
     async fetchOrderById(orderId) {
-        const responce = this.privateFetch('api/v3/order');
+        let orderToDelete = this.cache.getCachedOrderById(orderId);
+
+        if (!orderToDelete) {
+            throw 'Not in cache'; // TODO: Do something
+        }
+
+        const response = await this.privateFetch('api/v3/order', {
+            searchParams: {
+                symbol: orderToDelete.symbol.replace('/', ''),
+                orderId: orderToDelete.id.toString(),
+            },
+        });
+
+        const zOrder = utils.transfromBinanceOrder(response);
+
+        zOrder.symbol = this.parseBinanceSymbol(response.symbol);
+
+        this.cache.cacheOrder(zOrder);
+
+        utils.linkOriginalPayload(zOrder, response);
+
+        return zOrder;
     }
 
     getAccountDataStream() {

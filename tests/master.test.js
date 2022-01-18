@@ -335,12 +335,12 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe.skip('fetchOrderById()', () => {
+        describe('fetchOrderById()', () => {
             let result;
 
-            afterAll(() => {
-                exchange.cancelOrder(createdOrder);
-            });
+            // afterAll(() => {
+            //     exchange.cancelOrderById(createdOrder.id);
+            // });
 
             it('should be defined', () => {
                 expect(exchange.fetchOrderById).toBeDefined();
@@ -428,7 +428,7 @@ module.exports = function masterTest(Exchange, env) {
                 );
 
                 return await eventPromice.then(() =>
-                    exchange.cancelOrder(createdOrder),
+                    exchange.cancelOrderById(createdOrder.id),
                 );
             });
         });
