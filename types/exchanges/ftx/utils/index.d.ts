@@ -5,13 +5,13 @@ declare const _exports: {
         path: string;
         body?: any;
     }, key: string) => string;
-    transfromZenfuseOrder: (zOrder: any) => {
+    transfromZenfuseOrder: (zOrder: Order) => {
         market: any;
         type: any;
         side: any;
         size: any;
     };
-    transfromFtxOrder: (fOrder: any) => any;
+    transfromFtxOrder: (fOrder: any) => Order;
     extractSpotMarkets: (markets: any[]) => any[];
     extractTickersFromMarkets: (markets: any[]) => any[];
     linkOriginalPayload: (object: any, originalPayload: any) => void;

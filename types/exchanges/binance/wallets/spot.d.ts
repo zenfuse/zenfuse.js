@@ -55,19 +55,16 @@ declare class BinanceSpot extends BinanceBase {
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
      *      So if you know order symbol, better pass it to didn't make unnecessary HTTP requests.
      *
-     * @param {object} order Order object to delete
-     * @param {string} order.symbol Order ticker pair, for example `BTC/USDT`
-     * @param {string} order.id Binance order id
+     * @param {string} orderId Binance order id
      */
-    cancelOrder(order: {
-        symbol: string;
-        id: string;
-    }): Promise<{
-        symbol: string;
-        id: string;
-    }>;
+    cancelOrderById(orderId: string): Promise<import("../../..").Order>;
     fetchOpenOrders(): Promise<any>;
     fetchBalances(): Promise<any>;
+    /**
+     *
+     * @param {string} orderId
+     */
+    fetchOrderById(orderId: string): Promise<import("../../..").Order>;
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }

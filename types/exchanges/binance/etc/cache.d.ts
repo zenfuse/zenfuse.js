@@ -9,6 +9,9 @@ declare class BinanceCache extends BaseGlobalCache {
      * @type {BinanceBase}
      */
     base: import("../base");
+    localCache: {
+        openOrders: Map<any, any>;
+    };
     updateSelfIfRequired(): void;
     /**
      * Array of all binance tickers
@@ -29,6 +32,25 @@ declare class BinanceCache extends BaseGlobalCache {
     get parsedSymbols(): {
         [ticker: string]: string[];
     };
+    /**
+     * Cache order in local cache
+     *
+     * @reason Binance requires order symbol for many requests. So we should cache orders to delete it just by id.
+     * @param {ZenfuseOrder} order
+     */
+    cacheOrder(order: ZenfuseOrder): void;
+    /**
+     *
+     * @param {string} orderId
+     * @returns {ZenfuseOrder}
+     */
+    getCachedOrderById(orderId: string): ZenfuseOrder;
+    /**
+     *
+     * @param {string} orderId
+     * @returns {boolead}
+     */
+    deleteCachedOrderById(orderId: string): boolead;
     /**
      * Updating global cache using raw binance data
      * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint

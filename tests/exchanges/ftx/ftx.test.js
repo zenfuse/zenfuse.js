@@ -1,7 +1,7 @@
-const runMasterTest = require('../../master.test');
+const masterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
-const { FTX } = require('../../../src/index.js'); // zenfuse itself
+const { FTX } = require('zenfuse');
 
 if (isEnd2EndTest) {
     checkProcessHasVariables(['FTX_PUBLIC_KEY', 'FTX_SECRET_KEY']);
@@ -24,4 +24,4 @@ const env = {
 
 global.httpScope = createScope(env);
 
-runMasterTest(FTX, env);
+masterTest(FTX, env);

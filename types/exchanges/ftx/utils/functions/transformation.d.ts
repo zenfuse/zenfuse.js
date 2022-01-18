@@ -4,7 +4,7 @@
  * @param {Order} zOrder Order from
  * @returns Order for ftx api
  */
-export function transfromZenfuseOrder(zOrder: any): {
+export function transfromZenfuseOrder(zOrder: Order): {
     market: any;
     type: any;
     side: any;
@@ -15,4 +15,4 @@ export function transfromZenfuseOrder(zOrder: any): {
  * @param {*} fOrder Order from FTX
  * @returns {Order} Zenfuse Order
  */
-export function transfromFtxOrder(fOrder: any): any;
+export function transfromFtxOrder(fOrder: any): Order;
