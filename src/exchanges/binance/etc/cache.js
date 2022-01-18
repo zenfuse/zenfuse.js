@@ -13,7 +13,9 @@ class BinanceCache extends BaseGlobalCache {
     constructor(baseInstance) {
         super('binance');
         this.base = baseInstance;
-        this.localCache = new Map();
+        this.localCache = {
+            openOrders: new Map(),
+        };
         this.updateSelfIfRequired();
     }
 
@@ -64,7 +66,7 @@ class BinanceCache extends BaseGlobalCache {
      * @param {ZenfuseOrder} order
      */
     cacheOrder(order) {
-        this.localCache.set(order.id, order);
+        this.localCache.openOrders.set(order.id, order);
     }
 
     /**
@@ -73,7 +75,7 @@ class BinanceCache extends BaseGlobalCache {
      * @returns {ZenfuseOrder}
      */
     getCachedOrderById(orderId) {
-        return this.localCache.get(orderId);
+        return this.localCache.openOrders.get(orderId);
     }
 
     /**

@@ -2,7 +2,7 @@ const linkOriginalPayload = (object, originalPayload) => {
     Object.defineProperty(object, Symbol.for('zenfuse.originalPayload'), {
         value: originalPayload,
         enumerable: false,
-        configurable: false,
+        configurable: true,
         writable: false,
     });
 };

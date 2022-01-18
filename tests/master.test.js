@@ -313,16 +313,16 @@ module.exports = function masterTest(Exchange, env) {
         });
 
         describe('cancelOrderById()', () => {
+            it('should be defined', () => {
+                expect(exchange.cancelOrderById).toBeDefined();
+            });
+
             let result;
 
-            it('shoud cancel order without errors', async () => {
-                const createdOrder = await exchange.createOrder({
-                    symbol: 'USDT/USD',
-                    type: 'limit',
-                    side: 'buy',
-                    quantity: '20',
-                    price: '0.5',
-                });
+            it('should cancel order without errors', async () => {
+                const createdOrder = await exchange.createOrder(
+                    env.NOT_EXECUTABLE_ORDER,
+                );
 
                 result = await exchange.cancelOrderById(createdOrder.id);
             });

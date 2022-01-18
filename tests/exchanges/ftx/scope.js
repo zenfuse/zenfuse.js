@@ -219,7 +219,7 @@ module.exports = (env) => ({
                     ],
                 }),
 
-        'cancelOrder()': () =>
+        'cancelOrderById()': () =>
             nock(HOSTNAME)
                 .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
                 .matchHeader('FTX-TS', Boolean)
@@ -229,8 +229,8 @@ module.exports = (env) => ({
                     market: 'USDT/USD',
                     type: 'limit',
                     side: 'buy',
-                    size: '20',
-                    price: '0.5',
+                    size: 20,
+                    price: 0.5,
                 })
                 .reply(200, {
                     success: true,

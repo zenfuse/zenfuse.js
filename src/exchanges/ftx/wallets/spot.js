@@ -124,6 +124,8 @@ class FtxSpot extends FtxBase {
 
         const zCreatedOrder = utils.transfromFtxOrder(fCreatedOrder.result);
 
+        this.cache.cacheOrder(zCreatedOrder);
+
         utils.linkOriginalPayload(zCreatedOrder, fCreatedOrder);
 
         return zCreatedOrder;
@@ -132,15 +134,14 @@ class FtxSpot extends FtxBase {
     /**
      * Cancel an active order
      *
-     * @param {object} order Order object to delete
-     * @param {string} order.id Ftx order id
+     * @param {string} orderId Ftx order id
      */
-    async cancelOrder(order) {
-        const response = await this.privateFetch(`api/orders/${order.id}`, {
+    async cancelOrderById(orderId) {
+        const response = await this.privateFetch(`api/orders/${orderId}`, {
             method: 'DELETE',
         });
 
-        const deletedOrder = Object.assign({}, order);
+        const deletedOrder = this.cache.getCachedOrderById(orderId);
 
         utils.linkOriginalPayload(deletedOrder, response);
 

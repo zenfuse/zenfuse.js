@@ -269,10 +269,10 @@ module.exports = (env) => ({
                 .post('/api/v3/order')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        symbol: 'USDTUSD',
+                        symbol: 'USDCUSDT',
                         type: 'LIMIT',
                         side: 'BUY',
-                        price: '0.5',
+                        price: '0.8',
                         quantity: '20',
                         timeInForce: 'GTC',
                     });
