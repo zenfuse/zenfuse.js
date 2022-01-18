@@ -5,6 +5,7 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
+const ZenfuseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -96,18 +97,20 @@ class BinanceSpot extends BinanceBase {
         }
 
         const createSymbol = (symbol) => {
-            return this.cache.parsedSymbols[symbol].join('/');
+            if (!this.cache.parsedSymbols.has(symbol)) {
+                throw new ZenfuseError(
+                    `Cannot find ${symbol} in binance cache`,
+                    'ZEFU_CACHE_UNSYNC',
+                );
+            }
+            return this.cache.parsedSymbols.get(symbol).join('/');
         };
 
         const prices = response
             .map((bPrice) => {
                 let symbol;
-                try {
-                    symbol = createSymbol(bPrice.symbol);
-                } catch {
-                    // TODO: Get symbol for hiden market
-                    return;
-                }
+
+                symbol = createSymbol(bPrice.symbol);
 
                 return {
                     symbol,
@@ -148,6 +151,8 @@ class BinanceSpot extends BinanceBase {
 
         zCreadedOrder.symbol = this.parseBinanceSymbol(bCreatedOrder.symbol);
 
+        this.cache.cacheOrder(zCreadedOrder);
+
         utils.linkOriginalPayload(zCreadedOrder, bCreatedOrder);
 
         return zCreadedOrder;
@@ -160,40 +165,49 @@ class BinanceSpot extends BinanceBase {
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
      *      So if you know order symbol, better pass it to didn't make unnecessary HTTP requests.
      *
-     * @param {object} order Order object to delete
-     * @param {string} order.symbol Order ticker pair, for example `BTC/USDT`
-     * @param {string} order.id Binance order id
+     * @param {string} orderId Binance order id
      */
-    async cancelOrder(order) {
-        // TODO: Delete this shit
-        utils.validateOrderForCanceling(order);
+    async cancelOrderById(orderId) {
+        let openOrder = this.cache.getCachedOrderById(orderId);
 
-        if (!order.symbol) {
+        if (openOrder) {
+            this.cache.deleteCachedOrderById(orderId);
+        }
+
+        if (!openOrder) {
+            process.emitWarning(
+                `Cannot find ${orderId} binance order in local cache`,
+                {
+                    code: 'ZEFU_CACHE_UNSYNC',
+                    detail: 'This is a warning because zenfuse smart enough to handle unsynced cache. But this should be reported',
+                },
+            );
+
             // 	┬──┬ ノ(ò_óノ) Binance api kills nerve cells
             const openOrders = await this.fetchOpenOrders();
 
-            const responce = openOrders[Symbol.for('zenfuse.originalPayload')];
+            const response = openOrders[Symbol.for('zenfuse.originalPayload')];
 
-            const orderToDelete = responce.find((o) => {
-                return o.orderId === order.id;
+            const orderToDelete = response.find((o) => {
+                return o.orderId === orderId;
             });
 
             if (!orderToDelete) {
                 throw new Error('Order symbol not found'); // TODO: Specific error desc
             }
 
-            order.symbol = orderToDelete.symbol;
+            openOrder = orderToDelete.symbol;
         }
 
         const response = await this.privateFetch('api/v3/order', {
             method: 'DELETE',
             searchParams: {
-                symbol: order.symbol.replace('/', ''),
-                orderId: order.id.toString(),
+                symbol: openOrder.symbol.replace('/', ''),
+                orderId: openOrder.id.toString(),
             },
         });
 
-        const deletedOrder = Object.assign({}, order);
+        const deletedOrder = utils.transfromBinanceOrder(response);
 
         utils.linkOriginalPayload(deletedOrder, response);
 
@@ -224,6 +238,35 @@ class BinanceSpot extends BinanceBase {
         utils.linkOriginalPayload(balances, response);
 
         return balances;
+    }
+
+    /**
+     *
+     * @param {string} orderId
+     */
+    async fetchOrderById(orderId) {
+        let orderToDelete = this.cache.getCachedOrderById(orderId);
+
+        if (!orderToDelete) {
+            throw 'Not in cache'; // TODO: Do something
+        }
+
+        const response = await this.privateFetch('api/v3/order', {
+            searchParams: {
+                symbol: orderToDelete.symbol.replace('/', ''),
+                orderId: orderToDelete.id.toString(),
+            },
+        });
+
+        const zOrder = utils.transfromBinanceOrder(response);
+
+        zOrder.symbol = this.parseBinanceSymbol(response.symbol);
+
+        this.cache.cacheOrder(zOrder);
+
+        utils.linkOriginalPayload(zOrder, response);
+
+        return zOrder;
     }
 
     getAccountDataStream() {

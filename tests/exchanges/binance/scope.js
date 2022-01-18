@@ -262,22 +262,110 @@ module.exports = (env) => ({
                     ],
                     permissions: ['SPOT'],
                 }),
-        'cancelOrder()': () =>
+        'cancelOrderById()': () =>
             nock(HOSTNAME)
                 .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
                 // Order creation
                 .post('/api/v3/order')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        symbol: 'USDTUSD',
+                        symbol: 'USDCUSDT',
                         type: 'LIMIT',
                         side: 'BUY',
-                        price: '0.5',
+                        price: '0.8',
                         quantity: '20',
                         timeInForce: 'GTC',
                     });
                     expect(q.timestamp).toBeDefined();
                     expect(q.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    symbol: 'BUSDUSDT',
+                    orderId: 5123847,
+                    orderListId: -1,
+                    clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
+                    transactTime: 1637599759459,
+                    price: '500.00000000',
+                    origQty: '1.00000000',
+                    executedQty: '0.00000000',
+                    cummulativeQuoteQty: '0.00000000',
+                    status: 'NEW',
+                    timeInForce: 'GTC',
+                    type: 'LIMIT',
+                    side: 'BUY',
+                    fills: [],
+                })
+                // Order deletion
+                .delete('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        symbol: 'BUSDUSDT',
+                        orderId: '5123847',
+                    });
+                    expect(q.signature).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    symbol: 'BUSDUSDT',
+                    orderId: 5123847,
+                    orderListId: -1,
+                    clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
+                    transactTime: 1637599759459,
+                    price: '500.00000000',
+                    origQty: '1.00000000',
+                    executedQty: '0.00000000',
+                    cummulativeQuoteQty: '0.00000000',
+                    status: 'NEW',
+                    timeInForce: 'GTC',
+                    type: 'LIMIT',
+                    side: 'BUY',
+                    fills: [],
+                }),
+        'fetchOrderById()': () =>
+            nock(HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
+                // Order creation
+                .post('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        symbol: 'USDCUSDT',
+                        type: 'LIMIT',
+                        side: 'BUY',
+                        price: '0.8',
+                        quantity: '20',
+                        timeInForce: 'GTC',
+                    });
+                    expect(q.timestamp).toBeDefined();
+                    expect(q.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    symbol: 'BUSDUSDT',
+                    orderId: 5123847,
+                    orderListId: -1,
+                    clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
+                    transactTime: 1637599759459,
+                    price: '500.00000000',
+                    origQty: '1.00000000',
+                    executedQty: '0.00000000',
+                    cummulativeQuoteQty: '0.00000000',
+                    status: 'NEW',
+                    timeInForce: 'GTC',
+                    type: 'LIMIT',
+                    side: 'BUY',
+                    fills: [],
+                })
+                // Order status fetch
+                .get('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        symbol: 'BUSDUSDT',
+                        orderId: '5123847',
+                    });
+                    expect(q.signature).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
                     return true;
                 })
                 .reply(200, {

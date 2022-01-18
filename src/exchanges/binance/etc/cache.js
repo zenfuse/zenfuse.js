@@ -13,6 +13,9 @@ class BinanceCache extends BaseGlobalCache {
     constructor(baseInstance) {
         super('binance');
         this.base = baseInstance;
+        this.localCache = {
+            openOrders: new Map(),
+        };
         this.updateSelfIfRequired();
     }
 
@@ -54,6 +57,34 @@ class BinanceCache extends BaseGlobalCache {
     get parsedSymbols() {
         this.updateSelfIfRequired();
         return this.globalCache.get('parsedSymbols');
+    }
+
+    /**
+     * Cache order in local cache
+     *
+     * @reason Binance requires order symbol for many requests. So we should cache orders to delete it just by id.
+     * @param {ZenfuseOrder} order
+     */
+    cacheOrder(order) {
+        this.localCache.openOrders.set(order.id, order);
+    }
+
+    /**
+     *
+     * @param {string} orderId
+     * @returns {ZenfuseOrder}
+     */
+    getCachedOrderById(orderId) {
+        return this.localCache.openOrders.get(orderId);
+    }
+
+    /**
+     *
+     * @param {string} orderId
+     * @returns {boolead}
+     */
+    deleteCachedOrderById(orderId) {
+        return this.localCache.openOrders.delete(orderId);
     }
 
     /**

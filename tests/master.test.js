@@ -312,19 +312,19 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('cancelOrder()', () => {
+        describe('cancelOrderById()', () => {
+            it('should be defined', () => {
+                expect(exchange.cancelOrderById).toBeDefined();
+            });
+
             let result;
 
-            it('shoud cancel order without errors', async () => {
-                const createdOrder = await exchange.createOrder({
-                    symbol: 'USDT/USD',
-                    type: 'limit',
-                    side: 'buy',
-                    quantity: '20',
-                    price: '0.5',
-                });
+            it('should cancel order without errors', async () => {
+                const createdOrder = await exchange.createOrder(
+                    env.NOT_EXECUTABLE_ORDER,
+                );
 
-                result = await exchange.cancelOrder(createdOrder);
+                result = await exchange.cancelOrderById(createdOrder.id);
             });
 
             it('should have valid originalResponse', () => {
@@ -332,6 +332,34 @@ module.exports = function masterTest(Exchange, env) {
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
                 ).toBeDefined();
+            });
+        });
+
+        describe('fetchOrderById()', () => {
+            let result;
+            let createdOrder;
+
+            afterAll(() => {
+                exchange.cancelOrderById(createdOrder.id);
+            });
+
+            it('should be defined', () => {
+                expect(exchange.fetchOrderById).toBeDefined();
+            });
+
+            it('should fetch without errors', async () => {
+                createdOrder = await exchange.createOrder(
+                    env.NOT_EXECUTABLE_ORDER,
+                );
+
+                result = await exchange.fetchOrderById(createdOrder.id);
+            });
+
+            it('should return exact order', () => {
+                expect(createdOrder).toBeDefined();
+                expect(result).toBeDefined();
+
+                expect(result).toEqual(createdOrder);
             });
         });
     });
@@ -401,7 +429,7 @@ module.exports = function masterTest(Exchange, env) {
                 );
 
                 return await eventPromice.then(() =>
-                    exchange.cancelOrder(createdOrder),
+                    exchange.cancelOrderById(createdOrder.id),
                 );
             });
         });

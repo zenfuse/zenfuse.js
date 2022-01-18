@@ -124,6 +124,8 @@ class FtxSpot extends FtxBase {
 
         const zCreatedOrder = utils.transfromFtxOrder(fCreatedOrder.result);
 
+        this.cache.cacheOrder(zCreatedOrder);
+
         utils.linkOriginalPayload(zCreatedOrder, fCreatedOrder);
 
         return zCreatedOrder;
@@ -132,15 +134,20 @@ class FtxSpot extends FtxBase {
     /**
      * Cancel an active order
      *
-     * @param {object} order Order object to delete
-     * @param {string} order.id Ftx order id
+     * @param {string} orderId Ftx order id
      */
-    async cancelOrder(order) {
-        const response = await this.privateFetch(`api/orders/${order.id}`, {
+    async cancelOrderById(orderId) {
+        const response = await this.privateFetch(`api/orders/${orderId}`, {
             method: 'DELETE',
         });
 
-        const deletedOrder = Object.assign({}, order);
+        let deletedOrder = this.cache.getCachedOrderById(orderId);
+
+        if (!deletedOrder) {
+            deletedOrder = this.fetchOrderById(orderId);
+        }
+
+        this.cache.deleteCachedOrderById(orderId);
 
         utils.linkOriginalPayload(deletedOrder, response);
 
@@ -149,13 +156,7 @@ class FtxSpot extends FtxBase {
 
     // TODO: Test for this
     async fetchOpenOrders() {
-        const response = await this.privateFetch('api/v3/openOrders');
-
-        // TODO: order status object
-
-        utils.linkOriginalPayload(response, response);
-
-        return response;
+        throw 'Not implemented';
     }
 
     async fetchBalances() {
@@ -172,6 +173,18 @@ class FtxSpot extends FtxBase {
         utils.linkOriginalPayload(balances, response);
 
         return balances;
+    }
+
+    /**
+     *
+     * @param {string} orderId
+     */
+    async fetchOrderById(orderId) {
+        const responce = await this.privateFetch(`api/orders/${orderId}`);
+
+        const zOrder = utils.transfromFtxOrder(responce.result);
+
+        return zOrder;
     }
 
     getAccountDataStream() {
