@@ -11,8 +11,7 @@
         "jest": "node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
-        "download-mocks": "node ./scripts/downloadMocks.js --force",
-        "prepare": "npm run download-mocks --silent",
+        "download-mocks": "node ./scripts/downloadMocks.js",
         "build:types": "tsc"
     },
     "repository": {
