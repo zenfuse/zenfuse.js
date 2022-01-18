@@ -337,10 +337,11 @@ module.exports = function masterTest(Exchange, env) {
 
         describe('fetchOrderById()', () => {
             let result;
+            let createdOrder;
 
-            // afterAll(() => {
-            //     exchange.cancelOrderById(createdOrder.id);
-            // });
+            afterAll(() => {
+                exchange.cancelOrderById(createdOrder.id);
+            });
 
             it('should be defined', () => {
                 expect(exchange.fetchOrderById).toBeDefined();

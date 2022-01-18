@@ -38,7 +38,7 @@ class FtxCache extends BaseGlobalCache {
     }
 
     /**
-     * 
+     *
      * @param {string} orderId
      * @returns {boolead}
      */

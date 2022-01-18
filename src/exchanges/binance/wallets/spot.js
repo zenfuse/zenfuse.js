@@ -189,7 +189,7 @@ class BinanceSpot extends BinanceBase {
             const response = openOrders[Symbol.for('zenfuse.originalPayload')];
 
             const orderToDelete = response.find((o) => {
-                return o.orderId === order.id;
+                return o.orderId === orderId;
             });
 
             if (!orderToDelete) {
