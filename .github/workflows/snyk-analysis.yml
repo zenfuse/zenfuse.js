@@ -13,30 +13,30 @@
 name: Snyk Scan
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ main ]
-  schedule:
-    - cron: '22 2 * * 3'
+    push:
+        branches: [main]
+    pull_request:
+        # The branches below must be a subset of the branches above
+        branches: [main]
+    schedule:
+        - cron: '22 2 * * 3'
 
 jobs:
-  snyk:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run Snyk
-        # Snyk can be used to break the build when it detects security issues.
-        # In this case we want to upload the issues to GitHub Code Scanning
-        continue-on-error: true
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --sarif-file-output=snyk.sarif
-          
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: snyk.sarif
+    snyk:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Run Snyk
+              # Snyk can be used to break the build when it detects security issues.
+              # In this case we want to upload the issues to GitHub Code Scanning
+              continue-on-error: true
+              uses: snyk/actions/node@master
+              env:
+                  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+              with:
+                  args: --sarif-file-output=snyk.sarif
+
+            - name: Upload result to GitHub Code Scanning
+              uses: github/codeql-action/upload-sarif@v1
+              with:
+                  sarif_file: snyk.sarif

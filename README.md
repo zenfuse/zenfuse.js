@@ -236,7 +236,7 @@ _Returns:_
 
 ## Real-time events
 
-Zenfuse.js uses [EventEmiter](https://nodejs.org/api/events.html#class-eventemitter) for real-time data. Uses websocket connections.  By default, can handle unlimited listeners.
+Zenfuse.js uses [EventEmiter](https://nodejs.org/api/events.html#class-eventemitter) for real-time data. Uses websocket connections. By default, can handle unlimited listeners.
 
 ### Public events
 
