@@ -29,7 +29,7 @@ declare class MarketDataStream extends BinanceWebsocketBase {
     /**
      * @param {string|WesocketEvent} event
      */
-    unsubscribeFrom(event: string | any): Promise<void>;
+    unsubscribeFrom(event: string | WesocketEvent): Promise<void>;
     /**
      * @private
      *

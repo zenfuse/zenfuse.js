@@ -9,30 +9,27 @@ declare class FtxCache extends BaseGlobalCache {
      * @type {FtxBase}
      */
     base: import("../base");
-    updateSelfIfRequired(): void;
-    /**
-     * Array of all ftx tickers
-     * @type {string[]}
-     */
-    get tickers(): string[];
-    /**
-     * Array of all ftx ticker pairs
-     * @type {string[]}
-     */
-    get symbols(): string[];
-    /**
-     * Base Tickers and all their quote pairs
-     * @type {{
-     *     [ticker:string]: string[]
-     * }}
-     */
-    get parsedSymbols(): {
-        [ticker: string]: string[];
+    localCache: {
+        openOrders: Map<any, any>;
     };
     /**
-     * Updating global cache using raw ftx data
-     * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint
+     * Cache order in local cache
+     *
+     * @reason In some cases FTX doesnt return order from REST interface. Zenfuse return cached order.
+     * @param {ZenfuseOrder} order
      */
-    updateCache(exchageInfo: any): void;
+    cacheOrder(order: ZenfuseOrder): void;
+    /**
+     *
+     * @param {string} orderId
+     * @returns {ZenfuseOrder}
+     */
+    getCachedOrderById(orderId: string): ZenfuseOrder;
+    /**
+     *
+     * @param {string} orderId
+     * @returns {boolead}
+     */
+    deleteCachedOrderById(orderId: string): boolead;
 }
 import BaseGlobalCache = require("../../../base/etc/cache");

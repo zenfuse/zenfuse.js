@@ -41,20 +41,20 @@ declare class FtxSpot extends FtxBase {
      *
      * @param {Order} zOrder Order to create
      */
-    createOrder(zOrder: any): Promise<any>;
+    createOrder(zOrder: any): Promise<Order>;
     /**
      * Cancel an active order
      *
-     * @param {object} order Order object to delete
-     * @param {string} order.id Ftx order id
+     * @param {string} orderId Ftx order id
      */
-    cancelOrder(order: {
-        id: string;
-    }): Promise<{
-        id: string;
-    }>;
-    fetchOpenOrders(): Promise<any>;
+    cancelOrderById(orderId: string): Promise<ZenfuseOrder>;
+    fetchOpenOrders(): Promise<void>;
     fetchBalances(): Promise<any>;
+    /**
+     *
+     * @param {string} orderId
+     */
+    fetchOrderById(orderId: string): Promise<Order>;
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }

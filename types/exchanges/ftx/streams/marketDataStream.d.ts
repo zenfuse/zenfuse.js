@@ -25,7 +25,7 @@ declare class MarketDataStream extends FtxWebsocketBase {
      * @param {'subscribe'|'unsubscribe'} command
      */
     private editSubscribition;
-    unsubscribeFromAllbySymbol(symbol: any): Promise<void>;
+    unsubscribeFromAllbySymbol(): Promise<void>;
     /**
      * @private
      * @param {import('ws').MessageEvent} msgEvent
