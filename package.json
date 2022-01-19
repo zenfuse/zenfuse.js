@@ -20,7 +20,8 @@
     },
     "files": [
         "src",
-        "types"
+        "types",
+        "package-lock.json"
     ],
     "author": "zenfuse.io",
     "license": "AGPL-3.0-or-later",
