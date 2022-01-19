@@ -1,7 +1,6 @@
 image:
     file: .gitpod.Dockerfile
 tasks:
-    - name: Instaling deps
+    - name: Preparing for dev
       init: npm install
-    - name: Downloading mocks
-      init: npm run download-mocks
+      command: npm run download-mocks
