@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml)
 ![Lines of code](https://img.shields.io/tokei/lines/github/zenfuse/zenfuse.js)
-[![install size](https://packagephobia.com/badge?p=zenfuse)](https://packagephobia.com/result?p=zenfuse)
+[![Snyk](https://badgen.net/snyk/zenfuse/zenfuse.js)](https://snyk.io/vuln/npm:zenfuse)
 [![Version](https://badgen.net/npm/v/zenfuse)](https://www.npmjs.com/package/zenfuse)
 
 NodeJS connector for Binance and FTX. Currently, in development.
