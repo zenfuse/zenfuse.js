@@ -3,3 +3,5 @@ image:
 tasks:
     - name: Instaling deps
       init: npm install
+    - name: Downloading mocks
+      init: npm run download-mocks
