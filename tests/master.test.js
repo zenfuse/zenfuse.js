@@ -1,3 +1,5 @@
+const { z } = require('zod');
+
 /**
  * @typedef {object} MasterTestEnvironment
  * @property {string} API_PUBLIC_KEY
@@ -55,25 +57,14 @@ module.exports = function masterTest(Exchange, env) {
                 ).toBeDefined();
             });
 
-            it('should return valid schema', () => {
-                const schema = {
-                    type: 'array',
-                    items: {
-                        type: 'object',
-                        properties: {
-                            symbol: {
-                                type: 'string',
-                            },
-                            baseTicker: {
-                                type: 'string',
-                            },
-                            quoteTicker: {
-                                type: 'string',
-                            },
-                        },
-                        required: ['symbol', 'baseTicker', 'quoteTicker'],
-                    },
-                };
+            it('should return valid output', () => {
+                const schema = z.array(
+                    z.object({
+                        symbol: z.string(),
+                        baseTicker: z.string(),
+                        quoteTicker: z.string(),
+                    }),
+                );
                 expect(result).toMatchSchema(schema);
             });
         });
@@ -97,12 +88,7 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should return valid schema', () => {
-                const schema = {
-                    type: 'array',
-                    items: {
-                        type: 'string',
-                    },
-                };
+                const schema = z.array(z.string());
                 expect(result).toMatchSchema(schema);
             });
         });
@@ -176,7 +162,8 @@ module.exports = function masterTest(Exchange, env) {
                 ).rejects.toThrowError(NotAuthenticatedError);
             });
 
-            const orderSchema = {
+            // TODO: zod here
+            const OldOrderSchema = {
                 type: 'object',
                 properties: {
                     id: {
@@ -211,6 +198,17 @@ module.exports = function masterTest(Exchange, env) {
                 minProperties: 8,
             };
 
+            const orderSchema = z.object({
+                id: z.string(),
+                timestamp: z.number(),
+                status: z.enum(['open', 'close', 'canceled']),
+                symbol: z.string().refine((s) => s.split('/').length === 2),
+                type: z.enum(['market', 'limit']),
+                side: z.enum(['buy', 'sell']),
+                price: z.number(),
+                quantity: z.number(),
+            });
+
             describe('buy by market', () => {
                 let result;
 
@@ -225,6 +223,7 @@ module.exports = function masterTest(Exchange, env) {
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
+                    // TODO: Fix output validation
                     expect(result).toMatchSchema(orderSchema);
 
                     expect(
