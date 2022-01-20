@@ -176,7 +176,7 @@ class BinanceBase extends ExchangeBase {
                 rawSymbol = [base, quote];
                 process.emitWarning(errorMsg, {
                     code: 'ZEFU_CACHE_UNSYNC',
-                    detail: `Zenfuse cannot find a symbol in the global cache. This is a warning because this symbol can be guessed.`,
+                    detail: `Zenfuse cannot find a symbol in the global cache. This is a warning because this symbol possible to guess.`,
                 });
             } else {
                 throw new ZenfuseError(errorMsg, 'ZEFU_CACHE_UNSYNC');

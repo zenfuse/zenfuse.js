@@ -12,7 +12,7 @@ if (isEnd2EndTest) {
  */
 const env = {
     API_PUBLIC_KEY: process.env.BINANCE_PUBLIC_KEY || 'DUMMY_PUBLIC_KEY',
-    API_SECRET_KEY: process.env.BINANCE_SECRET_KEY || 'DUMMY_SECRET_KEY',
+    API_PRIVATE_KEY: process.env.BINANCE_SECRET_KEY || 'DUMMY_SECRET_KEY',
     NOT_EXECUTABLE_ORDER: {
         symbol: 'USDC/USDT',
         type: 'limit',

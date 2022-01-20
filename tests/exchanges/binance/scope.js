@@ -13,7 +13,7 @@ module.exports = (env) => ({
     /**
      * Initial nock scope
      */
-    init: () =>
+    root: () =>
         nock(HOSTNAME)
             .get('/api/v3/exchangeInfo')
             .replyWithFile(200, exchangeInfoFilePath, {

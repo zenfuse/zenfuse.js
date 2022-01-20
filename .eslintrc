@@ -17,6 +17,6 @@
         "Proxy": true,
         "isEnd2EndTest": true,
         "isIntegrationTest": true,
-        "isMasterTestFailed": true
+        "isExchangeTestFailed": true
     }
 }
