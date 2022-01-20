@@ -1,9 +1,11 @@
 /**
  * @typedef {object} MasterTestEnvironment
  * @property {string} API_PUBLIC_KEY
- * @property {string} API_SECRET_KEY
+ * @property {string} API_PRIVATE_KEY
  * @property {import('../src/index.js').Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usualy a pair of stablecoins for less than one.
  */
+
+const NotAuthenticatedError = require('../src/base/errors/notAuthenticated.error.js');
 
 /**
  * @param {object} Exchange
@@ -24,11 +26,7 @@ module.exports = function masterTest(Exchange, env) {
         /**
          * @type {FtxSpot}
          */
-        let exchange;
-
-        beforeAll(() => {
-            exchange = new Exchange['spot']();
-        });
+        let exchange = new Exchange['spot']();
 
         describe('ping()', () => {
             it('should be defined', () => {
@@ -151,7 +149,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should pass keys to instance', () => {
                 const keys = {
                     publicKey: env.API_PUBLIC_KEY,
-                    privateKey: env.API_SECRET_KEY,
+                    privateKey: env.API_PRIVATE_KEY,
                 };
 
                 expect(exchange.hasKeys).toBe(false);
@@ -162,9 +160,20 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
+        // NOTE: Now exchange is authenticated instance
+
         describe('createOrder()', () => {
             it('should be defined', () => {
                 expect(exchange.createOrder).toBeDefined();
+            });
+
+            it('should run only with keys', () => {
+                expect(
+                    exchange.createOrder.bind(
+                        new Exchange['spot'](),
+                        env.NOT_EXECUTABLE_ORDER,
+                    ),
+                ).rejects.toThrowError(NotAuthenticatedError);
             });
 
             const orderSchema = {
@@ -297,6 +306,12 @@ module.exports = function masterTest(Exchange, env) {
                 expect(exchange.fetchBalances).toBeDefined();
             });
 
+            it('should run only with keys', () => {
+                expect(
+                    exchange.fetchBalances.bind(new Exchange['spot']()),
+                ).rejects.toThrowError(NotAuthenticatedError);
+            });
+
             let result;
 
             it('should fetch without errors', async () => {
@@ -315,6 +330,15 @@ module.exports = function masterTest(Exchange, env) {
         describe('cancelOrderById()', () => {
             it('should be defined', () => {
                 expect(exchange.cancelOrderById).toBeDefined();
+            });
+
+            it('should run only with keys', () => {
+                expect(
+                    exchange.cancelOrderById.bind(
+                        new Exchange['spot'](),
+                        '7787',
+                    ),
+                ).rejects.toThrowError(NotAuthenticatedError);
             });
 
             let result;
@@ -338,6 +362,12 @@ module.exports = function masterTest(Exchange, env) {
         describe('fetchOrderById()', () => {
             let result;
             let createdOrder;
+
+            it('should run only with keys', () => {
+                expect(
+                    exchange.cancelOrderById.bind(new Exchange['spot'](), ''),
+                ).rejects.toThrowError(NotAuthenticatedError);
+            });
 
             afterAll(() => {
                 exchange.cancelOrderById(createdOrder.id);
@@ -392,7 +422,7 @@ module.exports = function masterTest(Exchange, env) {
         beforeAll(() => {
             exchange = new Exchange['spot']().auth({
                 publicKey: env.API_PUBLIC_KEY,
-                privateKey: env.API_SECRET_KEY,
+                privateKey: env.API_PRIVATE_KEY,
             });
 
             accountDataStream = exchange.getAccountDataStream();

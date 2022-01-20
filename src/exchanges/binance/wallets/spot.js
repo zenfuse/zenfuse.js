@@ -175,14 +175,7 @@ class BinanceSpot extends BinanceBase {
         }
 
         if (!openOrder) {
-            process.emitWarning(
-                `Cannot find ${orderId} binance order in local cache`,
-                {
-                    code: 'ZEFU_CACHE_UNSYNC',
-                    detail: 'This is a warning because zenfuse smart enough to handle unsynced cache. But this should be reported',
-                },
-            );
-
+            // TODO: Global user orders cache support
             // 	┬──┬ ノ(ò_óノ) Binance api kills nerve cells
             const openOrders = await this.fetchOpenOrders();
 
