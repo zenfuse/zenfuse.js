@@ -429,7 +429,7 @@ module.exports = function masterTest(Exchange, env) {
         });
 
         afterAll(() => {
-            if (isMasterTestFailed) {
+            if (isExchangeTestFailed) {
                 accountDataStream.socket.terminate();
             }
         });
@@ -507,7 +507,7 @@ module.exports = function masterTest(Exchange, env) {
         });
 
         afterEach(() => {
-            if (isMasterTestFailed) {
+            if (isExchangeTestFailed) {
                 marketDataStream.socket.terminate();
             }
         });

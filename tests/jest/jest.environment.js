@@ -5,27 +5,33 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
         switch (event.name) {
             case 'setup':
                 this.global.testTimeout = state.testTimeout;
-                this.global.isMasterTestFailed = false;
+                this.global.isExchangeTestFailed = false;
                 this.context.openScopes = new Map();
                 break;
             case 'hook_failure':
             case 'test_fn_failure':
-                this.global.isMasterTestFailed = true;
+                this.global.isExchangeTestFailed = true;
                 break;
             case 'test_fn_start':
-                if (this.global.isMasterTestFailed) {
+                if (this.global.isExchangeTestFailed) {
                     event.test.mode = 'skip';
                 }
                 break;
             case 'run_describe_start':
-                if (!this.global.isMasterTestFailed) {
+                if (
+                    !this.global.isExchangeTestFailed &&
+                    event.describeBlock.mode !== 'skip'
+                ) {
                     this.openHttpMockingScope(event.describeBlock);
                 } else {
                     event.describeBlock.mode = 'skip';
                 }
                 break;
             case 'run_describe_stop':
-                if (!this.global.isMasterTestFailed) {
+                if (
+                    !this.global.isExchangeTestFailed &&
+                    event.describeBlock.mode !== 'skip'
+                ) {
                     this.closeHttpMockingScope(event.describeBlock);
                 } else {
                     event.describeBlock.mode = 'skip';
@@ -60,7 +66,7 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
     }
 
     /**
-     * omg
+     * Do not touch, magic happens here
      * @todo refactor this cheap fuck
      */
     getScopeOfBlock(block) {
@@ -68,7 +74,7 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
 
         if (block.name === 'ROOT_DESCRIBE_BLOCK') {
             if (this.context.httpScope) {
-                return this.context.httpScope.init;
+                return this.context.httpScope.root;
             }
         }
 
