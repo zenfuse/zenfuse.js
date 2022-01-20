@@ -134,6 +134,8 @@ class BinanceSpot extends BinanceBase {
      * @param {Order} zOrder Order to create
      */
     async createOrder(zOrder) {
+        this.validateOrderParams(zOrder);
+
         const assignedOrder = utils.assignDefaultsInOrder(
             zOrder,
             this.options.defaults,

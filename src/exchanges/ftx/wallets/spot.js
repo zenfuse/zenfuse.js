@@ -115,6 +115,8 @@ class FtxSpot extends FtxBase {
      * @param {Order} zOrder Order to create
      */
     async createOrder(zOrder) {
+        this.validateOrderParams(zOrder);
+
         const fOrder = utils.transfromZenfuseOrder(zOrder);
 
         const fCreatedOrder = await this.privateFetch('api/orders', {

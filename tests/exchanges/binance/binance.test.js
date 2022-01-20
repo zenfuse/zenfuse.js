@@ -17,8 +17,8 @@ const env = {
         symbol: 'USDC/USDT',
         type: 'limit',
         side: 'buy',
-        quantity: '20',
-        price: '0.8',
+        quantity: 20,
+        price: 0.8,
     },
 };
 
