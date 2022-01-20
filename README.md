@@ -4,6 +4,8 @@
 ![Supported version](https://img.shields.io/node/v/zenfuse)
 [![Snyk](https://img.shields.io/snyk/vulnerabilities/github/zenfuse/zenfuse.js)](https://snyk.io/vuln/npm:zenfuse)
 [![Version](https://img.shields.io/npm/v/zenfuse)](https://www.npmjs.com/package/zenfuse)
+[![CodeFactor](https://www.codefactor.io/repository/github/zenfuse/zenfuse.js/badge)](https://www.codefactor.io/repository/github/zenfuse/zenfuse.js)
+[![Last Commit](https://img.shields.io/github/last-commit/zenfuse/zenfuse.js)](https://github.com/zenfuse/zenfuse.js/commits)
 
 NodeJS connector for Binance and FTX. Currently, in development.
 
