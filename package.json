@@ -53,7 +53,8 @@
     "dependencies": {
         "deepmerge": "^4.2.2",
         "got": "^11.8.2",
-        "ws": "^8.2.3"
+        "ws": "^8.2.3",
+        "zod": "^3.11.6"
     },
     "jest": {
         "slowTestThreshold": 30000,

@@ -5,7 +5,7 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const ZenfuseError = require('../../../base/errors/base.error');
+const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -98,7 +98,7 @@ class BinanceSpot extends BinanceBase {
 
         const createSymbol = (symbol) => {
             if (!this.cache.parsedSymbols.has(symbol)) {
-                throw new ZenfuseError(
+                throw new ZenfuseRuntimeError(
                     `Cannot find ${symbol} in binance cache`,
                     'ZEFU_CACHE_UNSYNC',
                 );

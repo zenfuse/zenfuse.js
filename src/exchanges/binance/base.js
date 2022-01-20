@@ -6,7 +6,7 @@ const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error
 const BinanceApiError = require('./errors/api.error');
 const BinanceCache = require('./etc/cache');
 const { createHmacSignature } = require('./utils');
-const ZenfuseError = require('../../base/errors/base.error');
+const ZenfuseRuntimeError = require('../../base/errors/runtime.error');
 
 const keysSymbol = Symbol('keys');
 
@@ -179,7 +179,7 @@ class BinanceBase extends ExchangeBase {
                     detail: `Zenfuse cannot find a symbol in the global cache. This is a warning because this symbol possible to guess.`,
                 });
             } else {
-                throw new ZenfuseError(errorMsg, 'ZEFU_CACHE_UNSYNC');
+                throw new ZenfuseRuntimeError(errorMsg, 'ZEFU_CACHE_UNSYNC');
             }
         }
 
