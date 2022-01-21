@@ -8,6 +8,7 @@ const { z } = require('zod');
  */
 
 const NotAuthenticatedError = require('../src/base/errors/notAuthenticated.error.js');
+const OrderSchema = require('./schemas/order');
 
 /**
  * @param {object} Exchange
@@ -104,6 +105,18 @@ module.exports = function masterTest(Exchange, env) {
                 result = await exchange.fetchPrice();
             });
 
+            it('should return valid schema', () => {
+                const schema = z.array(
+                    z.object({
+                        symbol: z
+                            .string()
+                            .refine((s) => s.split('/').length === 2),
+                        price: z.number(),
+                    }),
+                );
+                expect(result).toMatchSchema(schema);
+            });
+
             it('should have valid originalRespone', () => {
                 expect(result).toBeDefined();
                 expect(
@@ -161,8 +174,6 @@ module.exports = function masterTest(Exchange, env) {
                     ),
                 ).rejects.toThrowError(NotAuthenticatedError);
             });
-
-            const OrderSchema = require('./schemas/order');
 
             describe('buy by market', () => {
                 let result;
@@ -272,6 +283,19 @@ module.exports = function masterTest(Exchange, env) {
                 result = await exchange.fetchBalances();
             });
 
+            it('should return valid schema', () => {
+                const schema = z.array(
+                    z
+                        .object({
+                            ticker: z.string(),
+                            free: z.number(),
+                            used: z.number(),
+                        })
+                        .refine((b) => b.free > 0 || b.used > 0),
+                );
+                expect(result).toMatchSchema(schema);
+            });
+
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
                 // TODO: Test output
@@ -344,6 +368,11 @@ module.exports = function masterTest(Exchange, env) {
                 expect(result).toBeDefined();
 
                 expect(result).toEqual(createdOrder);
+            });
+
+            it('should return valid schema', () => {
+                expect(result).toMatchSchema(OrderSchema);
+                expect(createdOrder).toMatchSchema(OrderSchema);
             });
         });
     });

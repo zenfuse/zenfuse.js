@@ -222,13 +222,13 @@ class BinanceSpot extends BinanceBase {
     async fetchBalances() {
         const response = await this.privateFetch('api/v3/account');
 
-        const balances = response.balances.map((b) => {
-            return {
+        const balances = response.balances
+            .filter((b) => b.free > 0 || b.locked > 0)
+            .map((b) => ({
                 ticker: b.asset,
-                free: b.free,
-                used: b.locked,
-            };
-        });
+                free: parseFloat(b.free),
+                used: parseFloat(b.locked),
+            }));
 
         utils.linkOriginalPayload(balances, response);
 
@@ -243,7 +243,7 @@ class BinanceSpot extends BinanceBase {
         let orderToDelete = this.cache.getCachedOrderById(orderId);
 
         if (!orderToDelete) {
-            throw 'Not in cache'; // TODO: Do something
+            throw 'TODO: Fix cache'; // TODO:!!!
         }
 
         const response = await this.privateFetch('api/v3/order', {

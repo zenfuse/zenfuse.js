@@ -93,12 +93,15 @@ class FtxSpot extends FtxBase {
             return price;
         }
 
-        const prices = response.result.map((market) => {
-            return {
-                symbol: market.name,
-                price: market.price,
-            };
-        });
+        const prices = response.result
+            .filter((market) => market.type === 'spot')
+            .map((market) => {
+                // NOTE: FTX Return dead tokens with null price
+                return {
+                    symbol: market.name,
+                    price: market.price || 0,
+                };
+            });
 
         utils.linkOriginalPayload(prices, response);
 
@@ -164,13 +167,15 @@ class FtxSpot extends FtxBase {
     async fetchBalances() {
         const response = await this.privateFetch('api/wallet/balances');
 
-        const balances = response.result.map((b) => {
-            return {
-                ticker: b.coin,
-                free: b.free,
-                used: b.total - b.free,
-            };
-        });
+        const balances = response.result
+            .filter((b) => b.total > 0)
+            .map((b) => {
+                return {
+                    ticker: b.coin,
+                    free: parseFloat(b.free),
+                    used: parseFloat(b.total) - parseFloat(b.free),
+                };
+            });
 
         utils.linkOriginalPayload(balances, response);
 
