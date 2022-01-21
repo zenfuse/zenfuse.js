@@ -162,42 +162,6 @@ module.exports = function masterTest(Exchange, env) {
                 ).rejects.toThrowError(NotAuthenticatedError);
             });
 
-            // TODO: zod here
-            const OldOrderSchema = {
-                type: 'object',
-                properties: {
-                    id: {
-                        type: 'string',
-                    },
-                    timestamp: {
-                        type: 'number',
-                    },
-                    status: {
-                        type: 'string',
-                        tags: ['open', 'close', 'canceled'],
-                    },
-                    symbol: {
-                        type: 'string',
-                    },
-                    type: {
-                        type: 'string',
-                        tags: ['market', 'limit'],
-                    },
-                    side: {
-                        type: 'string',
-                        tags: ['buy', 'sell'],
-                    },
-                    price: {
-                        type: ['number', 'string'],
-                    },
-                    quantity: {
-                        type: ['number', 'string'],
-                    },
-                },
-                additionalProperties: false,
-                minProperties: 8,
-            };
-
             const OrderSchema = require('./schemas/order');
 
             describe('buy by market', () => {
