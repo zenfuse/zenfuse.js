@@ -1,4 +1,3 @@
-
 image:
     file: .gitpod.Dockerfile
 tasks:
@@ -7,5 +6,5 @@ tasks:
       command: npm run download-mocks
 
 vscode:
-  extensions:
-    - huntertran.auto-markdown-toc
+    extensions:
+        - huntertran.auto-markdown-toc
