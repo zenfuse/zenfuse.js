@@ -1,24 +1,14 @@
 # zenfuse.js
 
 [![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml)
-![Supported version](https://img.shields.io/node/v/zenfuse)
-[![Snyk](https://img.shields.io/snyk/vulnerabilities/github/zenfuse/zenfuse.js)](https://snyk.io/vuln/npm:zenfuse)
-[![Version](https://img.shields.io/npm/v/zenfuse)](https://www.npmjs.com/package/zenfuse)
-[![Last Commit](https://img.shields.io/github/last-commit/zenfuse/zenfuse.js)](https://github.com/zenfuse/zenfuse.js/commits)
+![Supported version](https://img.shields.io/node/v/zenfuse?logo=nodedotjs)
+[![Snyk](https://img.shields.io/snyk/vulnerabilities/github/zenfuse/zenfuse.js?logo=snyk)](https://snyk.io/vuln/npm:zenfuse)
+[![Version](https://img.shields.io/npm/v/zenfuse?logo=npm)](https://www.npmjs.com/package/zenfuse)
+[![Last Commit](https://img.shields.io/github/last-commit/zenfuse/zenfuse.js?logo=git)](https://github.com/zenfuse/zenfuse.js/commits)
 
-NodeJS connector for Binance and FTX. Currently, in development.
+<!-- TOC -->
 
-**Features:**
-
--   Account orders manipulating
--   Fetching public markets data
--   Real-time events
-    -   Public markets price
-    -   Account orders updating
-
-## Table of contents
-<!-- TOC depthfrom:2 orderedlist:false updateonsave:false bulletcharacter:- -->
-
+-   [What is zenfuse.js?](#what-is-zenfusejs)
 -   [Installation](#installation)
 -   [Usage](#usage)
     -   [Creating instance](#creating-instance)
@@ -59,10 +49,45 @@ NodeJS connector for Binance and FTX. Currently, in development.
 
 <!-- /TOC -->
 
+## What is zenfuse.js?
+
+Zenfuse.js is crypto exchanges connector libliary. Currently in active development.
+
+**Features:**
+
+-   Account orders manipulating
+-   Fetching public markets data
+-   Real-time events
+    -   Public markets price
+    -   Account orders updating
+
+**Exchanges**
+
+-   [Binance](https://www.binance.com/en)
+-   [FTX](https://ftx.com/)
+
+_In progress:_
+
+-   OkX
+
+_Soon:_
+
+-   Bitfinex
+-   Bitglobal
+-   Kraken
+-   KuCoin
+-   Huobi
+
 ## Installation
 
 ```
 npm install zenfuse
+```
+
+Or using yarn
+
+```
+yarn add zenfuse
 ```
 
 ## Usage
