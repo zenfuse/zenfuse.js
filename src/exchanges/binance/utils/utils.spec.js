@@ -88,40 +88,9 @@ describe('transfromZenfuseOrder()', () => {
 describe('transformBinanceOrder()', () => {
     const { transfromBinanceOrder } = utils;
 
-    const orderSchema = {
-        type: 'object',
-        properties: {
-            id: {
-                type: 'string',
-            },
-            timestamp: {
-                type: 'number',
-            },
-            status: {
-                type: 'string',
-                tags: ['open', 'close', 'canceled'],
-            },
-            symbol: {
-                type: 'string',
-            },
-            type: {
-                type: 'string',
-                tags: ['market', 'limit'],
-            },
-            side: {
-                type: 'string',
-                tags: ['buy', 'sell'],
-            },
-            price: {
-                type: ['number', 'string'],
-            },
-            quantity: {
-                type: ['number', 'string'],
-            },
-        },
-        additionalProperties: false,
-        minProperties: 8,
-    };
+    const OrderSchema = require('../../../../tests/schemas/order').omit({
+        symbol: true,
+    });
 
     it('should transform order', () => {
         const binanceCreatedOrder = {
@@ -158,7 +127,7 @@ describe('transformBinanceOrder()', () => {
 
         const result = transfromBinanceOrder(binanceCreatedOrder);
 
-        expect(result).toMatchSchema(orderSchema);
+        expect(result).toMatchSchema(OrderSchema);
     });
 });
 

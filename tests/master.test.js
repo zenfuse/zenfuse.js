@@ -198,16 +198,7 @@ module.exports = function masterTest(Exchange, env) {
                 minProperties: 8,
             };
 
-            const orderSchema = z.object({
-                id: z.string(),
-                timestamp: z.number(),
-                status: z.enum(['open', 'close', 'canceled']),
-                symbol: z.string().refine((s) => s.split('/').length === 2),
-                type: z.enum(['market', 'limit']),
-                side: z.enum(['buy', 'sell']),
-                price: z.number(),
-                quantity: z.number(),
-            });
+            const OrderSchema = require('./schemas/order');
 
             describe('buy by market', () => {
                 let result;
@@ -224,7 +215,7 @@ module.exports = function masterTest(Exchange, env) {
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
                     // TODO: Fix output validation
-                    expect(result).toMatchSchema(orderSchema);
+                    expect(result).toMatchSchema(OrderSchema);
 
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -246,7 +237,7 @@ module.exports = function masterTest(Exchange, env) {
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-                    expect(result).toMatchSchema(orderSchema);
+                    expect(result).toMatchSchema(OrderSchema);
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -268,7 +259,7 @@ module.exports = function masterTest(Exchange, env) {
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-                    expect(result).toMatchSchema(orderSchema);
+                    expect(result).toMatchSchema(OrderSchema);
 
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -291,7 +282,7 @@ module.exports = function masterTest(Exchange, env) {
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-                    expect(result).toMatchSchema(orderSchema);
+                    expect(result).toMatchSchema(OrderSchema);
 
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
