@@ -9,7 +9,7 @@
 
 NodeJS connector for Binance and FTX. Currently, in development.
 
-### Features:
+**Features:**
 
 -   Account orders manipulating
 -   Fetching public markets data
@@ -22,6 +22,48 @@ NodeJS connector for Binance and FTX. Currently, in development.
 ```
 npm install zenfuse
 ```
+
+<!-- TOC depthfrom:2 orderedlist:false updateonsave:false bulletcharacter:- -->
+
+-   [Installation](#installation)
+-   [Usage](#usage)
+    -   [Creating instance](#creating-instance)
+    -   [Public fetching](#public-fetching)
+    -   [fetchMarkets](#fetchmarkets)
+    -   [fetchTickers](#fetchtickers)
+    -   [fetchPricemarket?: sting](#fetchpricemarket-sting)
+        -   [All markets](#all-markets)
+        -   [Specific market](#specific-market)
+    -   [ping](#ping)
+-   [Private fetching](#private-fetching)
+    -   [Authentication](#authentication)
+    -   [auth](#auth)
+    -   [hasKeys](#haskeys)
+    -   [createOrderorder: ZenfuseOrder](#createorderorder-zenfuseorder)
+    -   [cancelOrderByIdorderId: string](#cancelorderbyidorderid-string)
+    -   [fetchBalances](#fetchbalances)
+-   [Real-time events](#real-time-events)
+    -   [Public events](#public-events)
+        -   [getMarketDataStream](#getmarketdatastream)
+        -   [open](#open)
+        -   [subscribeTo{ channel: 'price', symbol: string }](#subscribeto-channel-price-symbol-string-)
+        -   [unsubscribeFrom{ channel: 'price', symbol: string }](#unsubscribefrom-channel-price-symbol-string-)
+        -   [on'newPrice', listener: { symbol: string, price: number } => void](#onnewprice-listener--symbol-string-price-number---void)
+        -   [close](#close)
+    -   [Account events](#account-events)
+        -   [getAccountDataStream](#getaccountdatastream)
+        -   [open](#open)
+        -   [on'orderUpdate', listener: order: ZenfuseOrder => void](#onorderupdate-listener-order-zenfuseorder--void)
+        -   [close](#close)
+-   [Configuration](#configuration)
+    -   [All options](#all-options)
+-   [Advanced things](#advanced-things)
+-   [Full use cases](#full-use-cases)
+    -   [Create order on Binance](#create-order-on-binance)
+    -   [Using HTTP proxy](#using-http-proxy)
+-   [THE BIG TODO](#the-big-todo)
+
+<!-- /TOC -->
 
 ## Usage
 
