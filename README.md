@@ -426,7 +426,7 @@ ftx; // All HTTP requests will be proxied, except websockets
 
 Features:
 
--   [ ] Add Okex exchange
+-   [ ] Add Okx exchange
 -   [ ] Add Huobi exchange
 -   [ ] Add `orderbook` event in `MarketDataStream`
 -   [ ] Add more order types
@@ -437,7 +437,8 @@ Internal:
 
 -   [ ] Add full API doc wiki based on jsdoc
 -   [ ] Add a lot of use cases example in GitHub wiki
--   [ ] Add [zod](https://github.com/colinhacks/zod) integration with testing output and argument validation
+-   [x] Add [zod](https://github.com/colinhacks/zod) integration with testing output and argument validation
 -   [ ] Add mocked websocket testing (big thing)
+-   [ ] Refactor utils function, make them a method of the class
 
 [`got.extendoptions`]: https://github.com/sindresorhus/got/blob/3a84454208e39aae7f2bae0bf68b7ede2872f317/source/types.ts#L54
