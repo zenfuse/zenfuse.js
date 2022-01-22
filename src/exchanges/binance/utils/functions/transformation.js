@@ -109,7 +109,7 @@ const transfromBinanceOrder = (bOrder) => {
 
     zOrder.id = bOrder.orderId.toString();
     zOrder.timestamp = bOrder.transactTime;
-    zOrder.status = bOrder.status.toLowerCase();
+    // zOrder.status = bOrder.status.toLowerCase();
     // zOrder.timeInForce = bOrder.timeInForce;
     zOrder.type = bOrder.type.toLowerCase();
     zOrder.symbol = bOrder.symbol; // TODO: Binance symbol transformation
@@ -117,6 +117,14 @@ const transfromBinanceOrder = (bOrder) => {
     zOrder.side = bOrder.side.toLowerCase();
     zOrder.price = parseFloat(bOrder.price);
     zOrder.quantity = parseFloat(bOrder.origQty);
+
+    if (bOrder.status === 'FILLED') {
+        zOrder.status = 'close'; // TODO: Normal statuses
+    } else if (bOrder.status === 'NEW') {
+        zOrder.status = 'close';
+    } else {
+        zOrder.status = bOrder.status.toLowerCase();
+    }
 
     return zOrder;
 };

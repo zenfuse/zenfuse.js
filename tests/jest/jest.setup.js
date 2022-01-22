@@ -1,6 +1,22 @@
-const { matchers } = require('jest-json-schema');
+expect.extend({
+    toMatchSchema(received, zodSchema) {
+        const result = zodSchema.safeParse(received);
 
-expect.extend(matchers);
+        let message;
+
+        if (!result.success) {
+            message = result.error.errors
+                .map((e) => `${e.path.join('.')} ${e.message}`.trim())
+                .join('\n');
+        }
+
+        return {
+            actual: received,
+            message: () => message,
+            pass: result.success,
+        };
+    },
+});
 
 const TEST_TIMEOUT = 5000;
 

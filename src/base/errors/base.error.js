@@ -1,20 +1,11 @@
-class ZenfuseError extends Error {
-    /**
-     * Descriptions by error code
-     */
-    static details = {
-        ZEFU_CACHE_UNSYNC: 'Zenfuse global cache unsynced',
-    };
-
+class ZenfuseBaseError extends Error {
     /**
      * @param {string} msg Error massage
      * @param {string} [code] Optional error code
      */
-    constructor(msg, code) {
+    constructor(msg) {
         super(msg);
-        this.code = code;
-        this.details = ZenfuseError.details[code];
     }
 }
 
-module.exports = ZenfuseError;
+module.exports = ZenfuseBaseError;

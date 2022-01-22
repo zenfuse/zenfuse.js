@@ -4,3 +4,7 @@ tasks:
     - name: Preparing for dev
       init: npm install
       command: npm run download-mocks
+
+vscode:
+    extensions:
+        - huntertran.auto-markdown-toc

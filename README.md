@@ -1,20 +1,88 @@
 # zenfuse.js
 
 [![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml)
-![Supported version](https://img.shields.io/node/v/zenfuse)
-[![Snyk](https://img.shields.io/snyk/vulnerabilities/github/zenfuse/zenfuse.js)](https://snyk.io/vuln/npm:zenfuse)
-[![Version](https://img.shields.io/npm/v/zenfuse)](https://www.npmjs.com/package/zenfuse)
-[![Last Commit](https://img.shields.io/github/last-commit/zenfuse/zenfuse.js)](https://github.com/zenfuse/zenfuse.js/commits)
+![Supported version](https://img.shields.io/node/v/zenfuse?logo=nodedotjs)
+[![Snyk](https://img.shields.io/snyk/vulnerabilities/github/zenfuse/zenfuse.js?logo=snyk)](https://snyk.io/vuln/npm:zenfuse)
+[![Version](https://img.shields.io/npm/v/zenfuse?logo=npm)](https://www.npmjs.com/package/zenfuse)
+</br>
+[![Last Commit](https://img.shields.io/github/last-commit/zenfuse/zenfuse.js?logo=git)](https://github.com/zenfuse/zenfuse.js/commits)
+[![Zenfuse Dev Tool](https://gist.githubusercontent.com/izzqz/1b76f1e64b7883a602440ad6559159c2/raw/5fde4394256555e38b825abd8ada901739143388/badge.svg)](https://zenfuse.io)
 
-NodeJS connector for Binance and FTX. Currently, in development.
+<!-- TOC depthfrom:2 updateonsave:false -->
 
-### Features:
+-   [What is zenfuse.js?](#what-is-zenfusejs)
+-   [Installation](#installation)
+-   [Usage](#usage)
+    -   [Creating instance](#creating-instance)
+    -   [Public fetching](#public-fetching)
+    -   [.fetchMarkets](#fetchmarkets)
+    -   [.fetchTickers](#fetchtickers)
+    -   [.fetchPrice](#fetchprice)
+        -   [All markets](#all-markets)
+        -   [Specific market](#specific-market)
+    -   [.ping](#ping)
+-   [Private fetching](#private-fetching)
+    -   [Authentication](#authentication)
+    -   [.auth](#auth)
+    -   [.hasKeys](#haskeys)
+    -   [.createOrder](#createorder)
+    -   [.cancelOrderById](#cancelorderbyid)
+    -   [.fetchBalances](#fetchbalances)
+-   [Real-time events](#real-time-events)
+    -   [Public events](#public-events)
+        -   [.getMarketDataStream](#getmarketdatastream)
+        -   [.open](#open)
+        -   [.subscribeTo](#subscribeto)
+        -   [.unsubscribeFrom](#unsubscribefrom)
+        -   [.on](#on)
+        -   [.close](#close)
+    -   [Account events](#account-events)
+        -   [.getAccountDataStream](#getaccountdatastream)
+        -   [.open](#open)
+        -   [.on](#on)
+        -   [.close](#close)
+-   [Configuration](#configuration)
+    -   [All options](#all-options)
+-   [Advanced things](#advanced-things)
+    -   [Get original payload from exchange](#get-original-payload-from-exchange)
+    -   [Any private and public http fetching](#any-private-and-public-http-fetching)
+        -   [.publicFetch](#publicfetch)
+        -   [.privateFetch](#privatefetch)
+-   [Full use cases](#full-use-cases)
+    -   [Create order on Binance](#create-order-on-binance)
+    -   [Using HTTP proxy](#using-http-proxy)
+-   [THE BIG TODO](#the-big-todo)
+
+<!-- /TOC -->
+
+## What is zenfuse.js?
+
+Zenfuse.js is crypto exchanges connector library. Currently, in active development.
+
+**Features:**
 
 -   Account orders manipulating
 -   Fetching public markets data
 -   Real-time events
     -   Public markets price
     -   Account orders updating
+
+**Exchanges**
+
+-   [Binance](https://www.binance.com/en)
+-   [FTX](https://ftx.com/)
+
+<!-- _In progress:_
+
+-   OkX
+
+_Soon:_
+
+-   Bitfinex
+-   Bitglobal
+-   Kraken
+-   KuCoin
+-   Huobi -->
 
 ## Installation
 
@@ -41,7 +109,7 @@ const FTX = new FTX['spot']();
 
 All public methods exist in any exchange instance, even if it is not authenticated.
 
-### `fetchMarkets()`
+### `.fetchMarkets`
 
 Fetching all markets that exist in exchange.
 
@@ -55,7 +123,7 @@ await ftx.fetchMarkets();
 // ['BTC/USD', 'ETH/USDT', ... ]
 ```
 
-### `fetchTickers()`
+### `.fetchTickers`
 
 Fetching all tickers aka assets that exist in exchange.
 
@@ -67,7 +135,9 @@ await ftx.fetchTickers();
 // ['BTC', 'USD', ... ]
 ```
 
-### `fetchPrice(market?: sting)`
+### `.fetchPrice`
+
+`fetchPrice(market?: sting)`
 
 Fetch current market price
 
@@ -102,7 +172,7 @@ await ftx.fetchPrice('BTC/USD');
 }
 ```
 
-### `ping()`
+### `.ping`
 
 Just ping the server to check availability.
 
@@ -117,7 +187,9 @@ To use any methods for account, instance should have keys for it
 
 ### Authentication
 
-### `auth()`
+### `.auth`
+
+`auth({ publicKey: string, privateKey: string })`
 
 `auth` method pass keys to instance. Returns self for chaining.
 
@@ -128,7 +200,7 @@ binance.auth({
 });
 ```
 
-### `hasKeys`
+### `.hasKeys`
 
 `hasKeys` returns boolean
 
@@ -143,7 +215,9 @@ ftx.auth({
 ftx.hasKeys; // true
 ```
 
-### `createOrder(order: ZenfuseOrder)`
+### `.createOrder`
+
+`createOrder(order: ZenfuseOrder)`
 
 Creates order on exchange
 
@@ -195,7 +269,9 @@ This method resolves created order from exchange, this is `ZenfuseOrder` with so
 
 **NOTE:** Any other parameters passed to createOrder will be appended to request
 
-### `cancelOrderById(orderId: string)`
+### `.cancelOrderById`
+
+`cancelOrderById(orderId: string)`
 
 Cancels order using order id.
 
@@ -214,7 +290,7 @@ const deletedOrder = await binance.cancelOrderById(order.id);
 order.id === deletedOrder.id; // true
 ```
 
-### `fetchBalances()`
+### `.fetchBalances`
 
 Fetch account balances
 
@@ -243,7 +319,7 @@ Zenfuse.js uses [EventEmiter](https://nodejs.org/api/events.html#class-eventemit
 
 Any public events providing `MarketDataStream` inteface. Currently, only `newPrice` event supports.
 
-#### `getMarketDataStream()`
+#### `.getMarketDataStream`
 
 Exchange instance method which return `MarketDataStream` interface. One instance for one websocket connection.
 
@@ -252,7 +328,7 @@ binance.hasKeys; // false
 const marketDataStream = binance.getMarketDataStream();
 ```
 
-#### `open()`
+#### `.open`
 
 Opens websocket connection. Makes possible to receive events.
 
@@ -260,7 +336,9 @@ Opens websocket connection. Makes possible to receive events.
 await marketDataStream.open();
 ```
 
-#### `subscribeTo({ channel: 'price', symbol: string })`
+#### `.subscribeTo`
+
+`subscribeTo({ channel: 'price', symbol: string })`
 
 Subscribes to specific event.
 
@@ -273,7 +351,9 @@ await marketDataStream.subscribeTo({
 });
 ```
 
-#### `unsubscribeFrom({ channel: 'price', symbol: string })`
+#### `.unsubscribeFrom`
+
+`unsubscribeFrom({ channel: 'price', symbol: string })`
 
 Unsubscribes from specific event.
 
@@ -284,7 +364,9 @@ await marketDataStream.unsubscribeFrom({
 });
 ```
 
-#### `on('newPrice', listener: ({ symbol: string, price: number }) => void)`
+#### `.on`
+
+`on('newPrice', listener: ({ symbol: string, price: number }) => void)`
 
 Price update event. Pass `symbol` and `price` to listener.
 
@@ -294,7 +376,7 @@ marketDataStream.on('newPrice', (e) => {
 });
 ```
 
-#### `close()`
+#### `.close`
 
 Closes websocket connection.
 
@@ -306,7 +388,7 @@ await marketDataStream.close();
 
 Any public events providing `AccountDataStream` interface. Currently, only `orderUpdate` event supports.
 
-#### `getAccountDataStream()`
+#### `.getAccountDataStream`
 
 Exchange instance method which return `AccountDataStream` interface. One instance for one websocket connection. Instance with keys required.
 
@@ -315,7 +397,7 @@ ftx.hasKeys; // true
 const accountDataStream = ftx.getAccountDataStream();
 ```
 
-#### `open()`
+#### `.open`
 
 Opens websocket connection. Starting emit events immediately. Returns self for chaining.
 
@@ -323,7 +405,9 @@ Opens websocket connection. Starting emit events immediately. Returns self for c
 await accountDataStream.open();
 ```
 
-#### `on('orderUpdate', listener: (order: ZenfuseOrder) => void)`
+#### `.on`
+
+`on('orderUpdate', listener: (order: ZenfuseOrder) => void)`
 
 `orderUpdate` emits when open order changes his status. Like fills or cancelation.
 
@@ -335,7 +419,7 @@ marketDataStream.on('orderUpdate', (order) => {
 });
 ```
 
-#### `close()`
+#### `.close`
 
 Closes websocket connection. Returns self for chaining.
 
@@ -371,15 +455,122 @@ const b = new Binance['spot'](options);
 
 ## Advanced things
 
-...
+### Get original payload from exchange
+
+Any result what library return has `Symbol.for('zenfuse.originalPayload')` key, contains object returned from exchange API.
+
+```js
+const marketPrices = new FTX['spot']().fetchPrice();
+
+marketPrices;
+// [
+//     {
+//         symbol: 'BTC/USDT',
+//         price: 10999,
+//     },
+//     // ...
+// ];
+
+marketPrices[Symbol.for('zenfuse.originalPayload')];
+// {
+//     success: true,
+//     result: [
+//         {
+//             name: 'BTC/USDT',
+//             enabled: true,
+//             postOnly: false,
+//             priceIncrement: 0.0001,
+//         // ...
+```
+
+### Any http fetching
+
+Both methods copy `got` interface:
+
+-   [Full API here.](https://github.com/sindresorhus/got/tree/v11.8.3#api)
+-   [GotOptions params](https://github.com/sindresorhus/got/tree/v11.8.3#options)
+
+#### `.publicFetch`
+
+`publicFetch(url: string, GotOptions)`
+
+Can fetch any public data witch doesn't require authentication.
+`publicFetch` modify this request as needed by the exchange.
+
+_Example of https://docs.ftx.com/#get-historical-prices_
+
+```js
+// Fetch historical prices with pagination
+const response = await ftx.publicFetch('markets/BTC-0628/candles', {
+    method: 'GET',
+    json: {
+        resolution: 300,
+        start_time: 1559881511,
+        end_time: 1559881711,
+    },
+});
+
+response;
+// {
+//     success: true,
+//     result: [
+//         {
+//             close: 11055.25,
+//             high: 11089.0,
+//             low: 11043.5,
+//             open: 11059.25,
+//             startTime: '2019-06-24T17:15:00+00:00',
+//             volume: 464193.95725,
+//         },
+//     ],
+// };
+```
+
+#### `.privateFetch`
+
+`privateFetch(url: string, GotOptions)`
+
+Can fetch any data with required authentication.
+Zenfuse will sign this request as needed by the exchange with the passed credentials.
+
+_Example from https://binance-docs.github.io/apidocs/spot/en/#account-trade-list-user_data_
+
+```js
+binance.hasKeys; // true
+
+const response = await ftx.publicFetch('api/v3/myTrades', {
+    method: 'GET',
+    searchParams: {
+        symbol: 'BNBBTC',
+        orderId: 100234,
+    },
+});
+
+response;
+// [
+//     {
+//         symbol: 'BNBBTC',
+//         id: 28457,
+//         orderId: 100234,
+//         orderListId: -1,
+//         price: '4.00000100',
+//         qty: '12.00000000',
+//         quoteQty: '48.000012',
+//         commission: '10.10000000',
+//         commissionAsset: 'BNB',
+//         time: 1499865549590,
+//         isBuyer: true,
+//         isMaker: false,
+//         isBestMatch: true,
+//     },
+// ];
+```
 
 ## Full use cases
 
 ### Create order on Binance
 
 ```js
-const { Binance } = require('zenfuse');
-
 const binance = new Binance['spot']().auth({
     publicKey: process.env.PUBLIC_KEY,
     secretKey: process.env.SECRET_KEY,
@@ -425,7 +616,7 @@ ftx; // All HTTP requests will be proxied, except websockets
 
 Features:
 
--   [ ] Add Okex exchange
+-   [ ] Add Okx exchange
 -   [ ] Add Huobi exchange
 -   [ ] Add `orderbook` event in `MarketDataStream`
 -   [ ] Add more order types
@@ -436,7 +627,8 @@ Internal:
 
 -   [ ] Add full API doc wiki based on jsdoc
 -   [ ] Add a lot of use cases example in GitHub wiki
--   [ ] Add [zod](https://github.com/colinhacks/zod) integration with testing output and argument validation
+-   [x] Add [zod](https://github.com/colinhacks/zod) integration with testing output and argument validation
 -   [ ] Add mocked websocket testing (big thing)
+-   [ ] Refactor utils function, make them a method of the class
 
 [`got.extendoptions`]: https://github.com/sindresorhus/got/blob/3a84454208e39aae7f2bae0bf68b7ede2872f317/source/types.ts#L54

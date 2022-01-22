@@ -2,6 +2,8 @@ const got = require('got');
 const mergeObjects = require('deepmerge');
 
 const pkg = require('../../package.json');
+const ZenfuseValidationError = require('./errors/validation.error');
+const { OrderParamsSchema } = require('./schemas/order');
 
 /**
  * @typedef {object} ExtraWsOptions
@@ -49,7 +51,24 @@ class ExchangeBase {
         this.options = assignedOptions;
 
         this.fetcher = got.extend(this.options.httpClientOptions);
+
+        this.orderSchema = OrderParamsSchema.refine(
+            ({ symbol }) => symbol.split('/').length === 2,
+            {
+                message: 'Symbol should have valid "/" separator',
+            },
+        );
     }
+
+    validateOrderParams(order) {
+        const result = this.orderSchema.safeParse(order);
+
+        if (result.success) return;
+
+        throw new ZenfuseValidationError('InvalidOrder', result.error);
+    }
+
+    // TODO: safeValidateOrderParams()
 }
 
 module.exports = ExchangeBase;

@@ -5,7 +5,7 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const ZenfuseError = require('../../../base/errors/base.error');
+const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -98,7 +98,7 @@ class BinanceSpot extends BinanceBase {
 
         const createSymbol = (symbol) => {
             if (!this.cache.parsedSymbols.has(symbol)) {
-                throw new ZenfuseError(
+                throw new ZenfuseRuntimeError(
                     `Cannot find ${symbol} in binance cache`,
                     'ZEFU_CACHE_UNSYNC',
                 );
@@ -134,6 +134,8 @@ class BinanceSpot extends BinanceBase {
      * @param {Order} zOrder Order to create
      */
     async createOrder(zOrder) {
+        this.validateOrderParams(zOrder);
+
         const assignedOrder = utils.assignDefaultsInOrder(
             zOrder,
             this.options.defaults,
@@ -220,13 +222,13 @@ class BinanceSpot extends BinanceBase {
     async fetchBalances() {
         const response = await this.privateFetch('api/v3/account');
 
-        const balances = response.balances.map((b) => {
-            return {
+        const balances = response.balances
+            .filter((b) => b.free > 0 || b.locked > 0)
+            .map((b) => ({
                 ticker: b.asset,
-                free: b.free,
-                used: b.locked,
-            };
-        });
+                free: parseFloat(b.free),
+                used: parseFloat(b.locked),
+            }));
 
         utils.linkOriginalPayload(balances, response);
 
@@ -241,7 +243,7 @@ class BinanceSpot extends BinanceBase {
         let orderToDelete = this.cache.getCachedOrderById(orderId);
 
         if (!orderToDelete) {
-            throw 'Not in cache'; // TODO: Do something
+            throw 'TODO: Fix cache'; // TODO:!!!
         }
 
         const response = await this.privateFetch('api/v3/order', {

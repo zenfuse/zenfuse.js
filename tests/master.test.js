@@ -1,3 +1,5 @@
+const { z } = require('zod');
+
 /**
  * @typedef {object} MasterTestEnvironment
  * @property {string} API_PUBLIC_KEY
@@ -6,6 +8,7 @@
  */
 
 const NotAuthenticatedError = require('../src/base/errors/notAuthenticated.error.js');
+const OrderSchema = require('./schemas/order');
 
 /**
  * @param {object} Exchange
@@ -55,25 +58,14 @@ module.exports = function masterTest(Exchange, env) {
                 ).toBeDefined();
             });
 
-            it('should return valid schema', () => {
-                const schema = {
-                    type: 'array',
-                    items: {
-                        type: 'object',
-                        properties: {
-                            symbol: {
-                                type: 'string',
-                            },
-                            baseTicker: {
-                                type: 'string',
-                            },
-                            quoteTicker: {
-                                type: 'string',
-                            },
-                        },
-                        required: ['symbol', 'baseTicker', 'quoteTicker'],
-                    },
-                };
+            it('should return valid output', () => {
+                const schema = z.array(
+                    z.object({
+                        symbol: z.string(),
+                        baseTicker: z.string(),
+                        quoteTicker: z.string(),
+                    }),
+                );
                 expect(result).toMatchSchema(schema);
             });
         });
@@ -97,12 +89,7 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should return valid schema', () => {
-                const schema = {
-                    type: 'array',
-                    items: {
-                        type: 'string',
-                    },
-                };
+                const schema = z.array(z.string());
                 expect(result).toMatchSchema(schema);
             });
         });
@@ -116,6 +103,18 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should fetch all prices without errors', async () => {
                 result = await exchange.fetchPrice();
+            });
+
+            it('should return valid schema', () => {
+                const schema = z.array(
+                    z.object({
+                        symbol: z
+                            .string()
+                            .refine((s) => s.split('/').length === 2),
+                        price: z.number(),
+                    }),
+                );
+                expect(result).toMatchSchema(schema);
             });
 
             it('should have valid originalRespone', () => {
@@ -176,41 +175,6 @@ module.exports = function masterTest(Exchange, env) {
                 ).rejects.toThrowError(NotAuthenticatedError);
             });
 
-            const orderSchema = {
-                type: 'object',
-                properties: {
-                    id: {
-                        type: 'string',
-                    },
-                    timestamp: {
-                        type: 'number',
-                    },
-                    status: {
-                        type: 'string',
-                        tags: ['open', 'close', 'canceled'],
-                    },
-                    symbol: {
-                        type: 'string',
-                    },
-                    type: {
-                        type: 'string',
-                        tags: ['market', 'limit'],
-                    },
-                    side: {
-                        type: 'string',
-                        tags: ['buy', 'sell'],
-                    },
-                    price: {
-                        type: ['number', 'string'],
-                    },
-                    quantity: {
-                        type: ['number', 'string'],
-                    },
-                },
-                additionalProperties: false,
-                minProperties: 8,
-            };
-
             describe('buy by market', () => {
                 let result;
 
@@ -225,7 +189,8 @@ module.exports = function masterTest(Exchange, env) {
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-                    expect(result).toMatchSchema(orderSchema);
+                    // TODO: Fix output validation
+                    expect(result).toMatchSchema(OrderSchema);
 
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -247,7 +212,7 @@ module.exports = function masterTest(Exchange, env) {
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-                    expect(result).toMatchSchema(orderSchema);
+                    expect(result).toMatchSchema(OrderSchema);
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -269,7 +234,7 @@ module.exports = function masterTest(Exchange, env) {
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-                    expect(result).toMatchSchema(orderSchema);
+                    expect(result).toMatchSchema(OrderSchema);
 
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -292,7 +257,7 @@ module.exports = function masterTest(Exchange, env) {
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-                    expect(result).toMatchSchema(orderSchema);
+                    expect(result).toMatchSchema(OrderSchema);
 
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -316,6 +281,19 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should fetch without errors', async () => {
                 result = await exchange.fetchBalances();
+            });
+
+            it('should return valid schema', () => {
+                const schema = z.array(
+                    z
+                        .object({
+                            ticker: z.string(),
+                            free: z.number(),
+                            used: z.number(),
+                        })
+                        .refine((b) => b.free > 0 || b.used > 0),
+                );
+                expect(result).toMatchSchema(schema);
             });
 
             it('should have valid originalResponse', () => {
@@ -391,6 +369,11 @@ module.exports = function masterTest(Exchange, env) {
 
                 expect(result).toEqual(createdOrder);
             });
+
+            it('should return valid schema', () => {
+                expect(result).toMatchSchema(OrderSchema);
+                expect(createdOrder).toMatchSchema(OrderSchema);
+            });
         });
     });
 
@@ -448,8 +431,9 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should emit "orderUpdate"', async () => {
                 const eventPromice = new Promise((resolve) => {
-                    accountDataStream.once('orderUpdate', ({ id }) => {
-                        expect(id).toBe(createdOrder.id);
+                    accountDataStream.once('orderUpdate', (order) => {
+                        expect(order).toMatchSchema(OrderSchema);
+                        expect(order.id).toBe(createdOrder.id);
                         resolve();
                     });
                 });
@@ -531,9 +515,15 @@ module.exports = function masterTest(Exchange, env) {
                     symbol: 'BTC/USDT',
                 });
 
-                marketDataStream.once('newPrice', ({ symbol, price }) => {
-                    expect(symbol).toBe('BTC/USDT');
-                    expect(typeof price).toBe('number');
+                marketDataStream.once('newPrice', (p) => {
+                    const schema = z.object({
+                        symbol: z
+                            .string()
+                            .refine((s) => s.split('/').length === 2),
+                        price: z.number(),
+                    });
+                    expect(p).toMatchSchema(schema);
+                    expect(p.symbol).toBe('BTC/USDT');
                     done();
                 });
             });

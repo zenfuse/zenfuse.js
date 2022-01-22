@@ -5,7 +5,7 @@ require('dotenv').config();
 module.exports = async () => {
     process.env.ZENFUSE_DEBUG = 'true';
 
-    const testMode = process.env.TEST_MODE;
+    const testMode = process.env.TEST_MODE || 'unit';
 
     if (testMode === 'e2e') {
         process.stdout.write('\n\n\x1b[43m\x1b[30m E2E TEST \x1b[0m\n');
@@ -35,6 +35,4 @@ module.exports = async () => {
         nock.disableNetConnect(); // ¯\_(ツ)_/¯
         return;
     }
-
-    throw new Error('Invalid TEST_MODE variable');
 };
