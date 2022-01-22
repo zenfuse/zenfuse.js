@@ -6,6 +6,7 @@ class BaseGlobalCache {
 
     /**
      * Created cache namespace, should be the same in diferent instances
+     *
      * @type {Map<any, any>}
      */
     globalCache;

@@ -4,12 +4,12 @@
         "node": true,
         "jest/globals": true
     },
-    "extends": ["eslint:recommended", "prettier"],
+    "extends": ["eslint:recommended", "plugin:jsdoc/recommended", "prettier"],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2019
     },
-    "plugins": ["prettier", "@typescript-eslint", "jest"],
+    "plugins": ["prettier", "@typescript-eslint", "jest", "jsdoc"],
     "rules": {
         "prettier/prettier": "error"
     },

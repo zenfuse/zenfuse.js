@@ -25,6 +25,7 @@ class FtxWebsocketBase extends EventEmitter {
 
     /**
      * Opens websocket connection
+     *
      * @returns {Promice<void>}
      */
     open() {

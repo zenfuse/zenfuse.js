@@ -1,5 +1,5 @@
 /**
- * @param {array} symbols Array of symbols from `api/v3/exchangeInfo`
+ * @param {Array} symbols Array of symbols from `api/v3/exchangeInfo`
  * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
  */
 const extractTickersFromSymbols = (symbols) => {
@@ -14,8 +14,8 @@ const extractTickersFromSymbols = (symbols) => {
 };
 
 /**
- * @param {array} symbols List of symbols from `api/v3/exchangeInfo` endpoint
- * @returns {array} Symbols only with spot type
+ * @param {Array} symbols List of symbols from `api/v3/exchangeInfo` endpoint
+ * @returns {Array} Symbols only with spot type
  */
 const extractSpotMarkets = (symbols) => {
     return symbols.filter((market) => market.permissions.includes('SPOT'));
@@ -24,7 +24,7 @@ const extractSpotMarkets = (symbols) => {
 /**
  * Structualizing all markets to one interface
  *
- * @param {array} markets
+ * @param {Array} markets
  * @returns {{
  *      symbol: string,
  *      baseTicker: string

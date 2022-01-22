@@ -13,6 +13,7 @@ const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 /**
  * Binance class for spot wallet API
+ *
  * @important should have same
  */
 class BinanceSpot extends BinanceBase {
@@ -70,9 +71,8 @@ class BinanceSpot extends BinanceBase {
     /**
      *
      * @note If the symbol is not sent, prices for all symbols will be returned in an array.
-     *
      * @param {string} market Ticker pair aka symbol
-     * @return Last price
+     * @returns Last price
      */
     async fetchPrice(market) {
         const params = {};
@@ -166,7 +166,6 @@ class BinanceSpot extends BinanceBase {
      * @important Binance required order symbol for canceling.
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
      *      So if you know order symbol, better pass it to didn't make unnecessary HTTP requests.
-     *
      * @param {string} orderId Binance order id
      */
     async cancelOrderById(orderId) {

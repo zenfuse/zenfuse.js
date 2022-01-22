@@ -34,6 +34,7 @@ const transfromZenfuseOrder = (zOrder) => {
 
 /**
  * FTX -> Zenfuse
+ *
  * @param {*} fOrder Order from FTX
  * @returns {Order} Zenfuse Order
  */

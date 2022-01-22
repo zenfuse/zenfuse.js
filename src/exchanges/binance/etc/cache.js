@@ -32,6 +32,7 @@ class BinanceCache extends BaseGlobalCache {
 
     /**
      * Array of all binance tickers
+     *
      * @type {string[]}
      */
     get tickers() {
@@ -41,6 +42,7 @@ class BinanceCache extends BaseGlobalCache {
 
     /**
      * Array of all binance ticker pairs
+     *
      * @type {string[]}
      */
     get symbols() {
@@ -50,6 +52,7 @@ class BinanceCache extends BaseGlobalCache {
 
     /**
      * Base Tickers and all their quote pairs
+     *
      * @type {{
      *     [ticker:string]: string[]
      * }}
@@ -89,6 +92,7 @@ class BinanceCache extends BaseGlobalCache {
 
     /**
      * Updating global cache using raw binance data
+     *
      * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint
      */
     updateCache(exchageInfo) {

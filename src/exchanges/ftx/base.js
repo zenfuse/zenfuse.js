@@ -11,11 +11,13 @@ const keysSymbol = Symbol.for('zenfuse.keyVault');
 
 /**
  * FTX base class for method which included in any wallet type
+ *
  * @important Any class what extends ExchangeBase should have same public interface
  */
 class FtxBase extends ExchangeBase {
     /**
      * Http client options specialy for FTX
+     *
      * @type {import('../../base/exchange').BaseOptions}
      */
     static DEFAULT_OPTIONS = {
@@ -125,6 +127,7 @@ class FtxBase extends ExchangeBase {
 
     /**
      * Ping ftx servers
+     *
      * @public
      */
     async ping() {

@@ -13,6 +13,7 @@ class MarketDataStream extends BinanceWebsocketBase {
 
     /**
      * Messages that are waiting for a response with a specific id
+     *
      * @type {Map<string, [typeof Promise.resolve, typeof Promise.reject]>}
      */
     messageQueue = new Map();
@@ -73,14 +74,13 @@ class MarketDataStream extends BinanceWebsocketBase {
 
     /**
      * @private
-     *
      * @typedef {object} WebsocketEvent
      * @property {string} channel
      * @property {string} symbol
      * @property {string} [interval] Required if channel is kline
      * @property {string} channel
-     *
      * @param {WebsocketEvent} arg
+     * @param event
      * @param {'subscribe'|'unsubscribe'} command
      */
     async editSubscribition(event, command) {
@@ -169,7 +169,6 @@ class MarketDataStream extends BinanceWebsocketBase {
 
     /**
      * @fires MarketDataStream#kline
-     *
      * @param {*} payload
      */
     emitNewPrice(payload) {

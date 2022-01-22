@@ -14,6 +14,7 @@ const createHmacSignature = (data, key) => {
  * @param {{
  *      [ticker:string]: string[]
  * }} binanceCache.parsedSymbols All tickers with pairs
+ * @param binanceCache.tickers
  * @returns {[string, string]} Base and quote ticker
  */
 const parseBinanceSymbol = (bSymbol, { tickers, parsedSymbols }) => {

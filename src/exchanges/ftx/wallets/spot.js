@@ -12,6 +12,7 @@ const MarketDataStream = require('../streams/marketDataStream');
 
 /**
  * FTX class for spot wallet API
+ *
  * @important should have same
  */
 class FtxSpot extends FtxBase {
@@ -73,9 +74,8 @@ class FtxSpot extends FtxBase {
     /**
      *
      * @note If the symbol is not sent, prices for all symbols will be returned in an array.
-     *
      * @param {string} market Ticker pair aka symbol
-     * @return Last price
+     * @returns Last price
      */
     async fetchPrice(market = '') {
         const requestPath = market ? `api/markets/${market}` : 'api/markets';

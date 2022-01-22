@@ -12,11 +12,13 @@ const keysSymbol = Symbol('keys');
 
 /**
  * Binance base class for method which included in any wallet type
+ *
  * @important Any class what extends ExchangeBase should have same public interface
  */
 class BinanceBase extends ExchangeBase {
     /**
      * Http client options specialy for Binance
+     *
      * @type {import('../../base/exchange').BaseOptions}
      */
     static DEFAULT_OPTIONS = {
@@ -128,6 +130,7 @@ class BinanceBase extends ExchangeBase {
 
     /**
      * Ping binance servers
+     *
      * @public
      */
     async ping() {

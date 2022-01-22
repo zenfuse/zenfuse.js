@@ -8,6 +8,8 @@ const marketsFilePath = __dirname + '/mocks/static/markets.json';
 /**
  * HTTP mocking scope for FTX master test
  * Should be as
+ *
+ * @param env
  */
 module.exports = (env) => ({
     init: null,

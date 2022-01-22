@@ -40,13 +40,11 @@ class MarketDataStream extends FtxWebsocketBase {
 
     /**
      * @private
-     *
      * @typedef {object} WebsocketEvent
      * @property {string} channel
      * @property {string} symbol
      * @property {string} [interval] Required if channel is kline
      * @property {string} channel
-     *
      * @param {string|WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
@@ -98,7 +96,6 @@ class MarketDataStream extends FtxWebsocketBase {
 
     /**
      * @fires MarketDataStream#kline
-     *
      * @param {*} payload
      */
     emitNewPrice(payload) {

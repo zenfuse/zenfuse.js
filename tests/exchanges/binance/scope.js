@@ -8,6 +8,8 @@ const pricesFilePath = __dirname + '/mocks/static/prices.json';
 /**
  * HTTP mocking scope for Binance master test
  * Should be as
+ *
+ * @param env
  */
 module.exports = (env) => ({
     /**

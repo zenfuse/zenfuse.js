@@ -67,6 +67,8 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
 
     /**
      * Do not touch, magic happens here
+     *
+     * @param block
      * @todo refactor this cheap fuck
      */
     getScopeOfBlock(block) {

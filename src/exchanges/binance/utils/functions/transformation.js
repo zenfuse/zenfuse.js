@@ -9,7 +9,6 @@ const { timeIntervals } = require('../../metadata');
  * ```
  * transformMarketString('btc/USDT') // returns'BTCUSDT'
  * ```
- *
  * @param {string} libString Market string from lib interface
  */
 const transformMarketString = (libString) => {
@@ -20,12 +19,10 @@ const transformMarketString = (libString) => {
  * Insert default values for specific order type
  *
  * @important All values should be for zenfuse interface
- *
  * @param {object} order
  * @param {object} defaults
  * @param {object} defaults.limit
  * @param {object} defaults.market
- *
  * @returns TODO: Order type
  */
 const assignDefaultsInOrder = (order, defaults) => {
@@ -48,8 +45,8 @@ const assignDefaultsInOrder = (order, defaults) => {
 
 /**
  * Zenfuse -> Binance
- * @important This function does not assign defaults values
  *
+ * @important This function does not assign defaults values
  * @param {Order} zOrder Zenfuse order
  * @returns Order for binance api
  */
@@ -98,6 +95,7 @@ const transfromZenfuseOrder = (zOrder) => {
 
 /**
  * Binance -> Zenfuse
+ *
  * @param {*} bOrder Order fromf
  * @returns {Order} Zenfuse Order
  */
@@ -150,7 +148,6 @@ const transfromBinanceOrder = (bOrder) => {
  * @param {string} k.V Taker buy base asset volume
  * @param {string} k.Q Taker buy quote asset volume
  * @param {string} k.B Ignore
- *
  * @returns {import('../../../../index').Kline} Candlestick data
  */
 const transfornCandlestick = (k) => {
