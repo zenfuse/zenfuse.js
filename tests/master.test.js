@@ -431,8 +431,9 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should emit "orderUpdate"', async () => {
                 const eventPromice = new Promise((resolve) => {
-                    accountDataStream.once('orderUpdate', ({ id }) => {
-                        expect(id).toBe(createdOrder.id);
+                    accountDataStream.once('orderUpdate', (order) => {
+                        expect(order).toMatchSchema(OrderSchema);
+                        expect(order.id).toBe(createdOrder.id);
                         resolve();
                     });
                 });
@@ -514,9 +515,15 @@ module.exports = function masterTest(Exchange, env) {
                     symbol: 'BTC/USDT',
                 });
 
-                marketDataStream.once('newPrice', ({ symbol, price }) => {
-                    expect(symbol).toBe('BTC/USDT');
-                    expect(typeof price).toBe('number');
+                marketDataStream.once('newPrice', (p) => {
+                    const schema = z.object({
+                        symbol: z
+                            .string()
+                            .refine((s) => s.split('/').length === 2),
+                        price: z.number(),
+                    });
+                    expect(p).toMatchSchema(schema);
+                    expect(p.symbol).toBe('BTC/USDT');
                     done();
                 });
             });
