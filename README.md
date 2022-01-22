@@ -538,7 +538,7 @@ _Example from https://binance-docs.github.io/apidocs/spot/en/#account-trade-list
 ```js
 binance.hasKeys; // true
 
-const response = await ftx.publicFetch('api/v3/myTrades', {
+const response = await binance.privateFetch('api/v3/myTrades', {
     method: 'GET',
     searchParams: {
         symbol: 'BNBBTC',
