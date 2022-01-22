@@ -59,7 +59,6 @@
 
 Zenfuse.js is crypto exchanges connector library. Currently, in active development.
 
-
 **Features:**
 
 -   Account orders manipulating
