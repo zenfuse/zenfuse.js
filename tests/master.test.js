@@ -8,7 +8,7 @@ const { z } = require('zod');
  */
 
 const NotAuthenticatedError = require('../src/base/errors/notAuthenticated.error.js');
-const OrderSchema = require('./schemas/order');
+const OrderSchema = require('../src/base/schemas/openOrder');
 
 /**
  * @param {object} Exchange

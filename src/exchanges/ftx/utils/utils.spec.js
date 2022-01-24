@@ -72,7 +72,7 @@ describe('transfromZenfuseOrder()', () => {
 describe('transformFtxOrder()', () => {
     const { transfromFtxOrder } = utils;
 
-    const OrderSchema = require('../../../../tests/schemas/order');
+    const OrderSchema = require('../../../base/schemas/openOrder');
 
     it('should transform order', () => {
         const ftxCreatedOrder = {

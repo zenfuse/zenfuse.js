@@ -88,7 +88,7 @@ describe('transfromZenfuseOrder()', () => {
 describe('transformBinanceOrder()', () => {
     const { transfromBinanceOrder } = utils;
 
-    const OrderSchema = require('../../../../tests/schemas/order').omit({
+    const OrderSchema = require('../../../base/schemas/openOrder').omit({
         symbol: true,
     });
 

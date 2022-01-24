@@ -1,6 +1,6 @@
 const { z } = require('zod');
 
-const OrderParamsSchema = z
+const ZenfuseOrderParams = z
     .object({
         symbol: z.string(),
         quantity: z.number(),
@@ -28,6 +28,4 @@ const OrderParamsSchema = z
         },
     );
 
-module.exports = {
-    OrderParamsSchema,
-};
+module.exports = ZenfuseOrderParams;

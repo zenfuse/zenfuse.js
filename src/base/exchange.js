@@ -3,7 +3,7 @@ const mergeObjects = require('deepmerge');
 
 const pkg = require('../../package.json');
 const ZenfuseValidationError = require('./errors/validation.error');
-const { OrderParamsSchema } = require('./schemas/order');
+const OrderParamsSchema = require('./schemas/orderParams');
 
 /**
  * @typedef {object} ExtraWsOptions

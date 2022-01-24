@@ -1,6 +1,6 @@
 const { z } = require('zod');
 
-const OrderSchema = z.object({
+const ZenfuseOpenOrder = z.object({
     id: z.string(),
     timestamp: z.number(),
     status: z.enum(['open', 'close', 'canceled']),
@@ -11,4 +11,4 @@ const OrderSchema = z.object({
     quantity: z.number(),
 });
 
-module.exports = OrderSchema;
+module.exports = ZenfuseOpenOrder;
