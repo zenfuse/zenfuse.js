@@ -36,7 +36,7 @@
     "types": "./types",
     "devDependencies": {
         "@types/ws": "^8.2.2",
-        "@typescript-eslint/eslint-plugin": "^5.3.1",
+        "@typescript-eslint/eslint-plugin": "^5.10.1",
         "@typescript-eslint/parser": "^5.3.1",
         "dotenv": "^14.2.0",
         "eslint": "^8.2.0",
