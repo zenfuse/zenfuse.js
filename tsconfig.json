@@ -6,6 +6,9 @@
         "declaration": true,
         "emitDeclarationOnly": true,
         "outDir": "./types",
-        "declarationMap": false
+        "declarationMap": false,
+        "moduleResolution": "node",
+        "types": ["ws"],
+        "module": "CommonJS"
     }
 }
