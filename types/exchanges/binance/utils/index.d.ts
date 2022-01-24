@@ -5,6 +5,7 @@ declare const _exports: {
         parsedSymbols: {
             [ticker: string]: string[];
         };
+        tickers: any;
     }) => [string, string];
     validateOrderForCanceling: (order: {
         id: string | number;

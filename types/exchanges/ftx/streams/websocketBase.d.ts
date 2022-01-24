@@ -16,6 +16,7 @@ declare class FtxWebsocketBase extends EventEmitter {
     base: import("../base");
     /**
      * Opens websocket connection
+     *
      * @returns {Promice<void>}
      */
     open(): Promice<void>;

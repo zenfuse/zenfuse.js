@@ -15,16 +15,19 @@ declare class BinanceCache extends BaseGlobalCache {
     updateSelfIfRequired(): void;
     /**
      * Array of all binance tickers
+     *
      * @type {string[]}
      */
     get tickers(): string[];
     /**
      * Array of all binance ticker pairs
+     *
      * @type {string[]}
      */
     get symbols(): string[];
     /**
      * Base Tickers and all their quote pairs
+     *
      * @type {{
      *     [ticker:string]: string[]
      * }}
@@ -53,6 +56,7 @@ declare class BinanceCache extends BaseGlobalCache {
     deleteCachedOrderById(orderId: string): boolead;
     /**
      * Updating global cache using raw binance data
+     *
      * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint
      */
     updateCache(exchageInfo: any): void;

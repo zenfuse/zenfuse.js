@@ -47,6 +47,7 @@ declare class AccountDataStream extends ExchangeWebsocketBase {
      * Transforms websocket order from binance
      * Binance -> Zenfuse
      *
+     * @param wsOrder
      * @typedef {import('../../..').Order} Order
      * @private
      * @returns {Order} Zenfuse Order

@@ -1,6 +1,7 @@
 export = BinanceBase;
 /**
  * Binance base class for method which included in any wallet type
+ *
  * @important Any class what extends ExchangeBase should have same public interface
  */
 declare class BinanceBase extends ExchangeBase {
@@ -48,6 +49,7 @@ declare class BinanceBase extends ExchangeBase {
     get hasKeys(): boolean;
     /**
      * Ping binance servers
+     *
      * @public
      */
     public ping(): Promise<any>;

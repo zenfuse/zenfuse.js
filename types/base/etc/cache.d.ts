@@ -10,6 +10,7 @@ declare class BaseGlobalCache {
     constructor(namespace: string);
     /**
      * Created cache namespace, should be the same in diferent instances
+     *
      * @type {Map<any, any>}
      */
     globalCache: Map<any, any>;

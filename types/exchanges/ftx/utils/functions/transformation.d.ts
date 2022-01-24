@@ -12,6 +12,7 @@ export function transfromZenfuseOrder(zOrder: Order): {
 };
 /**
  * FTX -> Zenfuse
+ *
  * @param {*} fOrder Order from FTX
  * @returns {Order} Zenfuse Order
  */

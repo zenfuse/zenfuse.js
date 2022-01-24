@@ -4,6 +4,7 @@ export = FtxSpot;
  */
 /**
  * FTX class for spot wallet API
+ *
  * @important should have same
  */
 declare class FtxSpot extends FtxBase {
@@ -28,9 +29,8 @@ declare class FtxSpot extends FtxBase {
     /**
      *
      * @note If the symbol is not sent, prices for all symbols will be returned in an array.
-     *
      * @param {string} market Ticker pair aka symbol
-     * @return Last price
+     * @returns Last price
      */
     fetchPrice(market?: string): Promise<any>;
     /**

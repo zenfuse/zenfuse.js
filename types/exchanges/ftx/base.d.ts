@@ -1,6 +1,7 @@
 export = FtxBase;
 /**
  * FTX base class for method which included in any wallet type
+ *
  * @important Any class what extends ExchangeBase should have same public interface
  */
 declare class FtxBase extends ExchangeBase {
@@ -48,6 +49,7 @@ declare class FtxBase extends ExchangeBase {
     get hasKeys(): boolean;
     /**
      * Ping ftx servers
+     *
      * @public
      */
     public ping(): Promise<void>;

@@ -6,7 +6,6 @@ export type Order = import('../../../../index').Order;
  * ```
  * transformMarketString('btc/USDT') // returns'BTCUSDT'
  * ```
- *
  * @param {string} libString Market string from lib interface
  */
 export function transformMarketString(libString: string): string;
@@ -14,12 +13,10 @@ export function transformMarketString(libString: string): string;
  * Insert default values for specific order type
  *
  * @important All values should be for zenfuse interface
- *
  * @param {object} order
  * @param {object} defaults
  * @param {object} defaults.limit
  * @param {object} defaults.market
- *
  * @returns TODO: Order type
  */
 export function assignDefaultsInOrder(order: object, defaults: {
@@ -31,8 +28,8 @@ export function assignDefaultsInOrder(order: object, defaults: {
  */
 /**
  * Zenfuse -> Binance
- * @important This function does not assign defaults values
  *
+ * @important This function does not assign defaults values
  * @param {Order} zOrder Zenfuse order
  * @returns Order for binance api
  */
@@ -46,6 +43,7 @@ export function transfromZenfuseOrder(zOrder: Order): {
 };
 /**
  * Binance -> Zenfuse
+ *
  * @param {*} bOrder Order fromf
  * @returns {Order} Zenfuse Order
  */
@@ -71,7 +69,6 @@ export function transfromBinanceOrder(bOrder: any): Order;
  * @param {string} k.V Taker buy base asset volume
  * @param {string} k.Q Taker buy quote asset volume
  * @param {string} k.B Ignore
- *
  * @returns {import('../../../../index').Kline} Candlestick data
  */
 export function transfornCandlestick(k: {

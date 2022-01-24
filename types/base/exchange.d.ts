@@ -19,6 +19,56 @@ declare class ExchangeBase {
         wsClientOptions: ExtraWsOptions & import("ws").ClientOptions;
     };
     fetcher: any;
+    orderSchema: import("zod").ZodEffects<import("zod").ZodEffects<import("zod").ZodObject<{
+        symbol: import("zod").ZodString;
+        quantity: import("zod").ZodNumber;
+        price: import("zod").ZodOptional<import("zod").ZodNumber>;
+        type: import("zod").ZodNativeEnum<{
+            market: string;
+            limit: string;
+        }>;
+        side: import("zod").ZodNativeEnum<{
+            buy: string;
+            sell: string;
+        }>;
+    }, "passthrough", import("zod").ZodTypeAny, {
+        symbol?: string;
+        type?: string;
+        quantity?: number;
+        price?: number;
+        side?: string;
+    }, {
+        symbol?: string;
+        type?: string;
+        quantity?: number;
+        price?: number;
+        side?: string;
+    }>, {
+        symbol?: string;
+        type?: string;
+        quantity?: number;
+        price?: number;
+        side?: string;
+    }, {
+        symbol?: string;
+        type?: string;
+        quantity?: number;
+        price?: number;
+        side?: string;
+    }>, {
+        symbol?: string;
+        type?: string;
+        quantity?: number;
+        price?: number;
+        side?: string;
+    }, {
+        symbol?: string;
+        type?: string;
+        quantity?: number;
+        price?: number;
+        side?: string;
+    }>;
+    validateOrderParams(order: any): void;
 }
 declare namespace ExchangeBase {
     export { ExtraWsOptions, BaseOptions };

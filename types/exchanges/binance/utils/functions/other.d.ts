@@ -8,6 +8,7 @@ export function createHmacSignature(data: any, key: any): string;
  * @param {{
  *      [ticker:string]: string[]
  * }} binanceCache.parsedSymbols All tickers with pairs
+ * @param binanceCache.tickers
  * @returns {[string, string]} Base and quote ticker
  */
 export function parseBinanceSymbol(bSymbol: string, { tickers, parsedSymbols }: {
@@ -15,4 +16,5 @@ export function parseBinanceSymbol(bSymbol: string, { tickers, parsedSymbols }: 
     parsedSymbols: {
         [ticker: string]: string[];
     };
+    tickers: any;
 }): [string, string];
