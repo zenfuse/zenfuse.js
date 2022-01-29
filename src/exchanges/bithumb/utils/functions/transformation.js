@@ -4,7 +4,7 @@
  * @param {Order} zOrder Order from
  * @returns Order for bithumb api
  */
-const transfromZenfuseOrder = (zOrder) => {
+const transformZenfuseOrder = (zOrder) => {
     const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
 
     const bOrder = {
@@ -38,7 +38,7 @@ const transfromZenfuseOrder = (zOrder) => {
  * @param {*} bOrder Order from Bithumb
  * @returns {Order} Zenfuse Order
  */
-const transfromBithumbOrder = (bOrder) => {
+const transformBithumbOrder = (bOrder) => {
     /**
      * @type {Order}
      */
@@ -63,6 +63,6 @@ const transfromBithumbOrder = (bOrder) => {
 };
 
 module.exports = {
-    transfromZenfuseOrder,
-    transfromBithumbOrder,
+    transformZenfuseOrder,
+    transformBithumbOrder,
 };

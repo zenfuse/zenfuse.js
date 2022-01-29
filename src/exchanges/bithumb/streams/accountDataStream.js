@@ -27,25 +27,26 @@ class AccountDataStream extends BithumbWebsocketBase {
 
         const keysSymbol = Symbol.for('zenfuse.keyVault');
         const { publicKey, privateKey } = this.base[keysSymbol];
+        const requestPath = '/message/realtime';
         const timestamp = Date.now();
+        const signString = [requestPath, timestamp, publicKey].join('');
         const signature = createHmac('sha256', privateKey)
-            .update(`${timestamp}websocket_login`)
-            .digest('hex');
+        .update(signString);
 
         this.sendSocketMessage({
-            op: 'login',
+            cmd: 'authKey',
             args: {
-                key: publicKey,
-                sign: signature,
-                time: timestamp,
+                apiKey: publicKey,
+                apiTimestamp: timestamp,
+                apiSignature: signature,
             },
         });
 
-        this.sendSocketMessage({ op: 'subscribe', channel: 'orders' });
+        this.sendSocketMessage({ cmd: 'subscribe', args: ['orders'] }); //TODO: check args
 
         return this;
     }
-
+    //TODO: check all below
     serverMessageHandler(msgString) {
         const payload = JSON.parse(msgString);
 
@@ -59,7 +60,7 @@ class AccountDataStream extends BithumbWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transfromBithumbOrder(payload.data);
+        const order = utils.transformBithumbOrder(payload.data);
 
         utils.linkOriginalPayload(order, payload);
 

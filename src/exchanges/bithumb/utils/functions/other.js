@@ -1,24 +1,24 @@
 const { createHmac } = require('crypto');
 
 /**
- * Create HMAC signature specific for FTX
+ * Create HMAC signature specific for Bithumb
  *
  * @param {object} params
- * @param {number} params.ts UNIX Timestapm
- * @param {string} params.method HTTP Method
- * @param {string} params.path URL request path
+ * @param {string} params.apiKey Public key
+ * @param {string} privateKey Private key
+ * @param {number} params.ts UNIX Timestamp
+ * @param {string} msgNo Message number
  * @param {object} [params.body] Request body
- * @param {string} key HMAC Key
  * @returns {string} Hex HMAC Signature
  */
-const createHmacSignature = ({ ts, method, path, body = '' }, key) => {
+const createHmacSignature = ({ apiKey, ts, msgNo, body = '' }, privateKey) => {
     if (body !== '') {
         body = JSON.stringify(body);
     }
 
-    const signaturePayload = [ts, method, path, body].join('');
+    const signaturePayload = [apiKey, ts, msgNo, body].join('&');
 
-    return createHmac('sha256', key).update(signaturePayload).digest('hex');
+    return createHmac('sha256', privateKey).update(signaturePayload);
 };
 
 module.exports = { createHmacSignature };

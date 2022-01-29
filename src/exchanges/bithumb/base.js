@@ -59,7 +59,6 @@ class BithumbBase extends ExchangeBase {
      */
     async publicFetch(url, options = {}) {
         return await this.fetcher(url, options).catch(this.handleFetcherError);
-        // TODO: FTX Responce checker
     }
 
     /**
@@ -75,9 +74,9 @@ class BithumbBase extends ExchangeBase {
         const timestamp = Date.now();
 
         const sigParams = {
+            apiKey: this[keysSymbol].publicKey,
             ts: timestamp,
-            method: options.method || 'GET',
-            path: `/${url}`,
+            //TODO: add msgNo field
             body: options.json,
         };
 
@@ -86,7 +85,7 @@ class BithumbBase extends ExchangeBase {
             this[keysSymbol].privateKey,
         );
 
-        options = mergeObjects(options, {
+        options = mergeObjects(options, { //TODO: add msgNo field
             headers: {
                 'apiKey': this[keysSymbol].publicKey,
                 'timestamp': timestamp,
@@ -131,7 +130,7 @@ class BithumbBase extends ExchangeBase {
      * @public
      */
     async ping() {
-        await this.publicFetch('api');
+        await this.publicFetch('/openapi/v1/serverTime');
     }
 
     /**

@@ -126,12 +126,12 @@ class MarketDataStream extends BithumbWebsocketBase {
     /**
      * @private
      * @param  {string[]} eventNames
-     * @returns {Promise<object>} Server responce
+     * @returns {Promise<object>} Server response
      */
     async sendSocketUnsubscribe(...eventNames) {
         if (eventNames.lenght === 0) return; // nothing to do
 
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const id = this.createPayloadId();
 
@@ -144,8 +144,8 @@ class MarketDataStream extends BithumbWebsocketBase {
         return await this.sendSocketMessage(payload);
     }
 
-    checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
+    checkSocketIsConnected() {
+        if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
     }

@@ -44,7 +44,7 @@ class BithumbWebsocketBase extends EventEmitter {
                 this.socket.on('error', this.handleConnectionError.bind(this));
 
                 this.pingInterval = setInterval(() => {
-                    this.socket.send('{"op": "ping"}');
+                    this.socket.send('{"cmd": "ping"}');
                 }, BithumbWebsocketBase.PING_INTERVAL);
 
                 resolve();
@@ -68,13 +68,13 @@ class BithumbWebsocketBase extends EventEmitter {
         throw err; // TODO: Websocket connection error
     }
 
-    checkSocketIsConneted() {
+    checkSocketIsConnected() {
         if (!this.isSocketConneted) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
     }
 
-    get isSocketConneted() {
+    getIsSocketConnected() {
         if (!this.socket) return false;
 
         return this.socket.readyState === WebSocket.OPEN;
@@ -85,7 +85,7 @@ class BithumbWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg) {
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const msgString = JSON.stringify(msg);
 

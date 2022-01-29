@@ -21,7 +21,15 @@ const extractTickersFromMarkets = (markets) => {
     return tickers;
 };
 
+const extractSpotTickers = (payload) => {
+    const tickers = payload
+    .map((ticker) => ticker.s);
+
+    return tickers;
+};
+
 module.exports = {
     extractSpotMarkets,
     extractTickersFromMarkets,
+    extractSpotTickers,
 };

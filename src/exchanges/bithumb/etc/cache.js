@@ -21,7 +21,6 @@ class BithumbCache extends BaseGlobalCache {
     /**
      * Cache order in local cache
      *
-     * @reason In some cases FTX doesnt return order from REST interface. Zenfuse return cached order.
      * @param {ZenfuseOrder} order
      */
     cacheOrder(order) {
@@ -40,7 +39,7 @@ class BithumbCache extends BaseGlobalCache {
     /**
      *
      * @param {string} orderId
-     * @returns {boolead}
+     * @returns {boolean}
      */
     deleteCachedOrderById(orderId) {
         return this.localCache.openOrders.delete(orderId);

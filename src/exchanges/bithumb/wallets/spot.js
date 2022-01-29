@@ -11,7 +11,7 @@ const MarketDataStream = require('../streams/marketDataStream');
  */
 
 /**
- * FTX class for spot wallet API
+ * Bithumb class for spot wallet API
  *
  * @important should have same
  */
@@ -35,13 +35,11 @@ class BithumbSpot extends BithumbBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const markets = await this.publicFetch('api/markets');
+        const markets = await this.publicFetch('/openapi/v1/spot/ticker?symbol=ALL'); //TODO: check options
 
         // TODO: Cache update here
 
-        const spotMarkets = utils.extractSpotMarkets(markets.result);
-
-        const tickers = utils.extractTickersFromMarkets(spotMarkets);
+        const tickers = utils.extractSpotTickers(markets.data);
 
         utils.linkOriginalPayload(tickers, markets);
 
@@ -78,14 +76,14 @@ class BithumbSpot extends BithumbBase {
      * @returns Last price
      */
     async fetchPrice(market = '') {
-        const requestPath = market ? `api/markets/${market}` : 'api/markets';
+        const requestPath = market ? `/openapi/v1/spot/ticker?symbol=${market}` : '/openapi/v1/spot/ticker?symbol=ALL';
 
         const response = await this.publicFetch(requestPath);
 
         if (market) {
             const price = {
                 symbol: market,
-                price: response.result.price,
+                price: response.data.c,
             };
 
             utils.linkOriginalPayload(price, response);
@@ -93,13 +91,11 @@ class BithumbSpot extends BithumbBase {
             return price;
         }
 
-        const prices = response.result
-            .filter((market) => market.type === 'spot')
+        const prices = response.data
             .map((market) => {
-                // NOTE: FTX Return dead tokens with null price
                 return {
-                    symbol: market.name,
-                    price: market.price || 0,
+                    symbol: market.s,
+                    price: market.c || 0,
                 };
             });
 
@@ -120,7 +116,7 @@ class BithumbSpot extends BithumbBase {
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const fOrder = utils.transfromZenfuseOrder(zOrder);
+        const fOrder = utils.transformZenfuseOrder(zOrder);
 
         const fCreatedOrder = await this.privateFetch('api/orders', {
             method: 'POST',
@@ -189,7 +185,7 @@ class BithumbSpot extends BithumbBase {
     async fetchOrderById(orderId) {
         const responce = await this.privateFetch(`api/orders/${orderId}`);
 
-        const zOrder = utils.transfromBithumbOrder(responce.result);
+        const zOrder = utils.transformBithumbOrder(responce.result);
 
         return zOrder;
     }
