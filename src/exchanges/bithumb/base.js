@@ -130,7 +130,7 @@ class BithumbBase extends ExchangeBase {
      * @public
      */
     async ping() {
-        await this.publicFetch('/openapi/v1/serverTime');
+        await this.publicFetch('openapi/v1/serverTime');
     }
 
     /**
