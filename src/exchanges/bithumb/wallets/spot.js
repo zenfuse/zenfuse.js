@@ -1,10 +1,13 @@
 const BithumbBase = require('../base');
 const mergeObjects = require('deepmerge');
+const ccxt = require('ccxt');
 
 const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
+
+const keysSymbol = Symbol.for('zenfuse.keyVault');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -27,6 +30,11 @@ class BithumbSpot extends BithumbBase {
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
+        const ccxtBithumb = new ccxt.bithumb({
+            apiKey: this[keysSymbol].publicKey,
+            secret: this[keysSymbol].privateKey,
+        });
+
         const fullOptions = mergeObjects(BithumbSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
     }
@@ -35,7 +43,9 @@ class BithumbSpot extends BithumbBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const markets = await this.publicFetch('/openapi/v1/spot/ticker?symbol=ALL'); //TODO: check options
+        const markets = await this.publicFetch(
+            '/openapi/v1/spot/ticker?symbol=ALL',
+        ); //TODO: check options
 
         // TODO: Cache update here
 
@@ -49,25 +59,25 @@ class BithumbSpot extends BithumbBase {
     /**
      * @returns {string[]} Array of ticker pairs on FTX
      */
-    async fetchMarkets() {
-        const response = await this.publicFetch('api/markets');
+    // async fetchMarkets() {
+    //     const response = await this.publicFetch('api/markets');
 
-        // TODO: Cache update here
+    //     // TODO: Cache update here
 
-        const spotMarkets = utils.extractSpotMarkets(response.result);
+    //     const spotMarkets = utils.extractSpotMarkets(response.result);
 
-        const markets = spotMarkets.map((m) => {
-            return {
-                symbol: m.name,
-                baseTicker: m.baseCurrency,
-                quoteTicker: m.quoteCurrency,
-            };
-        });
+    //     const markets = spotMarkets.map((m) => {
+    //         return {
+    //             symbol: m.name,
+    //             baseTicker: m.baseCurrency,
+    //             quoteTicker: m.quoteCurrency,
+    //         };
+    //     });
 
-        utils.linkOriginalPayload(markets, response);
+    //     utils.linkOriginalPayload(markets, response);
 
-        return markets;
-    }
+    //     return markets;
+    // }
 
     /**
      *
@@ -76,7 +86,9 @@ class BithumbSpot extends BithumbBase {
      * @returns Last price
      */
     async fetchPrice(market = '') {
-        const requestPath = market ? `/openapi/v1/spot/ticker?symbol=${market}` : '/openapi/v1/spot/ticker?symbol=ALL';
+        const requestPath = market
+            ? `/openapi/v1/spot/ticker?symbol=${market}`
+            : '/openapi/v1/spot/ticker?symbol=ALL';
 
         const response = await this.publicFetch(requestPath);
 
@@ -91,13 +103,12 @@ class BithumbSpot extends BithumbBase {
             return price;
         }
 
-        const prices = response.data
-            .map((market) => {
-                return {
-                    symbol: market.s,
-                    price: market.c || 0,
-                };
-            });
+        const prices = response.data.map((market) => {
+            return {
+                symbol: market.s,
+                price: market.c || 0,
+            };
+        });
 
         utils.linkOriginalPayload(prices, response);
 
@@ -161,8 +172,9 @@ class BithumbSpot extends BithumbBase {
     }
 
     async fetchBalances() {
-        const response = await this.privateFetch('api/wallet/balances');
+        const response = await this.ccxtBithumb.fetchBalance();
 
+        //TODO: check formats
         const balances = response.result
             .filter((b) => b.total > 0)
             .map((b) => {

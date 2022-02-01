@@ -46,6 +46,20 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
+            task('Bithumb', ({ task }) => {
+                const mocksPath =
+                    __dirname + '/../tests/exchanges/bithumb/mocks/static/';
+
+                const downloadList = [
+                    {
+                        filename: 'spot.json',
+                        endpoint:
+                            'https://global-openapi.bithumb.pro/openapi/v1/spot/ticker?symbol=ALL',
+                    },
+                ];
+
+                run(mocksPath, downloadList, task);
+            }),
         ],
         {
             concurrency: Infinity,
