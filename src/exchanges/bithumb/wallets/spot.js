@@ -131,11 +131,6 @@ class BithumbSpot extends BithumbBase {
             json: zOrder,
         });
 
-        const zCreatedOrder = zOrder;
-
-        zCreatedOrder.orderId = bCreatedOrder.data.orderId;
-        zCreatedOrder.timestamp = bCreatedOrder.timestamp;
-
         const zCreatedOrder = utils.transformBithumbOrder(bCreatedOrder, zOrder);
 
         this.cache.cacheOrder(zCreatedOrder);
@@ -149,21 +144,25 @@ class BithumbSpot extends BithumbBase {
      * Cancel an active order
      *
      * @param {string} orderId Bithumb order id
+     * 
+     * @param {string} symbol
      */
-    async cancelOrderById(orderId) {
-        const response = await this.privateFetch(`api/orders/${orderId}`, {
-            method: 'DELETE',
+    async cancelOrderById(orderId, symbol) {
+        const response = await this.privateFetch('spot/cancelOrder', {
+            method: 'POST',
+            orderId: orderId,
+            symbol: symbol,
         });
 
-        let deletedOrder = this.cache.getCachedOrderById(orderId);
+        let orderToDelete = this.cache.getCachedOrderById(orderId);
 
-        if (!deletedOrder) {
-            deletedOrder = this.fetchOrderById(orderId);
+        if (!orderToDelete) {
+            orderToDelete = this.fetchOrderById(orderId, symbol);
         }
 
         this.cache.deleteCachedOrderById(orderId);
 
-        utils.linkOriginalPayload(deletedOrder, response);
+        utils.linkOriginalPayload(orderToDelete, response);
 
         return deletedOrder;
     }
@@ -174,14 +173,17 @@ class BithumbSpot extends BithumbBase {
     }
 
     async fetchBalances() {
-        //TODO: check formats
-        const balances = response.result
+        const response = await this.privateFetch('spot/assetList', {
+            assetType: 'wallet',
+        })
+
+        const balances = response.data
             .filter((b) => b.total > 0)
             .map((b) => {
                 return {
-                    ticker: b.coin,
-                    free: parseFloat(b.free),
-                    used: parseFloat(b.total) - parseFloat(b.free),
+                    ticker: b.coinType,
+                    free: parseFloat(b.count),
+                    used: parseFloat(b.frozen),
                 };
             });
 
@@ -193,11 +195,16 @@ class BithumbSpot extends BithumbBase {
     /**
      *
      * @param {string} orderId
+     * 
+     * @param {string} symbol
      */
-    async fetchOrderById(orderId) {
-        const responce = await this.privateFetch(`api/orders/${orderId}`);
+    async fetchOrderById(orderId, symbol) {
+        const responce = await this.privateFetch('spot/singleOrder', {
+            orderId: orderId,
+            symbol: symbol,
+        });
 
-        const zOrder = utils.transformBithumbOrder(responce.result);
+        const zOrder = utils.transformBithumbOrder(responce);
 
         return zOrder;
     }

@@ -86,12 +86,10 @@ class BithumbBase extends ExchangeBase {
         );
 
         options = mergeObjects(options, {
-            headers: {
-                'apiKey': this[keysSymbol].publicKey,
-                'msgNo': this.msgNo.toString(),
-                'timestamp': timestamp,
-                'signature': signature,
-            },
+            apiKey: this[keysSymbol].publicKey,
+            msgNo: this.msgNo.toString(),
+            timestamp: timestamp,
+            signature: signature,
         });
 
         this.msgNo += 1;
