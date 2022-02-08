@@ -6,7 +6,7 @@ const spotFilePath = __dirname + '/mocks/static/spot.json';
 // const mockedMarkets = JSON.parse(readFileSync(marketsFilePath, 'utf-8'));
 
 /**
- * HTTP mocking scope for FTX master test
+ * HTTP mocking scope for Bithumb master test
  * Should be as
  *
  * @param env

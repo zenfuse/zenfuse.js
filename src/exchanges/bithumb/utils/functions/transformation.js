@@ -8,10 +8,10 @@ const transformZenfuseOrder = (zOrder) => {
     const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
 
     const bOrder = {
-        market: zOrder.symbol,
+        symbol: zOrder.symbol,
         type: zOrder.type,
         side: zOrder.side,
-        size: zOrder.quantity,
+        quantity: zOrder.quantity,
     };
 
     if (zOrder.price) {
@@ -38,26 +38,39 @@ const transformZenfuseOrder = (zOrder) => {
  * @param {*} bOrder Order from Bithumb
  * @returns {Order} Zenfuse Order
  */
-const transformBithumbOrder = (bOrder) => {
+const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
     /**
      * @type {Order}
      */
     const zOrder = {};
 
-    zOrder.id = bOrder.id.toString();
-    zOrder.timestamp = Date.parse(bOrder.createdAt);
-    zOrder.symbol = bOrder.market;
-    zOrder.type = bOrder.type;
-    zOrder.side = bOrder.side;
-    zOrder.quantity = parseFloat(bOrder.size);
-    zOrder.price = bOrder.price ? parseFloat(bOrder.price) : undefined;
-    // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
-
-    if (bOrder.status === 'new') {
-        zOrder.status = 'open';
-    } else {
-        zOrder.status = fOrder.status;
+    zOrder.id = bOrder.data.orderId;
+    zOrder.timestamp = bOrder.timestamp;
+    if (Object.entries(zInitialOrder).length === 0) {
+        zOrder.symbol = bOrder.data.symbol;
+        zOrder.type = bOrder.data.type;
+        zOrder.side = bOrder.data.side;
+        zOrder.quantity = parseFloat(bOrder.data.quantity);
+        zOrder.price = bOrder.data.price ? parseFloat(bOrder.data.price) : undefined;
+        if (bOrder.data.status === 'success') {
+            zOrder.status = 'close';
+        }
+        else if (bOrder.data.status === 'send' || bOrder.data.status === 'pending') {
+            zOrder.status = 'open';
+        }
+        else {
+            zOrder.status = 'canceled';
+        }
     }
+    else {
+        zOrder.symbol = zInitialOrder.symbol;
+        zOrder.type = zInitialOrder.type;
+        zOrder.side = zInitialOrder.side;
+        zOrder.quantity = zInitialOrder.quantity;
+        zOrder.price = zInitialOrder.price ? zInitialOrder.price : undefined;
+        zOrder.status = zInitialOrder.status;
+    }
+    // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
 
     return zOrder;
 };

@@ -11,12 +11,9 @@ const { createHmac } = require('crypto');
  * @param {object} [params.body] Request body
  * @returns {string} Hex HMAC Signature
  */
-const createHmacSignature = ({ apiKey, ts, msgNo, body = '' }, privateKey) => {
-    if (body !== '') {
-        body = JSON.stringify(body);
-    }
+const createHmacSignature = ({ apiKey, ts, msgNo }, privateKey) => {
 
-    const signaturePayload = [apiKey, ts, msgNo, body].join('&');
+    const signaturePayload = `apiKey=${apiKey}&msgNo=${msgNo}&timestamp=${ts}`;
 
     return createHmac('sha256', privateKey).update(signaturePayload);
 };

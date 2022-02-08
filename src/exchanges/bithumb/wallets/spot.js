@@ -1,13 +1,10 @@
 const BithumbBase = require('../base');
 const mergeObjects = require('deepmerge');
-const ccxt = require('ccxt');
 
 const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-
-const keysSymbol = Symbol.for('zenfuse.keyVault');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -30,11 +27,6 @@ class BithumbSpot extends BithumbBase {
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
-        const ccxtBithumb = new ccxt.bithumb({
-            apiKey: this[keysSymbol].publicKey,
-            secret: this[keysSymbol].privateKey,
-        });
-
         const fullOptions = mergeObjects(BithumbSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
     }
@@ -44,8 +36,11 @@ class BithumbSpot extends BithumbBase {
      */
     async fetchTickers() {
         const markets = await this.publicFetch(
-            '/openapi/v1/spot/ticker?symbol=ALL',
-        ); //TODO: check options
+            '/openapi/v1/spot/ticker',
+            {
+                symbol: 'ALL',
+            }
+        );
 
         // TODO: Cache update here
 
@@ -86,11 +81,13 @@ class BithumbSpot extends BithumbBase {
      * @returns Last price
      */
     async fetchPrice(market = '') {
-        const requestPath = market
-            ? `/openapi/v1/spot/ticker?symbol=${market}`
-            : '/openapi/v1/spot/ticker?symbol=ALL';
+        const requestPath = '/openapi/v1/spot/ticker';
 
-        const response = await this.publicFetch(requestPath);
+        const requestOptions = market 
+            ? { symbol: market }
+            : { symbol: 'ALL' };
+
+        const response = await this.publicFetch(requestPath, requestOptions);
 
         if (market) {
             const price = {
@@ -127,26 +124,31 @@ class BithumbSpot extends BithumbBase {
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const fOrder = utils.transformZenfuseOrder(zOrder);
+        // const bOrder = utils.transformZenfuseOrder(zOrder);
 
-        const fCreatedOrder = await this.privateFetch('api/orders', {
+        const bCreatedOrder = await this.privateFetch('spot/placeOrder', {
             method: 'POST',
-            json: fOrder,
+            json: zOrder,
         });
 
-        const zCreatedOrder = utils.transfromBithumbOrder(fCreatedOrder.result);
+        const zCreatedOrder = zOrder;
+
+        zCreatedOrder.orderId = bCreatedOrder.data.orderId;
+        zCreatedOrder.timestamp = bCreatedOrder.timestamp;
+
+        const zCreatedOrder = utils.transformBithumbOrder(bCreatedOrder, zOrder);
 
         this.cache.cacheOrder(zCreatedOrder);
 
-        utils.linkOriginalPayload(zCreatedOrder, fCreatedOrder);
+        utils.linkOriginalPayload(zCreatedOrder, bCreatedOrder);
 
-        return zCreatedOrder;
+        return zOrder;
     }
 
     /**
      * Cancel an active order
      *
-     * @param {string} orderId Ftx order id
+     * @param {string} orderId Bithumb order id
      */
     async cancelOrderById(orderId) {
         const response = await this.privateFetch(`api/orders/${orderId}`, {
@@ -172,8 +174,6 @@ class BithumbSpot extends BithumbBase {
     }
 
     async fetchBalances() {
-        const response = await this.ccxtBithumb.fetchBalance();
-
         //TODO: check formats
         const balances = response.result
             .filter((b) => b.total > 0)

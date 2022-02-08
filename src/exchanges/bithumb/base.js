@@ -12,11 +12,11 @@ const keysSymbol = Symbol.for('zenfuse.keyVault');
 /**
  * Bithumb base class for method which included in any wallet type
  *
- * @important Any class what extends ExchangeBase should have same public interface
+ * @important Any class that extends ExchangeBase should have same public interface
  */
 class BithumbBase extends ExchangeBase {
     /**
-     * Http client options specialy for Bithumb
+     * Http client options specially for Bithumb
      *
      * @type {import('../../base/exchange').BaseOptions}
      */
@@ -48,6 +48,7 @@ class BithumbBase extends ExchangeBase {
         this[keysSymbol] = {};
 
         this.cache = new BithumbCache(this);
+        this.msgNo = 0;
     }
 
     /**
@@ -76,8 +77,7 @@ class BithumbBase extends ExchangeBase {
         const sigParams = {
             apiKey: this[keysSymbol].publicKey,
             ts: timestamp,
-            //TODO: add msgNo field
-            body: options.json,
+            msgNo: this.msgNo,
         };
 
         const signature = createHmacSignature(
@@ -85,13 +85,16 @@ class BithumbBase extends ExchangeBase {
             this[keysSymbol].privateKey,
         );
 
-        options = mergeObjects(options, { //TODO: add msgNo field
+        options = mergeObjects(options, {
             headers: {
                 'apiKey': this[keysSymbol].publicKey,
+                'msgNo': this.msgNo.toString(),
                 'timestamp': timestamp,
                 'signature': signature,
             },
         });
+
+        this.msgNo += 1;
 
         return await this.fetcher(url, options).catch(this.handleFetcherError);
     }
