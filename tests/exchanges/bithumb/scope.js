@@ -1,4 +1,5 @@
 const nock = require('nock');
+const { isExportDeclaration } = require('typescript');
 
 const HOSTNAME = 'https://global-openapi.bithumb.pro';
 
@@ -63,16 +64,24 @@ module.exports = (env) => ({
         'createOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', Boolean)
-                    .matchHeader('FTX-SIGN', Boolean)
-                    .post('/api/orders', {
-                        market: 'BTC/USDT',
-                        side: 'buy',
-                        type: 'market',
-                        price: null,
-                        size: 0.0004,
+                    .matchHeader('Content-Type', 'application/json')
+                    .post('/spot/placeOrder')
+                    .query((q) => {
+                        expect(q).toMatchObject({
+                            apiKey: env.API_PUBLIC_KEY,
+                            market: 'BTC-USDT',
+                            side: 'buy',
+                            type: 'market',
+                            price: null,
+                            size: 0.0004,
+                        });
+
+                        expect(q.msgNo).toBeDefined();
+                        expect(q.timestamp).toBeDefined();
+                        expect(q.signature).toBeDefined();
+                        return true;
                     })
+                    // TODO: change reply
                     .reply(201, {
                         success: true,
                         result: {
@@ -97,16 +106,15 @@ module.exports = (env) => ({
                     }),
             'sell by market': () =>
                 nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', Boolean)
-                    .matchHeader('FTX-SIGN', Boolean)
-                    .post('/api/orders', {
-                        market: 'BTC/USDT',
+                    .matchHeader('Content-Type', 'application/json')
+                    .post('/spot/placeOrder', {
+                        market: 'BTC-USDT',
                         side: 'sell',
                         type: 'market',
                         price: null,
                         size: 0.0004,
                     })
+                    // TODO: change reply
                     .reply(201, {
                         success: true,
                         result: {
@@ -131,16 +139,15 @@ module.exports = (env) => ({
                     }),
             'buy by limit': () =>
                 nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', Boolean)
-                    .matchHeader('FTX-SIGN', Boolean)
-                    .post('/api/orders', {
-                        market: 'BTC/USDT',
+                    .matchHeader('Content-Type', 'application/json')
+                    .post('/spot/placeOrder', {
+                        market: 'BTC-USDT',
                         type: 'limit',
                         side: 'buy',
                         size: 0.0004,
                         price: 35000,
                     })
+                    // TODO: change reply
                     .reply(201, {
                         success: true,
                         result: {
@@ -165,16 +172,15 @@ module.exports = (env) => ({
                     }),
             'sell by limit': () =>
                 nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', Boolean)
-                    .matchHeader('FTX-SIGN', Boolean)
-                    .post('/api/orders', {
-                        market: 'BTC/USDT',
+                    .matchHeader('Content-Type', 'application/json')
+                    .post('/spot/placeOrder', {
+                        market: 'BTC-USDT',
                         type: 'limit',
                         side: 'sell',
                         size: 0.0004,
                         price: 55000,
                     })
+                    // TODO: change reply
                     .reply(201, {
                         success: true,
                         result: {
@@ -200,10 +206,9 @@ module.exports = (env) => ({
         },
         'fetchBalances()': () =>
             nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-SIGN', Boolean)
-                .matchHeader('FTX-TS', Boolean)
-                .get('/api/wallet/balances')
+                .matchHeader('Content-Type', 'application/json')
+                .post('/spot/assetList')
+                // TODO: change reply
                 .reply(200, {
                     success: true,
                     result: [
@@ -220,17 +225,16 @@ module.exports = (env) => ({
 
         'cancelOrderById()': () =>
             nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-TS', Boolean)
-                .matchHeader('FTX-SIGN', Boolean)
+                .matchHeader('Content-Type', 'application/json')
                 // Order creation
-                .post('/api/orders', {
-                    market: 'USDT/USD',
+                .post('/spot/placeOrder', {
+                    market: 'USDT-USD',
                     type: 'limit',
                     side: 'buy',
                     size: 20,
                     price: 0.5,
                 })
+                // TODO: change reply
                 .reply(200, {
                     success: true,
                     result: {
@@ -254,22 +258,33 @@ module.exports = (env) => ({
                     },
                 })
                 // Order deletion
-                .delete(`/api/orders/112590877630`)
+                .post(`/spot/cancelOrder`)
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        apiKey: env.API_PUBLIC_KEY,
+                        orderId: 1, // TODO: check parameters
+                        symbol: 'USDT-USD',
+                    });
+                    expect(q.msgNo).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    expect(q.signature).toBeDefined();
+                    return true;
+                })
                 .reply(200),
 
         'fetchOrderById()': () =>
             nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-TS', Boolean)
-                .matchHeader('FTX-SIGN', Boolean)
+                .matchHeader('Content-Type', 'application/json')
                 // Order creation
-                .post('/api/orders', {
+                .post('/spot/placeOrder')
+                .query({
                     market: 'USDT/USD',
                     type: 'limit',
                     side: 'buy',
                     size: 20,
                     price: 0.5,
                 })
+                // TODO: change reply
                 .reply(200, {
                     success: true,
                     result: {
@@ -293,7 +308,19 @@ module.exports = (env) => ({
                     },
                 })
                 // Order status fetch
-                .get('/api/orders/112590877631')
+                .post('/spot/singleOrder')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        apiKey: env.API_PUBLIC_KEY,
+                        orderId: 1, // TODO: check parameters
+                        symbol: 'USDT-USD',
+                    });
+
+                    expect(q.msgNo).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    expect(q.signature).toBeDefined();
+                })
+                // TODO: change reply
                 .reply(200, {
                     success: true,
                     result: {
@@ -317,7 +344,18 @@ module.exports = (env) => ({
                     },
                 })
                 // Order deletion
-                .delete(`/api/orders/112590877631`)
+                .post(`/spot/cancelOrder`)
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        apiKey: env.API_PUBLIC_KEY,
+                        orderId: 1, // TODO: check parameters
+                        symbol: 'USDT-USD',
+                    });
+                    expect(q.msgNo).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    expect(q.signature).toBeDefined();
+                    return true;
+                })
                 .reply(200),
     },
 });

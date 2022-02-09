@@ -124,8 +124,6 @@ class BithumbSpot extends BithumbBase {
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        // const bOrder = utils.transformZenfuseOrder(zOrder);
-
         const bCreatedOrder = await this.privateFetch('spot/placeOrder', {
             method: 'POST',
             json: zOrder,
@@ -172,8 +170,10 @@ class BithumbSpot extends BithumbBase {
         throw 'Not implemented';
     }
 
+    // TODO: add coinType if necessary
     async fetchBalances() {
         const response = await this.privateFetch('spot/assetList', {
+            method: 'POST',
             assetType: 'wallet',
         })
 
