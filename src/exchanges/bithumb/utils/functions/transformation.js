@@ -8,7 +8,7 @@ const transformZenfuseOrder = (zOrder) => {
     const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
 
     const bOrder = {
-        symbol: zOrder.symbol,
+        symbol: zOrder.symbol.replace('/', '-'),
         type: zOrder.type,
         side: zOrder.side,
         quantity: zOrder.quantity,
@@ -47,11 +47,6 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
     zOrder.id = bOrder.data.orderId;
     zOrder.timestamp = bOrder.timestamp;
     if (Object.entries(zInitialOrder).length === 0) {
-        zOrder.symbol = bOrder.data.symbol;
-        zOrder.type = bOrder.data.type;
-        zOrder.side = bOrder.data.side;
-        zOrder.quantity = parseFloat(bOrder.data.quantity);
-        zOrder.price = bOrder.data.price ? parseFloat(bOrder.data.price) : undefined;
         if (bOrder.data.status === 'success') {
             zOrder.status = 'close';
         }
@@ -61,6 +56,11 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
         else {
             zOrder.status = 'canceled';
         }
+        zOrder.symbol = bOrder.data.symbol.replace('-', '/');
+        zOrder.type = bOrder.data.type;
+        zOrder.side = bOrder.data.side;
+        zOrder.price = bOrder.data.price ? parseFloat(bOrder.data.price) : undefined;
+        zOrder.quantity = parseFloat(bOrder.data.quantity);
     }
     else {
         zOrder.symbol = zInitialOrder.symbol;

@@ -15,7 +15,7 @@ const createHmacSignature = ({ apiKey, ts, msgNo }, privateKey) => {
 
     const signaturePayload = `apiKey=${apiKey}&msgNo=${msgNo}&timestamp=${ts}`;
 
-    return createHmac('sha256', privateKey).update(signaturePayload);
+    return createHmac('sha256', privateKey).update(signaturePayload).digest('hex');
 };
 
 module.exports = { createHmacSignature };
