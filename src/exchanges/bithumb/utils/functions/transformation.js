@@ -19,7 +19,7 @@ const transformZenfuseOrder = (zOrder) => {
     }
 
     if (zOrder.type === 'market') {
-        bOrder.price = null;
+        bOrder.price = -1;
     }
 
     // Allow user extra keys
@@ -68,7 +68,7 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
         zOrder.side = zInitialOrder.side;
         zOrder.quantity = zInitialOrder.quantity;
         zOrder.price = zInitialOrder.price ? zInitialOrder.price : undefined;
-        zOrder.status = zInitialOrder.status;
+        zOrder.status = zInitialOrder.status ? zInitialOrder.status : 'open';
     }
     // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
 

@@ -68,294 +68,282 @@ module.exports = (env) => ({
                     .post('/spot/placeOrder')
                     .query((q) => {
                         expect(q).toMatchObject({
-                            apiKey: env.API_PUBLIC_KEY,
-                            market: 'BTC-USDT',
-                            side: 'buy',
+                            symbol: 'BTC-USDT',
                             type: 'market',
-                            price: null,
-                            size: 0.0004,
+                            side: 'buy',                            
+                            price: '-1',
+                            quantity: '0.0004',
                         });
 
+                        expect(q.apiKey).toBeDefined();
                         expect(q.msgNo).toBeDefined();
                         expect(q.timestamp).toBeDefined();
                         expect(q.signature).toBeDefined();
                         return true;
                     })
-                    // TODO: change reply
                     .reply(201, {
-                        success: true,
-                        result: {
-                            id: 112582179056,
-                            clientId: null,
-                            market: 'BTC/USDT',
-                            type: 'market',
-                            side: 'buy',
-                            price: null,
-                            size: 0.0004,
-                            status: 'new',
-                            filledSize: 0,
-                            remainingSize: 0.0004,
-                            reduceOnly: false,
-                            liquidation: null,
-                            avgFillPrice: null,
-                            postOnly: false,
-                            ioc: true,
-                            createdAt: '2022-01-11T17:41:47.235109+00:00',
-                            future: null,
-                        },
+                        data: {
+                            orderId: "23132134242",
+                            symbol: "BTC-USDT"
+                           },
+                        code: "0",
+                        msg: "success",
+                        timestamp: 1551346473238,
+                        params: []
                     }),
             'sell by market': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
-                    .post('/spot/placeOrder', {
-                        market: 'BTC-USDT',
-                        side: 'sell',
-                        type: 'market',
-                        price: null,
-                        size: 0.0004,
-                    })
-                    // TODO: change reply
-                    .reply(201, {
-                        success: true,
-                        result: {
-                            id: 112587218515,
-                            clientId: null,
-                            market: 'BTC/USDT',
+                    .post('/spot/placeOrder')
+                    .query((q) => {
+                        expect(q).toMatchObject({
+                            symbol: 'BTC-USDT',
                             type: 'market',
-                            side: 'sell',
-                            price: null,
-                            size: 0.0004,
-                            status: 'new',
-                            filledSize: 0,
-                            remainingSize: 0.0004,
-                            reduceOnly: false,
-                            liquidation: null,
-                            avgFillPrice: null,
-                            postOnly: false,
-                            ioc: true,
-                            createdAt: '2022-01-11T18:04:55.627232+00:00',
-                            future: null,
-                        },
+                            side: 'sell',                            
+                            price: '-1',
+                            quantity: '0.0004',
+                        });
+
+                        expect(q.apiKey).toBeDefined();
+                        expect(q.msgNo).toBeDefined();
+                        expect(q.timestamp).toBeDefined();
+                        expect(q.signature).toBeDefined();
+                        return true;
+                    })
+                    .reply(201, {
+                        data: {
+                            orderId:"23132134242",
+                            symbol:"BTC-USDT"
+                           },
+                        code: "0",
+                        msg: "success",
+                        timestamp: 1551346473238,
+                        params: []
                     }),
             'buy by limit': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
-                    .post('/spot/placeOrder', {
-                        market: 'BTC-USDT',
-                        type: 'limit',
-                        side: 'buy',
-                        size: 0.0004,
-                        price: 35000,
-                    })
-                    // TODO: change reply
-                    .reply(201, {
-                        success: true,
-                        result: {
-                            id: 112588036315,
-                            clientId: null,
-                            market: 'BTC/USDT',
+                    .post('/spot/placeOrder')
+                    .query((q) => {
+                        expect(q).toMatchObject({
+                            symbol: 'BTC-USDT',
                             type: 'limit',
-                            side: 'buy',
-                            price: 35000,
-                            size: 0.0004,
-                            status: 'new',
-                            filledSize: 0,
-                            remainingSize: 0.0004,
-                            reduceOnly: false,
-                            liquidation: null,
-                            avgFillPrice: null,
-                            postOnly: false,
-                            ioc: false,
-                            createdAt: '2022-01-11T18:08:16.731842+00:00',
-                            future: null,
-                        },
+                            side: 'buy',                            
+                            price: '35000',
+                            quantity: '0.0004',
+                        });
+
+                        expect(q.apiKey).toBeDefined();
+                        expect(q.msgNo).toBeDefined();
+                        expect(q.timestamp).toBeDefined();
+                        expect(q.signature).toBeDefined();
+                        return true;
+                    })
+                    .reply(201, {
+                        data: {
+                            orderId:"23132134242",
+                            symbol:"BTC-USDT"
+                           },
+                        code: "0",
+                        msg: "success",
+                        timestamp: 1551346473238,
+                        params: []
                     }),
             'sell by limit': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
-                    .post('/spot/placeOrder', {
-                        market: 'BTC-USDT',
-                        type: 'limit',
-                        side: 'sell',
-                        size: 0.0004,
-                        price: 55000,
-                    })
-                    // TODO: change reply
-                    .reply(201, {
-                        success: true,
-                        result: {
-                            id: 112589159471,
-                            clientId: null,
-                            market: 'BTC/USDT',
+                    .post('/spot/placeOrder')
+                    .query((q) => {
+                        expect(q).toMatchObject({
+                            symbol: 'BTC-USDT',
                             type: 'limit',
-                            side: 'sell',
-                            price: 55000,
-                            size: 0.0004,
-                            status: 'new',
-                            filledSize: 0,
-                            remainingSize: 0.0004,
-                            reduceOnly: false,
-                            liquidation: null,
-                            avgFillPrice: null,
-                            postOnly: false,
-                            ioc: false,
-                            createdAt: '2022-01-11T18:13:38.138876+00:00',
-                            future: null,
-                        },
+                            side: 'sell',                            
+                            price: '55000',
+                            quantity: '0.0004',
+                        });
+
+                        expect(q.apiKey).toBeDefined();
+                        expect(q.msgNo).toBeDefined();
+                        expect(q.timestamp).toBeDefined();
+                        expect(q.signature).toBeDefined();
+                        return true;
+                    })
+                    .reply(201, {
+                        data: {
+                            orderId:"23132134242",
+                            symbol:"BTC-USDT"
+                           },
+                        code: "0",
+                        msg: "success",
+                        timestamp: 1551346473238,
+                        params: []
                     }),
         },
         'fetchBalances()': () =>
             nock(HOSTNAME)
                 .matchHeader('Content-Type', 'application/json')
                 .post('/spot/assetList')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        assetType: 'wallet',
+                    });
+
+                    expect(q.apiKey).toBeDefined();
+                    expect(q.msgNo).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    expect(q.signature).toBeDefined();
+                    return true;
+                })
                 // TODO: change reply
                 .reply(200, {
-                    success: true,
-                    result: [
-                        {
-                            coin: 'USDTBEAR',
-                            free: 2320.2,
-                            spotBorrow: 0.0,
-                            total: 2340.2,
-                            usdValue: 2340.2,
-                            availableWithoutBorrow: 2320.2,
-                        },
-                    ],
+                    data: [
+                         {
+                          coinType: "BTC",
+                          count: "100",
+                          frozen: "10",
+                          btcQuantity: "110",
+                          type: "1"
+                        }
+                      ],
+                    code: "0",
+                    msg: "success",
+                    timestamp: 1551346473238,
+                    params: []
                 }),
 
         'cancelOrderById()': () =>
             nock(HOSTNAME)
                 .matchHeader('Content-Type', 'application/json')
                 // Order creation
-                .post('/spot/placeOrder', {
-                    market: 'USDT-USD',
-                    type: 'limit',
-                    side: 'buy',
-                    size: 20,
-                    price: 0.5,
-                })
-                // TODO: change reply
-                .reply(200, {
-                    success: true,
-                    result: {
-                        id: 112590877630,
-                        clientId: null,
-                        market: 'USDT/USD',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 0.5,
-                        size: 20,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 20,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:21:19.188847+00:00',
-                        future: null,
-                    },
-                })
-                // Order deletion
-                .post(`/spot/cancelOrder`)
+                .post('/spot/placeOrder')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        apiKey: env.API_PUBLIC_KEY,
-                        orderId: 1, // TODO: check parameters
                         symbol: 'USDT-USD',
+                        type: 'limit',
+                        side: 'buy',
+                        quantity: '20',
+                        price: '0.5',
                     });
+
+                    expect(q.apiKey).toBeDefined();
                     expect(q.msgNo).toBeDefined();
                     expect(q.timestamp).toBeDefined();
                     expect(q.signature).toBeDefined();
                     return true;
                 })
-                .reply(200),
+                .reply(201, {
+                    data: {
+                        orderId: "23132134242",
+                        symbol: "USDT-USD",
+                       },
+                    code: "0",
+                    msg: "success",
+                    timestamp: 1551346473238,
+                    params: [],
+                })
+                // Order deletion
+                .post(`/spot/cancelOrder`)
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        orderId: "23132134242",
+                        symbol: "",
+                    });
+
+                    expect(q.apiKey).toBeDefined();
+                    expect(q.msgNo).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    expect(q.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    code: "0",
+                    msg: "success",
+                    timestamp: 1551346473238,
+                    params: [],
+                }),
 
         'fetchOrderById()': () =>
             nock(HOSTNAME)
                 .matchHeader('Content-Type', 'application/json')
                 // Order creation
                 .post('/spot/placeOrder')
-                .query({
-                    market: 'USDT/USD',
-                    type: 'limit',
-                    side: 'buy',
-                    size: 20,
-                    price: 0.5,
-                })
-                // TODO: change reply
-                .reply(200, {
-                    success: true,
-                    result: {
-                        id: 112590877631,
-                        clientId: null,
-                        market: 'USDT/USD',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 0.5,
-                        size: 20,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 20,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:21:19.188847+00:00',
-                        future: null,
-                    },
-                })
-                // Order status fetch
-                .post('/spot/singleOrder')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        apiKey: env.API_PUBLIC_KEY,
-                        orderId: 1, // TODO: check parameters
                         symbol: 'USDT-USD',
+                        type: 'limit',
+                        side: 'buy',
+                        quantity: '20',
+                        price: '0.5',
                     });
 
-                    expect(q.msgNo).toBeDefined();
-                    expect(q.timestamp).toBeDefined();
-                    expect(q.signature).toBeDefined();
-                })
-                // TODO: change reply
-                .reply(200, {
-                    success: true,
-                    result: {
-                        id: 112590877631,
-                        clientId: null,
-                        market: 'USDT/USD',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 0.5,
-                        size: 20,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 20,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:21:19.188847+00:00',
-                        future: null,
-                    },
-                })
-                // Order deletion
-                .post(`/spot/cancelOrder`)
-                .query((q) => {
-                    expect(q).toMatchObject({
-                        apiKey: env.API_PUBLIC_KEY,
-                        orderId: 1, // TODO: check parameters
-                        symbol: 'USDT-USD',
-                    });
+                    expect(q.apiKey).toBeDefined();
                     expect(q.msgNo).toBeDefined();
                     expect(q.timestamp).toBeDefined();
                     expect(q.signature).toBeDefined();
                     return true;
                 })
-                .reply(200),
+                .reply(201, {
+                    data: {
+                        orderId: "23132134242",
+                        symbol: "USDT-USD",
+                       },
+                    code: "0",
+                    msg: "success",
+                    timestamp: 1551346473238,
+                    params: [],
+                })
+                // Order status fetch
+                .post('/spot/singleOrder')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        orderId: '23132134242',
+                        symbol: '',
+                    });
+
+                    expect(q.apiKey).toBeDefined();
+                    expect(q.msgNo).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    expect(q.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    data:{
+                        orderId: "23132134242",
+                        symbol: "USDT-USD",
+                        price: "0.5",
+                        tradedNum: "0.01",
+                        quantity: "20",
+                        avgPrice: "0",
+                        status: "pending",
+                        type: "limit",
+                        side: "buy",
+                        createTime: "1551346473238",
+                        tradeTotal: "0.5",
+                      },
+                    code: "0",
+                    msg: "success",
+                    timestamp: 1551346473238,
+                    params: [],
+                })
+                // Order deletion
+                .post(`/spot/cancelOrder`)
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        orderId: "23132134242",
+                        symbol: "",
+                    });
+
+                    expect(q.apiKey).toBeDefined();
+                    expect(q.msgNo).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    expect(q.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    code: "0",
+                    msg: "success",
+                    timestamp: 1551346473238,
+                    params: [],
+                }),
     },
 });

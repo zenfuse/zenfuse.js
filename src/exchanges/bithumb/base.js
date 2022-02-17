@@ -6,6 +6,7 @@ const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error
 const BithumbApiError = require('./errors/api.error');
 const BithumbCache = require('./etc/cache');
 const { createHmacSignature } = require('./utils');
+const { merge } = require('../../base/schemas/openOrder');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
 
@@ -85,12 +86,16 @@ class BithumbBase extends ExchangeBase {
             this[keysSymbol].privateKey,
         );
 
-        options = mergeObjects(options, {
+        const searchParams = mergeObjects(options.searchParams, {
             apiKey: this[keysSymbol].publicKey,
             msgNo: this.msgNo.toString(),
             timestamp: timestamp,
             signature: signature,
         });
+
+        options.searchParams = searchParams;
+
+        // console.log(options);
 
         this.msgNo += 1;
 
