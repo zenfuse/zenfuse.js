@@ -43,22 +43,22 @@ module.exports = function masterTest(Exchange, env) {
         describe('fetchMarkets()', () => {
             let result;
 
-            it.skip('should be defined', () => {
+            it('should be defined', () => {
                 expect(exchange.fetchMarkets).toBeDefined();
             });
 
-            it.skip('should fetch without errors', async () => {
+            it('should fetch without errors', async () => {
                 result = await exchange.fetchMarkets();
             });
 
-            it.skip('should have valid originalResponse', () => {
+            it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
                 ).toBeDefined();
             });
 
-            it.skip('should return valid output', () => {
+            it('should return valid output', () => {
                 const schema = z.array(
                     z.object({
                         symbol: z.string(),
