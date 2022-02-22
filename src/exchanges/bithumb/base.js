@@ -89,13 +89,13 @@ class BithumbBase extends ExchangeBase {
         const searchParams = mergeObjects(options.searchParams, {
             apiKey: this[keysSymbol].publicKey,
             msgNo: this.msgNo.toString(),
-            timestamp: timestamp,
+            timestamp: timestamp.toString(),
             signature: signature,
         });
 
         options.searchParams = searchParams;
 
-        // console.log(options);
+        console.log(options);
 
         this.msgNo += 1;
 
@@ -153,6 +153,7 @@ class BithumbBase extends ExchangeBase {
      * @private
      */
     handleFetcherError(err) {
+        console.log(err.response.body.error);
         if (err instanceof HTTPError) {
             throw new BithumbApiError(err);
         }
