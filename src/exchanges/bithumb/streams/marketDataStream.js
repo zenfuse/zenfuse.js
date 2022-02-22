@@ -15,7 +15,7 @@ class MarketDataStream extends BithumbWebsocketBase {
      * @returns {this}
      */
     async open() {
-        if (this.isSocketConneted) return this;
+        if (this.isSocketConnected) return this;
 
         await super.open();
 
@@ -64,9 +64,10 @@ class MarketDataStream extends BithumbWebsocketBase {
 
         if (event.channel === 'price') {
             return this.sendSocketMessage({
-                op: command,
-                channel: 'ticker',
-                market: event.symbol,
+                cmd: command,
+                args: ["TICKER:" + event.symbol.replace('/', '-')],
+                // channel: 'ticker',
+                // market: event.symbol,
             });
         }
 
@@ -85,8 +86,8 @@ class MarketDataStream extends BithumbWebsocketBase {
     serverMessageHandler(msgEvent) {
         const payload = JSON.parse(msgEvent.data);
 
-        if (payload.type === 'update') {
-            if (payload.channel === 'ticker') {
+        if (payload.code === "00007") {
+            if (payload.topic === 'TICKER') {
                 this.emitNewPrice(payload);
             }
         }
@@ -100,9 +101,9 @@ class MarketDataStream extends BithumbWebsocketBase {
      */
     emitNewPrice(payload) {
         const priceObject = {
-            symbol: payload.market,
-            price: payload.data.last,
-            timestamp: payload.data.time,
+            symbol: payload.data.symbol.replace('-', '/'),
+            price: parseFloat(payload.data.c),
+            timestamp: payload.timestamp,
         };
 
         utils.linkOriginalPayload(priceObject, payload);
@@ -136,8 +137,8 @@ class MarketDataStream extends BithumbWebsocketBase {
         const id = this.createPayloadId();
 
         const payload = {
-            method: 'UNSUBSCRIBE',
-            params: [...eventNames],
+            cmd: 'UNSUBSCRIBE',
+            args: [...eventNames],
             id,
         };
 

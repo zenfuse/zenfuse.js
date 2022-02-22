@@ -11,15 +11,16 @@ const transformZenfuseOrder = (zOrder) => {
         symbol: zOrder.symbol.replace('/', '-'),
         type: zOrder.type,
         side: zOrder.side,
-        quantity: zOrder.quantity,
+        quantity: zOrder.quantity.toString(),
+        timestamp: Date.now().toString(),
     };
 
     if (zOrder.price) {
-        bOrder.price = zOrder.price;
+        bOrder.price = zOrder.price.toString();
     }
 
     if (zOrder.type === 'market') {
-        bOrder.price = -1;
+        bOrder.price = "-1";
     }
 
     // Allow user extra keys
@@ -35,7 +36,7 @@ const transformZenfuseOrder = (zOrder) => {
 /**
  * Bithumb -> Zenfuse
  *
- * @param {*} bOrder Order from Bithumb
+ * @param {*} bOrder Order from Bithumb REST
  * @returns {Order} Zenfuse Order
  */
 const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
@@ -75,7 +76,41 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
     return zOrder;
 };
 
+/**
+ * Bithumb -> Zenfuse
+ *
+ * @param {*} bOrder Order from Bithumb WS
+ * @returns {Order} Zenfuse Order
+ */
+ const transformBithumbOrderWS = (bOrder, zInitialOrder = {}) => {
+    /**
+     * @type {Order}
+     */
+    const zOrder = {};
+
+    zOrder.id = bOrder.data.oId;
+    zOrder.timestamp = bOrder.timestamp;
+    zOrder.symbol = bOrder.data.symbol;
+    zOrder.type = bOrder.data.type; 
+    zOrder.side = bOrder.data.side;
+    zOrder.quantity = bOrder.data.quantity;
+    zOrder.price = bOrder.data.price // ? bOrder.data.price : undefined;
+    if (bOrder.data.status === 'fullDealt') {
+        zOrder.status = 'close';
+    }
+    else if (bOrder.data.status === 'created' || bOrder.data.status === 'partDealt') {
+        zOrder.status = 'open';
+    }
+    else {
+        zOrder.status = 'canceled';
+    }
+    // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+
+    return zOrder;
+};
+
 module.exports = {
     transformZenfuseOrder,
     transformBithumbOrder,
+    transformBithumbOrderWS,
 };

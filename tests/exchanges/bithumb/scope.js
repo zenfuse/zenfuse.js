@@ -19,12 +19,13 @@ module.exports = (env) => ({
             nock(HOSTNAME)
                 .get('/openapi/v1/serverTime')
                 .reply(200, { data: Date.now(), code: '0', msg: 'success' }),
-        // 'fetchMarkets()': () =>
-        //     nock(HOSTNAME)
-        //         .get('/api/markets')
-        //         .replyWithFile(200, marketsFilePath, {
-        //             'Content-Type': 'application/json',
-        //         }),
+        'fetchMarkets()': () =>
+            nock(HOSTNAME)
+                .get('/openapi/v1/spot/ticker')
+                .query({ symbol: 'ALL' })
+                .replyWithFile(200, spotFilePath, {
+                    'Content-Type': 'application/json',
+                }),
         'fetchTickers()': () =>
             nock(HOSTNAME)
                 .get('/openapi/v1/spot/ticker')

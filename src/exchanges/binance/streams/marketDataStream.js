@@ -54,7 +54,7 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @returns {this}
      */
     close() {
-        if (this.isSocketConneted) {
+        if (this.isSocketConnected) {
             this.socket.close();
         }
 
@@ -253,14 +253,14 @@ class MarketDataStream extends BinanceWebsocketBase {
         return this.lastPayloadId;
     }
 
-    get isSocketConneted() {
+    get isSocketConnected() {
         if (!this.socket) return false;
 
         return this.socket.readyState === 1;
     }
 
     checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
+        if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
     }

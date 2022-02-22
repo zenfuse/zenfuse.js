@@ -56,25 +56,33 @@ class BithumbSpot extends BithumbBase {
     /**
      * @returns {string[]} Array of ticker pairs on FTX
      */
-    // async fetchMarkets() {
-    //     const response = await this.publicFetch('api/markets');
+    async fetchMarkets() {
+        const response = await this.publicFetch(
+            'openapi/v1/spot/ticker',
+            {
+                searchParams: {
+                    symbol: 'ALL',
+                },
+            }
+        );
 
-    //     // TODO: Cache update here
+        // TODO: Cache update here
 
-    //     const spotMarkets = utils.extractSpotMarkets(response.result);
+        const markets = response.data.map((m) => {
+            let ticker = m.s.split('-');
+            return {
+                symbol: m.s,
+                baseTicker: ticker[0],
+                quoteTicker: ticker[1],
+            };
+        });
 
-    //     const markets = spotMarkets.map((m) => {
-    //         return {
-    //             symbol: m.name,
-    //             baseTicker: m.baseCurrency,
-    //             quoteTicker: m.quoteCurrency,
-    //         };
-    //     });
+        console.log(markets);
 
-    //     utils.linkOriginalPayload(markets, response);
+        utils.linkOriginalPayload(markets, response);
 
-    //     return markets;
-    // }
+        return markets;
+    }
 
     /**
      *
@@ -135,6 +143,8 @@ class BithumbSpot extends BithumbBase {
         this.validateOrderParams(zOrder);
 
         const bOrder = transformZenfuseOrder(zOrder);
+
+        console.log(bOrder);
 
         const bCreatedOrder = await this.privateFetch('spot/placeOrder', {
             method: 'POST',

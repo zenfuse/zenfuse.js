@@ -31,7 +31,7 @@ module.exports = function masterTest(Exchange, env) {
          */
         let exchange = new Exchange['spot']();
 
-        describe('ping()', () => {
+        describe.skip('ping()', () => {
             it('should be defined', () => {
                 expect(exchange.ping).toBeDefined();
             });
@@ -40,7 +40,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchMarkets()', () => {
+        describe.skip('fetchMarkets()', () => {
             let result;
 
             it('should be defined', () => {
@@ -70,7 +70,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchTickers()', () => {
+        describe.skip('fetchTickers()', () => {
             let result;
 
             it('should be defined', () => {
@@ -94,7 +94,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchPrice()', () => {
+        describe.skip('fetchPrice()', () => {
             let result;
 
             it('should be defined', () => {
@@ -266,7 +266,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchBalances()', () => {
+        describe.skip('fetchBalances()', () => {
             it('should be defined', () => {
                 expect(exchange.fetchBalances).toBeDefined();
             });
@@ -305,7 +305,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('cancelOrderById()', () => {
+        describe.skip('cancelOrderById()', () => {
             it('should be defined', () => {
                 expect(exchange.cancelOrderById).toBeDefined();
             });
@@ -337,7 +337,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchOrderById()', () => {
+        describe.skip('fetchOrderById()', () => {
             let result;
             let createdOrder;
 
@@ -385,7 +385,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
      */
 
-    describe('Spot Wallet Private Stream', () => {
+    describe.skip('Spot Wallet Private Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -426,7 +426,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should connect to websocket', async () => {
                 await accountDataStream.open();
 
-                expect(accountDataStream.isSocketConneted).toBe(true);
+                expect(accountDataStream.isSocketConnected).toBe(true);
             });
 
             it('should emit "orderUpdate"', async () => {
@@ -438,6 +438,7 @@ module.exports = function masterTest(Exchange, env) {
                     });
                 });
 
+                console.log(env.NOT_EXECUTABLE_ORDER);
                 const createdOrder = await exchange.createOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
@@ -448,14 +449,14 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('close()', () => {
+        describe.skip('close()', () => {
             beforeAll(() => accountDataStream.open());
             it('should close connection', () => {
-                expect(accountDataStream.isSocketConneted).toBe(true);
+                expect(accountDataStream.isSocketConnected).toBe(true);
 
                 accountDataStream.close();
 
-                expect(accountDataStream.isSocketConneted).toBe(false);
+                expect(accountDataStream.isSocketConnected).toBe(false);
             });
         });
     });
@@ -496,17 +497,17 @@ module.exports = function masterTest(Exchange, env) {
             }
         });
 
-        describe('open()', () => {
+        describe.skip('open()', () => {
             it('should connect to websocket', async () => {
                 await marketDataStream.open();
 
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
             });
         });
 
-        describe('subscribeTo()', () => {
+        describe.skip('subscribeTo()', () => {
             beforeEach(async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
             });
 
             it('should subscribe for price', (done) => {
@@ -529,13 +530,13 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('unsubscribeFrom()', () => {
+        describe.skip('unsubscribeFrom()', () => {
             beforeEach(async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
             });
 
             it('should unsubsctibed from specific event', async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
 
                 await marketDataStream.subscribeTo({
                     channel: 'price',
@@ -544,7 +545,7 @@ module.exports = function masterTest(Exchange, env) {
 
                 await marketDataStream.unsubscribeFrom({
                     channel: 'price',
-                    symbol: 'BTC/USDt',
+                    symbol: 'BTC/USDT',
                 });
 
                 const listener = jest.fn();
@@ -562,7 +563,7 @@ module.exports = function masterTest(Exchange, env) {
             // TODO: FTX Websocket subscription list memory
             // Should be skipped for now, FTX websocket doesnt have "get subscription" support
             it.skip('should unsubscribe by string', async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
 
                 await marketDataStream.subscribeTo('BTC/USDT');
 
@@ -582,7 +583,7 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it.skip('should unsubscribe by string from all events with the same symbol', async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
 
                 await marketDataStream.subscribeTo({
                     channel: 'kline',
@@ -623,13 +624,13 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('close()', () => {
+        describe.skip('close()', () => {
             it('should close connection', () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
 
                 marketDataStream.close();
 
-                expect(marketDataStream.isSocketConneted).toBe(false);
+                expect(marketDataStream.isSocketConnected).toBe(false);
             });
         });
     });

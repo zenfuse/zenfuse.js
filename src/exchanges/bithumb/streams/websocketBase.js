@@ -56,7 +56,7 @@ class BithumbWebsocketBase extends EventEmitter {
      * @returns {this}
      */
     close() {
-        if (this.isSocketConneted) {
+        if (this.isSocketConnected) {
             clearInterval(this.pingInterval);
             this.socket.close();
         }
@@ -69,12 +69,12 @@ class BithumbWebsocketBase extends EventEmitter {
     }
 
     checkSocketIsConnected() {
-        if (!this.isSocketConneted) {
+        if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
     }
 
-    getIsSocketConnected() {
+    get isSocketConnected() {
         if (!this.socket) return false;
 
         return this.socket.readyState === WebSocket.OPEN;

@@ -42,7 +42,7 @@ class AccountDataStream extends BithumbWebsocketBase {
             },
         });
 
-        this.sendSocketMessage({ cmd: 'subscribe', args: ['orders'] }); //TODO: check args
+        this.sendSocketMessage({ cmd: 'subscribe', args: ['ORDER'] });
 
         return this;
     }
@@ -50,17 +50,15 @@ class AccountDataStream extends BithumbWebsocketBase {
     serverMessageHandler(msgString) {
         const payload = JSON.parse(msgString);
 
-        if (payload.type === 'update') {
-            if (payload.channel === 'orders') {
-                this.emitOrderUpdateEvent(payload);
-            }
+        if (payload.topic === 'ORDER') {
+            this.emitOrderUpdateEvent(payload);
         }
 
         this.emit('payload', payload);
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transformBithumbOrder(payload.data);
+        const order = utils.transformBithumbOrderWS(payload);
 
         utils.linkOriginalPayload(order, payload);
 
