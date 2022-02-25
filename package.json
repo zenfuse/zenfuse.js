@@ -35,7 +35,7 @@
     "homepage": "https://zenfuse.js",
     "types": "./types",
     "devDependencies": {
-        "@types/ws": "^8.2.3",
+        "@types/ws": "^8.5.1",
         "@typescript-eslint/eslint-plugin": "^5.12.1",
         "@typescript-eslint/parser": "^5.12.1",
         "dotenv": "^16.0.0",
