@@ -37,7 +37,7 @@ class BithumbSpot extends BithumbBase {
      */
     async fetchTickers() {
         const markets = await this.publicFetch(
-            'openapi/v1/spot/ticker',
+            'spot/ticker',
             {
                 searchParams: {
                     symbol: 'ALL',
@@ -58,7 +58,7 @@ class BithumbSpot extends BithumbBase {
      */
     async fetchMarkets() {
         const response = await this.publicFetch(
-            'openapi/v1/spot/ticker',
+            'spot/ticker',
             {
                 searchParams: {
                     symbol: 'ALL',
@@ -91,7 +91,7 @@ class BithumbSpot extends BithumbBase {
      * @returns Last price
      */
     async fetchPrice(market = '') {
-        const requestPath = 'openapi/v1/spot/ticker';
+        const requestPath = 'spot/ticker';
 
         const requestOptions = market 
             ? { 
@@ -148,8 +148,10 @@ class BithumbSpot extends BithumbBase {
 
         const bCreatedOrder = await this.privateFetch('spot/placeOrder', {
             method: 'POST',
-            searchParams: bOrder,
+            json: bOrder,
         });
+
+        console.log(bCreatedOrder);
 
         const zCreatedOrder = utils.transformBithumbOrder(bCreatedOrder, zOrder);
 
@@ -170,7 +172,7 @@ class BithumbSpot extends BithumbBase {
     async cancelOrderById(orderId, symbol = '') {
         const response = await this.privateFetch('spot/cancelOrder', {
             method: 'POST',
-            searchParams: {
+            json: {
                 orderId: orderId,
                 symbol: symbol, //empty string for master.test
             },
@@ -198,13 +200,13 @@ class BithumbSpot extends BithumbBase {
     async fetchBalances() {
         const response = await this.privateFetch('spot/assetList', {
             method: 'POST',
-            searchParams: {
+            json: {
                 assetType: 'wallet',
             },
-        })
+        });
 
         const balances = response.data
-            .filter((b) => b.total > 0)
+            // .filter((b) => b.total > 0)
             .map((b) => {
                 return {
                     ticker: b.coinType,
@@ -227,7 +229,7 @@ class BithumbSpot extends BithumbBase {
     async fetchOrderById(orderId, symbol = '') {
         const responce = await this.privateFetch('spot/singleOrder', {
             method: 'POST',
-            searchParams: {
+            json: {
                 orderId: orderId,
                 symbol: symbol, //empty string for master.test
             },

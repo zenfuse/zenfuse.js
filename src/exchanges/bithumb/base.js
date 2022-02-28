@@ -24,7 +24,7 @@ class BithumbBase extends ExchangeBase {
     static DEFAULT_OPTIONS = {
         httpClientOptions: {
             responseType: 'json',
-            prefixUrl: 'https://global-openapi.bithumb.pro',
+            prefixUrl: 'https://global-openapi.bithumb.pro/openapi/v1',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -75,25 +75,26 @@ class BithumbBase extends ExchangeBase {
 
         const timestamp = Date.now();
 
-        const sigParams = {
+        let sigParams = mergeObjects(options.json, {
             apiKey: this[keysSymbol].publicKey,
-            ts: timestamp,
-            msgNo: this.msgNo,
-        };
+            timestamp: timestamp.toString(),
+            msgNo: this.msgNo.toString(),
+        });
+
+        sigParams = Object.keys(sigParams).sort().reduce((acc, key) => ({
+            ...acc, [key]: sigParams[key]
+        }), {});
 
         const signature = createHmacSignature(
             sigParams,
             this[keysSymbol].privateKey,
         );
 
-        const searchParams = mergeObjects(options.searchParams, {
-            apiKey: this[keysSymbol].publicKey,
-            msgNo: this.msgNo.toString(),
-            timestamp: timestamp.toString(),
+        const reqBody = mergeObjects(sigParams, {
             signature: signature,
         });
 
-        options.searchParams = searchParams;
+        options.json = reqBody;
 
         console.log(options);
 
@@ -153,7 +154,7 @@ class BithumbBase extends ExchangeBase {
      * @private
      */
     handleFetcherError(err) {
-        console.log(err.response.body.error);
+        console.log(err.message);
         if (err instanceof HTTPError) {
             throw new BithumbApiError(err);
         }

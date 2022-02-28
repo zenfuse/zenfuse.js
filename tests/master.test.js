@@ -198,7 +198,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
             });
 
-            describe('sell by market', () => {
+            describe.skip('sell by market', () => {
                 let result;
 
                 it('should create order without errors', async () => {
@@ -219,7 +219,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
             });
 
-            describe('buy by limit', () => {
+            describe.skip('buy by limit', () => {
                 let result;
 
                 it('should create order without errors', async () => {
@@ -242,7 +242,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
             });
 
-            describe('sell by limit', () => {
+            describe.skip('sell by limit', () => {
                 let result;
 
                 it('should create order without errors', async () => {
