@@ -202,8 +202,11 @@ class BithumbSpot extends BithumbBase {
             method: 'POST',
             json: {
                 assetType: 'wallet',
+                coinType: 'USDT',
             },
         });
+
+        console.log(response);
 
         const balances = response.data
             // .filter((b) => b.total > 0)
