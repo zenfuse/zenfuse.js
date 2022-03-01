@@ -96,7 +96,7 @@ class BithumbBase extends ExchangeBase {
 
         options.json = reqBody;
 
-        console.log(options);
+        // console.log(options);
 
         this.msgNo += 1;
 

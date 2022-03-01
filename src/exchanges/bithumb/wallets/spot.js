@@ -202,7 +202,7 @@ class BithumbSpot extends BithumbBase {
             method: 'POST',
             json: {
                 assetType: 'wallet',
-                coinType: 'USDT',
+                coinType: 'BTC',
             },
         });
 

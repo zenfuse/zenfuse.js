@@ -161,7 +161,7 @@ module.exports = function masterTest(Exchange, env) {
 
         // NOTE: Now exchange is authenticated instance
 
-        describe('createOrder()', () => {
+        describe.skip('createOrder()', () => {
             it('should be defined', () => {
                 expect(exchange.createOrder).toBeDefined();
             });
@@ -175,7 +175,7 @@ module.exports = function masterTest(Exchange, env) {
                 ).rejects.toThrowError(NotAuthenticatedError);
             });
 
-            describe('buy by market', () => {
+            describe.skip('buy by market', () => {
                 let result;
 
                 it('should create order without errors', async () => {
@@ -183,7 +183,7 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: 'BTC/USDT',
                         type: 'market',
                         side: 'buy',
-                        quantity: 0.0004,
+                        quantity: 5,
                     });
                 });
 
@@ -206,7 +206,7 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: 'BTC/USDT',
                         type: 'market',
                         side: 'sell',
-                        quantity: 0.0004,
+                        quantity: 0.0003,
                     });
                 });
 
@@ -497,7 +497,7 @@ module.exports = function masterTest(Exchange, env) {
             }
         });
 
-        describe.skip('open()', () => {
+        describe('open()', () => {
             it('should connect to websocket', async () => {
                 await marketDataStream.open();
 
@@ -624,7 +624,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe.skip('close()', () => {
+        describe('close()', () => {
             it('should close connection', () => {
                 expect(marketDataStream.isSocketConnected).toBe(true);
 
