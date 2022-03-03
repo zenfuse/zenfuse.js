@@ -40,10 +40,10 @@ class AccountDataStream extends BithumbWebsocketBase {
             args: [publicKey, timestamp, signature],
         });
 
-        this.sendSocketMessage({
-            cmd: 'subscribe',
-            args: ['ORDER'],
-        });
+        // this.sendSocketMessage({
+        //     cmd: 'subscribe',
+        //     args: ['ORDER'],
+        // });
 
         return this;
     }
@@ -52,7 +52,7 @@ class AccountDataStream extends BithumbWebsocketBase {
         
         const payload = JSON.parse(msgString);
         console.log(payload);
-        if (payload.topic === 'ORDER') {
+        if (payload.code === '00007' && payload.topic === 'ORDER') {
             this.emitOrderUpdateEvent(payload);
         }
 

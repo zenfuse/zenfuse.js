@@ -161,7 +161,7 @@ module.exports = function masterTest(Exchange, env) {
 
         // NOTE: Now exchange is authenticated instance
 
-        describe.skip('createOrder()', () => {
+        describe('createOrder()', () => {
             it('should be defined', () => {
                 expect(exchange.createOrder).toBeDefined();
             });
@@ -206,7 +206,7 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: 'BTC/USDT',
                         type: 'market',
                         side: 'sell',
-                        quantity: 0.0003,
+                        quantity: 0.0001,
                     });
                 });
 
@@ -250,7 +250,7 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: 'BTC/USDT',
                         type: 'limit',
                         side: 'sell',
-                        quantity: 0.0004,
+                        quantity: 0.0001,
                         price: 55000,
                     });
                 });
@@ -343,7 +343,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should run only with keys', () => {
                 expect(
-                    exchange.cancelOrderById.bind(new Exchange['spot'](), ''),
+                    exchange.fetchOrderById.bind(new Exchange['spot'](), ''),
                 ).rejects.toThrowError(NotAuthenticatedError);
             });
 
@@ -385,7 +385,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
      */
 
-    describe.skip('Spot Wallet Private Stream', () => {
+    describe('Spot Wallet Private Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -417,7 +417,7 @@ module.exports = function masterTest(Exchange, env) {
             }
         });
 
-        describe('open()', () => {
+        describe.skip('open()', () => {
             // TODO: Mock websocket
             afterAll(() => {
                 accountDataStream.close();
@@ -438,7 +438,6 @@ module.exports = function masterTest(Exchange, env) {
                     });
                 });
 
-                console.log(env.NOT_EXECUTABLE_ORDER);
                 const createdOrder = await exchange.createOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
@@ -449,7 +448,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe.skip('close()', () => {
+        describe('close()', () => {
             beforeAll(() => accountDataStream.open());
             it('should close connection', () => {
                 expect(accountDataStream.isSocketConnected).toBe(true);

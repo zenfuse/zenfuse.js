@@ -45,9 +45,8 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
      */
     const zOrder = {};
 
-    zOrder.id = bOrder.data.orderId;
-    zOrder.timestamp = bOrder.timestamp;
-    if (Object.entries(zInitialOrder).length === 0) {
+    zOrder.id = bOrder.data.orderId;  
+    if (Object.entries(zInitialOrder).length === 0) { //if order is not cached
         if (bOrder.data.status === 'success') {
             zOrder.status = 'close';
         }
@@ -58,6 +57,7 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
             zOrder.status = 'canceled';
         }
         zOrder.symbol = bOrder.data.symbol.replace('-', '/');
+        zOrder.timestamp = bOrder.timestamp;
         zOrder.type = bOrder.data.type;
         zOrder.side = bOrder.data.side;
         zOrder.price = bOrder.data.price ? parseFloat(bOrder.data.price) : undefined;
@@ -65,6 +65,7 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
     }
     else {
         zOrder.symbol = zInitialOrder.symbol;
+        zOrder.timestamp = zInitialOrder.timestamp ? zInitialOrder.timestamp : Date.now();
         zOrder.type = zInitialOrder.type;
         zOrder.side = zInitialOrder.side;
         zOrder.quantity = zInitialOrder.quantity;

@@ -44,7 +44,7 @@ class BithumbWebsocketBase extends EventEmitter {
                 this.socket.on('error', this.handleConnectionError.bind(this));
 
                 this.pingInterval = setInterval(() => {
-                    this.socket.send('{"cmd": "ping"}');
+                    this.socket.send(JSON.stringify({cmd: "ping"}));
                 }, BithumbWebsocketBase.PING_INTERVAL);
 
                 resolve();

@@ -86,10 +86,10 @@ class MarketDataStream extends BithumbWebsocketBase {
     serverMessageHandler(msgEvent) {
         const payload = JSON.parse(msgEvent.data);
 
-        if (payload.code === "00007") {
-            if (payload.topic === 'TICKER') {
-                this.emitNewPrice(payload);
-            }
+        console.log(payload);
+
+        if (payload.code === "00007" && payload.topic === 'TICKER') {
+            this.emitNewPrice(payload);
         }
 
         this.emit('payload', payload);

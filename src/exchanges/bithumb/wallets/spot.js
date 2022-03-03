@@ -6,6 +6,7 @@ const utils = require('../utils');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 const { transformZenfuseOrder } = require('../utils');
+const NotAuthenticatedError = require('../../../base/errors/notAuthenticated.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -170,6 +171,13 @@ class BithumbSpot extends BithumbBase {
      * @param {string} symbol
      */
     async cancelOrderById(orderId, symbol = '') {
+
+        let orderToDelete = this.cache.getCachedOrderById(orderId);
+
+        if (orderToDelete) {
+            symbol = orderToDelete.symbol.replace('/', '-');
+        }
+
         const response = await this.privateFetch('spot/cancelOrder', {
             method: 'POST',
             json: {
@@ -177,8 +185,6 @@ class BithumbSpot extends BithumbBase {
                 symbol: symbol, //empty string for master.test
             },
         });
-
-        let orderToDelete = this.cache.getCachedOrderById(orderId);
 
         if (!orderToDelete) {
             orderToDelete = this.fetchOrderById(orderId, symbol);
@@ -201,15 +207,15 @@ class BithumbSpot extends BithumbBase {
         const response = await this.privateFetch('spot/assetList', {
             method: 'POST',
             json: {
-                assetType: 'wallet',
-                coinType: 'BTC',
+                assetType: 'spot',
+                // coinType: 'BTC',
             },
         });
 
-        console.log(response);
+        // console.log(response);
 
         const balances = response.data
-            // .filter((b) => b.total > 0)
+            .filter((b) => parseFloat(b.count) > 0)
             .map((b) => {
                 return {
                     ticker: b.coinType,
@@ -217,6 +223,8 @@ class BithumbSpot extends BithumbBase {
                     used: parseFloat(b.frozen),
                 };
             });
+
+        console.log(balances);
 
         utils.linkOriginalPayload(balances, response);
 
@@ -230,6 +238,12 @@ class BithumbSpot extends BithumbBase {
      * @param {string} symbol
      */
     async fetchOrderById(orderId, symbol = '') {
+        let orderToFetch = this.cache.getCachedOrderById(orderId);
+
+        if (orderToFetch) {
+            symbol = orderToFetch.symbol.replace('/', '-');
+        }
+
         const responce = await this.privateFetch('spot/singleOrder', {
             method: 'POST',
             json: {
@@ -238,7 +252,9 @@ class BithumbSpot extends BithumbBase {
             },
         });
 
-        const zOrder = utils.transformBithumbOrder(responce);
+        console.log(responce);
+
+        const zOrder = utils.transformBithumbOrder(responce, orderToFetch);
 
         return zOrder;
     }
