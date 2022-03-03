@@ -100,7 +100,7 @@ class BithumbBase extends ExchangeBase {
 
         this.msgNo += 1;
 
-        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        return await this.fetcher(url, options).then(this.handleFetcherResponse, this.handleFetcherError);
     }
 
     /**
@@ -160,6 +160,14 @@ class BithumbBase extends ExchangeBase {
         }
 
         throw err;
+    }
+
+    handleFetcherResponse(response) {
+        if (parseFloat(response.code) > 0) {
+            throw new BithumbApiError(response);
+        }
+
+        return response;
     }
 }
 

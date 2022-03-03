@@ -161,7 +161,7 @@ module.exports = function masterTest(Exchange, env) {
 
         // NOTE: Now exchange is authenticated instance
 
-        describe('createOrder()', () => {
+        describe.skip('createOrder()', () => {
             it('should be defined', () => {
                 expect(exchange.createOrder).toBeDefined();
             });
@@ -198,7 +198,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
             });
 
-            describe.skip('sell by market', () => {
+            describe('sell by market', () => {
                 let result;
 
                 it('should create order without errors', async () => {
@@ -266,7 +266,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe.skip('fetchBalances()', () => {
+        describe('fetchBalances()', () => {
             it('should be defined', () => {
                 expect(exchange.fetchBalances).toBeDefined();
             });
@@ -448,7 +448,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('close()', () => {
+        describe.skip('close()', () => {
             beforeAll(() => accountDataStream.open());
             it('should close connection', () => {
                 expect(accountDataStream.isSocketConnected).toBe(true);
@@ -496,7 +496,7 @@ module.exports = function masterTest(Exchange, env) {
             }
         });
 
-        describe('open()', () => {
+        describe.skip('open()', () => {
             it('should connect to websocket', async () => {
                 await marketDataStream.open();
 
@@ -623,7 +623,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('close()', () => {
+        describe.skip('close()', () => {
             it('should close connection', () => {
                 expect(marketDataStream.isSocketConnected).toBe(true);
 

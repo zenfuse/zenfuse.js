@@ -145,7 +145,7 @@ class BithumbSpot extends BithumbBase {
 
         const bOrder = transformZenfuseOrder(zOrder);
 
-        // console.log(bOrder);
+        console.log(bOrder);
 
         const bCreatedOrder = await this.privateFetch('spot/placeOrder', {
             method: 'POST',
