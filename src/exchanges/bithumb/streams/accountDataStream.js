@@ -39,7 +39,7 @@ class AccountDataStream extends BithumbWebsocketBase {
             cmd: 'authKey',
             args: [publicKey, timestamp, signature],
         });
-
+        // console.log('this.socket', this.socket);
         // this.sendSocketMessage({
         //     cmd: 'subscribe',
         //     args: ['ORDER'],
@@ -51,7 +51,8 @@ class AccountDataStream extends BithumbWebsocketBase {
     serverMessageHandler(msgString) {
         
         const payload = JSON.parse(msgString);
-        console.log(payload);
+        console.log('serverMessageHandler', payload);
+
         if (payload.code === '00007' && payload.topic === 'ORDER') {
             this.emitOrderUpdateEvent(payload);
         }

@@ -31,7 +31,7 @@ class BithumbWebsocketBase extends EventEmitter {
     open() {
         const { wsClientOptions } = this.base.options;
 
-        const url = new URL('ws', wsClientOptions.prefixUrl);
+        const url = new URL('/message/realtime', wsClientOptions.prefixUrl);
 
         const socket = new WebSocket(url, wsClientOptions);
 
@@ -89,7 +89,7 @@ class BithumbWebsocketBase extends EventEmitter {
 
         const msgString = JSON.stringify(msg);
 
-        console.log(msgString);
+        console.log('msgString', msgString);
 
         this.socket.send(msgString);
     }

@@ -266,7 +266,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchBalances()', () => {
+        describe.skip('fetchBalances()', () => {
             it('should be defined', () => {
                 expect(exchange.fetchBalances).toBeDefined();
             });
@@ -412,39 +412,59 @@ module.exports = function masterTest(Exchange, env) {
         });
 
         afterAll(() => {
-            if (isExchangeTestFailed) {
+            if (isExchangeTestFailed && accountDataStream.socket) {
                 accountDataStream.socket.terminate();
             }
         });
 
-        describe.skip('open()', () => {
+        describe('open()', () => {
             // TODO: Mock websocket
-            afterAll(() => {
-                accountDataStream.close();
-            });
+            // afterAll(() => {
+            //     accountDataStream.close();
+            // });
 
-            it('should connect to websocket', async () => {
+            it.skip('should connect to websocket', async () => {
                 await accountDataStream.open();
 
                 expect(accountDataStream.isSocketConnected).toBe(true);
+
+                accountDataStream.close();
             });
 
             it('should emit "orderUpdate"', async () => {
-                const eventPromice = new Promise((resolve) => {
-                    accountDataStream.once('orderUpdate', (order) => {
-                        expect(order).toMatchSchema(OrderSchema);
-                        expect(order.id).toBe(createdOrder.id);
+                async function waitForResponse(cb, timeout = 200) {
+                    return await new Promise((resolve) => {
+                      const tm = setTimeout(async () => {
+                        cb();
+                        clearTimeout(tm);
                         resolve();
+                      }, timeout);
                     });
-                });
+                  }
 
-                const createdOrder = await exchange.createOrder(
-                    env.NOT_EXECUTABLE_ORDER,
-                );
+                await accountDataStream.open();
 
-                return await eventPromice.then(() =>
-                    exchange.cancelOrderById(createdOrder.id),
-                );
+                // const eventPromice = await new Promise((resolve) => {
+                //     accountDataStream.once('orderUpdate', (order) => {
+                //         expect(order).toMatchSchema(OrderSchema);
+                //         expect(order.id).toBe(createdOrder.id);
+                //         resolve();
+                //     });
+                // });
+
+                await waitForResponse(() => {}, 4000);
+
+                console.log('eventPromice')      
+                
+                expect(3).toEqual(55)
+
+                // const createdOrder = await exchange.createOrder(
+                //     env.NOT_EXECUTABLE_ORDER,
+                // );
+
+                // return await eventPromice.then(() =>
+                //     exchange.cancelOrderById(createdOrder.id),
+                // );
             });
         });
 

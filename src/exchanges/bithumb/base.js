@@ -30,7 +30,7 @@ class BithumbBase extends ExchangeBase {
             },
         },
         wsClientOptions: {
-            prefixUrl: 'wss://global-api.bithumb.pro/message/realtime',
+            prefixUrl: 'wss://global-api.bithumb.pro',
         },
     };
 
