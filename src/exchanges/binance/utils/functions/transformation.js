@@ -153,7 +153,7 @@ const transfromBinanceOrder = (bOrder) => {
 const transfornCandlestick = (k) => {
     return {
         open: parseFloat(k.o),
-        hight: parseFloat(k.h),
+        high: parseFloat(k.h),
         low: parseFloat(k.l),
         close: parseFloat(k.c),
         timestamp: k.t,
