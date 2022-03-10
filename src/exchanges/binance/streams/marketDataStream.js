@@ -1,5 +1,6 @@
 const debug = require('../../../base/etc/debug');
 const utils = require('../utils');
+const RuntimeError = require('../../../base/errors/runtime.error');
 
 const BinanceWebsocketBase = require('./websocketBase');
 
@@ -77,13 +78,17 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @typedef {object} WebsocketEvent
      * @property {string} channel
      * @property {string} symbol
-     * @property {string} [interval] Required if channel is kline
+     * @property {string} [interval] Required if channel is candle
      * @property {string} channel
-     * @param {WebsocketEvent} arg
-     * @param event
+     * 
+     * @param {WebsocketEvent} event
      * @param {'subscribe'|'unsubscribe'} command
      */
     async editSubscribition(event, command) {
+        if (!['subscribe', 'unsubscribe'].includes(command)) {
+            throw new TypeError('Uknown command ' + command);
+        }
+
         if (event.channel === 'price') {
             const symbol = utils
                 .transformMarketString(event.symbol)
@@ -98,8 +103,22 @@ class MarketDataStream extends BinanceWebsocketBase {
                 await this.sendSocketUnsubscribe(`${symbol}@kline_1m`);
                 return;
             }
+        }
 
-            throw new TypeError('Uknown command argument ' + command);
+        if (event.channel === 'candle') {
+            const symbol = utils
+                .transformMarketString(event.symbol)
+                .toLowerCase();
+
+            if (command === 'subscribe') {
+                await this.sendSocketSubscribe(`${symbol}@kline_${event.interval}`);
+                return;
+            }
+
+            if (command === 'unsubscribe') {
+                await this.sendSocketUnsubscribe(`${symbol}@kline_${event.interval}`);
+                return;
+            }
         }
 
         throw new TypeError(`Uknown channel name ${event.channel}`);
@@ -137,10 +156,14 @@ class MarketDataStream extends BinanceWebsocketBase {
             return;
         }
 
+        this.emit('payload', payload);
+
         if (payload.id) {
             // this message is response for specific request
             if (!this.messageQueue.has(payload.id)) {
-                throw new Error('Mesage queue unsynced');
+                throw new RuntimeError(
+                    'Binance MarketDataStream mesage queue unsynced',
+                );
             }
 
             const [resolve, reject] = this.messageQueue.get(payload.id);
@@ -156,19 +179,14 @@ class MarketDataStream extends BinanceWebsocketBase {
             return;
         }
 
-        debug.log('<- IN');
-        debug.log(payload);
-        debug.log('');
-
         if (payload.e === 'kline') {
             this.emitNewPrice(payload);
+            this.emitCandle(payload);
         }
-
-        this.emit('payload', payload);
     }
 
     /**
-     * @fires MarketDataStream#kline
+     * @fires MarketDataStream#newPrice
      * @param {*} payload
      */
     emitNewPrice(payload) {
@@ -184,6 +202,21 @@ class MarketDataStream extends BinanceWebsocketBase {
             price: parseFloat(kline.close),
             timestamp: kline.timestamp,
         });
+    }
+
+    /**
+     * @fires MarketDataStream#kline
+     * @param {*} payload
+     */
+    emitCandle(payload) {3
+        const kline = utils.transfornCandlestick(payload.k);
+
+        kline.symbol = this.base.parseBinanceSymbol(kline.symbol);
+
+        debug.log('Emit "candle" Event');
+        debug.log(kline);
+
+        this.emit('candle', kline);
     }
 
     /**

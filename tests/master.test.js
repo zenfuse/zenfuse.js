@@ -509,7 +509,7 @@ module.exports = function masterTest(Exchange, env) {
                 expect(marketDataStream.isSocketConneted).toBe(true);
             });
 
-            it('should subscribe for price', (done) => {
+            it('should emit "newPrice" event', (done) => {
                 marketDataStream.subscribeTo({
                     channel: 'price',
                     symbol: 'BTC/USDT',
@@ -524,7 +524,49 @@ module.exports = function masterTest(Exchange, env) {
                     });
                     expect(p).toMatchSchema(schema);
                     expect(p.symbol).toBe('BTC/USDT');
-                    done();
+
+                    marketDataStream
+                        .unsubscribeFrom({
+                            channel: 'price',
+                            symbol: 'BTC/USDT',
+                        })
+                        .then(done);
+                });
+            });
+
+            it('should emit "candle" event', (done) => {
+                marketDataStream.subscribeTo({
+                    channel: 'candle',
+                    symbol: 'BTC/USDT',
+                    interval: '15m',
+                });
+
+                marketDataStream.once('candle', (p) => {
+                    const schema = z.object({
+                        open: z.number(),
+                        hight: z.number(),
+                        low: z.number(),
+                        close: z.number(),
+                        timestamp: z.number(),
+                        interval: z.string(),
+                        isClosed: z.boolean(),
+                        symbol: z
+                            .string()
+                            .refine((s) => s.split('/').length === 2),
+                        volume: z.number(),
+                    });
+
+                    expect(p).toMatchSchema(schema);
+                    expect(p.symbol).toBe('BTC/USDT');
+                    expect(p.interval).toBe('15m');
+
+                    marketDataStream
+                        .unsubscribeFrom({
+                            channel: 'candle',
+                            symbol: 'BTC/USDT',
+                            interval: '15m',
+                        })
+                        .then(done);
                 });
             });
         });
