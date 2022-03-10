@@ -3,7 +3,7 @@ const nock = require('nock');
 const HOSTNAME = 'https://ftx.com/';
 
 const marketsFilePath = __dirname + '/mocks/static/markets.json';
-// const mockedMarkets = JSON.parse(readFileSync(marketsFilePath, 'utf-8'));
+const historyFilePath = __dirname + '/mocks/static/history.json';
 
 /**
  * HTTP mocking scope for FTX master test
@@ -62,6 +62,15 @@ module.exports = (env) => ({
                         quoteVolume24h: 116192699.7696,
                         volumeUsd24h: 116191540.1664563,
                     },
+                }),
+        'fetchCandleHistory()': () =>
+            nock(HOSTNAME)
+                .get('/api/markets/BTC/USDT/candles')
+                .query({
+                    resolution: 60,
+                })
+                .replyWithFile(200, historyFilePath, {
+                    'Content-Type': 'application/json',
                 }),
         'createOrder()': {
             'buy by market': () =>

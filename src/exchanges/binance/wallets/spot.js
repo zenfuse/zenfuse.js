@@ -105,7 +105,6 @@ class BinanceSpot extends BinanceBase {
                 low: parseFloat(bCandle[3]),
                 close: parseFloat(bCandle[4]),
                 volume: parseFloat(bCandle[5]),
-                closeAt: bCandle[6],
                 interval: params.interval,
                 symbol: params.symbol,
             };
