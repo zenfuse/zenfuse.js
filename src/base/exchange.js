@@ -1,9 +1,11 @@
 const got = require('got');
 const mergeObjects = require('deepmerge');
+const z = require('zod');
 
 const pkg = require('../../package.json');
 const ZenfuseValidationError = require('./errors/validation.error');
 const OrderParamsSchema = require('./schemas/orderParams');
+const KlineSchema = require('./schemas/kline');
 
 /**
  * @typedef {object} ExtraWsOptions
@@ -66,6 +68,21 @@ class ExchangeBase {
         if (result.success) return;
 
         throw new ZenfuseValidationError('InvalidOrder', result.error);
+    }
+
+    validateCandleHistoryParams(params) {
+        const paramsSchema = z.object({
+            symbol: KlineSchema.shape.symbol,
+            interval: KlineSchema.shape.interval,
+            startTime: z.number().optional(),
+            endTime: z.number().optional(),
+        });
+
+        const validation = paramsSchema.safeParse(params);
+
+        if (!validation.success) {
+            throw new ZenfuseValidationError('InvalidParams', validation.error);
+        }
     }
 
     // TODO: safeValidateOrderParams()
