@@ -29,6 +29,10 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                         filename: 'prices.json',
                         endpoint: 'https://api.binance.com/api/v3/ticker/price',
                     },
+                    {
+                        filename: 'history.json',
+                        endpoint: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=1000',
+                    },
                 ];
 
                 run(mocksPath, downloadList, task);

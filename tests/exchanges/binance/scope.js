@@ -4,6 +4,7 @@ const HOSTNAME = 'https://api.binance.com/';
 
 const exchangeInfoFilePath = __dirname + '/mocks/static/exchangeInfo.json';
 const pricesFilePath = __dirname + '/mocks/static/prices.json';
+const historyFilePath = __dirname + '/mocks/static/history.json';
 
 /**
  * HTTP mocking scope for Binance master test
@@ -46,6 +47,17 @@ module.exports = (env) => ({
                 .reply(200, {
                     symbol: 'BTCUSDT',
                     price: '9999999.999999',
+                }),
+        'fetchCandleHistory()': () =>
+            nock(HOSTNAME)
+                .get('/api/v3/klines')
+                .query({
+                    symbol: 'BTCUSDT',
+                    interval: '1m',
+                    limit: 1000,
+                })
+                .replyWithFile(200, historyFilePath, {
+                    'Content-Type': 'application/json',
                 }),
         'createOrder()': {
             'buy by market': () =>

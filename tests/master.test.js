@@ -137,7 +137,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe.only('fetchCandleHistory()', () => {
+        describe('fetchCandleHistory()', () => {
             let result;
 
             it('should be defined', () => {
@@ -154,6 +154,14 @@ module.exports = function masterTest(Exchange, env) {
             it('should return valid schema', () => {
                 const schema = z.array(KlineSchema);
                 expect(result).toMatchSchema(schema);
+
+                result.forEach((kline) => {
+                    expect(kline.interval).toBe('1m');
+                    expect(kline.symbol).toBe('BTC/USDT');
+                    expect(
+                        kline[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeDefined();
+                });
             });
 
             it('should have valid originalRespone', () => {
