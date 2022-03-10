@@ -1,11 +1,15 @@
-const BinanceBase = require('../base');
+const { z } = require('zod');
 const mergeObjects = require('deepmerge');
 
 const utils = require('../utils');
-
+const BinanceBase = require('../base');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
+const ZenfuseValidationError = require('../../../base/errors/validation.error');
+
+const KlineSchema = require('../../../base/schemas/kline');
+const { timeIntervals } = require('../metadata');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -66,6 +70,54 @@ class BinanceSpot extends BinanceBase {
         utils.linkOriginalPayload(markets, exchangeInfo);
 
         return markets;
+    }
+
+    /**
+     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     *
+     * @param {object} params
+     * @param {string} params.symbol
+     * @param {timeIntervals} params.interval
+     * @param {number} [params.startTime]
+     * @param {number} [params.endTime]
+     * @returns {Kline[]}
+     */
+    async fetchCandleHistory(params) {
+        this.validateCandleHistoryParams(params);
+
+        // NOTE: Binance can return only 1000 candels once. If user interval is to big, it will be unfilled
+        // TODO: Additional responses to fill required interval
+        const response = await this.publicFetch('api/v3/klines', {
+            searchParams: {
+                symbol: params.symbol.replace('/', ''),
+                interval: params.interval,
+                startTime: params.startTime,
+                endTime: params.endTime,
+                limit: 1000, // Overwrite default 500 limit
+            },
+        });
+
+        const result = response.map((bCandle) => {
+            const zCandle = {
+                timestamp: bCandle[0],
+                open: parseFloat(bCandle[1]),
+                high: parseFloat(bCandle[2]),
+                low: parseFloat(bCandle[3]),
+                close: parseFloat(bCandle[4]),
+                volume: parseFloat(bCandle[5]),
+                closeAt: bCandle[6],
+                interval: params.interval,
+                symbol: params.symbol,
+            };
+
+            utils.linkOriginalPayload(zCandle, bCandle);
+
+            return zCandle;
+        });
+
+        utils.linkOriginalPayload(result, response);
+
+        return result;
     }
 
     /**

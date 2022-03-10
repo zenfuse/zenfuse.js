@@ -9,6 +9,7 @@ const { z } = require('zod');
 
 const NotAuthenticatedError = require('../src/base/errors/notAuthenticated.error.js');
 const OrderSchema = require('../src/base/schemas/openOrder');
+const KlineSchema = require('../src/base/schemas/kline');
 
 /**
  * @param {object} Exchange
@@ -129,6 +130,33 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should have valid originalResponse', () => {
+                expect(result).toBeDefined();
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeDefined();
+            });
+        });
+
+        describe.only('fetchCandleHistory()', () => {
+            let result;
+
+            it('should be defined', () => {
+                expect(exchange.fetchCandleHistory).toBeDefined();
+            });
+
+            it('should fetch history without errors', async () => {
+                result = await exchange.fetchCandleHistory({
+                    symbol: 'BTC/USDT',
+                    interval: '1m',
+                });
+            });
+
+            it('should return valid schema', () => {
+                const schema = z.array(KlineSchema);
+                expect(result).toMatchSchema(schema);
+            });
+
+            it('should have valid originalRespone', () => {
                 expect(result).toBeDefined();
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
@@ -385,7 +413,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
      */
 
-    describe('Spot Wallet Private Stream', () => {
+    describe.skip('Spot Wallet Private Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -464,7 +492,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
      */
 
-    describe('Spot Wallet Public Stream', () => {
+    describe.skip('Spot Wallet Public Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -542,21 +570,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
 
                 marketDataStream.once('candle', (p) => {
-                    const schema = z.object({
-                        open: z.number(),
-                        hight: z.number(),
-                        low: z.number(),
-                        close: z.number(),
-                        timestamp: z.number(),
-                        interval: z.string(),
-                        isClosed: z.boolean(),
-                        symbol: z
-                            .string()
-                            .refine((s) => s.split('/').length === 2),
-                        volume: z.number(),
-                    });
-
-                    expect(p).toMatchSchema(schema);
+                    expect(p).toMatchSchema(KlineSchema);
                     expect(p.symbol).toBe('BTC/USDT');
                     expect(p.interval).toBe('15m');
 
