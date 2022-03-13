@@ -11,7 +11,10 @@
     },
     "plugins": ["prettier", "@typescript-eslint", "jest", "jsdoc"],
     "rules": {
-        "prettier/prettier": "error"
+        "prettier/prettier": "error",
+        "jsdoc/require-property-description": "off",
+        "jsdoc/require-param-description": "off",
+        "jsdoc/require-returns-description": "off"
     },
     "globals": {
         "Proxy": true,

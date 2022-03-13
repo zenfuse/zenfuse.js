@@ -8,7 +8,7 @@
         "test:e2e": "TEST_MODE=e2e npm run jest --silent",
         "test:integration": "TEST_MODE=integration npm run jest --silent",
         "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
-        "jest": "node node_modules/.bin/jest --no-cache --runInBand",
+        "jest": "node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
         "download-mocks": "node ./scripts/downloadMocks.js",
