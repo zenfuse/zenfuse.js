@@ -83,7 +83,7 @@ class FtxCandleStream {
 
         const candleOpenTime = this.previusCandle.timestamp + this.intervalInMs;
 
-        this.currentCandle.closeTime = candleOpenTime + this.intervalInMs;
+        this.currentCandle.closeAt = candleOpenTime + this.intervalInMs;
         this.currentCandle.timestamp = candleOpenTime;
 
         this.trades = await this.fetchCurrentTrades(candleOpenTime);
@@ -174,32 +174,32 @@ class FtxCandleStream {
     handleNewTrades(trades) {
         const nextTrades = trades.filter(
             (trade) =>
-                new Date(trade.time).getDate() > this.currentCandle.closeTime,
+                new Date(trade.time).getTime() > this.currentCandle.closeAt,
         );
 
         const actualTrades = trades.filter(
             (trade) =>
-                new Date(trade.time).getDate() < this.currentCandle.closeTime,
+                new Date(trade.time).getTime() < this.currentCandle.closeAt,
         );
 
         this.trades.push(...actualTrades);
 
         if (nextTrades.length === 0) {
-            this.emitNewCandleStatus();
+            this.emitNewCandleStatus({ isClosed: false });
         }
 
         if (nextTrades.length > 0) {
             this.emitNewCandleStatus({ isClosed: true });
             this.trades = nextTrades;
             this.onCloseCandle();
-            this.emitNewCandleStatus();
+            this.emitNewCandleStatus({ isClosed: false });
         }
     }
 
     onCloseCandle() {
         this.previusCandle = this.currentCandle;
         this.currentCandle = {};
-        this.currentCandle.timestamp = this.previusCandle.closeTime;
+        this.currentCandle.timestamp = this.previusCandle.closeAt;
         this.currentCandle.closeAt =
             this.currentCandle.timestamp + this.intervalInMs;
     }
