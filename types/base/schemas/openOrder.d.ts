@@ -10,21 +10,21 @@ declare const ZenfuseOpenOrder: z.ZodObject<{
     quantity: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
     symbol?: string;
-    type?: "market" | "limit";
+    type?: "limit" | "market";
     id?: string;
     status?: "open" | "canceled" | "close";
-    quantity?: number;
-    price?: number;
     side?: "buy" | "sell";
+    price?: number;
+    quantity?: number;
     timestamp?: number;
 }, {
     symbol?: string;
-    type?: "market" | "limit";
+    type?: "limit" | "market";
     id?: string;
     status?: "open" | "canceled" | "close";
-    quantity?: number;
-    price?: number;
     side?: "buy" | "sell";
+    price?: number;
+    quantity?: number;
     timestamp?: number;
 }>;
 import { z } from "zod";

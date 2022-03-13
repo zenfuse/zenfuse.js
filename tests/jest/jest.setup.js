@@ -18,7 +18,7 @@ expect.extend({
     },
 });
 
-const TEST_TIMEOUT = 5000;
+const TEST_TIMEOUT = 10000;
 
 global.isEnd2EndTest = process.env.TEST_MODE === 'e2e';
 global.isIntegrationTest = !global.isEnd2EndTest;

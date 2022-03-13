@@ -12,7 +12,7 @@ const keysSymbol = Symbol.for('zenfuse.keyVault');
 /**
  * FTX base class for method which included in any wallet type
  *
- * @important Any class what extends ExchangeBase should have same public interface
+ * **DEV:** Any class what extends ExchangeBase should have same public interface
  */
 class FtxBase extends ExchangeBase {
     /**
@@ -59,7 +59,7 @@ class FtxBase extends ExchangeBase {
      */
     async publicFetch(url, options = {}) {
         return await this.fetcher(url, options).catch(this.handleFetcherError);
-        // TODO: FTX Responce checker
+        // TODO: FTX Response checker
     }
 
     /**

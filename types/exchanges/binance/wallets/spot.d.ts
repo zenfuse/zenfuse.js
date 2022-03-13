@@ -4,8 +4,6 @@ export = BinanceSpot;
  */
 /**
  * Binance class for spot wallet API
- *
- * @important should have same
  */
 declare class BinanceSpot extends BinanceBase {
     static DEFAULT_OPTIONS: {
@@ -32,6 +30,21 @@ declare class BinanceSpot extends BinanceBase {
         baseTicker: string;
         quoteTicker: string;
     }>;
+    /**
+     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     * @param {object} params
+     * @param {string} params.symbol
+     * @param {timeIntervals} params.interval
+     * @param {number} [params.startTime]
+     * @param {number} [params.endTime]
+     * @returns {Kline[]}
+     */
+    fetchCandleHistory(params: {
+        symbol: string;
+        interval: timeIntervals;
+        startTime?: number;
+        endTime?: number;
+    }): import("../../../base/schemas/kline.js").ZenfuseKline[];
     /**
      *
      * @note If the symbol is not sent, prices for all symbols will be returned in an array.
@@ -71,6 +84,7 @@ declare namespace BinanceSpot {
     export { BaseOptions };
 }
 import BinanceBase = require("../base");
+import { timeIntervals } from "../metadata";
 import AccountDataStream = require("../streams/accountDataStream");
 import MarketDataStream = require("../streams/marketDataStream");
 type BaseOptions = import('../../../base/exchange').BaseOptions;

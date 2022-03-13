@@ -34,6 +34,24 @@ declare class FtxSpot extends FtxBase {
      */
     fetchPrice(market?: string): Promise<any>;
     /**
+     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     * @typedef {import('../metadata').timeIntervals} timeIntervals
+     */
+    /**
+     * @param {object} params
+     * @param {string} params.symbol
+     * @param {timeIntervals} params.interval
+     * @param {number} [params.startTime]
+     * @param {number} [params.endTime]
+     * @returns {Promise<Kline[]>}
+     */
+    fetchCandleHistory(params: {
+        symbol: string;
+        interval: import("../../..").timeInterval;
+        startTime?: number;
+        endTime?: number;
+    }): Promise<import("../../../base/schemas/kline.js").ZenfuseKline[]>;
+    /**
      * @typedef {import('../utils/functions/transformation').Order} Order
      */
     /**
