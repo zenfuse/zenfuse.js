@@ -110,41 +110,25 @@ class FtxSpot extends FtxBase {
 
     /**
      * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
-     *
+     * @typedef {import('../metadata').timeIntervals} timeIntervals
+     */
+
+    /**
      * @param {object} params
      * @param {string} params.symbol
      * @param {timeIntervals} params.interval
      * @param {number} [params.startTime]
      * @param {number} [params.endTime]
-     * @returns {Kline[]}
+     * @returns {Promise<Kline[]>}
      */
     async fetchCandleHistory(params) {
         this.validateCandleHistoryParams(params);
-
-        // NOTE: FTX requires candlestick interval in seconds
-        const INTERVAL_TABLE = {
-            '1m': 60,
-            '3m': 180,
-            '5m': 300,
-            '15m': 900,
-            '30m': 1800,
-            '1h': 3600,
-            '2h': 7200,
-            '4h': 14400,
-            '6h': 21600,
-            '8h': 28800,
-            '12h': 43200,
-            '1d': 86400,
-            '3d': 259200,
-            '1w': 604800,
-            '1M': 86400 * 30,
-        };
 
         const response = await this.publicFetch(
             `api/markets/${params.symbol}/candles`,
             {
                 searchParams: {
-                    resolution: INTERVAL_TABLE[params.interval],
+                    resolution: utils.timeIntervalToSeconds(params.interval),
                     start_time: params.startTime,
                     end_time: params.endTime,
                 },

@@ -38,6 +38,7 @@ const ZenfuseKline = z.object({
         '1M',
     ]),
     isClosed: z.boolean().optional(),
+    closeAt: z.number().optional(),
     symbol: z.string().refine((s) => s.split('/').length === 2),
     volume: z.number(),
 });

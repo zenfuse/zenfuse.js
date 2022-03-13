@@ -31,7 +31,8 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     },
                     {
                         filename: 'history.json',
-                        endpoint: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=1000',
+                        endpoint:
+                            'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=1000',
                     },
                 ];
 
@@ -48,7 +49,8 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     },
                     {
                         filename: 'history.json',
-                        endpoint: 'https://ftx.com/api/markets/BTC/USDT/candles?resolution=60',
+                        endpoint:
+                            'https://ftx.com/api/markets/BTC/USDT/candles?resolution=60',
                     },
                 ];
 

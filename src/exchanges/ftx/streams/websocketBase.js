@@ -15,7 +15,7 @@ class FtxWebsocketBase extends EventEmitter {
     socket;
 
     /**
-     * @param {import('../base')} baseInstance
+     * @param {import('../wallets/spot')} baseInstance
      */
     constructor(baseInstance) {
         super();

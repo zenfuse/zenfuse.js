@@ -26,7 +26,7 @@ module.exports = function masterTest(Exchange, env) {
     //////////////////////////////////////  HTTP INTERFACE  ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    describe('Spot Wallet HTTP interface', () => {
+    describe.skip('Spot Wallet HTTP interface', () => {
         /**
          * @type {FtxSpot}
          */
@@ -500,7 +500,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
      */
 
-    describe.skip('Spot Wallet Public Stream', () => {
+    describe.only('Spot Wallet Public Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -545,7 +545,7 @@ module.exports = function masterTest(Exchange, env) {
                 expect(marketDataStream.isSocketConneted).toBe(true);
             });
 
-            it('should emit "newPrice" event', (done) => {
+            it.skip('should emit "newPrice" event', (done) => {
                 marketDataStream.subscribeTo({
                     channel: 'price',
                     symbol: 'BTC/USDT',
@@ -574,19 +574,19 @@ module.exports = function masterTest(Exchange, env) {
                 marketDataStream.subscribeTo({
                     channel: 'candle',
                     symbol: 'BTC/USDT',
-                    interval: '15m',
+                    interval: '1m',
                 });
 
                 marketDataStream.once('candle', (p) => {
                     expect(p).toMatchSchema(KlineSchema);
                     expect(p.symbol).toBe('BTC/USDT');
-                    expect(p.interval).toBe('15m');
+                    expect(p.interval).toBe('1m');
 
                     marketDataStream
                         .unsubscribeFrom({
                             channel: 'candle',
                             symbol: 'BTC/USDT',
-                            interval: '15m',
+                            interval: '1m',
                         })
                         .then(done);
                 });

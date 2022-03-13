@@ -80,7 +80,6 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @property {string} symbol
      * @property {string} [interval] Required if channel is candle
      * @property {string} channel
-     * 
      * @param {WebsocketEvent} event
      * @param {'subscribe'|'unsubscribe'} command
      */
@@ -111,12 +110,16 @@ class MarketDataStream extends BinanceWebsocketBase {
                 .toLowerCase();
 
             if (command === 'subscribe') {
-                await this.sendSocketSubscribe(`${symbol}@kline_${event.interval}`);
+                await this.sendSocketSubscribe(
+                    `${symbol}@kline_${event.interval}`,
+                );
                 return;
             }
 
             if (command === 'unsubscribe') {
-                await this.sendSocketUnsubscribe(`${symbol}@kline_${event.interval}`);
+                await this.sendSocketUnsubscribe(
+                    `${symbol}@kline_${event.interval}`,
+                );
                 return;
             }
         }
@@ -208,7 +211,7 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @fires MarketDataStream#kline
      * @param {*} payload
      */
-    emitCandle(payload) {3
+    emitCandle(payload) {
         const kline = utils.transfornCandlestick(payload.k);
 
         kline.symbol = this.base.parseBinanceSymbol(kline.symbol);

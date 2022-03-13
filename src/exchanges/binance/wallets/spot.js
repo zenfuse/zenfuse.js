@@ -1,4 +1,3 @@
-const { z } = require('zod');
 const mergeObjects = require('deepmerge');
 
 const utils = require('../utils');
@@ -6,9 +5,7 @@ const BinanceBase = require('../base');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
-const ZenfuseValidationError = require('../../../base/errors/validation.error');
 
-const KlineSchema = require('../../../base/schemas/kline');
 const { timeIntervals } = require('../metadata');
 
 /**
@@ -17,8 +14,6 @@ const { timeIntervals } = require('../metadata');
 
 /**
  * Binance class for spot wallet API
- *
- * @important should have same
  */
 class BinanceSpot extends BinanceBase {
     static DEFAULT_OPTIONS = {
@@ -74,7 +69,6 @@ class BinanceSpot extends BinanceBase {
 
     /**
      * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
-     *
      * @param {object} params
      * @param {string} params.symbol
      * @param {timeIntervals} params.interval
