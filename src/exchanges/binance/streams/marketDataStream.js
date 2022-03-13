@@ -67,7 +67,7 @@ class MarketDataStream extends BinanceWebsocketBase {
     }
 
     /**
-     * @param {string|WesocketEvent} event
+     * @param {string|WebsocketEvent} event
      */
     async unsubscribeFrom(event) {
         return await this.editSubscribition(event, 'unsubscribe');
@@ -79,7 +79,6 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @property {string} channel
      * @property {string} symbol
      * @property {string} [interval] Required if channel is candle
-     * @property {string} channel
      * @param {WebsocketEvent} event
      * @param {'subscribe'|'unsubscribe'} command
      */

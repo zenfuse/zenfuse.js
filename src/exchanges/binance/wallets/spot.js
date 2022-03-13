@@ -51,7 +51,11 @@ class BinanceSpot extends BinanceBase {
     }
 
     /**
-     * @returns Array of ticker pairs on this exchange
+     * @typedef {import('../utils/functions/agregation').structualizedMarket} structualizedMarket
+     */
+
+    /**
+     * @returns {structualizedMarket} Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
         const exchangeInfo = await this.publicFetch('api/v3/exchangeInfo');
@@ -114,10 +118,16 @@ class BinanceSpot extends BinanceBase {
     }
 
     /**
+     * @typedef {object} PriceObject
+     * @property {string} symbol
+     * @property {number} price
+     */
+
+    /**
+     * **DEV:** If the symbol is not sent, prices for all symbols will be returned in an array.
      *
-     * @note If the symbol is not sent, prices for all symbols will be returned in an array.
      * @param {string} market Ticker pair aka symbol
-     * @returns Last price
+     * @returns {PriceObject} Price object
      */
     async fetchPrice(market) {
         const params = {};
@@ -208,9 +218,10 @@ class BinanceSpot extends BinanceBase {
     /**
      * Cancel an active order
      *
-     * @important Binance required order symbol for canceling.
+     * **NOTE:** Binance required order symbol for canceling.
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
-     *      So if you know order symbol, better pass it to didn't make unnecessary HTTP requests.
+     *      TODO: Make possible to pass symbol from user
+     *
      * @param {string} orderId Binance order id
      */
     async cancelOrderById(orderId) {

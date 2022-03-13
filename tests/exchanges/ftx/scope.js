@@ -9,10 +9,11 @@ const historyFilePath = __dirname + '/mocks/static/history.json';
  * HTTP mocking scope for FTX master test
  * Should be as
  *
- * @param env
+ * @param {import('../../master.test').MasterTestEnvironment} env
+ * @returns {object} Object with test names witch opens nock scope
  */
 module.exports = (env) => ({
-    init: null,
+    root: null,
     'Spot Wallet HTTP interface': {
         'ping()': () =>
             nock(HOSTNAME)

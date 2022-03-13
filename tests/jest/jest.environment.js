@@ -68,8 +68,9 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
     /**
      * Do not touch, magic happens here
      *
-     * @param block
+     * @param {object} block Jest test block
      * @todo refactor this cheap fuck
+     * @returns {void}
      */
     getScopeOfBlock(block) {
         let objectPath = [];

@@ -53,9 +53,7 @@ class BinanceCache extends BaseGlobalCache {
     /**
      * Base Tickers and all their quote pairs
      *
-     * @type {{
-     *     [ticker:string]: string[]
-     * }}
+     * @returns {Object.<string, string[]>}
      */
     get parsedSymbols() {
         this.updateSelfIfRequired();
@@ -65,7 +63,8 @@ class BinanceCache extends BaseGlobalCache {
     /**
      * Cache order in local cache
      *
-     * @reason Binance requires order symbol for many requests. So we should cache orders to delete it just by id.
+     * **DEV:** Binance requires order symbol for many requests. So we should cache orders to delete it just by id.
+     *
      * @param {ZenfuseOrder} order
      */
     cacheOrder(order) {
@@ -84,7 +83,7 @@ class BinanceCache extends BaseGlobalCache {
     /**
      *
      * @param {string} orderId
-     * @returns {boolead}
+     * @returns {boolean}
      */
     deleteCachedOrderById(orderId) {
         return this.localCache.openOrders.delete(orderId);

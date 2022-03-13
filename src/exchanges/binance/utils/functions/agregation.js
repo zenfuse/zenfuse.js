@@ -22,14 +22,17 @@ const extractSpotMarkets = (symbols) => {
 };
 
 /**
+ * @typedef {object} structualizedMarket
+ * @property {string} symbol
+ * @property {string} baseTicker
+ * @property {string} quoteTicker
+ */
+
+/**
  * Structualizing all markets to one interface
  *
  * @param {Array} markets
- * @returns {{
- *      symbol: string,
- *      baseTicker: string
- *      quoteTicker: string
- * }}
+ * @returns {structualizedMarket}
  */
 const structualizeMarkets = (markets) => {
     return markets.map((market) => {

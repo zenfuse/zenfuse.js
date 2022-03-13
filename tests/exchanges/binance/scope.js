@@ -10,12 +10,11 @@ const historyFilePath = __dirname + '/mocks/static/history.json';
  * HTTP mocking scope for Binance master test
  * Should be as
  *
- * @param env
+ * @param {import('../../master.test').MasterTestEnvironment} env
+ * @returns {object} Object with test names witch opens nock scope
  */
 module.exports = (env) => ({
-    /**
-     * Initial nock scope
-     */
+    // Initial scope
     root: () =>
         nock(HOSTNAME)
             .get('/api/v3/exchangeInfo')
