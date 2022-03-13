@@ -19,56 +19,57 @@ declare class ExchangeBase {
         wsClientOptions: ExtraWsOptions & import("ws").ClientOptions;
     };
     fetcher: any;
-    orderSchema: import("zod").ZodEffects<import("zod").ZodEffects<import("zod").ZodObject<{
-        symbol: import("zod").ZodString;
-        quantity: import("zod").ZodNumber;
-        price: import("zod").ZodOptional<import("zod").ZodNumber>;
-        type: import("zod").ZodNativeEnum<{
+    orderSchema: z.ZodEffects<z.ZodEffects<z.ZodObject<{
+        symbol: z.ZodString;
+        quantity: z.ZodNumber;
+        price: z.ZodOptional<z.ZodNumber>;
+        type: z.ZodNativeEnum<{
             market: string;
             limit: string;
         }>;
-        side: import("zod").ZodNativeEnum<{
+        side: z.ZodNativeEnum<{
             buy: string;
             sell: string;
         }>;
-    }, "passthrough", import("zod").ZodTypeAny, {
+    }, "passthrough", z.ZodTypeAny, {
         symbol?: string;
         type?: string;
-        quantity?: number;
-        price?: number;
         side?: string;
+        price?: number;
+        quantity?: number;
     }, {
         symbol?: string;
         type?: string;
-        quantity?: number;
-        price?: number;
         side?: string;
+        price?: number;
+        quantity?: number;
     }>, {
         symbol?: string;
         type?: string;
-        quantity?: number;
-        price?: number;
         side?: string;
+        price?: number;
+        quantity?: number;
     }, {
         symbol?: string;
         type?: string;
-        quantity?: number;
-        price?: number;
         side?: string;
+        price?: number;
+        quantity?: number;
     }>, {
         symbol?: string;
         type?: string;
-        quantity?: number;
-        price?: number;
         side?: string;
+        price?: number;
+        quantity?: number;
     }, {
         symbol?: string;
         type?: string;
-        quantity?: number;
-        price?: number;
         side?: string;
+        price?: number;
+        quantity?: number;
     }>;
     validateOrderParams(order: any): void;
+    validateCandleHistoryParams(params: any): void;
 }
 declare namespace ExchangeBase {
     export { ExtraWsOptions, BaseOptions };
@@ -82,6 +83,7 @@ type ExtraWsOptions = {
      */
     prefixUrl: string;
 };
+import z = require("zod");
 type BaseOptions = {
     /**
      * This object will be passed to `got.extend`
