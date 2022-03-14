@@ -32,14 +32,14 @@ class AccountDataStream extends BithumbWebsocketBase {
         const signString = [requestPath, timestamp, publicKey].join('');
 
         const signature = createHmac('sha256', privateKey)
-        .update(signString)
-        .digest('hex');
+            .update(signString)
+            .digest('hex');
 
         this.sendSocketMessage({
             cmd: 'authKey',
             args: [publicKey, timestamp, signature],
         });
-        
+
         this.sendSocketMessage({
             cmd: 'subscribe',
             args: ['ORDER'],
@@ -47,7 +47,7 @@ class AccountDataStream extends BithumbWebsocketBase {
 
         return this;
     }
-    
+
     serverMessageHandler(msgString) {
         const payload = JSON.parse(msgString);
         console.log('serverMessageHandler', payload);

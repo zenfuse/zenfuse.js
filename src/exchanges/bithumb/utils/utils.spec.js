@@ -92,16 +92,19 @@ describe('transformBithumbOrder()', () => {
         };
         const receivedBithumbOrder = {
             data: {
-                "orderId":"23132134242",
-                "symbol":"BTC-ETH"
+                orderId: '23132134242',
+                symbol: 'BTC-ETH',
             },
-            code: "0",
-            msg: "success",
+            code: '0',
+            msg: 'success',
             timestamp: 1551346473238,
             params: [],
         };
 
-        const result = transformBithumbOrder(receivedBithumbOrder, zenfuseCreatedOrder);
+        const result = transformBithumbOrder(
+            receivedBithumbOrder,
+            zenfuseCreatedOrder,
+        );
         console.log(result);
 
         expect(result).toMatchSchema(OrderSchema);
@@ -109,21 +112,21 @@ describe('transformBithumbOrder()', () => {
 
     it('should transform fetched order', () => {
         const receivedBithumbOrder = {
-            data:{
-                orderId:"12300993210",
-                symbol:"BTC-USDT",
-                price:"3700",
-                tradedNum:"0.01",
-                quantity:"0.5",
-                avgPrice:"0",
-                status:"pending",
-                type:"limit",
-                side:"buy",
-                createTime:"1552878781",
-                tradeTotal:"0.5"
-              },
-            code: "0",
-            msg: "success",
+            data: {
+                orderId: '12300993210',
+                symbol: 'BTC-USDT',
+                price: '3700',
+                tradedNum: '0.01',
+                quantity: '0.5',
+                avgPrice: '0',
+                status: 'pending',
+                type: 'limit',
+                side: 'buy',
+                createTime: '1552878781',
+                tradeTotal: '0.5',
+            },
+            code: '0',
+            msg: 'success',
             timestamp: 1551346473238,
             params: [],
         };

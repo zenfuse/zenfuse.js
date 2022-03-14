@@ -6,7 +6,6 @@ const utils = require('../utils');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 const { transformZenfuseOrder } = require('../utils');
-const NotAuthenticatedError = require('../../../base/errors/notAuthenticated.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -15,7 +14,6 @@ const NotAuthenticatedError = require('../../../base/errors/notAuthenticated.err
 /**
  * Bithumb class for spot wallet API
  *
- * @important should have same
  */
 class BithumbSpot extends BithumbBase {
     static DEFAULT_OPTIONS = {
@@ -37,14 +35,11 @@ class BithumbSpot extends BithumbBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const markets = await this.publicFetch(
-            'spot/ticker',
-            {
-                searchParams: {
-                    symbol: 'ALL',
-                },
-            }
-        );
+        const markets = await this.publicFetch('spot/ticker', {
+            searchParams: {
+                symbol: 'ALL',
+            },
+        });
         // TODO: Cache update here
 
         const tickers = utils.extractSpotTickers(markets.data);
@@ -58,14 +53,11 @@ class BithumbSpot extends BithumbBase {
      * @returns {string[]} Array of ticker pairs on FTX
      */
     async fetchMarkets() {
-        const response = await this.publicFetch(
-            'spot/ticker',
-            {
-                searchParams: {
-                    symbol: 'ALL',
-                },
-            }
-        );
+        const response = await this.publicFetch('spot/ticker', {
+            searchParams: {
+                symbol: 'ALL',
+            },
+        });
 
         // TODO: Cache update here
 
@@ -86,25 +78,31 @@ class BithumbSpot extends BithumbBase {
     }
 
     /**
+     * @typedef {object} PriceObject
+     * @property {string} symbol
+     * @property {number} price
+     */
+
+    /**
+     * **NOTE:** If the symbol is not sent, prices for all symbols will be returned in an array.
      *
-     * @note If the symbol is not sent, prices for all symbols will be returned in an array.
      * @param {string} market Ticker pair aka symbol
-     * @returns Last price
+     * @returns {PriceObject} Last price
      */
     async fetchPrice(market = '') {
         const requestPath = 'spot/ticker';
 
-        const requestOptions = market 
-            ? { 
-                searchParams: {
-                    symbol: market.replace('/', '-')
-            } 
-        }
-            : { 
-                searchParams: {
-                    symbol: 'ALL' 
-            }
-        };
+        const requestOptions = market
+            ? {
+                  searchParams: {
+                      symbol: market.replace('/', '-'),
+                  },
+              }
+            : {
+                  searchParams: {
+                      symbol: 'ALL',
+                  },
+              };
 
         const response = await this.publicFetch(requestPath, requestOptions);
 
@@ -154,7 +152,10 @@ class BithumbSpot extends BithumbBase {
 
         console.log(bCreatedOrder);
 
-        const zCreatedOrder = utils.transformBithumbOrder(bCreatedOrder, zOrder);
+        const zCreatedOrder = utils.transformBithumbOrder(
+            bCreatedOrder,
+            zOrder,
+        );
 
         this.cache.cacheOrder(zCreatedOrder);
 
@@ -167,11 +168,9 @@ class BithumbSpot extends BithumbBase {
      * Cancel an active order
      *
      * @param {string} orderId Bithumb order id
-     * 
      * @param {string} symbol
      */
     async cancelOrderById(orderId, symbol = '') {
-
         let orderToDelete = this.cache.getCachedOrderById(orderId);
 
         if (orderToDelete) {
@@ -234,7 +233,6 @@ class BithumbSpot extends BithumbBase {
     /**
      *
      * @param {string} orderId
-     * 
      * @param {string} symbol
      */
     async fetchOrderById(orderId, symbol = '') {

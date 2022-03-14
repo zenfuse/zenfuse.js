@@ -6,7 +6,6 @@ const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error
 const BithumbApiError = require('./errors/api.error');
 const BithumbCache = require('./etc/cache');
 const { createHmacSignature } = require('./utils');
-const { merge } = require('../../base/schemas/openOrder');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
 
@@ -43,7 +42,10 @@ class BithumbBase extends ExchangeBase {
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options) {
-        const assignedOptions = mergeObjects(BithumbBase.DEFAULT_OPTIONS, options);
+        const assignedOptions = mergeObjects(
+            BithumbBase.DEFAULT_OPTIONS,
+            options,
+        );
         super(assignedOptions);
 
         this[keysSymbol] = {};
@@ -81,9 +83,15 @@ class BithumbBase extends ExchangeBase {
             msgNo: this.msgNo.toString(),
         });
 
-        sigParams = Object.keys(sigParams).sort().reduce((acc, key) => ({
-            ...acc, [key]: sigParams[key]
-        }), {});
+        sigParams = Object.keys(sigParams)
+            .sort()
+            .reduce(
+                (acc, key) => ({
+                    ...acc,
+                    [key]: sigParams[key],
+                }),
+                {},
+            );
 
         const signature = createHmacSignature(
             sigParams,
@@ -100,7 +108,10 @@ class BithumbBase extends ExchangeBase {
 
         this.msgNo += 1;
 
-        return await this.fetcher(url, options).then(this.handleFetcherResponse, this.handleFetcherError);
+        return await this.fetcher(url, options).then(
+            this.handleFetcherResponse,
+            this.handleFetcherError,
+        );
     }
 
     /**

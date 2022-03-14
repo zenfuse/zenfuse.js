@@ -20,7 +20,7 @@ const transformZenfuseOrder = (zOrder) => {
     }
 
     if (zOrder.type === 'market') {
-        bOrder.price = "-1";
+        bOrder.price = '-1';
     }
 
     // Allow user extra keys
@@ -37,6 +37,7 @@ const transformZenfuseOrder = (zOrder) => {
  * Bithumb -> Zenfuse
  *
  * @param {*} bOrder Order from Bithumb REST
+ * @param {object} zInitialOrder
  * @returns {Order} Zenfuse Order
  */
 const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
@@ -45,27 +46,32 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
      */
     const zOrder = {};
 
-    zOrder.id = bOrder.data.orderId;  
-    if (Object.entries(zInitialOrder).length === 0) { //if order is not cached
+    zOrder.id = bOrder.data.orderId;
+    if (Object.entries(zInitialOrder).length === 0) {
+        //if order is not cached
         if (bOrder.data.status === 'success') {
             zOrder.status = 'close';
-        }
-        else if (bOrder.data.status === 'send' || bOrder.data.status === 'pending') {
+        } else if (
+            bOrder.data.status === 'send' ||
+            bOrder.data.status === 'pending'
+        ) {
             zOrder.status = 'open';
-        }
-        else {
+        } else {
             zOrder.status = 'canceled';
         }
         zOrder.symbol = bOrder.data.symbol.replace('-', '/');
         zOrder.timestamp = bOrder.timestamp;
         zOrder.type = bOrder.data.type;
         zOrder.side = bOrder.data.side;
-        zOrder.price = bOrder.data.price ? parseFloat(bOrder.data.price) : undefined;
+        zOrder.price = bOrder.data.price
+            ? parseFloat(bOrder.data.price)
+            : undefined;
         zOrder.quantity = parseFloat(bOrder.data.quantity);
-    }
-    else {
+    } else {
         zOrder.symbol = zInitialOrder.symbol;
-        zOrder.timestamp = zInitialOrder.timestamp ? zInitialOrder.timestamp : Date.now();
+        zOrder.timestamp = zInitialOrder.timestamp
+            ? zInitialOrder.timestamp
+            : Date.now();
         zOrder.type = zInitialOrder.type;
         zOrder.side = zInitialOrder.side;
         zOrder.quantity = zInitialOrder.quantity;
@@ -83,7 +89,7 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
  * @param {*} bOrder Order from Bithumb WS
  * @returns {Order} Zenfuse Order
  */
- const transformBithumbOrderWS = (bOrder, zInitialOrder = {}) => {
+const transformBithumbOrderWS = (bOrder) => {
     /**
      * @type {Order}
      */
@@ -92,17 +98,18 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
     zOrder.id = bOrder.data.oId;
     zOrder.timestamp = bOrder.timestamp;
     zOrder.symbol = bOrder.data.symbol.replace('-', '/');
-    zOrder.type = bOrder.data.type; 
+    zOrder.type = bOrder.data.type;
     zOrder.side = bOrder.data.side;
     zOrder.quantity = parseFloat(bOrder.data.quantity);
     zOrder.price = parseFloat(bOrder.data.price);
     if (bOrder.data.status === 'fullDealt') {
         zOrder.status = 'close';
-    }
-    else if (bOrder.data.status === 'created' || bOrder.data.status === 'partDealt') {
+    } else if (
+        bOrder.data.status === 'created' ||
+        bOrder.data.status === 'partDealt'
+    ) {
         zOrder.status = 'open';
-    }
-    else {
+    } else {
         zOrder.status = 'canceled';
     }
     // zOrder.trades = bOrder.fills; // TODO: Fill commision counter

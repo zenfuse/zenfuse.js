@@ -5,9 +5,9 @@ class BithumbWebsocketBase extends EventEmitter {
     static PING_INTERVAL = 15000; // 15 sec
 
     /**
-     * @type {NodeJS.Timeout}
+     * @type {number}
      */
-    pingInterval;
+    pingIntervalId;
 
     /**
      * @type {import('ws').WebSocket}
@@ -26,7 +26,7 @@ class BithumbWebsocketBase extends EventEmitter {
     /**
      * Opens websocket connection
      *
-     * @returns {Promice<void>}
+     * @returns {Promise<void>}
      */
     open() {
         const { wsClientOptions } = this.base.options;
@@ -43,8 +43,8 @@ class BithumbWebsocketBase extends EventEmitter {
                 this.socket = socket;
                 this.socket.on('error', this.handleConnectionError.bind(this));
 
-                this.pingInterval = setInterval(() => {
-                    this.socket.send(JSON.stringify({cmd: "ping"}));
+                this.pingIntervalId = setInterval(() => {
+                    this.socket.send(JSON.stringify({ cmd: 'ping' }));
                 }, BithumbWebsocketBase.PING_INTERVAL);
 
                 resolve();
@@ -57,7 +57,7 @@ class BithumbWebsocketBase extends EventEmitter {
      */
     close() {
         if (this.isSocketConnected) {
-            clearInterval(this.pingInterval);
+            clearInterval(this.pingIntervalId);
             this.socket.close();
         }
 

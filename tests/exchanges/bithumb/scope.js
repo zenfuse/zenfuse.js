@@ -1,5 +1,4 @@
 const nock = require('nock');
-const { isExportDeclaration } = require('typescript');
 
 const HOSTNAME = 'https://global-openapi.bithumb.pro';
 
@@ -7,10 +6,11 @@ const spotFilePath = __dirname + '/mocks/static/spot.json';
 // const mockedMarkets = JSON.parse(readFileSync(marketsFilePath, 'utf-8'));
 
 /**
- * HTTP mocking scope for Bithumb master test
+ * HTTP mocking scope for FTX master test
  * Should be as
  *
- * @param env
+ * @param {import('../../master.test').MasterTestEnvironment} env
+ * @returns {object} Object with test names witch opens nock scope
  */
 module.exports = (env) => ({
     init: null,
@@ -71,7 +71,7 @@ module.exports = (env) => ({
                         expect(q).toMatchObject({
                             symbol: 'BTC-USDT',
                             type: 'market',
-                            side: 'buy',                            
+                            side: 'buy',
                             price: '-1',
                             quantity: '0.0004',
                         });
@@ -84,13 +84,13 @@ module.exports = (env) => ({
                     })
                     .reply(201, {
                         data: {
-                            orderId: "23132134242",
-                            symbol: "BTC-USDT"
-                           },
-                        code: "0",
-                        msg: "success",
+                            orderId: '23132134242',
+                            symbol: 'BTC-USDT',
+                        },
+                        code: '0',
+                        msg: 'success',
                         timestamp: 1551346473238,
-                        params: []
+                        params: [],
                     }),
             'sell by market': () =>
                 nock(HOSTNAME)
@@ -100,7 +100,7 @@ module.exports = (env) => ({
                         expect(q).toMatchObject({
                             symbol: 'BTC-USDT',
                             type: 'market',
-                            side: 'sell',                            
+                            side: 'sell',
                             price: '-1',
                             quantity: '0.0004',
                         });
@@ -113,13 +113,13 @@ module.exports = (env) => ({
                     })
                     .reply(201, {
                         data: {
-                            orderId:"23132134242",
-                            symbol:"BTC-USDT"
-                           },
-                        code: "0",
-                        msg: "success",
+                            orderId: '23132134242',
+                            symbol: 'BTC-USDT',
+                        },
+                        code: '0',
+                        msg: 'success',
                         timestamp: 1551346473238,
-                        params: []
+                        params: [],
                     }),
             'buy by limit': () =>
                 nock(HOSTNAME)
@@ -129,7 +129,7 @@ module.exports = (env) => ({
                         expect(q).toMatchObject({
                             symbol: 'BTC-USDT',
                             type: 'limit',
-                            side: 'buy',                            
+                            side: 'buy',
                             price: '35000',
                             quantity: '0.0004',
                         });
@@ -142,13 +142,13 @@ module.exports = (env) => ({
                     })
                     .reply(201, {
                         data: {
-                            orderId:"23132134242",
-                            symbol:"BTC-USDT"
-                           },
-                        code: "0",
-                        msg: "success",
+                            orderId: '23132134242',
+                            symbol: 'BTC-USDT',
+                        },
+                        code: '0',
+                        msg: 'success',
                         timestamp: 1551346473238,
-                        params: []
+                        params: [],
                     }),
             'sell by limit': () =>
                 nock(HOSTNAME)
@@ -158,7 +158,7 @@ module.exports = (env) => ({
                         expect(q).toMatchObject({
                             symbol: 'BTC-USDT',
                             type: 'limit',
-                            side: 'sell',                            
+                            side: 'sell',
                             price: '55000',
                             quantity: '0.0004',
                         });
@@ -171,13 +171,13 @@ module.exports = (env) => ({
                     })
                     .reply(201, {
                         data: {
-                            orderId:"23132134242",
-                            symbol:"BTC-USDT"
-                           },
-                        code: "0",
-                        msg: "success",
+                            orderId: '23132134242',
+                            symbol: 'BTC-USDT',
+                        },
+                        code: '0',
+                        msg: 'success',
                         timestamp: 1551346473238,
-                        params: []
+                        params: [],
                     }),
         },
         'fetchBalances()': () =>
@@ -198,18 +198,18 @@ module.exports = (env) => ({
                 // TODO: change reply
                 .reply(200, {
                     data: [
-                         {
-                          coinType: "BTC",
-                          count: "100",
-                          frozen: "10",
-                          btcQuantity: "110",
-                          type: "1"
-                        }
-                      ],
-                    code: "0",
-                    msg: "success",
+                        {
+                            coinType: 'BTC',
+                            count: '100',
+                            frozen: '10',
+                            btcQuantity: '110',
+                            type: '1',
+                        },
+                    ],
+                    code: '0',
+                    msg: 'success',
                     timestamp: 1551346473238,
-                    params: []
+                    params: [],
                 }),
 
         'cancelOrderById()': () =>
@@ -234,11 +234,11 @@ module.exports = (env) => ({
                 })
                 .reply(201, {
                     data: {
-                        orderId: "23132134242",
-                        symbol: "USDT-USD",
-                       },
-                    code: "0",
-                    msg: "success",
+                        orderId: '23132134242',
+                        symbol: 'USDT-USD',
+                    },
+                    code: '0',
+                    msg: 'success',
                     timestamp: 1551346473238,
                     params: [],
                 })
@@ -246,8 +246,8 @@ module.exports = (env) => ({
                 .post(`/spot/cancelOrder`)
                 .query((q) => {
                     expect(q).toMatchObject({
-                        orderId: "23132134242",
-                        symbol: "",
+                        orderId: '23132134242',
+                        symbol: '',
                     });
 
                     expect(q.apiKey).toBeDefined();
@@ -257,8 +257,8 @@ module.exports = (env) => ({
                     return true;
                 })
                 .reply(200, {
-                    code: "0",
-                    msg: "success",
+                    code: '0',
+                    msg: 'success',
                     timestamp: 1551346473238,
                     params: [],
                 }),
@@ -285,11 +285,11 @@ module.exports = (env) => ({
                 })
                 .reply(201, {
                     data: {
-                        orderId: "23132134242",
-                        symbol: "USDT-USD",
-                       },
-                    code: "0",
-                    msg: "success",
+                        orderId: '23132134242',
+                        symbol: 'USDT-USD',
+                    },
+                    code: '0',
+                    msg: 'success',
                     timestamp: 1551346473238,
                     params: [],
                 })
@@ -308,21 +308,21 @@ module.exports = (env) => ({
                     return true;
                 })
                 .reply(200, {
-                    data:{
-                        orderId: "23132134242",
-                        symbol: "USDT-USD",
-                        price: "0.5",
-                        tradedNum: "0.01",
-                        quantity: "20",
-                        avgPrice: "0",
-                        status: "pending",
-                        type: "limit",
-                        side: "buy",
-                        createTime: "1551346473238",
-                        tradeTotal: "0.5",
-                      },
-                    code: "0",
-                    msg: "success",
+                    data: {
+                        orderId: '23132134242',
+                        symbol: 'USDT-USD',
+                        price: '0.5',
+                        tradedNum: '0.01',
+                        quantity: '20',
+                        avgPrice: '0',
+                        status: 'pending',
+                        type: 'limit',
+                        side: 'buy',
+                        createTime: '1551346473238',
+                        tradeTotal: '0.5',
+                    },
+                    code: '0',
+                    msg: 'success',
                     timestamp: 1551346473238,
                     params: [],
                 })
@@ -330,8 +330,8 @@ module.exports = (env) => ({
                 .post(`/spot/cancelOrder`)
                 .query((q) => {
                     expect(q).toMatchObject({
-                        orderId: "23132134242",
-                        symbol: "",
+                        orderId: '23132134242',
+                        symbol: '',
                     });
 
                     expect(q.apiKey).toBeDefined();
@@ -341,8 +341,8 @@ module.exports = (env) => ({
                     return true;
                 })
                 .reply(200, {
-                    code: "0",
-                    msg: "success",
+                    code: '0',
+                    msg: 'success',
                     timestamp: 1551346473238,
                     params: [],
                 }),

@@ -22,8 +22,7 @@ const extractTickersFromMarkets = (markets) => {
 };
 
 const extractSpotTickers = (payload) => {
-    const tickers = payload
-    .map((ticker) => ticker.s);
+    const tickers = payload.map((ticker) => ticker.s);
 
     return tickers;
 };

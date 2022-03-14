@@ -44,7 +44,6 @@ class MarketDataStream extends BithumbWebsocketBase {
      * @property {string} channel
      * @property {string} symbol
      * @property {string} [interval] Required if channel is kline
-     * @property {string} channel
      * @param {string|WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
@@ -65,9 +64,7 @@ class MarketDataStream extends BithumbWebsocketBase {
         if (event.channel === 'price') {
             return this.sendSocketMessage({
                 cmd: command,
-                args: ["TICKER:" + event.symbol.replace('/', '-')],
-                // channel: 'ticker',
-                // market: event.symbol,
+                args: ['TICKER:' + event.symbol.replace('/', '-')],
             });
         }
 
@@ -88,7 +85,7 @@ class MarketDataStream extends BithumbWebsocketBase {
 
         console.log(payload);
 
-        if (payload.code === "00007" && payload.topic === 'TICKER') {
+        if (payload.code === '00007' && payload.topic === 'TICKER') {
             this.emitNewPrice(payload);
         }
 
