@@ -91,11 +91,11 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
 
     zOrder.id = bOrder.data.oId;
     zOrder.timestamp = bOrder.timestamp;
-    zOrder.symbol = bOrder.data.symbol;
+    zOrder.symbol = bOrder.data.symbol.replace('-', '/');
     zOrder.type = bOrder.data.type; 
     zOrder.side = bOrder.data.side;
-    zOrder.quantity = bOrder.data.quantity;
-    zOrder.price = bOrder.data.price // ? bOrder.data.price : undefined;
+    zOrder.quantity = parseFloat(bOrder.data.quantity);
+    zOrder.price = parseFloat(bOrder.data.price);
     if (bOrder.data.status === 'fullDealt') {
         zOrder.status = 'close';
     }

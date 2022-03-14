@@ -39,22 +39,22 @@ class AccountDataStream extends BithumbWebsocketBase {
             cmd: 'authKey',
             args: [publicKey, timestamp, signature],
         });
-        // console.log('this.socket', this.socket);
-        // this.sendSocketMessage({
-        //     cmd: 'subscribe',
-        //     args: ['ORDER'],
-        // });
+        
+        this.sendSocketMessage({
+            cmd: 'subscribe',
+            args: ['ORDER'],
+        });
 
         return this;
     }
-    //TODO: check all below
+    
     serverMessageHandler(msgString) {
-        
         const payload = JSON.parse(msgString);
         console.log('serverMessageHandler', payload);
 
         if (payload.code === '00007' && payload.topic === 'ORDER') {
             this.emitOrderUpdateEvent(payload);
+            console.log('orderUpdate emit');
         }
 
         this.emit('payload', payload);
