@@ -12,8 +12,6 @@ const MarketDataStream = require('../streams/marketDataStream');
 
 /**
  * FTX class for spot wallet API
- *
- * @important should have same
  */
 class FtxSpot extends FtxBase {
     static DEFAULT_OPTIONS = {
@@ -72,10 +70,16 @@ class FtxSpot extends FtxBase {
     }
 
     /**
+     * @typedef {object} PriceObject
+     * @property {string} symbol
+     * @property {number} price
+     */
+
+    /**
+     * **NOTE:** If the symbol is not sent, prices for all symbols will be returned in an array.
      *
-     * @note If the symbol is not sent, prices for all symbols will be returned in an array.
      * @param {string} market Ticker pair aka symbol
-     * @returns Last price
+     * @returns {PriceObject} Last price
      */
     async fetchPrice(market = '') {
         const requestPath = market ? `api/markets/${market}` : 'api/markets';
@@ -106,6 +110,55 @@ class FtxSpot extends FtxBase {
         utils.linkOriginalPayload(prices, response);
 
         return prices;
+    }
+
+    /**
+     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     * @typedef {import('../metadata').timeIntervals} timeIntervals
+     */
+
+    /**
+     * @param {object} params
+     * @param {string} params.symbol
+     * @param {timeIntervals} params.interval
+     * @param {number} [params.startTime]
+     * @param {number} [params.endTime]
+     * @returns {Promise<Kline[]>}
+     */
+    async fetchCandleHistory(params) {
+        this.validateCandleHistoryParams(params);
+
+        const response = await this.publicFetch(
+            `api/markets/${params.symbol}/candles`,
+            {
+                searchParams: {
+                    resolution: utils.timeIntervalToSeconds(params.interval),
+                    start_time: params.startTime,
+                    end_time: params.endTime,
+                },
+            },
+        );
+
+        const result = response.result.map((fCandle) => {
+            const zCandle = {
+                timestamp: new Date(fCandle.startTime).getTime(),
+                open: fCandle.open,
+                high: fCandle.high,
+                low: fCandle.low,
+                close: fCandle.close,
+                volume: fCandle.volume,
+                interval: params.interval,
+                symbol: params.symbol,
+            };
+
+            utils.linkOriginalPayload(zCandle, fCandle);
+
+            return zCandle;
+        });
+
+        utils.linkOriginalPayload(result, response);
+
+        return result;
     }
 
     /**

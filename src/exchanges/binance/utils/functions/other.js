@@ -1,4 +1,6 @@
 const { createHmac } = require('crypto');
+const RuntimeError = require('../../../../base/errors/runtime.error');
+const BinanceCache = require('../../etc/cache');
 
 const createHmacSignature = (data, key) => {
     const params = new URLSearchParams(data).toString();
@@ -9,12 +11,7 @@ const createHmacSignature = (data, key) => {
  * Parse binance symbol from `BTCETH` and returns base an quote ticker from it
  *
  * @param {string} bSymbol Ticker pair from binance like `ETHBUSD`
- * @param {object} binanceCache Binance cache object
- * @param {string[]} binanceCache.ticker All binance tickers
- * @param {{
- *      [ticker:string]: string[]
- * }} binanceCache.parsedSymbols All tickers with pairs
- * @param binanceCache.tickers
+ * @param {BinanceCache} binanceCache Binance cache object
  * @returns {[string, string]} Base and quote ticker
  */
 const parseBinanceSymbol = (bSymbol, { tickers, parsedSymbols }) => {
@@ -25,8 +22,8 @@ const parseBinanceSymbol = (bSymbol, { tickers, parsedSymbols }) => {
         baseTicker = tickers.find((ticker) => bSymbol.startsWith(ticker));
 
         if (!baseTicker) {
-            throw new Error(
-                `Zenfuse cannot find base ticker in ${bSymbol} symbol`,
+            throw new RuntimeError(
+                `Cannot find base ticker in ${bSymbol} symbol`,
             );
         }
 

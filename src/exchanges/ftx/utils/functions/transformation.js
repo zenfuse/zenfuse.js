@@ -2,7 +2,7 @@
  * Zenfuse -> FTX
  *
  * @param {Order} zOrder Order from
- * @returns Order for ftx api
+ * @returns {object} Order for ftx api
  */
 const transfromZenfuseOrder = (zOrder) => {
     const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];

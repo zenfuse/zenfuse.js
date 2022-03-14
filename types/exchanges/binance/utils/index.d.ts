@@ -51,5 +51,6 @@ declare const _exports: {
         quoteTicker: string;
     };
     linkOriginalPayload: (object: any, originalPayload: any) => void;
+    timeIntervalToSeconds: (interval: any) => any;
 };
 export = _exports;

@@ -15,5 +15,6 @@ declare const _exports: {
     extractSpotMarkets: (markets: any[]) => any[];
     extractTickersFromMarkets: (markets: any[]) => any[];
     linkOriginalPayload: (object: any, originalPayload: any) => void;
+    timeIntervalToSeconds: (interval: any) => any;
 };
 export = _exports;

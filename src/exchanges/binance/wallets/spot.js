@@ -1,11 +1,12 @@
-const BinanceBase = require('../base');
 const mergeObjects = require('deepmerge');
 
 const utils = require('../utils');
-
+const BinanceBase = require('../base');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
+
+const { timeIntervals } = require('../metadata');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -13,8 +14,6 @@ const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 /**
  * Binance class for spot wallet API
- *
- * @important should have same
  */
 class BinanceSpot extends BinanceBase {
     static DEFAULT_OPTIONS = {
@@ -52,7 +51,11 @@ class BinanceSpot extends BinanceBase {
     }
 
     /**
-     * @returns Array of ticker pairs on this exchange
+     * @typedef {import('../utils/functions/agregation').structualizedMarket} structualizedMarket
+     */
+
+    /**
+     * @returns {structualizedMarket} Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
         const exchangeInfo = await this.publicFetch('api/v3/exchangeInfo');
@@ -69,10 +72,62 @@ class BinanceSpot extends BinanceBase {
     }
 
     /**
+     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     * @param {object} params
+     * @param {string} params.symbol
+     * @param {timeIntervals} params.interval
+     * @param {number} [params.startTime]
+     * @param {number} [params.endTime]
+     * @returns {Kline[]}
+     */
+    async fetchCandleHistory(params) {
+        this.validateCandleHistoryParams(params);
+
+        // NOTE: Binance can return only 1000 candels once. If user interval is to big, it will be unfilled
+        // TODO: Additional responses to fill required interval
+        const response = await this.publicFetch('api/v3/klines', {
+            searchParams: {
+                symbol: params.symbol.replace('/', ''),
+                interval: params.interval,
+                startTime: params.startTime,
+                endTime: params.endTime,
+                limit: 1000, // Overwrite default 500 limit
+            },
+        });
+
+        const result = response.map((bCandle) => {
+            const zCandle = {
+                timestamp: bCandle[0],
+                open: parseFloat(bCandle[1]),
+                high: parseFloat(bCandle[2]),
+                low: parseFloat(bCandle[3]),
+                close: parseFloat(bCandle[4]),
+                volume: parseFloat(bCandle[5]),
+                interval: params.interval,
+                symbol: params.symbol,
+            };
+
+            utils.linkOriginalPayload(zCandle, bCandle);
+
+            return zCandle;
+        });
+
+        utils.linkOriginalPayload(result, response);
+
+        return result;
+    }
+
+    /**
+     * @typedef {object} PriceObject
+     * @property {string} symbol
+     * @property {number} price
+     */
+
+    /**
+     * **DEV:** If the symbol is not sent, prices for all symbols will be returned in an array.
      *
-     * @note If the symbol is not sent, prices for all symbols will be returned in an array.
      * @param {string} market Ticker pair aka symbol
-     * @returns Last price
+     * @returns {PriceObject} Price object
      */
     async fetchPrice(market) {
         const params = {};
@@ -163,9 +218,10 @@ class BinanceSpot extends BinanceBase {
     /**
      * Cancel an active order
      *
-     * @important Binance required order symbol for canceling.
+     * **NOTE:** Binance required order symbol for canceling.
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
-     *      So if you know order symbol, better pass it to didn't make unnecessary HTTP requests.
+     *      TODO: Make possible to pass symbol from user
+     *
      * @param {string} orderId Binance order id
      */
     async cancelOrderById(orderId) {

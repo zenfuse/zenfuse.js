@@ -1,6 +1,6 @@
 {
     "name": "zenfuse",
-    "version": "0.6.1-dev.5",
+    "version": "0.6.1-dev.7",
     "description": "Crypto exchanges connector library",
     "main": "src/index.js",
     "scripts": {
@@ -8,7 +8,7 @@
         "test:e2e": "TEST_MODE=e2e npm run jest --silent",
         "test:integration": "TEST_MODE=integration npm run jest --silent",
         "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
-        "jest": "node node_modules/.bin/jest --no-cache --runInBand",
+        "jest": "node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand",
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
         "download-mocks": "node ./scripts/downloadMocks.js",
@@ -35,26 +35,26 @@
     "homepage": "https://zenfuse.js",
     "types": "./types",
     "devDependencies": {
-        "@types/ws": "^8.2.2",
-        "@typescript-eslint/eslint-plugin": "^5.10.1",
-        "@typescript-eslint/parser": "^5.10.1",
-        "dotenv": "^14.3.0",
-        "eslint": "^8.2.0",
-        "eslint-config-prettier": "^8.3.0",
-        "eslint-plugin-jest": "^26.0.0",
-        "eslint-plugin-jsdoc": "^37.6.3",
+        "@types/ws": "^8.5.2",
+        "@typescript-eslint/eslint-plugin": "^5.14.0",
+        "@typescript-eslint/parser": "^5.14.0",
+        "dotenv": "^16.0.0",
+        "eslint": "^8.10.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-jest": "^26.1.1",
+        "eslint-plugin-jsdoc": "^38.0.0",
         "eslint-plugin-prettier": "^4.0.0",
-        "jest": "^27.3.1",
-        "nock": "^13.2.1",
+        "jest": "^27.5.1",
+        "nock": "^13.2.4",
         "prettier": "^2.4.1",
         "tasuku": "^1.0.2",
-        "typescript": "^4.4.4"
+        "typescript": "^4.6.2"
     },
     "dependencies": {
         "deepmerge": "^4.2.2",
         "got": "^11.8.2",
-        "ws": "^8.2.3",
-        "zod": "^3.11.6"
+        "ws": "^8.5.0",
+        "zod": "^3.13.4"
     },
     "jest": {
         "slowTestThreshold": 30000,

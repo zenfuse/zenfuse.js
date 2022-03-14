@@ -142,13 +142,15 @@ class AccountDataStream extends ExchangeWebsocketBase {
      * Transforms websocket order from binance
      * Binance -> Zenfuse
      *
-     * @param wsOrder
+     * @param {object} wsOrder
      * @typedef {import('../../..').Order} Order
      * @private
      * @returns {Order} Zenfuse Order
      */
     transfromWebsocketOrder(wsOrder) {
         const parsedSymbol = this.base.parseBinanceSymbol(wsOrder.s);
+
+        // TODO: Add type for wsOrder
 
         return {
             id: wsOrder.i.toString(),

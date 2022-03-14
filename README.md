@@ -45,7 +45,7 @@
     -   [All options](#all-options)
 -   [Advanced things](#advanced-things)
     -   [Get original payload from exchange](#get-original-payload-from-exchange)
-    -   [Any private and public http fetching](#any-private-and-public-http-fetching)
+    -   [Any http fetching](#any-http-fetching)
         -   [.publicFetch](#publicfetch)
         -   [.privateFetch](#privatefetch)
 -   [Full use cases](#full-use-cases)
@@ -65,24 +65,13 @@ Zenfuse.js is crypto exchanges connector library. Currently, in active developme
 -   Fetching public markets data
 -   Real-time events
     -   Public markets price
+    -   Candlestick streams
     -   Account orders updating
 
 **Exchanges**
 
 -   [Binance](https://www.binance.com/en)
 -   [FTX](https://ftx.com/)
-
-<!-- _In progress:_
-
--   OkX
-
-_Soon:_
-
--   Bitfinex
--   Bitglobal
--   Kraken
--   KuCoin
--   Huobi -->
 
 ## Installation
 
@@ -317,7 +306,7 @@ Zenfuse.js uses [EventEmiter](https://nodejs.org/api/events.html#class-eventemit
 
 ### Public events
 
-Any public events providing `MarketDataStream` inteface. Currently, only `newPrice` event supports.
+Any public events providing `MarketDataStream` inteface.
 
 #### `.getMarketDataStream`
 
@@ -338,7 +327,7 @@ await marketDataStream.open();
 
 #### `.subscribeTo`
 
-`subscribeTo({ channel: 'price', symbol: string })`
+`subscribeTo({ channel: string, symbol: string })`
 
 Subscribes to specific event.
 
@@ -353,7 +342,7 @@ await marketDataStream.subscribeTo({
 
 #### `.unsubscribeFrom`
 
-`unsubscribeFrom({ channel: 'price', symbol: string })`
+`unsubscribeFrom({ channel: string, symbol: string })`
 
 Unsubscribes from specific event.
 
@@ -378,10 +367,49 @@ marketDataStream.on('newPrice', (e) => {
 
 #### `.close`
 
-Closes websocket connection.
+Closes websocket connection. When you close websocket, all events are unsubscribed.
 
 ```js
 await marketDataStream.close();
+```
+
+#### Event list
+
+#### `price`
+
+```js
+await marketDataStream.subscribeTo({
+    channel: 'price',
+    symbol: 'BTC/USDT',
+});
+
+await marketDataStream.on('newPrice', (p) => {
+    p.symbol; // BTC/USDT
+    p.price; // 14708.3434
+});
+```
+
+#### `candle`
+
+```js
+await marketDataStream.subscribeTo({
+    channel: 'candle',
+    symbol: 'BTC/USDT',
+    interval: '1m',
+});
+
+await marketDataStream.on('candle', (c) => {
+    c.symbol; // 'BTC/USDT'
+    c.open; // 37808
+    c.high; // 37824
+    c.low; // 37756
+    c.close; //  37773
+    c.volume; // 125947.25939999998
+    c.timestamp; // 1647212880000
+    c.interval; // '1m'
+    c.closeAt; // 1647212940000
+    c.isClosed; // false
+});
 ```
 
 ### Account events

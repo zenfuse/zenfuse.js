@@ -4,17 +4,17 @@ const HOSTNAME = 'https://api.binance.com/';
 
 const exchangeInfoFilePath = __dirname + '/mocks/static/exchangeInfo.json';
 const pricesFilePath = __dirname + '/mocks/static/prices.json';
+const historyFilePath = __dirname + '/mocks/static/history.json';
 
 /**
  * HTTP mocking scope for Binance master test
  * Should be as
  *
- * @param env
+ * @param {import('../../master.test').MasterTestEnvironment} env
+ * @returns {object} Object with test names witch opens nock scope
  */
 module.exports = (env) => ({
-    /**
-     * Initial nock scope
-     */
+    // Initial scope
     root: () =>
         nock(HOSTNAME)
             .get('/api/v3/exchangeInfo')
@@ -46,6 +46,17 @@ module.exports = (env) => ({
                 .reply(200, {
                     symbol: 'BTCUSDT',
                     price: '9999999.999999',
+                }),
+        'fetchCandleHistory()': () =>
+            nock(HOSTNAME)
+                .get('/api/v3/klines')
+                .query({
+                    symbol: 'BTCUSDT',
+                    interval: '1m',
+                    limit: 1000,
+                })
+                .replyWithFile(200, historyFilePath, {
+                    'Content-Type': 'application/json',
                 }),
         'createOrder()': {
             'buy by market': () =>

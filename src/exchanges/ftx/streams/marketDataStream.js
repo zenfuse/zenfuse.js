@@ -2,14 +2,28 @@ const debug = require('../../../base/etc/debug');
 const utils = require('../utils');
 
 const FtxWebsocketBase = require('./websocketBase');
+const CandleStream = require('./additional/candleStream');
+
+/**
+ * @typedef {object} WebsocketEvent
+ * @property {string} channel
+ * @property {string} symbol
+ * @property {string} [interval] Required if channel is kline
+ * @param {WebsocketEvent} event
+ */
 
 class MarketDataStream extends FtxWebsocketBase {
     /**
-     * @param {import('../base')} baseInstance
+     * @param {import('../wallets/spot')} baseInstance
      */
     constructor(baseInstance) {
         super(baseInstance);
     }
+
+    /**
+     * @type {Map<WebsocketEvent, CandleStream>}
+     */
+    candleStreams = new Map();
 
     /**
      * @returns {this}
@@ -27,12 +41,15 @@ class MarketDataStream extends FtxWebsocketBase {
         return this;
     }
 
+    /**
+     * @param {WebsocketEvent} event
+     */
     async subscribeTo(event) {
         return await this.editSubscribition(event, 'subscribe');
     }
 
     /**
-     * @param {string|WebsocketEvent} event
+     * @param {WebsocketEvent} event
      */
     async unsubscribeFrom(event) {
         return await this.editSubscribition(event, 'unsubscribe');
@@ -40,12 +57,7 @@ class MarketDataStream extends FtxWebsocketBase {
 
     /**
      * @private
-     * @typedef {object} WebsocketEvent
-     * @property {string} channel
-     * @property {string} symbol
-     * @property {string} [interval] Required if channel is kline
-     * @property {string} channel
-     * @param {string|WebsocketEvent} arg
+     * @param {WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
     async editSubscribition(arg, command) {
@@ -70,10 +82,50 @@ class MarketDataStream extends FtxWebsocketBase {
             });
         }
 
+        if (event.channel === 'candle') {
+            if (command === 'subscribe') {
+                await this.setupCandleStream(event);
+            }
+            if (command === 'unsubscribe') {
+                await this.unsetupCandleStream(event);
+            }
+            return;
+        }
+
         throw new Error('Uknown channel name ' + event.channel);
     }
 
-    // TODO: Save all subscribition
+    /**
+     * @param {WebsocketEvent} event Candle stream event subscribtion
+     */
+    async setupCandleStream(event) {
+        if (this.candleStreams.has(event)) {
+            return; // Alredy registered
+        }
+
+        const candleStream = new CandleStream(this);
+
+        await candleStream.register(event);
+
+        this.candleStreams.set(event, candleStream);
+    }
+
+    /**
+     * @param {WebsocketEvent} event Candle stream event subscribtion
+     */
+    async unsetupCandleStream(event) {
+        const candleStream = this.candleStreams.get(event);
+
+        if (!candleStream) {
+            return; // Nothing to unregister
+        }
+
+        await candleStream.unregister();
+
+        this.candleStreams.delete(event);
+    }
+
+    // TODO: Sav8sde all subscribition
     async unsubscribeFromAllbySymbol() {
         throw 'Not implemented';
     }
@@ -84,14 +136,13 @@ class MarketDataStream extends FtxWebsocketBase {
      */
     serverMessageHandler(msgEvent) {
         const payload = JSON.parse(msgEvent.data);
+        this.emit('payload', payload);
 
         if (payload.type === 'update') {
             if (payload.channel === 'ticker') {
                 this.emitNewPrice(payload);
             }
         }
-
-        this.emit('payload', payload);
     }
 
     /**

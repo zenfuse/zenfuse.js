@@ -2,9 +2,9 @@ export = FtxWebsocketBase;
 declare class FtxWebsocketBase extends EventEmitter {
     static PING_INTERVAL: number;
     /**
-     * @param {import('../base')} baseInstance
+     * @param {import('../wallets/spot')} baseInstance
      */
-    constructor(baseInstance: import('../base'));
+    constructor(baseInstance: import('../wallets/spot'));
     /**
      * @type {NodeJS.Timeout}
      */
@@ -13,7 +13,7 @@ declare class FtxWebsocketBase extends EventEmitter {
      * @type {import('ws').WebSocket}
      */
     socket: import('ws').WebSocket;
-    base: import("../base");
+    base: import("../wallets/spot");
     /**
      * Opens websocket connection
      *

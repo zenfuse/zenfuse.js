@@ -5,9 +5,9 @@ class FtxWebsocketBase extends EventEmitter {
     static PING_INTERVAL = 15000; // 15 sec
 
     /**
-     * @type {NodeJS.Timeout}
+     * @type {number}
      */
-    pingInterval;
+    pingIntervalId;
 
     /**
      * @type {import('ws').WebSocket}
@@ -15,7 +15,7 @@ class FtxWebsocketBase extends EventEmitter {
     socket;
 
     /**
-     * @param {import('../base')} baseInstance
+     * @param {import('../wallets/spot')} baseInstance
      */
     constructor(baseInstance) {
         super();
@@ -26,7 +26,7 @@ class FtxWebsocketBase extends EventEmitter {
     /**
      * Opens websocket connection
      *
-     * @returns {Promice<void>}
+     * @returns {Promise<void>}
      */
     open() {
         const { wsClientOptions } = this.base.options;
@@ -43,7 +43,7 @@ class FtxWebsocketBase extends EventEmitter {
                 this.socket = socket;
                 this.socket.on('error', this.handleConnectionError.bind(this));
 
-                this.pingInterval = setInterval(() => {
+                this.pingIntervalId = setInterval(() => {
                     this.socket.send('{"op": "ping"}');
                 }, FtxWebsocketBase.PING_INTERVAL);
 
@@ -57,7 +57,8 @@ class FtxWebsocketBase extends EventEmitter {
      */
     close() {
         if (this.isSocketConnected) {
-            clearInterval(this.pingInterval);
+            clearInterval(this.pingIntervalId);
+
             this.socket.close();
         }
 

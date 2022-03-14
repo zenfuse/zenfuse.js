@@ -10,6 +10,7 @@ const { timeIntervals } = require('../../metadata');
  * transformMarketString('btc/USDT') // returns'BTCUSDT'
  * ```
  * @param {string} libString Market string from lib interface
+ * @returns {string} Binance symbol
  */
 const transformMarketString = (libString) => {
     return libString.replace('/', '').toUpperCase();
@@ -18,12 +19,13 @@ const transformMarketString = (libString) => {
 /**
  * Insert default values for specific order type
  *
- * @important All values should be for zenfuse interface
- * @param {object} order
+ * **DEV** All values should be for zenfuse interface
+ *
+ * @param {Order} order
  * @param {object} defaults
- * @param {object} defaults.limit
- * @param {object} defaults.market
- * @returns TODO: Order type
+ * @param {Order} defaults.limit
+ * @param {Order} defaults.market
+ * @returns {Order} TODO: Order type
  */
 const assignDefaultsInOrder = (order, defaults) => {
     let newOrder;
@@ -46,9 +48,10 @@ const assignDefaultsInOrder = (order, defaults) => {
 /**
  * Zenfuse -> Binance
  *
- * @important This function does not assign defaults values
+ * **DEV:** This function does not assign defaults values
+ *
  * @param {Order} zOrder Zenfuse order
- * @returns Order for binance api
+ * @returns {object} Order for binance api
  */
 const transfromZenfuseOrder = (zOrder) => {
     const TRANSFORM_LIST = [
@@ -152,15 +155,15 @@ const transfromBinanceOrder = (bOrder) => {
  */
 const transfornCandlestick = (k) => {
     return {
-        open: k.o,
-        hight: k.h,
-        low: k.l,
-        close: k.c,
+        open: parseFloat(k.o),
+        high: parseFloat(k.h),
+        low: parseFloat(k.l),
+        close: parseFloat(k.c),
         timestamp: k.t,
         interval: timeIntervals[k.i],
         isClosed: k.x,
         symbol: k.s,
-        volume: k.v,
+        volume: parseFloat(k.v),
     };
 };
 

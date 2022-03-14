@@ -1,28 +1,42 @@
 export = MarketDataStream;
+/**
+ * @typedef {object} WebsocketEvent
+ * @property {string} channel
+ * @property {string} symbol
+ * @property {string} [interval] Required if channel is kline
+ * @param {WebsocketEvent} event
+ */
 declare class MarketDataStream extends FtxWebsocketBase {
-    subscribeTo(event: any): Promise<void>;
     /**
-     * @param {string|WebsocketEvent} event
+     * @type {Map<WebsocketEvent, CandleStream>}
      */
-    unsubscribeFrom(event: string | {
-        channel: string;
-        symbol: string;
-        /**
-         * Required if channel is kline
-         */
-        interval?: string;
-    }): Promise<void>;
+    candleStreams: Map<WebsocketEvent, CandleStream>;
+    /**
+     * @returns {this}
+     */
+    open(): this;
+    /**
+     * @param {WebsocketEvent} event
+     */
+    subscribeTo(event: WebsocketEvent): Promise<void>;
+    /**
+     * @param {WebsocketEvent} event
+     */
+    unsubscribeFrom(event: WebsocketEvent): Promise<void>;
     /**
      * @private
-     * @typedef {object} WebsocketEvent
-     * @property {string} channel
-     * @property {string} symbol
-     * @property {string} [interval] Required if channel is kline
-     * @property {string} channel
-     * @param {string|WebsocketEvent} arg
+     * @param {WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
     private editSubscribition;
+    /**
+     * @param {WebsocketEvent} event Candle stream event subscribtion
+     */
+    setupCandleStream(event: WebsocketEvent): Promise<void>;
+    /**
+     * @param {WebsocketEvent} event Candle stream event subscribtion
+     */
+    unsetupCandleStream(event: WebsocketEvent): Promise<void>;
     unsubscribeFromAllbySymbol(): Promise<void>;
     /**
      * @private
@@ -41,4 +55,16 @@ declare class MarketDataStream extends FtxWebsocketBase {
      */
     private sendSocketUnsubscribe;
 }
+declare namespace MarketDataStream {
+    export { WebsocketEvent };
+}
 import FtxWebsocketBase = require("./websocketBase");
+type WebsocketEvent = {
+    channel: string;
+    symbol: string;
+    /**
+     * Required if channel is kline
+     */
+    interval?: string;
+};
+import CandleStream = require("./additional/candleStream");
