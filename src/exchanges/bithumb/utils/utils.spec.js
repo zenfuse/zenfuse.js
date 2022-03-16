@@ -13,7 +13,7 @@ describe('createHmacSignature()', () => {
         const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
         const madeSign = createHmacSignature(params, key);
         const signature =
-            '79f7543c48aaa89852f1ad5e71645443099e16aba4d155df74cf211af9954863';
+            '31dac2c4416eb03c6ef5e81aa40716b71ad116ce896645bd35cba38ab4287696';
 
         expect(madeSign).toBe(signature);
     });
@@ -66,8 +66,8 @@ describe('transformZenfuseOrder()', () => {
             symbol: 'BTC-ETH',
             side: 'buy',
             type: 'limit',
-            price: 69.6969,
-            quantity: 0.02323,
+            price: '69.6969',
+            quantity: '0.02323',
         };
 
         expect(transformZenfuseOrder(order)).toStrictEqual(expectation);
