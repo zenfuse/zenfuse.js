@@ -626,69 +626,6 @@ module.exports = function masterTest(Exchange, env) {
                     }, 3000);
                 });
             });
-
-            // TODO: FTX Websocket subscription list memory
-            // Should be skipped for now, FTX websocket doesnt have "get subscription" support
-            it.skip('should unsubscribe by string', async () => {
-                expect(marketDataStream.isSocketConnected).toBe(true);
-
-                await marketDataStream.subscribeTo('BTC/USDT');
-
-                await marketDataStream.unsubscribeFrom('BTC/USDT');
-
-                const listener = jest.fn();
-
-                marketDataStream.once('kline', listener);
-
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        expect(listener).not.toHaveBeenCalled();
-                        resolve();
-                    });
-                    global.testTimeout * 0.3;
-                });
-            });
-
-            it.skip('should unsubscribe by string from all events with the same symbol', async () => {
-                expect(marketDataStream.isSocketConnected).toBe(true);
-
-                await marketDataStream.subscribeTo({
-                    channel: 'kline',
-                    symbol: 'BTC/USDT',
-                    interval: '15m',
-                });
-
-                await marketDataStream.subscribeTo({
-                    channel: 'kline',
-                    symbol: 'BTC/USDT',
-                    interval: '1h',
-                });
-
-                await marketDataStream.subscribeTo({
-                    channel: 'kline',
-                    symbol: 'BNB/BUSD',
-                    interval: '1m',
-                });
-
-                await marketDataStream.unsubscribeFrom('BTC/USDT');
-
-                const listener = jest.fn();
-
-                marketDataStream.once('kline', listener);
-
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        expect(listener).toHaveBeenCalled();
-                        listener.mock.calls.forEach((call) => {
-                            const kline = call[0];
-
-                            expect(kline.symbol).toBe('BNBBUSD');
-                            expect(kline.interval).toBe('1m');
-                        });
-                        resolve();
-                    }, global.testTimeout * 0.3);
-                });
-            });
         });
 
         describe('close()', () => {

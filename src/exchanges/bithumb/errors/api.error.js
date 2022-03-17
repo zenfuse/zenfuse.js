@@ -10,8 +10,7 @@ class BithumbApiError extends ZenfuseBaseError {
             super(err.response.body.error);
             this.response = err.response.body;
             this.httpError = err;
-        }
-        else {
+        } else {
             super(err.msg);
             this.response = err;
         }

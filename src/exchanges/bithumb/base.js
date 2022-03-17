@@ -165,7 +165,6 @@ class BithumbBase extends ExchangeBase {
      * @private
      */
     handleFetcherError(err) {
-        console.log(err.message);
         if (err instanceof HTTPError) {
             throw new BithumbApiError(err);
         }

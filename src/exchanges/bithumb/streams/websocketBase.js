@@ -89,8 +89,6 @@ class BithumbWebsocketBase extends EventEmitter {
 
         const msgString = JSON.stringify(msg);
 
-        console.log('msgString', msgString);
-
         this.socket.send(msgString);
     }
 }

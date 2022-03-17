@@ -50,11 +50,9 @@ class AccountDataStream extends BithumbWebsocketBase {
 
     serverMessageHandler(msgString) {
         const payload = JSON.parse(msgString);
-        console.log('serverMessageHandler', payload);
 
         if (payload.code === '00007' && payload.topic === 'ORDER') {
             this.emitOrderUpdateEvent(payload);
-            console.log('orderUpdate emit');
         }
 
         this.emit('payload', payload);

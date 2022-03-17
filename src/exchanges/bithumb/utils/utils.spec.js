@@ -17,31 +17,6 @@ describe('createHmacSignature()', () => {
 
         expect(madeSign).toBe(signature);
     });
-
-    it.skip('should return valid signature with body', () => {
-        const params = {
-            method: 'POST',
-            body: {
-                market: 'BTC-PERP',
-                side: 'buy',
-                price: 8500,
-                size: 1,
-                type: 'limit',
-                reduceOnly: false,
-                ioc: false,
-                postOnly: false,
-                clientId: null,
-            },
-            path: '/api/orders',
-            ts: 1588591856950,
-        };
-
-        const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
-        const signature =
-            '2832d853e55db715f59aaadd966cdc51913967da8bf687aad8457a5ac609313e';
-
-        expect(createHmacSignature(params, key)).toBe(signature);
-    });
 });
 
 describe('transformZenfuseOrder()', () => {
@@ -105,7 +80,6 @@ describe('transformBithumbOrder()', () => {
             receivedBithumbOrder,
             zenfuseCreatedOrder,
         );
-        console.log(result);
 
         expect(result).toMatchSchema(OrderSchema);
     });
@@ -132,7 +106,6 @@ describe('transformBithumbOrder()', () => {
         };
 
         const result = transformBithumbOrder(receivedBithumbOrder);
-        console.log(result);
 
         expect(result).toMatchSchema(OrderSchema);
     });

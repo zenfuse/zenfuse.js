@@ -6,6 +6,7 @@ const utils = require('../utils');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 const { transformZenfuseOrder } = require('../utils');
+const { timeIntervals } = require('../metadata');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -69,8 +70,6 @@ class BithumbSpot extends BithumbBase {
                 quoteTicker: ticker[1],
             };
         });
-
-        console.log(markets);
 
         utils.linkOriginalPayload(markets, response);
 
@@ -143,14 +142,10 @@ class BithumbSpot extends BithumbBase {
 
         const bOrder = transformZenfuseOrder(zOrder);
 
-        console.log(bOrder);
-
         const bCreatedOrder = await this.privateFetch('spot/placeOrder', {
             method: 'POST',
             json: bOrder,
         });
-
-        console.log(bCreatedOrder);
 
         const zCreatedOrder = utils.transformBithumbOrder(
             bCreatedOrder,
@@ -223,8 +218,6 @@ class BithumbSpot extends BithumbBase {
                 };
             });
 
-        console.log(balances);
-
         utils.linkOriginalPayload(balances, response);
 
         return balances;
@@ -250,11 +243,31 @@ class BithumbSpot extends BithumbBase {
             },
         });
 
-        console.log(responce);
-
         const zOrder = utils.transformBithumbOrder(responce, orderToFetch);
 
         return zOrder;
+    }
+
+    /**
+     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     * @param {object} params
+     * @param {string} params.symbol
+     * @param {timeIntervals} params.interval
+     * @param {number} [params.startTime]
+     * @param {number} [params.endTime]
+     * @returns {Kline[]}
+     */
+    fetchCandleHistory(params) {
+        const response = this.publicFetch('spot/kline', {
+            searchParams: {
+                symbol: params.symbol,
+                interval: timeIntervals[params.interval],
+                start: params.startTime,
+                end: params.endTime,
+            },
+        });
+
+        return response.data;
     }
 
     getAccountDataStream() {
