@@ -12,6 +12,7 @@ const spotFilePath = __dirname + '/mocks/static/spot.json';
  * @param {import('../../master.test').MasterTestEnvironment} env
  * @returns {object} Object with test names witch opens nock scope
  */
+// eslint-disable-next-line no-unused-vars
 module.exports = (env) => ({
     init: null,
     'Spot Wallet HTTP interface': {
@@ -190,7 +191,6 @@ module.exports = (env) => ({
                     expect(b.signature).toBeDefined();
                     return true;
                 })
-                // TODO: change reply
                 .reply(200, {
                     data: [
                         {
@@ -229,7 +229,7 @@ module.exports = (env) => ({
                 .reply(201, {
                     data: {
                         orderId: '23132134242',
-                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
+                        symbol: 'USDT-USD',
                     },
                     code: '0',
                     msg: 'success',
@@ -240,7 +240,7 @@ module.exports = (env) => ({
                 .post(`/openapi/v1/spot/cancelOrder`, (q) => {
                     expect(q).toMatchObject({
                         orderId: '23132134242',
-                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
+                        symbol: 'USDT-USD',
                     });
 
                     expect(q.apiKey).toBeDefined();
@@ -262,7 +262,7 @@ module.exports = (env) => ({
                 // Order creation
                 .post('/openapi/v1/spot/placeOrder', (b) => {
                     expect(b).toMatchObject({
-                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
+                        symbol: 'USDT-USD',
                         type: 'limit',
                         side: 'buy',
                         quantity: '20',
@@ -278,7 +278,7 @@ module.exports = (env) => ({
                 .reply(201, {
                     data: {
                         orderId: '23132134242',
-                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
+                        symbol: 'USDT-USD',
                     },
                     code: '0',
                     msg: 'success',
@@ -289,7 +289,7 @@ module.exports = (env) => ({
                 .post('/openapi/v1/spot/singleOrder', (b) => {
                     expect(b).toMatchObject({
                         orderId: '23132134242',
-                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
+                        symbol: 'USDT-USD',
                     });
 
                     expect(b.apiKey).toBeDefined();
@@ -321,7 +321,7 @@ module.exports = (env) => ({
                 .post(`/openapi/v1/spot/cancelOrder`, (q) => {
                     expect(q).toMatchObject({
                         orderId: '23132134242',
-                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
+                        symbol: 'USDT-USD',
                     });
 
                     expect(q.apiKey).toBeDefined();
