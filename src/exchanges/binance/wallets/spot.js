@@ -4,9 +4,10 @@ const utils = require('../utils');
 const BinanceBase = require('../base');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
+const RuntimeError = require('../../../base/errors/runtime.error');
 
 const { timeIntervals } = require('../metadata');
+const BaseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -153,7 +154,7 @@ class BinanceSpot extends BinanceBase {
 
         const createSymbol = (symbol) => {
             if (!this.cache.parsedSymbols.has(symbol)) {
-                throw new ZenfuseRuntimeError(
+                throw new RuntimeError(
                     `Cannot find ${symbol} in binance cache`,
                     'ZEFU_CACHE_UNSYNC',
                 );
@@ -290,21 +291,34 @@ class BinanceSpot extends BinanceBase {
         return balances;
     }
 
+    // TODO: fetchOrder() method
+
     /**
+     * **NOTE:** Binance requires symbol for fetching order.
      *
      * @param {string} orderId
      */
     async fetchOrderById(orderId) {
-        let orderToDelete = this.cache.getCachedOrderById(orderId);
+        let cachedOrder = this.cache.getCachedOrderById(orderId);
 
-        if (!orderToDelete) {
-            throw 'TODO: Fix cache'; // TODO:!!!
+        if (!cachedOrder) {
+            // Should find this order cur binance want symbol for fetching
+            const openOrders = await this.privateFetch('api/v3/openOrders');
+
+            cachedOrder = openOrders.find((o) => o.orderId === orderId);
+
+            if (!cachedOrder) {
+                // TODO: Make base error better
+                throw new BaseError(`Order with ${orderId} id does not exists`);
+            }
+
+            // throw 'TODO: Fix cache'; // TODO:!!!
         }
 
         const response = await this.privateFetch('api/v3/order', {
             searchParams: {
-                symbol: orderToDelete.symbol.replace('/', ''),
-                orderId: orderToDelete.id.toString(),
+                symbol: cachedOrder.symbol.replace('/', ''),
+                orderId: cachedOrder.id.toString(),
             },
         });
 
