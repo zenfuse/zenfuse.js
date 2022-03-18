@@ -14,11 +14,11 @@ const env = {
     API_PUBLIC_KEY: process.env.BITHUMB_PUBLIC_KEY || 'DUMMY_PUBLIC_KEY',
     API_PRIVATE_KEY: process.env.BITHUMB_SECRET_KEY || 'DUMMY_SECRET_KEY',
     NOT_EXECUTABLE_ORDER: {
-        symbol: 'BTC/USDT',
+        symbol: 'USDT/USD',
         type: 'limit',
         side: 'buy',
-        quantity: 0.0004,
-        price: 35000,
+        quantity: 20,
+        price: 0.5,
     },
 };
 

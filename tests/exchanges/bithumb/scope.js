@@ -66,9 +66,8 @@ module.exports = (env) => ({
             'buy by market': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
-                    .post('/spot/placeOrder')
-                    .query((q) => {
-                        expect(q).toMatchObject({
+                    .post('/openapi/v1/spot/placeOrder', (b) => {
+                        expect(b).toMatchObject({
                             symbol: 'BTC-USDT',
                             type: 'market',
                             side: 'buy',
@@ -76,10 +75,10 @@ module.exports = (env) => ({
                             quantity: '0.0004',
                         });
 
-                        expect(q.apiKey).toBeDefined();
-                        expect(q.msgNo).toBeDefined();
-                        expect(q.timestamp).toBeDefined();
-                        expect(q.signature).toBeDefined();
+                        expect(b.apiKey).toBeDefined();
+                        expect(b.msgNo).toBeDefined();
+                        expect(b.timestamp).toBeDefined();
+                        expect(b.signature).toBeDefined();
                         return true;
                     })
                     .reply(201, {
@@ -95,9 +94,8 @@ module.exports = (env) => ({
             'sell by market': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
-                    .post('/spot/placeOrder')
-                    .query((q) => {
-                        expect(q).toMatchObject({
+                    .post('/openapi/v1/spot/placeOrder', (b) => {
+                        expect(b).toMatchObject({
                             symbol: 'BTC-USDT',
                             type: 'market',
                             side: 'sell',
@@ -105,10 +103,10 @@ module.exports = (env) => ({
                             quantity: '0.0004',
                         });
 
-                        expect(q.apiKey).toBeDefined();
-                        expect(q.msgNo).toBeDefined();
-                        expect(q.timestamp).toBeDefined();
-                        expect(q.signature).toBeDefined();
+                        expect(b.apiKey).toBeDefined();
+                        expect(b.msgNo).toBeDefined();
+                        expect(b.timestamp).toBeDefined();
+                        expect(b.signature).toBeDefined();
                         return true;
                     })
                     .reply(201, {
@@ -124,8 +122,7 @@ module.exports = (env) => ({
             'buy by limit': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
-                    .post('/spot/placeOrder')
-                    .query((q) => {
+                    .post('/openapi/v1/spot/placeOrder', (q) => {
                         expect(q).toMatchObject({
                             symbol: 'BTC-USDT',
                             type: 'limit',
@@ -153,9 +150,8 @@ module.exports = (env) => ({
             'sell by limit': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
-                    .post('/spot/placeOrder')
-                    .query((q) => {
-                        expect(q).toMatchObject({
+                    .post('/openapi/v1/spot/placeOrder', (b) => {
+                        expect(b).toMatchObject({
                             symbol: 'BTC-USDT',
                             type: 'limit',
                             side: 'sell',
@@ -163,10 +159,10 @@ module.exports = (env) => ({
                             quantity: '0.0004',
                         });
 
-                        expect(q.apiKey).toBeDefined();
-                        expect(q.msgNo).toBeDefined();
-                        expect(q.timestamp).toBeDefined();
-                        expect(q.signature).toBeDefined();
+                        expect(b.apiKey).toBeDefined();
+                        expect(b.msgNo).toBeDefined();
+                        expect(b.timestamp).toBeDefined();
+                        expect(b.signature).toBeDefined();
                         return true;
                     })
                     .reply(201, {
@@ -183,16 +179,15 @@ module.exports = (env) => ({
         'fetchBalances()': () =>
             nock(HOSTNAME)
                 .matchHeader('Content-Type', 'application/json')
-                .post('/spot/assetList')
-                .query((q) => {
-                    expect(q).toMatchObject({
-                        assetType: 'wallet',
+                .post('/openapi/v1/spot/assetList', (b) => {
+                    expect(b).toMatchObject({
+                        assetType: 'spot',
                     });
 
-                    expect(q.apiKey).toBeDefined();
-                    expect(q.msgNo).toBeDefined();
-                    expect(q.timestamp).toBeDefined();
-                    expect(q.signature).toBeDefined();
+                    expect(b.apiKey).toBeDefined();
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
                     return true;
                 })
                 // TODO: change reply
@@ -216,9 +211,8 @@ module.exports = (env) => ({
             nock(HOSTNAME)
                 .matchHeader('Content-Type', 'application/json')
                 // Order creation
-                .post('/spot/placeOrder')
-                .query((q) => {
-                    expect(q).toMatchObject({
+                .post('/openapi/v1/spot/placeOrder', (b) => {
+                    expect(b).toMatchObject({
                         symbol: 'USDT-USD',
                         type: 'limit',
                         side: 'buy',
@@ -226,16 +220,16 @@ module.exports = (env) => ({
                         price: '0.5',
                     });
 
-                    expect(q.apiKey).toBeDefined();
-                    expect(q.msgNo).toBeDefined();
-                    expect(q.timestamp).toBeDefined();
-                    expect(q.signature).toBeDefined();
+                    expect(b.apiKey).toBeDefined();
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
                     return true;
                 })
                 .reply(201, {
                     data: {
                         orderId: '23132134242',
-                        symbol: 'USDT-USD',
+                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
                     },
                     code: '0',
                     msg: 'success',
@@ -243,11 +237,10 @@ module.exports = (env) => ({
                     params: [],
                 })
                 // Order deletion
-                .post(`/spot/cancelOrder`)
-                .query((q) => {
+                .post(`/openapi/v1/spot/cancelOrder`, (q) => {
                     expect(q).toMatchObject({
                         orderId: '23132134242',
-                        symbol: '',
+                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
                     });
 
                     expect(q.apiKey).toBeDefined();
@@ -267,26 +260,25 @@ module.exports = (env) => ({
             nock(HOSTNAME)
                 .matchHeader('Content-Type', 'application/json')
                 // Order creation
-                .post('/spot/placeOrder')
-                .query((q) => {
-                    expect(q).toMatchObject({
-                        symbol: 'USDT-USD',
+                .post('/openapi/v1/spot/placeOrder', (b) => {
+                    expect(b).toMatchObject({
+                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
                         type: 'limit',
                         side: 'buy',
                         quantity: '20',
                         price: '0.5',
                     });
 
-                    expect(q.apiKey).toBeDefined();
-                    expect(q.msgNo).toBeDefined();
-                    expect(q.timestamp).toBeDefined();
-                    expect(q.signature).toBeDefined();
+                    expect(b.apiKey).toBeDefined();
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
                     return true;
                 })
                 .reply(201, {
                     data: {
                         orderId: '23132134242',
-                        symbol: 'USDT-USD',
+                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
                     },
                     code: '0',
                     msg: 'success',
@@ -294,17 +286,16 @@ module.exports = (env) => ({
                     params: [],
                 })
                 // Order status fetch
-                .post('/spot/singleOrder')
-                .query((q) => {
-                    expect(q).toMatchObject({
+                .post('/openapi/v1/spot/singleOrder', (b) => {
+                    expect(b).toMatchObject({
                         orderId: '23132134242',
-                        symbol: '',
+                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
                     });
 
-                    expect(q.apiKey).toBeDefined();
-                    expect(q.msgNo).toBeDefined();
-                    expect(q.timestamp).toBeDefined();
-                    expect(q.signature).toBeDefined();
+                    expect(b.apiKey).toBeDefined();
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
                     return true;
                 })
                 .reply(200, {
@@ -327,11 +318,10 @@ module.exports = (env) => ({
                     params: [],
                 })
                 // Order deletion
-                .post(`/spot/cancelOrder`)
-                .query((q) => {
+                .post(`/openapi/v1/spot/cancelOrder`, (q) => {
                     expect(q).toMatchObject({
                         orderId: '23132134242',
-                        symbol: '',
+                        symbol: env.NOT_EXECUTABLE_ORDER.symbol,
                     });
 
                     expect(q.apiKey).toBeDefined();
