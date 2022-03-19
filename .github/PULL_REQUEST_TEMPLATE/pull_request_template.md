@@ -1,3 +1,8 @@
+---
+name: Add new exchange
+title: 'Add EXCHANGE_NAME exchange'
+---
+
 ## Checklist
 - [ ] `npm run lint` doesn't have errors
 - [ ] `npm run test` passes
