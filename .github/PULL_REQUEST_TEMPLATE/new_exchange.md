@@ -1,4 +1,4 @@
 
 
 ## Checklist
-- [] `npm run lint` doesnt have errors
+- [ ] `npm run lint` doesnt have errors
