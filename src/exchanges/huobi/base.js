@@ -23,13 +23,13 @@ class HuobiBase extends ExchangeBase {
     static DEFAULT_OPTIONS = {
         httpClientOptions: {
             responseType: 'json',
-            prefixUrl: 'https://www.okex.com/',
+            prefixUrl: 'https://api.huobi.pro',
             headers: {
                 'Content-Type': 'application/json',
             },
         },
         wsClientOptions: {
-            prefixUrl: 'wss://real.okex.com:8443',
+            prefixUrl: 'wss://api.huobi.pro',
         },
     };
 
