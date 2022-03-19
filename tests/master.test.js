@@ -38,7 +38,7 @@ const OrderSchema = require('../src/base/schemas/openOrder');
 const KlineSchema = require('../src/base/schemas/kline');
 
 /**
- * @param {object} Exchange
+ * @param {object} Exchange Exchange class which should be tested
  * @param {MasterTestEnvironment} env
  */
 module.exports = function masterTest(Exchange, env) {
