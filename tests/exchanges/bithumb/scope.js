@@ -3,6 +3,7 @@ const nock = require('nock');
 const HOSTNAME = 'https://global-openapi.bithumb.pro';
 
 const spotFilePath = __dirname + '/mocks/static/spot.json';
+const klineFilePath = __dirname + '/mocks/static/kline.json';
 // const mockedMarkets = JSON.parse(readFileSync(marketsFilePath, 'utf-8'));
 
 /**
@@ -62,6 +63,19 @@ module.exports = (env) => ({
                     msg: 'success',
                     timestamp: 1643713512523,
                     startTime: null,
+                }),
+        'fetchCandleHistory()': () =>
+            nock(HOSTNAME)
+                .get('/openapi/v1/spot/kline')
+                .query((q) => {
+                    expect(q.symbol).toBe('BTC-USDT');
+                    expect(q.interval).toBe('m1');
+                    expect(q.start).toBeDefined();
+                    expect(q.end).toBeDefined();
+                    return true;
+                })
+                .replyWithFile(200, klineFilePath, {
+                    'Content-Type': 'application/json',
                 }),
         'createOrder()': {
             'buy by market': () =>

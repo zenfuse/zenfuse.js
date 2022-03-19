@@ -91,19 +91,11 @@ class BithumbSpot extends BithumbBase {
     async fetchPrice(market = '') {
         const requestPath = 'spot/ticker';
 
-        const requestOptions = market
-            ? {
-                  searchParams: {
-                      symbol: market.replace('/', '-'),
-                  },
-              }
-            : {
-                  searchParams: {
-                      symbol: 'ALL',
-                  },
-              };
-
-        const response = await this.publicFetch(requestPath, requestOptions);
+        const response = await this.publicFetch(requestPath, {
+            searchParams: {
+                symbol: market ? market.replace('/', '-') : 'ALL',
+            },
+        });
 
         if (market) {
             const price = {
@@ -257,17 +249,34 @@ class BithumbSpot extends BithumbBase {
      * @param {number} [params.endTime]
      * @returns {Kline[]}
      */
-    fetchCandleHistory(params) {
-        const response = this.publicFetch('spot/kline', {
+    async fetchCandleHistory(params) {
+        const response = await this.publicFetch('spot/kline', {
             searchParams: {
-                symbol: params.symbol,
+                symbol: params.symbol.replace('/', '-'),
                 interval: timeIntervals[params.interval],
-                start: params.startTime,
-                end: params.endTime,
+                start: params.startTime || Date.now() - 60000 * 60,
+                end: params.endTime || Date.now(),
             },
         });
 
-        return response.data;
+        const result = response.data.map((bKline) => {
+            const kline = {
+                open: parseFloat(bKline.o),
+                high: parseFloat(bKline.h),
+                low: parseFloat(bKline.l),
+                close: parseFloat(bKline.c),
+                timestamp: parseFloat(bKline.time),
+                interval: params.interval,
+                symbol: params.symbol,
+                volume: parseFloat(bKline.v),
+            };
+            utils.linkOriginalPayload(kline, bKline);
+            return kline;
+        });
+
+        utils.linkOriginalPayload(result, response);
+
+        return result;
     }
 
     getAccountDataStream() {

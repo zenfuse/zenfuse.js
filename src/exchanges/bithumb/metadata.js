@@ -1,4 +1,6 @@
 /**
+ * Zenfuse -> Bithumb intervals
+ *
  * @enum {import('../..').timeInterval}
  */
 const timeIntervals = {

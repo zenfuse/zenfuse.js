@@ -66,6 +66,11 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                         endpoint:
                             'https://global-openapi.bithumb.pro/openapi/v1/spot/ticker?symbol=ALL',
                     },
+                    {
+                        filename: 'kline.json',
+                        endpoint:
+                            'https://global-openapi.bithumb.pro/openapi/v1/spot/kline?symbol=BTC-USDT&type=m1&start=1646690750&end=1647694350',
+                    },
                 ];
 
                 run(mocksPath, downloadList, task);
@@ -93,7 +98,7 @@ const run = (mocksPath, downloadList, task) => {
                 })
                 .then(() => {
                     setStatus('Downloaded');
-                    setOutput(path.relative(__dirname + '/../', filePath));
+                    setOutput(path.resolve(__dirname + '/../', filePath));
                 });
         });
     }
