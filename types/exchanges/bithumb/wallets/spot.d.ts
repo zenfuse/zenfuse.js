@@ -1,11 +1,12 @@
-export = FtxSpot;
+export = BithumbSpot;
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
  */
 /**
- * FTX class for spot wallet API
+ * Bithumb class for spot wallet API
+ *
  */
-declare class FtxSpot extends FtxBase {
+declare class BithumbSpot extends BithumbBase {
     static DEFAULT_OPTIONS: {
         defaults: {
             limit: {};
@@ -40,28 +41,10 @@ declare class FtxSpot extends FtxBase {
         price: number;
     };
     /**
-     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
-     * @typedef {import('../metadata').timeIntervals} timeIntervals
-     */
-    /**
-     * @param {object} params
-     * @param {string} params.symbol
-     * @param {timeIntervals} params.interval
-     * @param {number} [params.startTime]
-     * @param {number} [params.endTime]
-     * @returns {Promise<Kline[]>}
-     */
-    fetchCandleHistory(params: {
-        symbol: string;
-        interval: import("../../..").timeInterval;
-        startTime?: number;
-        endTime?: number;
-    }): Promise<import("../../../base/schemas/kline.js").ZenfuseKline[]>;
-    /**
      * @typedef {import('../utils/functions/transformation').Order} Order
      */
     /**
-     * Create new spot order on FTX
+     * Create new spot order on Bithumb
      *
      * @param {Order} zOrder Order to create
      */
@@ -69,23 +52,41 @@ declare class FtxSpot extends FtxBase {
     /**
      * Cancel an active order
      *
-     * @param {string} orderId Ftx order id
+     * @param {string} orderId Bithumb order id
+     * @param {string} symbol
      */
-    cancelOrderById(orderId: string): Promise<ZenfuseOrder>;
+    cancelOrderById(orderId: string, symbol?: string): Promise<ZenfuseOrder>;
     fetchOpenOrders(): Promise<void>;
     fetchBalances(): Promise<any>;
     /**
      *
      * @param {string} orderId
+     * @param {string} symbol
      */
-    fetchOrderById(orderId: string): Promise<Order>;
+    fetchOrderById(orderId: string, symbol?: string): Promise<Order>;
+    /**
+     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     * @param {object} params
+     * @param {string} params.symbol
+     * @param {timeIntervals} params.interval
+     * @param {number} [params.startTime]
+     * @param {number} [params.endTime]
+     * @returns {Kline[]}
+     */
+    fetchCandleHistory(params: {
+        symbol: string;
+        interval: timeIntervals;
+        startTime?: number;
+        endTime?: number;
+    }): import("../../../base/schemas/kline.js").ZenfuseKline[];
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }
-declare namespace FtxSpot {
+declare namespace BithumbSpot {
     export { BaseOptions };
 }
-import FtxBase = require("../base");
+import BithumbBase = require("../base");
+import { timeIntervals } from "../metadata";
 import AccountDataStream = require("../streams/accountDataStream");
 import MarketDataStream = require("../streams/marketDataStream");
 type BaseOptions = import('../../../base/exchange').BaseOptions;

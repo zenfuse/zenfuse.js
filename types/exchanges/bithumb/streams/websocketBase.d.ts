@@ -1,10 +1,10 @@
-export = FtxWebsocketBase;
-declare class FtxWebsocketBase extends EventEmitter {
+export = BithumbWebsocketBase;
+declare class BithumbWebsocketBase extends EventEmitter {
     static PING_INTERVAL: number;
     /**
-     * @param {import('../wallets/spot')} baseInstance
+     * @param {import('../base')} baseInstance
      */
-    constructor(baseInstance: import('../wallets/spot'));
+    constructor(baseInstance: import('../base'));
     /**
      * @type {number}
      */
@@ -13,7 +13,7 @@ declare class FtxWebsocketBase extends EventEmitter {
      * @type {import('ws').WebSocket}
      */
     socket: import('ws').WebSocket;
-    base: import("../wallets/spot");
+    base: import("../base");
     /**
      * Opens websocket connection
      *
@@ -25,7 +25,7 @@ declare class FtxWebsocketBase extends EventEmitter {
      */
     close(): this;
     handleConnectionError(err: any): void;
-    checkSocketIsConneted(): void;
+    checkSocketIsConnected(): void;
     get isSocketConnected(): boolean;
     /**
      * @param {object} msg

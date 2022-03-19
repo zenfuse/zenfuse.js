@@ -1,18 +1,19 @@
-export = BinanceBase;
+export = BithumbBase;
 /**
- * Binance base class for method which included in any wallet type
+ * Bithumb base class for method which included in any wallet type
  *
- * **DEV:** Any class what extends ExchangeBase should have same public interface
+ * @important Any class that extends ExchangeBase should have same public interface
  */
-declare class BinanceBase extends ExchangeBase {
+declare class BithumbBase extends ExchangeBase {
     /**
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options: import('../../base/exchange').BaseOptions);
     /**
-     * @type {BinanceCache}
+     * @type {BithumbCache}
      */
-    cache: BinanceCache;
+    cache: BithumbCache;
+    msgNo: number;
     /**
      * Make http request based on constructor settings
      *
@@ -24,11 +25,11 @@ declare class BinanceBase extends ExchangeBase {
     /**
      * Make authenticated http request based on constructor settings
      *
-     * @param {URL} url
+     * @param {string} url
      * @param {import('http').RequestOptions} options
-     * @returns {object};
+     * @returns {any}
      */
-    privateFetch(url: URL, options?: import('http').RequestOptions): object;
+    privateFetch(url: string, options?: import('http').RequestOptions): any;
     /**
      * Connect to authentificated API
      *
@@ -48,11 +49,11 @@ declare class BinanceBase extends ExchangeBase {
      */
     get hasKeys(): boolean;
     /**
-     * Ping binance servers
+     * Ping bithumb servers
      *
      * @public
      */
-    public ping(): Promise<any>;
+    public ping(): Promise<void>;
     /**
      * @private
      */
@@ -62,15 +63,9 @@ declare class BinanceBase extends ExchangeBase {
      * @private
      */
     private handleFetcherError;
-    /**
-     * Parses Binance symbol using cache
-     *
-     * @param {string} bSymbol Binance symbol without separator
-     * @returns {string} Normal symbol with separator
-     */
-    parseBinanceSymbol(bSymbol: string): string;
+    handleFetcherResponse(response: any): any;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");
-import BinanceCache = require("./etc/cache");
+import BithumbCache = require("./etc/cache");
 declare const keysSymbol: unique symbol;

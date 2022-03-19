@@ -1,12 +1,12 @@
-export = FtxCache;
-declare class FtxCache extends BaseGlobalCache {
+export = BithumbCache;
+declare class BithumbCache extends BaseGlobalCache {
     /**
-     * @param {FtxBase} baseInstance
+     * @param {BithumbBase} baseInstance
      */
     constructor(baseInstance: import("../base"));
     /**
-     * @typedef {import('../base')} FtxBase
-     * @type {FtxBase}
+     * @typedef {import('../base')} BithumbBase
+     * @type {BithumbBase}
      */
     base: import("../base");
     localCache: {
@@ -14,8 +14,6 @@ declare class FtxCache extends BaseGlobalCache {
     };
     /**
      * Cache order in local cache
-     *
-     * **DEV:** In some cases FTX doesnt return order from REST interface. Zenfuse return cached order.
      *
      * @param {ZenfuseOrder} order
      */

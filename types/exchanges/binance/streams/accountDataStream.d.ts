@@ -18,7 +18,7 @@ declare class AccountDataStream extends ExchangeWebsocketBase {
      * @returns {this}
      */
     close(): this;
-    get isSocketConneted(): boolean;
+    get isSocketConnected(): boolean;
     /**
      * @private
      */
@@ -47,7 +47,7 @@ declare class AccountDataStream extends ExchangeWebsocketBase {
      * Transforms websocket order from binance
      * Binance -> Zenfuse
      *
-     * @param wsOrder
+     * @param {object} wsOrder
      * @typedef {import('../../..').Order} Order
      * @private
      * @returns {Order} Zenfuse Order
