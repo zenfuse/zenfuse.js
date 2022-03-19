@@ -2,7 +2,7 @@ const HuobiSpot = require('./wallets/spot');
 
 // prettier-ignore
 /**
- * @enum {HuobiSpot}
+ * @enum {HuobiWallets}
  */
 const HuobiWallets = {
     'spot': HuobiSpot,

@@ -1,21 +1,37 @@
 const { EventEmitter } = require('events');
 const { WebSocket } = require('ws');
-const { gunzip } = require('zlib');
-const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 class HuobiWebsocketBase extends EventEmitter {
+    static PING_INTERVAL = 15000; // 15 sec
+
     /**
-     * @param {import('../base')} baseInstance
+     * @type {number}
+     */
+    pingIntervalId;
+
+    /**
+     * @type {import('ws').WebSocket}
+     */
+    socket;
+
+    /**
+     * @param {import('../wallets/spot')} baseInstance
      */
     constructor(baseInstance) {
         super();
         this.base = baseInstance;
+        this.setMaxListeners(Infinity);
     }
 
-    getSocketConnection(path) {
+    /**
+     * Opens websocket connection
+     *
+     * @returns {Promise<void>}
+     */
+    open() {
         const { wsClientOptions } = this.base.options;
 
-        const url = new URL(path, wsClientOptions.prefixUrl);
+        const url = new URL('ws/v3', wsClientOptions.prefixUrl);
 
         const socket = new WebSocket(url, wsClientOptions);
 
@@ -24,10 +40,44 @@ class HuobiWebsocketBase extends EventEmitter {
 
             socket.once('open', () => {
                 socket.removeAllListeners('error');
-                socket.on('error', this.handleConnectionError.bind(this));
-                resolve(socket);
+                this.socket = socket;
+                this.socket.on('error', this.handleConnectionError.bind(this));
+
+                this.pingIntervalId = setInterval(() => {
+                    this.socket.send('{"op": "ping"}');
+                }, HuobiWebsocketBase.PING_INTERVAL);
+
+                resolve();
             });
         });
+    }
+
+    /**
+     * @returns {this}
+     */
+    close() {
+        if (this.isSocketConneted) {
+            clearInterval(this.pingIntervalId);
+            this.socket.close();
+        }
+
+        return this;
+    }
+
+    handleConnectionError(err) {
+        throw err; // TODO: Websocket connection error
+    }
+
+    checkSocketIsConneted() {
+        if (!this.isSocketConneted) {
+            throw new Error('Socket not connected'); // TODO: Specific error
+        }
+    }
+
+    get isSocketConneted() {
+        if (!this.socket) return false;
+
+        return this.socket.readyState === WebSocket.OPEN;
     }
 
     /**
@@ -35,99 +85,11 @@ class HuobiWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg) {
-        this.checkSocketIsConnected();
+        this.checkSocketIsConneted();
 
         const msgString = JSON.stringify(msg);
 
         this.socket.send(msgString);
-    }
-
-    checkSocketIsConnected() {
-        if (!this.isSocketConnected) {
-            throw new Error('Socket not connected'); // TODO: Specific error
-        }
-    }
-
-    handleConnectionError(err) {
-        throw err; // TODO: Websocket connection error
-    }
-
-    get isSocketConnected() {
-        if (!this.socket) return false;
-
-        return this.socket.readyState === WebSocket.OPEN;
-    }
-
-    unzip(buffer) {
-        return new Promise((resolve, reject) => {
-            gunzip(buffer, (err, dezipped) => {
-                if (err) reject(err);
-
-                resolve(dezipped.toString());
-            });
-        });
-    }
-
-    /**
-     * Transforms websocket order from huobi
-     * Huobi -> Zenfuse
-     *
-     * @param {object} wsOrder
-     * @typedef {import('../../..').Order} Order
-     * @private
-     * @returns {Order} Zenfuse Order
-     */
-    transformWebsocketOrder(wsOrder) {
-        const parsedSymbol = this.base.parseHuobiSymbol(wsOrder.symbol);
-
-        //TODO: Update cached order with received order info
-        // TODO: Add type for wsOrder
-        switch (wsOrder.eventType) {
-            case 'creation':
-                return {
-                    id: wsOrder.clientOrderId,
-                    timestamp: wsOrder.orderCreateTime,
-                    status: 'open',
-                    symbol: parsedSymbol,
-                    type: wsOrder.type.split('-')[1],
-                    side: wsOrder.type.split('-')[0],
-                    price: parseFloat(wsOrder.orderPrice),
-                    quantity: parseFloat(wsOrder.orderSize),
-                };
-            case 'deletion':
-                const cachedOrder = this.base.cache.getCachedOrderById(
-                    wsOrder.clientOrderId,
-                );
-                if (!cachedOrder) {
-                    throw new ZenfuseRuntimeError(
-                        `Order with ${orderId} id does not exists`,
-                        'ZEFU_ORDER_NOT_FOUND',
-                    );
-                }
-                return {
-                    id: wsOrder.clientOrderId,
-                    timestamp: wsOrder.lastActTime,
-                    status: 'canceled',
-                    symbol: parsedSymbol,
-                    type: cachedOrder.type,
-                    side: cachedOrder.side,
-                    price: cachedOrder.price,
-                    quantity: cachedOrder.quantity,
-                };
-            case 'trade':
-                return {
-                    id: wsOrder.clientOrderId,
-                    timestamp: wsOrder.tradeTime,
-                    status: 'closed',
-                    symbol: parsedSymbol,
-                    type: wsOrder.type.split('-')[1],
-                    side: wsOrder.type.split('-')[0],
-                    price: wsOrder.tradePrice,
-                    quantity: wsOrder.tradeVolume,
-                };
-            default:
-                return;
-        }
     }
 }
 

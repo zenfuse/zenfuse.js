@@ -1,13 +1,10 @@
+const HuobiBase = require('../base');
 const mergeObjects = require('deepmerge');
 
-const utils = require('../../../base/utils/utils');
-const HuobiBase = require('../base');
+const utils = require('../utils');
+
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-
-const { timeIntervals } = require('../metadata');
-const ZenfuseUserError = require('../../../base/errors/user.error');
-const ZenfuseBaseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -25,51 +22,45 @@ class HuobiSpot extends HuobiBase {
     };
 
     /**
-     * Huobi has unique id for spot account. Which required for some requests
-     */
-    accountId;
-
-    /**
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
         const fullOptions = mergeObjects(HuobiSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
-        this.orderCount = 1;
     }
 
     /**
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const response = await this.publicFetch(
-            'v2/settings/common/currencies',
-        );
+        const markets = await this.publicFetch('api/markets');
 
-        const tickers = response.data.map((t) => t.dn);
+        // TODO: Cache update here
 
-        utils.linkOriginalPayload(tickers, response);
+        const spotMarkets = utils.extractSpotMarkets(markets.result);
+
+        const tickers = utils.extractTickersFromMarkets(spotMarkets);
+
+        utils.linkOriginalPayload(tickers, markets);
 
         return tickers;
     }
 
     /**
-     * @typedef {import('../utils/functions/agregation').structualizedMarket} structualizedMarket
-     */
-
-    /**
-     * @returns {structualizedMarket} Array of ticker pairs on this exchange
+     * @returns {string[]} Array of ticker pairs on Huobi
      */
     async fetchMarkets() {
-        const response = await this.publicFetch('v2/settings/common/symbols');
+        const response = await this.publicFetch('api/markets');
 
-        this.cache.updateCache(response);
+        // TODO: Cache update here
 
-        const markets = response.data.map((m) => {
+        const spotMarkets = utils.extractSpotMarkets(response.result);
+
+        const markets = spotMarkets.map((m) => {
             return {
-                symbol: m.dn,
-                baseTicker: m.bcdn,
-                quoteTicker: m.qcdn,
+                symbol: m.name,
+                baseTicker: m.baseCurrency,
+                quoteTicker: m.quoteCurrency,
             };
         });
 
@@ -79,115 +70,26 @@ class HuobiSpot extends HuobiBase {
     }
 
     /**
-     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
-     * @param {object} params
-     * @param {string} params.symbol
-     * @param {timeIntervals} params.interval
-     * @param {number} [params.startTime]
-     * @param {number} [params.endTime]
-     * @returns {Kline[]}
-     */
-    async fetchCandleHistory(params) {
-        this.validateCandleHistoryParams(params);
-
-        // TODO: Rework intervals
-        if (timeIntervals[params.interval] === null) {
-            throw new ZenfuseUserError(
-                `Interval ${params.interval} doesn't support Huobi. Use any of these 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w, 1M`,
-                'UNSUPPORTED_FEATURE',
-            );
-        }
-
-        const response = await this.publicFetch('market/history/kline', {
-            searchParams: {
-                symbol: params.symbol.toLowerCase().replace('/', ''),
-                period: timeIntervals[params.interval],
-                size: 2000, // Overwrite default 150 limit
-            },
-        });
-
-        const result = response.data.map((hCandle) => {
-            const zCandle = {
-                timestamp: hCandle.id * 1000,
-                open: hCandle.open,
-                high: hCandle.high,
-                low: hCandle.low,
-                close: hCandle.close,
-                volume: hCandle.vol,
-                interval: params.interval,
-                symbol: params.symbol,
-            };
-
-            utils.linkOriginalPayload(zCandle, hCandle);
-
-            return zCandle;
-        });
-
-        // NOTE: Huobi API doesn't support custom perioud fetching
-        // Trying to cut candles with user parameters
-        if (params.startTime || params.endTime) {
-            if (params.startTime && params.endTime) {
-                const isPossimbleToCut =
-                    result[0].timestamp < params.endTime &&
-                    result[result.length - 1].timestamp > params.startTime;
-
-                if (isPossimbleToCut) {
-                    return result.filter(({ timestamp }) => {
-                        return (
-                            timestamp < params.endTime &&
-                            timestamp > params.startTime
-                        );
-                    });
-                }
-            }
-
-            if (params.startTime && !params.endTime) {
-                const isPossimbleToCut =
-                    result[result.length - 1].timestamp > params.startTime;
-
-                if (isPossimbleToCut) {
-                    return result.filter(({ timestamp }) => {
-                        return timestamp > params.startTime;
-                    });
-                }
-            }
-
-            throw new ZenfuseUserError(
-                "Huobi API doesn't support custom period fetching, you see this error because zenfusejs unable to cut candles with your parameters",
-                'UNSUPPORTED_FEATURE',
-            );
-        }
-
-        utils.linkOriginalPayload(result, response);
-
-        return result;
-    }
-
-    /**
      * @typedef {object} PriceObject
      * @property {string} symbol
      * @property {number} price
      */
 
     /**
-     * **DEV:** If the symbol is not sent, prices for all symbols will be returned in an array.
+     * **NOTE:** If the symbol is not sent, prices for all symbols will be returned in an array.
      *
      * @param {string} market Ticker pair aka symbol
-     * @returns {PriceObject} Price object
+     * @returns {PriceObject} Last price
      */
-    async fetchPrice(market) {
-        let response;
+    async fetchPrice(market = '') {
+        const requestPath = market ? `api/markets/${market}` : 'api/markets';
+
+        const response = await this.publicFetch(requestPath);
 
         if (market) {
-            response = await this.publicFetch('market/detail', {
-                searchParams: {
-                    symbol: market.toLowerCase().replace('/', ''),
-                },
-            });
-
             const price = {
                 symbol: market,
-                price: response.tick.close,
+                price: response.result.price,
             };
 
             utils.linkOriginalPayload(price, response);
@@ -195,24 +97,67 @@ class HuobiSpot extends HuobiBase {
             return price;
         }
 
-        response = await this.publicFetch('market/tickers');
-
-        const prices = response.data
-            .map((t) => {
-                // NOTE: Some markets doesnt includes in list, so symbol unable to parse
-                if (!this.cache.parsedSymbols.has(t.symbol)) {
-                    return;
-                }
+        const prices = response.result
+            .filter((market) => market.type === 'spot')
+            .map((market) => {
                 return {
-                    symbol: this.parseHuobiSymbol(t.symbol),
-                    price: t.close,
+                    symbol: market.name,
+                    price: market.price || 0,
                 };
-            })
-            .filter(Boolean);
+            });
 
         utils.linkOriginalPayload(prices, response);
 
         return prices;
+    }
+
+    /**
+     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     * @typedef {import('../metadata').timeIntervals} timeIntervals
+     */
+
+    /**
+     * @param {object} params
+     * @param {string} params.symbol
+     * @param {timeIntervals} params.interval
+     * @param {number} [params.startTime]
+     * @param {number} [params.endTime]
+     * @returns {Promise<Kline[]>}
+     */
+    async fetchCandleHistory(params) {
+        this.validateCandleHistoryParams(params);
+
+        const response = await this.publicFetch(
+            `api/markets/${params.symbol}/candles`,
+            {
+                searchParams: {
+                    resolution: utils.timeIntervalToSeconds(params.interval),
+                    start_time: params.startTime,
+                    end_time: params.endTime,
+                },
+            },
+        );
+
+        const result = response.result.map((fCandle) => {
+            const zCandle = {
+                timestamp: new Date(fCandle.startTime).getTime(),
+                open: fCandle.open,
+                high: fCandle.high,
+                low: fCandle.low,
+                close: fCandle.close,
+                volume: fCandle.volume,
+                interval: params.interval,
+                symbol: params.symbol,
+            };
+
+            utils.linkOriginalPayload(zCandle, fCandle);
+
+            return zCandle;
+        });
+
+        utils.linkOriginalPayload(result, response);
+
+        return result;
     }
 
     /**
@@ -226,80 +171,21 @@ class HuobiSpot extends HuobiBase {
      */
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
-        await this.fetchAccountIdIfRequired();
 
-        const hOrder = this.transformZenfuseOrder(zOrder);
+        const fOrder = utils.transfromZenfuseOrder(zOrder);
 
-        hOrder['account-id'] = this.accountId;
-
-        hOrder['client-order-id'] = `ZENFUSE_HUOBI_ORDER_${this.orderCount}`;
-
-        this.orderCount += 1;
-
-        // NOTE: Different api for buy market order. See https://t.ly/RCzx
-        // Need to convert quantity to total
-        if (zOrder.type === 'market' && zOrder.side === 'buy') {
-            let orderTotal = null;
-
-            if (zOrder.price) {
-                orderTotal = zOrder.price * zOrder.quantity;
-            }
-
-            if (!zOrder.price) {
-                const { price } = await this.fetchPrice(zOrder.symbol);
-
-                orderTotal = price * zOrder.quantity;
-            }
-
-            hOrder.amount = orderTotal;
-        }
-
-        const response = await this.privateFetch('v1/order/orders/place', {
+        const fCreatedOrder = await this.privateFetch('api/orders', {
             method: 'POST',
-            json: hOrder,
+            json: fOrder,
         });
 
-        zOrder.timestamp = Date.now();
-        // zOrder.id = response.data.toString();
-        zOrder.id = hOrder['client-order-id'];
-        zOrder.status = 'open';
+        const zCreatedOrder = utils.transfromHuobiOrder(fCreatedOrder.result);
 
-        this.cache.cacheOrder(zOrder);
+        this.cache.cacheOrder(zCreatedOrder);
 
-        utils.linkOriginalPayload(zOrder, response);
+        utils.linkOriginalPayload(zCreatedOrder, fCreatedOrder);
 
-        return zOrder;
-    }
-
-    /**
-     * Cancel an active order
-     *
-     * @param {Order} zOrder Huobi active order to cancel
-     */
-    async cancelOrder(zOrder) {
-        const response = await this.privateFetch(
-            `v1/order/orders/submitCancelClientOrder`,
-            {
-                method: 'POST',
-                json: {
-                    'client-order-id': zOrder.id,
-                },
-            },
-        );
-
-        const cachedOrder = this.cache.getCachedOrderById(zOrder.id);
-
-        if (!cachedOrder) {
-            throw ZenfuseBaseError('ZEFU_CACHE_UNSYNC');
-        }
-
-        this.cache.deleteCachedOrderById(zOrder.id);
-
-        cachedOrder.status = 'canceled';
-
-        utils.linkOriginalPayload(cachedOrder, response);
-
-        return cachedOrder;
+        return zCreatedOrder;
     }
 
     /**
@@ -308,94 +194,40 @@ class HuobiSpot extends HuobiBase {
      * @param {string} orderId Huobi order id
      */
     async cancelOrderById(orderId) {
-        let cachedOrder = this.cache.getCachedOrderById(orderId);
+        const response = await this.privateFetch(`api/orders/${orderId}`, {
+            method: 'DELETE',
+        });
 
-        if (!cachedOrder) {
-            const openOrders = await this.fetchOpenOrders();
+        let deletedOrder = this.cache.getCachedOrderById(orderId);
 
-            const response = openOrders[Symbol.for('zenfuse.originalPayload')];
-
-            const orderToDelete = response.find((o) => {
-                return o.orderId === orderId;
-            });
-
-            if (!orderToDelete) {
-                throw new Error('Order symbol not found'); // TODO: Specific error desc
-            }
-
-            cachedOrder = orderToDelete;
+        if (!deletedOrder) {
+            deletedOrder = this.fetchOrderById(orderId);
         }
-
-        const response = await this.privateFetch(
-            `v1/order/orders/submitCancelClientOrder`,
-            {
-                method: 'POST',
-                json: {
-                    'client-order-id': orderId,
-                },
-            },
-        );
 
         this.cache.deleteCachedOrderById(orderId);
 
-        cachedOrder.status = 'canceled';
+        utils.linkOriginalPayload(deletedOrder, response);
 
-        utils.linkOriginalPayload(cachedOrder, response);
-
-        return cachedOrder;
+        return deletedOrder;
     }
 
+    // TODO: Test for this
     async fetchOpenOrders() {
-        await this.fetchAccountIdIfRequired();
-
-        const response = await this.privateFetch('v1/order/openOrders', {
-            searchParams: {
-                'account-id': this.accountId,
-            },
-        });
-
-        const openOrders = response.data.map((order) => {
-            const zOrder = this.transformHuobiOrder(order);
-            zOrder.symbol = this.parseHuobiSymbol(order.symbol);
-            return zOrder;
-        });
-
-        utils.linkOriginalPayload(openOrders, response);
-
-        return openOrders;
+        throw 'Not implemented';
     }
 
     async fetchBalances() {
-        await this.fetchAccountIdIfRequired();
+        const response = await this.privateFetch('api/wallet/balances');
 
-        const response = await this.privateFetch(
-            `v1/account/accounts/${this.accountId}/balance`,
-        );
-
-        const mapedBalances = response.data.list.reduce(
-            (map, { currency, type, balance }) => {
-                if (type === 'trade') {
-                    map.set(currency, {
-                        ticker: currency,
-                        free: parseFloat(balance),
-                        used: map.has(currency) ? map.get(currency).used : 0,
-                    });
-                }
-                if (type === 'frozen') {
-                    map.set(currency, {
-                        ticker: currency,
-                        free: map.has(currency) ? map.get(currency).free : 0,
-                        used: parseFloat(balance),
-                    });
-                }
-                return map;
-            },
-            new Map(),
-        );
-
-        const balances = Array.from(mapedBalances.values()).filter(
-            (b) => b.free > 0 || b.used > 0,
-        );
+        const balances = response.result
+            .filter((b) => b.total > 0)
+            .map((b) => {
+                return {
+                    ticker: b.coin,
+                    free: parseFloat(b.free),
+                    used: parseFloat(b.total) - parseFloat(b.free),
+                };
+            });
 
         utils.linkOriginalPayload(balances, response);
 
@@ -407,15 +239,9 @@ class HuobiSpot extends HuobiBase {
      * @param {string} orderId
      */
     async fetchOrderById(orderId) {
-        const response = await this.privateFetch(`v1/order/orders/${orderId}`);
+        const responce = await this.privateFetch(`api/orders/${orderId}`);
 
-        const zOrder = this.transformHuobiOrder(response.data);
-
-        zOrder.symbol = this.parseHuobiSymbol(response.data.symbol);
-
-        this.cache.cacheOrder(zOrder);
-
-        utils.linkOriginalPayload(zOrder, response);
+        const zOrder = utils.transfromHuobiOrder(responce.result);
 
         return zOrder;
     }
@@ -426,17 +252,6 @@ class HuobiSpot extends HuobiBase {
 
     getMarketDataStream() {
         return new MarketDataStream(this);
-    }
-
-    /**
-     * @private
-     */
-    async fetchAccountIdIfRequired() {
-        if (!this.accountId) {
-            const response = await this.privateFetch('v1/account/accounts');
-
-            this.accountId = response.data.find((a) => a.type === 'spot').id;
-        }
     }
 }
 
