@@ -138,7 +138,7 @@ class HuobiBase extends ExchangeBase {
     }
 
     /**
-     * Ping huobi servers
+     * Ping Huobi servers
      *
      * @public
      */
