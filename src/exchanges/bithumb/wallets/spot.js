@@ -242,6 +242,13 @@ class BithumbSpot extends BithumbBase {
 
     /**
      * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     */
+
+    /**
+     * **NOTE:** Not stable
+     *
+     * @see https://github.com/bithumb-pro/bithumb.pro-official-api-docs/issues/78
+     * @see https://github.com/bithumb-pro/bithumb.pro-official-api-docs/issues/67
      * @param {object} params
      * @param {string} params.symbol
      * @param {timeIntervals} params.interval
@@ -250,12 +257,25 @@ class BithumbSpot extends BithumbBase {
      * @returns {Kline[]}
      */
     async fetchCandleHistory(params) {
+        // NOTE: start and end should be in secconds
+        let start = 0;
+        let end = 0;
+
+        // TODO: Timeline defaults for 1m and 1M
+        if (!params.startTime || !params.endTime) {
+            start = Math.floor((Date.now() - 60000 * 60) / 1000);
+            end = Math.floor(Date.now() / 1000);
+        } else {
+            start = params.startTime / 1000;
+            end = params.end / 1000;
+        }
+
         const response = await this.publicFetch('spot/kline', {
             searchParams: {
                 symbol: params.symbol.replace('/', '-'),
                 interval: timeIntervals[params.interval],
-                start: params.startTime || Date.now() - 60000 * 60,
-                end: params.endTime || Date.now(),
+                start,
+                end,
             },
         });
 
