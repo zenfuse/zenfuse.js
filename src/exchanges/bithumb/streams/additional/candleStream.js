@@ -9,7 +9,7 @@ const MarketDataStream = require('../marketDataStream');
  *
  * **DEV:** This class exists only for exchanges which does not supports kline streams natively
  */
-class FtxCandleStream {
+class BithumbCandleStream {
     /**
      * User event of the stream, witch candles stream based on
      *
@@ -248,4 +248,4 @@ class FtxCandleStream {
     }
 }
 
-module.exports = FtxCandleStream;
+module.exports = BithumbCandleStream;
