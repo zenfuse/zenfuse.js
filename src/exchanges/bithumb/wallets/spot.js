@@ -257,26 +257,28 @@ class BithumbSpot extends BithumbBase {
      * @returns {Kline[]}
      */
     async fetchCandleHistory(params) {
-        // NOTE: start and end should be in secconds
+        // NOTE: `start` and `end` should be in secconds
         let start = 0;
         let end = 0;
 
         // TODO: Timeline defaults for 1m and 1M
         if (!params.startTime || !params.endTime) {
-            start = Math.floor((Date.now() - 60000 * 60) / 1000);
-            end = Math.floor(Date.now() / 1000);
+            end = new Date().setMinutes(0, 0, 0) / 1000;
+            start = end - 60 * 60; // Last hour didnt work
         } else {
-            start = params.startTime / 1000;
-            end = params.end / 1000;
+            start = Math.floor(params.startTime / 1000);
+            end = Math.floor(params.endTime / 1000);
         }
 
         const response = await this.publicFetch('spot/kline', {
             searchParams: {
                 symbol: params.symbol.replace('/', '-'),
-                interval: timeIntervals[params.interval],
+                type: timeIntervals[params.interval],
                 start,
                 end,
             },
+        }).catch((e) => {
+            e;
         });
 
         const result = response.data.map((bKline) => {
@@ -285,7 +287,7 @@ class BithumbSpot extends BithumbBase {
                 high: parseFloat(bKline.h),
                 low: parseFloat(bKline.l),
                 close: parseFloat(bKline.c),
-                timestamp: parseFloat(bKline.time),
+                timestamp: parseFloat(bKline.time) * 1000,
                 interval: params.interval,
                 symbol: params.symbol,
                 volume: parseFloat(bKline.v),

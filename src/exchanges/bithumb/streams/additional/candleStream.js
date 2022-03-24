@@ -29,7 +29,8 @@ class BithumbCandleStream {
      * @typedef {object} TradeDto
      * @property {string} p price
      * @property {string} v quantity
-     * @property {string} price
+     * @property {string} t timestamp
+     * @property {string} symbol
      * @property {'sell'|'buy'} s trade type
      */
 
@@ -39,6 +40,11 @@ class BithumbCandleStream {
      * @type {TradeDto[]}
      */
     trades = [];
+
+    /**
+     * Trades for last candlestick
+     */
+    previusTrades = [];
 
     /**
      * @returns {boolean}
@@ -74,10 +80,10 @@ class BithumbCandleStream {
 
         this.event = event;
 
-        this.previusCandle = await this.fetchLastCandle();
-
         this.intervalInMs =
             utils.timeIntervalToSeconds(this.event.interval) * 1000;
+
+        this.previusCandle = await this.fetchLastCandle();
 
         const candleOpenTime = this.previusCandle.timestamp + this.intervalInMs;
 
@@ -87,9 +93,8 @@ class BithumbCandleStream {
         this.trades = await this.fetchCurrentTrades(candleOpenTime);
 
         this.parentStream.sendSocketMessage({
-            op: 'subscribe',
-            channel: 'trades',
-            market: event.symbol,
+            cmd: 'subscribe',
+            args: ['TRADE:' + event.symbol.replace('/', '-')],
         });
     }
 
@@ -104,9 +109,8 @@ class BithumbCandleStream {
         }
 
         this.parentStream.sendSocketMessage({
-            op: 'unsubscribe',
-            channel: 'trades',
-            market: this.event.symbol,
+            cmd: 'unSubscribe',
+            args: ['TRADE:' + this.event.symbol.replace('/', '-')],
         });
 
         this.event = null;
@@ -123,7 +127,7 @@ class BithumbCandleStream {
         });
 
         return history.filter(
-            (trade) => new Date(trade.time).getTime() > fromTime,
+            (trade) => new Date(trade.t).getTime() > fromTime,
         );
     }
 
@@ -132,69 +136,79 @@ class BithumbCandleStream {
      */
     async fetchTradesHistory() {
         return await this.parentStream.base
-            .publicFetch(`api/markets/${this.event.symbol}/trades`)
-            .then((res) => res.result);
+            .publicFetch(`spot/trades`, {
+                searchParams: {
+                    symbol: this.event.symbol.replace('/', '-'),
+                },
+            })
+            .then((res) => {
+                return res.data;
+            })
+            .catch((e) => {
+                e;
+            });
     }
 
     async fetchLastCandle() {
+        const endTime = Date.now();
+        const startTime = endTime - this.intervalInMs;
+
         return await this.parentStream.base
             .fetchCandleHistory({
                 symbol: this.event.symbol,
                 interval: this.event.interval,
-                // TODO: Find way to fetch 1 candle using startTime
-                // WARN: Pain here
-                // startTime: baseTime - 60000 * 15,
-                // endTime: baseTime - 60000aqweotruciqpwtcqwtc
+                startTime,
+                endTime,
             })
             .catch((e) => {
                 throw e;
             })
-            // IDEA: Using chonky response for historical chart data
             .then((candles) => {
                 return candles.pop();
             });
     }
 
     serverPayloadHandler(payload) {
+        if (!payload.data) return;
+
         const isRelevantTrade =
-            payload.channel === 'trades' &&
-            payload.type === 'update' &&
-            payload.market === this.event.symbol;
+            payload.topic === 'TRADE' &&
+            payload.data.symbol === this.event.symbol.replace('/', '-');
+
+        require('inspector').console.log(payload);
 
         if (isRelevantTrade) {
-            this.handleNewTrades(payload.data);
+            this.handleNewTrade(payload.data);
         }
     }
 
     /**
-     * @param {TradeDto[]} trades
+     * @param {TradeDto} trade
      */
-    handleNewTrades(trades) {
-        const nextTrades = trades.filter(
-            (trade) =>
-                new Date(trade.time).getTime() > this.currentCandle.closeAt,
-        );
+    handleNewTrade(trade) {
+        const timestamp = parseFloat(trade.t) * 1000;
 
-        const actualTrades = trades.filter(
-            (trade) =>
-                new Date(trade.time).getTime() < this.currentCandle.closeAt,
-        );
+        const isCurrentCandle = timestamp < this.currentCandle.closeAt;
 
-        this.trades.push(...actualTrades);
-
-        if (nextTrades.length === 0) {
+        if (isCurrentCandle) {
+            this.trades.push(trade);
             this.emitNewCandleStatus({ isClosed: false });
         }
 
-        if (nextTrades.length > 0) {
+        if (!isCurrentCandle) {
+            if (this.previusTrades.length === 0) {
+                this.previusTrades.push(trade);
+            }
             this.emitNewCandleStatus({ isClosed: true });
-            this.trades = nextTrades;
             this.onCloseCandle();
+            this.trades.push(trade);
             this.emitNewCandleStatus({ isClosed: false });
         }
     }
 
     onCloseCandle() {
+        this.previusTrades = this.trades;
+        this.trades = [];
         this.previusCandle = this.currentCandle;
         this.currentCandle = {};
         this.currentCandle.timestamp = this.previusCandle.closeAt;
@@ -203,9 +217,15 @@ class BithumbCandleStream {
     }
 
     emitNewCandleStatus(additional) {
-        const open = this.trades[0].price;
+        if (this.trades.length === 0) {
+            // Using last trade
+            this.trades = this.previusTrades[this.previusTrades.length - 1];
+        }
 
-        const high = this.trades.reduce((acc, { price }) => {
+        const open = parseFloat(this.trades[0].p);
+
+        const high = this.trades.reduce((acc, { p }) => {
+            const price = parseFloat(p);
             if (price > acc) {
                 return price;
             } else {
@@ -213,7 +233,8 @@ class BithumbCandleStream {
             }
         }, open);
 
-        const low = this.trades.reduce((acc, { price }) => {
+        const low = this.trades.reduce((acc, { p }) => {
+            const price = parseFloat(p);
             if (price < acc) {
                 return price;
             } else {
@@ -222,12 +243,13 @@ class BithumbCandleStream {
         }, open);
 
         const lastTrade = this.trades[this.trades.length - 1];
-        const close = lastTrade.price;
+        const close = parseFloat(lastTrade.p);
 
-        const volume = this.trades.reduce(
-            (acc, { size, price }) => price * size + acc,
-            0,
-        );
+        const volume = this.trades.reduce((acc, { v, p }) => {
+            const price = parseFloat(p);
+            const size = parseFloat(v);
+            return price * size + acc;
+        }, 0);
 
         const candle = {
             symbol: this.event.symbol,

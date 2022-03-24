@@ -62,7 +62,9 @@ class BithumbBase extends ExchangeBase {
      * @returns {object};
      */
     async publicFetch(url, options = {}) {
-        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        return await this.fetcher(url, options)
+            .then(this.handleUnexpectedResponse)
+            .catch(this.handleFetcherError);
     }
 
     /**
@@ -108,10 +110,9 @@ class BithumbBase extends ExchangeBase {
 
         this.msgNo += 1;
 
-        return await this.fetcher(url, options).then(
-            this.handleFetcherResponse,
-            this.handleFetcherError,
-        );
+        return await this.fetcher(url, options)
+            .then(this.handleUnexpectedResponse)
+            .catch(this.handleFetcherError);
     }
 
     /**
@@ -172,7 +173,7 @@ class BithumbBase extends ExchangeBase {
         throw err;
     }
 
-    handleFetcherResponse(response) {
+    handleUnexpectedResponse(response) {
         if (parseFloat(response.code) > 0) {
             throw new BithumbApiError(response);
         }

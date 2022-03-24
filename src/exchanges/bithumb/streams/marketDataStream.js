@@ -2,8 +2,14 @@ const debug = require('../../../base/etc/debug');
 const utils = require('../utils');
 
 const BithumbWebsocketBase = require('./websocketBase');
+const CandleStream = require('./additional/candleStream');
 
 class MarketDataStream extends BithumbWebsocketBase {
+    /**
+     * @type {Map<WebsocketEvent, CandleStream>}
+     */
+    candleStreams = new Map();
+
     /**
      * @param {import('../base')} baseInstance
      */
@@ -68,7 +74,48 @@ class MarketDataStream extends BithumbWebsocketBase {
             });
         }
 
+        if (event.channel === 'candle') {
+            if (command === 'subscribe') {
+                await this.setupCandleStream(event);
+            }
+            if (command === 'unsubscribe') {
+                await this.unsetupCandleStream(event);
+            }
+            return;
+        }
+
         throw new Error('Uknown channel name ' + event.channel);
+    }
+
+    /**
+     * @private
+     * @param {WebsocketEvent} event Candle stream event subscribtion
+     */
+    async setupCandleStream(event) {
+        if (this.candleStreams.has(event)) {
+            return; // Alredy registered
+        }
+
+        const candleStream = new CandleStream(this);
+
+        await candleStream.register(event);
+
+        this.candleStreams.set(event, candleStream);
+    }
+
+    /**
+     * @param {WebsocketEvent} event Candle stream event subscribtion
+     */
+    async unsetupCandleStream(event) {
+        const candleStream = this.candleStreams.get(event);
+
+        if (!candleStream) {
+            return; // Nothing to unregister
+        }
+
+        await candleStream.unregister();
+
+        this.candleStreams.delete(event);
     }
 
     // TODO: Save all subscribition

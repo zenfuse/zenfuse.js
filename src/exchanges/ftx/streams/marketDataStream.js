@@ -96,6 +96,7 @@ class MarketDataStream extends FtxWebsocketBase {
     }
 
     /**
+     * @private
      * @param {WebsocketEvent} event Candle stream event subscribtion
      */
     async setupCandleStream(event) {
