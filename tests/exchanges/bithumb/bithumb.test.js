@@ -3,9 +3,9 @@ const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
 const { Bithumb } = require('zenfuse');
 
-// if (isEnd2EndTest) {
-//     checkProcessHasVariables(['BITHUMB_PUBLIC_KEY', 'BITHUMB_SECRET_KEY']);
-// }
+if (isEnd2EndTest) {
+    checkProcessHasVariables(['BITHUMB_PUBLIC_KEY', 'BITHUMB_SECRET_KEY']);
+}
 
 /**
  * @type {import('../../master.test').MasterTestEnvironment}
