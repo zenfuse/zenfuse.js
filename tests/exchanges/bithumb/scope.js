@@ -69,7 +69,7 @@ module.exports = (env) => ({
                 .get('/openapi/v1/spot/kline')
                 .query((q) => {
                     expect(q.symbol).toBe('BTC-USDT');
-                    expect(q.interval).toBe('m1');
+                    expect(q.type).toBe('m1');
                     expect(q.start).toBeDefined();
                     expect(q.end).toBeDefined();
                     return true;
