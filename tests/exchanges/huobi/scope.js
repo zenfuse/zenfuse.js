@@ -16,9 +16,10 @@ module.exports = (env) => ({
     root: null,
     'Spot Wallet HTTP interface': {
         'ping()': () =>
-            nock(HOSTNAME)
-                .get('/api')
-                .reply(200, { success: true, result: true }),
+            nock(HOSTNAME).get('/v1/common/timestamp').reply(200, {
+                status: 'ok',
+                data: 1629715504949,
+            }),
         'fetchMarkets()': () =>
             nock(HOSTNAME)
                 .get('/api/markets')

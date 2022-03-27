@@ -1,9 +1,16 @@
-const { createHmac } = require('crypto');
+const WebSocket = require('ws');
+const ExchangeWebsocketBase = require('./websocketBase');
 
-const utils = require('../utils');
-const HuobiWebsocketBase = require('./websocketBase');
+const listenKeySymbol = Symbol('listenKey');
+const validUntilSymbol = Symbol('validUntil');
+const intervalSymbol = Symbol('interval');
 
-class AccountDataStream extends HuobiWebsocketBase {
+class AccountDataStream extends ExchangeWebsocketBase {
+    /**
+     * Time interval when zenfuse should revalidate listen key
+     */
+    static REVALIDATE_INTERVAL = 1_800_000; // 30min
+
     /**
      * @type {import('ws').WebSocket}
      */
@@ -14,6 +21,9 @@ class AccountDataStream extends HuobiWebsocketBase {
      */
     constructor(baseInstance) {
         super(baseInstance);
+
+        this[listenKeySymbol] = null;
+        this[validUntilSymbol] = null;
     }
 
     /**
@@ -21,49 +31,137 @@ class AccountDataStream extends HuobiWebsocketBase {
      * @returns {this}
      */
     async open() {
-        await super.open();
+        const listenKey = await this.fetchListenKey();
+
+        this[listenKeySymbol] = listenKey;
+
+        this.socket = await this.getSocketConnection(`/ws/${listenKey}`);
+
+        this.createRevalidateInterval();
 
         this.socket.on('message', this.serverMessageHandler.bind(this));
 
-        const keysSymbol = Symbol.for('zenfuse.keyVault');
-        const { publicKey, privateKey } = this.base[keysSymbol];
-        const timestamp = Date.now();
-        const signature = createHmac('sha256', privateKey)
-            .update(`${timestamp}websocket_login`)
-            .digest('hex');
+        return this;
+    }
 
-        this.sendSocketMessage({
-            op: 'login',
-            args: {
-                key: publicKey,
-                sign: signature,
-                time: timestamp,
+    /**
+     *
+     * @returns {this}
+     */
+    close() {
+        if (this.isSocketConneted) {
+            this.socket.close();
+        }
+
+        this.stopInterval();
+        return this;
+    }
+
+    get isSocketConneted() {
+        if (!this.socket) return false;
+
+        return this.socket.readyState === WebSocket.OPEN;
+    }
+
+    /**
+     * @private
+     */
+    async fetchListenKey() {
+        const { listenKey } = await this.base.publicFetch(
+            'api/v3/userDataStream',
+            {
+                method: 'POST',
+            },
+        );
+
+        return listenKey;
+    }
+
+    /**
+     * @private
+     */
+    createRevalidateInterval() {
+        this[intervalSymbol] = setInterval(
+            this.extendListenKey.bind(this),
+            AccountDataStream.REVALIDATE_INTERVAL,
+        );
+    }
+
+    /**
+     * @private
+     */
+    stopInterval() {
+        clearInterval(this[intervalSymbol]);
+    }
+
+    /**
+     * @private
+     */
+    async extendListenKey() {
+        await this.base.publicFetch('/api/v3/userDataStream', {
+            method: 'PUT',
+            searchParams: {
+                listenKey: this[listenKeySymbol],
             },
         });
 
-        this.sendSocketMessage({ op: 'subscribe', channel: 'orders' });
+        this.extendValidityTime();
+    }
 
-        return this;
+    /**
+     * @private
+     */
+    extendValidityTime() {
+        this._validUntil = Date.now() + 3_600_000; // 60min
+    }
+
+    checkSocketIsConneted() {
+        if (!this.isSocketConneted) {
+            throw new Error('Socket not connected'); // TODO: Specific error
+        }
     }
 
     serverMessageHandler(msgString) {
         const payload = JSON.parse(msgString);
 
-        if (payload.type === 'update') {
-            if (payload.channel === 'orders') {
-                this.emitOrderUpdateEvent(payload);
-            }
+        const eventName = payload.e;
+
+        if (eventName === 'executionReport') {
+            this.emitOrderUpdateEvent(payload);
         }
 
         this.emit('payload', payload);
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transfromHuobiOrder(payload.data);
-
-        utils.linkOriginalPayload(order, payload);
-
+        const order = this.transfromWebsocketOrder(payload);
         this.emit('orderUpdate', order);
+    }
+
+    /**
+     * Transforms websocket order from huobi
+     * Huobi -> Zenfuse
+     *
+     * @param {object} wsOrder
+     * @typedef {import('../../..').Order} Order
+     * @private
+     * @returns {Order} Zenfuse Order
+     */
+    transfromWebsocketOrder(wsOrder) {
+        const parsedSymbol = this.base.parseHuobiSymbol(wsOrder.s);
+
+        // TODO: Add type for wsOrder
+
+        return {
+            id: wsOrder.i.toString(),
+            timestamp: wsOrder.E,
+            status: wsOrder.X.toLowerCase(),
+            symbol: parsedSymbol,
+            type: wsOrder.o.toLowerCase(),
+            side: wsOrder.S.toLowerCase(),
+            price: parseFloat(wsOrder.p),
+            quantity: parseFloat(wsOrder.q),
+        };
     }
 }
 

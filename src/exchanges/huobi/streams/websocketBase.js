@@ -1,37 +1,19 @@
 const { EventEmitter } = require('events');
 const { WebSocket } = require('ws');
 
-class HuobiWebsocketBase extends EventEmitter {
-    static PING_INTERVAL = 15000; // 15 sec
-
+class ExchangeWebsocketBase extends EventEmitter {
     /**
-     * @type {number}
-     */
-    pingIntervalId;
-
-    /**
-     * @type {import('ws').WebSocket}
-     */
-    socket;
-
-    /**
-     * @param {import('../wallets/spot')} baseInstance
+     * @param {import('../base')} baseInstance
      */
     constructor(baseInstance) {
         super();
         this.base = baseInstance;
-        this.setMaxListeners(Infinity);
     }
 
-    /**
-     * Opens websocket connection
-     *
-     * @returns {Promise<void>}
-     */
-    open() {
+    getSocketConnection(path) {
         const { wsClientOptions } = this.base.options;
 
-        const url = new URL('ws/v3', wsClientOptions.prefixUrl);
+        const url = new URL(path, wsClientOptions.prefixUrl);
 
         const socket = new WebSocket(url, wsClientOptions);
 
@@ -40,57 +22,15 @@ class HuobiWebsocketBase extends EventEmitter {
 
             socket.once('open', () => {
                 socket.removeAllListeners('error');
-                this.socket = socket;
-                this.socket.on('error', this.handleConnectionError.bind(this));
-
-                this.pingIntervalId = setInterval(() => {
-                    this.socket.send('{"op": "ping"}');
-                }, HuobiWebsocketBase.PING_INTERVAL);
-
-                resolve();
+                socket.on('error', this.handleConnectionError.bind(this));
+                resolve(socket);
             });
         });
-    }
-
-    /**
-     * @returns {this}
-     */
-    close() {
-        if (this.isSocketConneted) {
-            clearInterval(this.pingIntervalId);
-            this.socket.close();
-        }
-
-        return this;
     }
 
     handleConnectionError(err) {
         throw err; // TODO: Websocket connection error
     }
-
-    checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
-            throw new Error('Socket not connected'); // TODO: Specific error
-        }
-    }
-
-    get isSocketConneted() {
-        if (!this.socket) return false;
-
-        return this.socket.readyState === WebSocket.OPEN;
-    }
-
-    /**
-     * @param {object} msg
-     * @returns {void}
-     */
-    sendSocketMessage(msg) {
-        this.checkSocketIsConneted();
-
-        const msgString = JSON.stringify(msg);
-
-        this.socket.send(msgString);
-    }
 }
 
-module.exports = HuobiWebsocketBase;
+module.exports = ExchangeWebsocketBase;
