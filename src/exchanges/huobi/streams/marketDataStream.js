@@ -1,37 +1,46 @@
 const debug = require('../../../base/etc/debug');
 const utils = require('../utils');
+const RuntimeError = require('../../../base/errors/runtime.error');
 
 const HuobiWebsocketBase = require('./websocketBase');
-const CandleStream = require('./additional/candleStream');
-
-/**
- * @typedef {object} WebsocketEvent
- * @property {string} channel
- * @property {string} symbol
- * @property {string} [interval] Required if channel is kline
- * @param {WebsocketEvent} event
- */
 
 class MarketDataStream extends HuobiWebsocketBase {
-    /**
-     * @param {import('../wallets/spot')} baseInstance
-     */
-    constructor(baseInstance) {
-        super(baseInstance);
-    }
+    lastPayloadId = 0;
 
     /**
-     * @type {Map<WebsocketEvent, CandleStream>}
+     * @type {import('ws').WebSocket}
      */
-    candleStreams = new Map();
+    socket;
+
+    /**
+     * Messages that are waiting for a response with a specific id
+     *
+     * @type {Map<string, [typeof Promise.resolve, typeof Promise.reject]>}
+     */
+    messageQueue = new Map();
+
+    /**
+     *
+     */
+    state = {
+        watch: new Set(),
+    };
+
+    /**
+     * @param {import('../base')} baseInstance
+     */
+    constructor(baseInstance) {
+        super();
+        this.base = baseInstance;
+
+        this.setMaxListeners(Infinity);
+    }
 
     /**
      * @returns {this}
      */
     async open() {
-        if (this.isSocketConneted) return this;
-
-        await super.open();
+        this.socket = await this.getSocketConnection('ws');
 
         this.socket.addEventListener(
             'message',
@@ -42,14 +51,23 @@ class MarketDataStream extends HuobiWebsocketBase {
     }
 
     /**
-     * @param {WebsocketEvent} event
+     *
+     * @returns {this}
      */
+    close() {
+        if (this.isSocketConneted) {
+            this.socket.close();
+        }
+
+        return this;
+    }
+
     async subscribeTo(event) {
         return await this.editSubscribition(event, 'subscribe');
     }
 
     /**
-     * @param {WebsocketEvent} event
+     * @param {string|WebsocketEvent} event
      */
     async unsubscribeFrom(event) {
         return await this.editSubscribition(event, 'unsubscribe');
@@ -57,77 +75,72 @@ class MarketDataStream extends HuobiWebsocketBase {
 
     /**
      * @private
-     * @param {WebsocketEvent} arg
+     * @typedef {object} WebsocketEvent
+     * @property {string} channel
+     * @property {string} symbol
+     * @property {string} [interval] Required if channel is candle
+     * @param {WebsocketEvent} event
      * @param {'subscribe'|'unsubscribe'} command
      */
-    async editSubscribition(arg, command) {
-        const isJustSymbol = typeof arg === 'string';
-
-        /**
-         * @type {WebsocketEvent}
-         */
-        let event = {};
-
-        if (isJustSymbol) {
-            throw 'Not implemented'; // TODO: Full symbol subscribition
-        } else {
-            event = arg;
+    async editSubscribition(event, command) {
+        if (!['subscribe', 'unsubscribe'].includes(command)) {
+            throw new TypeError('Uknown command ' + command);
         }
 
         if (event.channel === 'price') {
-            return this.sendSocketMessage({
-                op: command,
-                channel: 'ticker',
-                market: event.symbol,
-            });
+            const symbol = utils
+                .transformMarketString(event.symbol)
+                .toLowerCase();
+
+            if (command === 'subscribe') {
+                await this.sendSocketSubscribe(`${symbol}@kline_1m`);
+                return;
+            }
+
+            if (command === 'unsubscribe') {
+                await this.sendSocketUnsubscribe(`${symbol}@kline_1m`);
+                return;
+            }
         }
 
         if (event.channel === 'candle') {
+            const symbol = utils
+                .transformMarketString(event.symbol)
+                .toLowerCase();
+
             if (command === 'subscribe') {
-                await this.setupCandleStream(event);
+                await this.sendSocketSubscribe(
+                    `${symbol}@kline_${event.interval}`,
+                );
+                return;
             }
+
             if (command === 'unsubscribe') {
-                await this.unsetupCandleStream(event);
+                await this.sendSocketUnsubscribe(
+                    `${symbol}@kline_${event.interval}`,
+                );
+                return;
             }
-            return;
         }
 
-        throw new Error('Uknown channel name ' + event.channel);
+        throw new TypeError(`Uknown channel name ${event.channel}`);
     }
 
-    /**
-     * @param {WebsocketEvent} event Candle stream event subscribtion
-     */
-    async setupCandleStream(event) {
-        if (this.candleStreams.has(event)) {
-            return; // Alredy registered
-        }
+    async unsubscribeFromAllbySymbol(symbol) {
+        const symbolToDelete = utils
+            .transformMarketString(symbol)
+            .toLowerCase();
 
-        const candleStream = new CandleStream(this);
+        const requestPayload = {
+            method: 'LIST_SUBSCRIPTIONS',
+            id: this.createPayloadId(),
+        };
 
-        await candleStream.register(event);
+        const allSubs = await this.sendSocketMessage(requestPayload);
 
-        this.candleStreams.set(event, candleStream);
-    }
+        const subsToDelete = allSubs.filter((a) => a.includes(symbolToDelete));
 
-    /**
-     * @param {WebsocketEvent} event Candle stream event subscribtion
-     */
-    async unsetupCandleStream(event) {
-        const candleStream = this.candleStreams.get(event);
-
-        if (!candleStream) {
-            return; // Nothing to unregister
-        }
-
-        await candleStream.unregister();
-
-        this.candleStreams.delete(event);
-    }
-
-    // TODO: Sav8sde all subscribition
-    async unsubscribeFromAllbySymbol() {
-        throw 'Not implemented';
+        await this.sendSocketUnsubscribe(...subsToDelete);
     }
 
     /**
@@ -135,43 +148,94 @@ class MarketDataStream extends HuobiWebsocketBase {
      * @param {import('ws').MessageEvent} msgEvent
      */
     serverMessageHandler(msgEvent) {
-        const payload = JSON.parse(msgEvent.data);
+        let payload;
+
+        try {
+            payload = JSON.parse(msgEvent.data);
+        } catch (error) {
+            this.emit('error', error);
+            debug.error(error);
+            return;
+        }
+
         this.emit('payload', payload);
 
-        if (payload.type === 'update') {
-            if (payload.channel === 'ticker') {
-                this.emitNewPrice(payload);
+        if (payload.id) {
+            // this message is response for specific request
+            if (!this.messageQueue.has(payload.id)) {
+                throw new RuntimeError(
+                    'Huobi MarketDataStream mesage queue unsynced',
+                );
             }
+
+            const [resolve, reject] = this.messageQueue.get(payload.id);
+
+            const isErrorMsg = !!payload.code; // code value has only error payload on binance
+
+            if (isErrorMsg) {
+                reject(payload.msg);
+                return;
+            }
+
+            resolve(payload.result);
+            return;
         }
+
+        if (payload.e === 'kline') {
+            this.emitNewPrice(payload);
+            this.emitCandle(payload);
+        }
+    }
+
+    /**
+     * @fires MarketDataStream#newPrice
+     * @param {*} payload
+     */
+    emitNewPrice(payload) {
+        const kline = utils.transfornCandlestick(payload.k);
+        const parsedSymbol = this.base.parseHuobiSymbol(kline.symbol);
+
+        debug.log('Emit "price" Event');
+        debug.log(kline);
+
+        // TODO: Return type
+        this.emit('newPrice', {
+            symbol: parsedSymbol,
+            price: parseFloat(kline.close),
+            timestamp: kline.timestamp,
+        });
     }
 
     /**
      * @fires MarketDataStream#kline
      * @param {*} payload
      */
-    emitNewPrice(payload) {
-        const priceObject = {
-            symbol: payload.market,
-            price: payload.data.last,
-            timestamp: payload.data.time,
+    emitCandle(payload) {
+        const kline = utils.transfornCandlestick(payload.k);
+
+        kline.symbol = this.base.parseHuobiSymbol(kline.symbol);
+
+        debug.log('Emit "candle" Event');
+        debug.log(kline);
+
+        this.emit('candle', kline);
+    }
+
+    /**
+     * @private
+     * @param  {...string} eventNames
+     * @returns {Promise<object>} Server responce
+     */
+    async sendSocketSubscribe(...eventNames) {
+        this.checkSocketIsConneted();
+
+        const payload = {
+            method: 'SUBSCRIBE',
+            params: [...eventNames],
+            id: this.createPayloadId(),
         };
 
-        utils.linkOriginalPayload(priceObject, payload);
-
-        debug.log('Emit "newPrice" Event');
-        debug.log(priceObject);
-
-        /**
-         * Event represent new
-         *
-         * @event MarketDataStream#newPrice
-         * @type {{
-         *      symbol: string,
-         *      price: number,
-         *      timestamp: number
-         * }}
-         */
-        this.emit('newPrice', priceObject);
+        return await this.sendSocketMessage(payload);
     }
 
     /**
@@ -193,6 +257,41 @@ class MarketDataStream extends HuobiWebsocketBase {
         };
 
         return await this.sendSocketMessage(payload);
+    }
+
+    /**
+     * @param {object} msg
+     * @returns {Promise<object>}
+     */
+    sendSocketMessage(msg) {
+        // TODO: Rename this shit
+        this.checkSocketIsConneted();
+
+        const msgString = JSON.stringify(msg);
+
+        this.socket.send(msgString);
+
+        debug.log('-> OUT');
+        debug.log(msg);
+
+        return new Promise((resolve, reject) => {
+            this.messageQueue.set(msg.id, [resolve, reject]);
+        });
+    }
+
+    /**
+     * @private
+     * @returns {number} Actual payload id
+     */
+    createPayloadId() {
+        this.lastPayloadId = ++this.lastPayloadId;
+        return this.lastPayloadId;
+    }
+
+    get isSocketConneted() {
+        if (!this.socket) return false;
+
+        return this.socket.readyState === 1;
     }
 
     checkSocketIsConneted() {
