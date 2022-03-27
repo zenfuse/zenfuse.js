@@ -3,7 +3,7 @@ const nock = require('nock');
 const HOSTNAME = 'https://api.huobi.pro';
 
 const marketsFilePath = __dirname + '/mocks/static/markets.json';
-const historyFilePath = __dirname + '/mocks/static/history.json';
+const tickersFilePath = __dirname + '/mocks/static/tickers.json';
 
 /**
  * HTTP mocking scope for FTX master test
@@ -22,13 +22,13 @@ module.exports = (env) => ({
             }),
         'fetchMarkets()': () =>
             nock(HOSTNAME)
-                .get('/api/markets')
+                .get('/v2/settings/common/symbols')
                 .replyWithFile(200, marketsFilePath, {
                     'Content-Type': 'application/json',
                 }),
         'fetchTickers()': () =>
             nock(HOSTNAME)
-                .get('/api/markets')
+                .get('/v2/settings/common/currencies')
                 .replyWithFile(200, marketsFilePath, {
                     'Content-Type': 'application/json',
                 }),
@@ -71,7 +71,7 @@ module.exports = (env) => ({
                 .query({
                     resolution: 60,
                 })
-                .replyWithFile(200, historyFilePath, {
+                .replyWithFile(200, tickersFilePath, {
                     'Content-Type': 'application/json',
                 }),
         'createOrder()': {

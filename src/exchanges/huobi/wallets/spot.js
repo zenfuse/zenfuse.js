@@ -58,15 +58,21 @@ class HuobiSpot extends HuobiBase {
      * @returns {structualizedMarket} Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
-        const response = await this.publicFetch(
-            'v2/settings/common/currencies',
-        );
+        const response = await this.publicFetch('v2/settings/common/symbols');
 
         // this.cache.updateCache(response);
 
-        const tickers = {};
+        const markets = response.data.map((m) => {
+            return {
+                symbol: m.dn,
+                baseTicker: m.bcdn,
+                quoteTicker: m.qcdn,
+            };
+        });
 
-        return tickers;
+        utils.linkOriginalPayload(markets, response);
+
+        return markets;
     }
 
     /**
