@@ -16,19 +16,19 @@ class HuobiCache extends BaseGlobalCache {
         this.localCache = {
             openOrders: new Map(),
         };
-        this.updateSelfIfRequired();
+        // this.updateSelfIfRequired();
     }
 
-    updateSelfIfRequired() {
-        // If cache updating in progress
-        if (this.globalCache.updatingPromise) return;
+    // updateSelfIfRequired() {
+    //     // If cache updating in progress
+    //     if (this.globalCache.updatingPromise) return;
 
-        if (this.isExpired) {
-            this.globalCache.updatingPromise = this.base
-                .publicFetch('api/v3/exchangeInfo')
-                .then(this.updateCache.bind(this));
-        }
-    }
+    //     if (this.isExpired) {
+    //         this.globalCache.updatingPromise = this.base
+    //             .publicFetch('api/v3/exchangeInfo')
+    //             .then(this.updateCache.bind(this));
+    //     }
+    // }
 
     /**
      * Array of all binance tickers
