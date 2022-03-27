@@ -37,15 +37,15 @@ class HuobiSpot extends HuobiBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const exchangeInfo = await this.publicFetch('api/v3/exchangeInfo');
+        const response = await this.publicFetch(
+            'v2/settings/common/currencies',
+        );
 
-        this.cache.updateCache(exchangeInfo);
+        // this.cache.updateCache(response);
 
-        const spotMarkets = utils.extractSpotMarkets(exchangeInfo.symbols);
+        const tickers = response.data.map((t) => t.dn);
 
-        const tickers = utils.extractTickersFromSymbols(spotMarkets);
-
-        utils.linkOriginalPayload(tickers, exchangeInfo);
+        utils.linkOriginalPayload(tickers, response);
 
         return tickers;
     }
@@ -58,17 +58,15 @@ class HuobiSpot extends HuobiBase {
      * @returns {structualizedMarket} Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
-        const exchangeInfo = await this.publicFetch('api/v3/exchangeInfo');
+        const response = await this.publicFetch(
+            'v2/settings/common/currencies',
+        );
 
-        this.cache.updateCache(exchangeInfo);
+        // this.cache.updateCache(response);
 
-        const spotMarkets = utils.extractSpotMarkets(exchangeInfo.symbols);
+        const tickers = {};
 
-        const markets = utils.structualizeMarkets(spotMarkets);
-
-        utils.linkOriginalPayload(markets, exchangeInfo);
-
-        return markets;
+        return tickers;
     }
 
     /**
