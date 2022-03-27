@@ -134,7 +134,7 @@ class HuobiBase extends ExchangeBase {
      * @public
      */
     async ping() {
-        return await this.publicFetch('api/v3/ping');
+        return await this.publicFetch('v1/common/timestamp');
     }
 
     /**
