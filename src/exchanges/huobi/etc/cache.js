@@ -2,36 +2,36 @@ const BaseGlobalCache = require('../../../base/etc/cache');
 
 class HuobiCache extends BaseGlobalCache {
     /**
-     * @typedef {import('../base')} BinanceBase
-     * @type {BinanceBase}
+     * @typedef {import('../base')} HuobiBase
+     * @type {HuobiBase}
      */
     base;
 
     /**
-     * @param {BinanceBase} baseInstance
+     * @param {HuobiBase} baseInstance
      */
     constructor(baseInstance) {
-        super('binance');
+        super('huobi');
         this.base = baseInstance;
         this.localCache = {
             openOrders: new Map(),
         };
-        // this.updateSelfIfRequired();
+        this.updateSelfIfRequired();
     }
 
-    // updateSelfIfRequired() {
-    //     // If cache updating in progress
-    //     if (this.globalCache.updatingPromise) return;
+    updateSelfIfRequired() {
+        // If cache updating in progress
+        if (this.globalCache.updatingPromise) return;
 
-    //     if (this.isExpired) {
-    //         this.globalCache.updatingPromise = this.base
-    //             .publicFetch('api/v3/exchangeInfo')
-    //             .then(this.updateCache.bind(this));
-    //     }
-    // }
+        if (this.isExpired) {
+            this.globalCache.updatingPromise = this.base
+                .publicFetch('v2/settings/common/currencies')
+                .then(this.updateCache.bind(this));
+        }
+    }
 
     /**
-     * Array of all binance tickers
+     * Array of all huobi tickers
      *
      * @type {string[]}
      */
@@ -41,7 +41,7 @@ class HuobiCache extends BaseGlobalCache {
     }
 
     /**
-     * Array of all binance ticker pairs
+     * Array of all huobi ticker pairs
      *
      * @type {string[]}
      */
@@ -62,8 +62,6 @@ class HuobiCache extends BaseGlobalCache {
 
     /**
      * Cache order in local cache
-     *
-     * **DEV:** Binance requires order symbol for many requests. So we should cache orders to delete it just by id.
      *
      * @param {ZenfuseOrder} order
      */
@@ -92,21 +90,17 @@ class HuobiCache extends BaseGlobalCache {
     /**
      * Updating global cache using raw huobi data
      *
-     * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint
+     * @param {*} rawMarkets Data from `api/v3/exchangeInfo` endpoint
      */
-    updateCache(exchageInfo) {
+    updateCache(rawMarkets) {
         let tickers = new Set();
         let symbols = new Set();
 
-        // Fill tickers
-        exchageInfo.symbols.forEach((s) => {
-            tickers.add(s.baseAsset);
-            tickers.add(s.quoteAsset);
-        });
-
-        // Fill symbols
-        exchageInfo.symbols.forEach((s) => {
-            symbols.add(s.symbol);
+        // Fill tickers and symbols
+        rawMarkets.data.forEach((m) => {
+            tickers.add(m.bc);
+            tickers.add(m.qc);
+            symbols.add(m.sc);
         });
 
         tickers = [...tickers];
@@ -130,7 +124,10 @@ class HuobiCache extends BaseGlobalCache {
             if (allQuoteTickers.length > 0) {
                 allQuoteTickers.forEach((quoteTicker) => {
                     const rawSymbol = baseTicker + quoteTicker;
-                    parsedSymbols.set(rawSymbol, [baseTicker, quoteTicker]);
+                    parsedSymbols.set(rawSymbol, [
+                        baseTicker.toUpperCase(),
+                        quoteTicker.toUpperCase(),
+                    ]);
                 });
             }
         }

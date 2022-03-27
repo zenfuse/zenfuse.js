@@ -41,8 +41,6 @@ class HuobiSpot extends HuobiBase {
             'v2/settings/common/currencies',
         );
 
-        // this.cache.updateCache(response);
-
         const tickers = response.data.map((t) => t.dn);
 
         utils.linkOriginalPayload(tickers, response);
@@ -60,7 +58,7 @@ class HuobiSpot extends HuobiBase {
     async fetchMarkets() {
         const response = await this.publicFetch('v2/settings/common/symbols');
 
-        // this.cache.updateCache(response);
+        this.cache.updateCache(response);
 
         const markets = response.data.map((m) => {
             return {
