@@ -13,7 +13,12 @@ const tickersFilePath = __dirname + '/mocks/static/tickers.json';
  * @returns {object} Object with test names witch opens nock scope
  */
 module.exports = (env) => ({
-    root: null,
+    root: () =>
+        nock(HOSTNAME)
+            .get('/v2/settings/common/currencies')
+            .replyWithFile(200, marketsFilePath, {
+                'Content-Type': 'application/json',
+            }),
     'Spot Wallet HTTP interface': {
         'ping()': () =>
             nock(HOSTNAME).get('/v1/common/timestamp').reply(200, {
