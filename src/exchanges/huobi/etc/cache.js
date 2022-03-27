@@ -90,7 +90,7 @@ class HuobiCache extends BaseGlobalCache {
     }
 
     /**
-     * Updating global cache using raw binance data
+     * Updating global cache using raw huobi data
      *
      * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint
      */
