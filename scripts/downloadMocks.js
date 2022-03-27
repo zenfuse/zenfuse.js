@@ -127,6 +127,25 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 return downloadEach(mocksPath, downloadList, task);
             }),
+            task('Huobi', ({ task }) => {
+                const mocksPath =
+                    __dirname + '/../tests/exchanges/huobi/mocks/static/';
+
+                const downloadList = [
+                    {
+                        filename: 'tickers.json',
+                        endpoint:
+                            'https://api.huobi.pro/v2/settings/common/currencies',
+                    },
+                    {
+                        filename: 'markets.json',
+                        endpoint:
+                            'https://api.huobi.pro/v2/settings/common/symbols',
+                    },
+                ];
+
+                run(mocksPath, downloadList, task);
+            }),
         ],
         {
             concurrency: Infinity,
