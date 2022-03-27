@@ -24,7 +24,6 @@ module.exports = {
         bithumb: Bithumb,
         huobi: Huobi,
     },
-};
 
     errorCodes: ExchangeBaseException.errorCodes,
     config: require('./base/conf/configurator'),
