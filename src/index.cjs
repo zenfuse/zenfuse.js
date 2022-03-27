@@ -3,6 +3,7 @@ const FTX = require('./exchanges/ftx');
 const Bitglobal = require('./exchanges/bitglobal');
 const OKX = require('./exchanges/okx');
 const ExchangeBaseException = require('./base/errors/exchange.error');
+const Huobi = require('./exchanges/huobi');
 
 /**
  * @enum
@@ -12,6 +13,18 @@ module.exports = {
     FTX,
     Bitglobal,
     OKX,
+    Bitglobal: Bithumb, // TODO: Rename all githumb classes
+    Huobi,
+    /**
+     * Object with lower case names for uid usage
+     */
+    exchanges: {
+        binance: Binance,
+        ftx: FTX,
+        bithumb: Bithumb,
+        huobi: Huobi,
+    },
+};
 
     errorCodes: ExchangeBaseException.errorCodes,
     config: require('./base/conf/configurator'),

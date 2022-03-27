@@ -1,24 +1,49 @@
 const { createHmac } = require('crypto');
+const RuntimeError = require('../../../../base/errors/runtime.error');
+const BinanceCache = require('../../etc/cache');
 
-/**
- * Create HMAC signature specific for Huobi
- *
- * @param {object} params
- * @param {number} params.ts UNIX Timestapm
- * @param {string} params.method HTTP Method
- * @param {string} params.path URL request path
- * @param {object} [params.body] Request body
- * @param {string} key HMAC Key
- * @returns {string} Hex HMAC Signature
- */
-const createHmacSignature = ({ ts, method, path, body = '' }, key) => {
-    if (body !== '') {
-        body = JSON.stringify(body);
-    }
-
-    const signaturePayload = [ts, method, path, body].join('');
-
-    return createHmac('sha256', key).update(signaturePayload).digest('hex');
+const createHmacSignature = (data, key) => {
+    const params = new URLSearchParams(data).toString();
+    return createHmac('sha256', key).update(params).digest('hex');
 };
 
-module.exports = { createHmacSignature };
+/**
+ * Parse binance symbol from `BTCETH` and returns base an quote ticker from it
+ *
+ * @param {string} bSymbol Ticker pair from binance like `ETHBUSD`
+ * @param {BinanceCache} binanceCache Binance cache object
+ * @returns {[string, string]} Base and quote ticker
+ */
+const parseBinanceSymbol = (bSymbol, { tickers, parsedSymbols }) => {
+    let quoteTicker;
+    let baseTicker;
+
+    while (!quoteTicker) {
+        baseTicker = tickers.find((ticker) => bSymbol.startsWith(ticker));
+
+        if (!baseTicker) {
+            throw new RuntimeError(
+                `Cannot find base ticker in ${bSymbol} symbol`,
+            );
+        }
+
+        quoteTicker = bSymbol.substring(baseTicker.length);
+
+        const isQuoteTickerExists = parsedSymbols[baseTicker].some((quote) => {
+            return quoteTicker === quote;
+        });
+
+        if (!isQuoteTickerExists) continue;
+
+        return [baseTicker, quoteTicker];
+    }
+
+    throw new Error(
+        `Zenfuse cannot find quote ticker of ${baseTicker} in ${bSymbol} symbol`,
+    );
+};
+
+module.exports = {
+    createHmacSignature,
+    parseBinanceSymbol,
+};

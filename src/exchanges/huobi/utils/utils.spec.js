@@ -4,96 +4,183 @@ describe('createHmacSignature()', () => {
     const { createHmacSignature } = utils;
 
     it('should return valid signature', () => {
-        const params = {
-            ts: 1588591511721,
-            method: 'GET',
-            path: '/api/markets',
-        };
+        const data = { foo: 'bar' };
 
-        const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
-        const signature =
-            'dbc62ec300b2624c580611858d94f2332ac636bb86eccfa1167a7777c496ee6f';
-
-        expect(createHmacSignature(params, key)).toBe(signature);
+        expect(createHmacSignature(data, 'testkey')).toBe(
+            'e037a467e455d7847d50df4a6fa3b1c2ebfa4234b19cb7b2a220f1ffbfe9fdb8',
+        );
     });
+});
 
-    it('should return valid signature with body', () => {
-        const params = {
-            method: 'POST',
-            body: {
-                market: 'BTC-PERP',
-                side: 'buy',
-                price: 8500,
-                size: 1,
-                type: 'limit',
-                reduceOnly: false,
-                ioc: false,
-                postOnly: false,
-                clientId: null,
-            },
-            path: '/api/orders',
-            ts: 1588591856950,
-        };
+describe('transformMarketString()', () => {
+    const { transformMarketString } = utils;
 
-        const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
-        const signature =
-            '2832d853e55db715f59aaadd966cdc51913967da8bf687aad8457a5ac609313e';
-
-        expect(createHmacSignature(params, key)).toBe(signature);
+    it('should delete slash', () => {
+        const result = transformMarketString('ETH/BUSD');
+        expect(result).toBe('ETHBUSD');
+    });
+    it('should upper case things', () => {
+        const result = transformMarketString('ethbusd');
+        expect(result).toBe('ETHBUSD');
     });
 });
 
 describe('transfromZenfuseOrder()', () => {
     const { transfromZenfuseOrder } = utils;
 
-    it('should transform limit order', () => {
+    it('should upper case symbols and transform amount', () => {
+        const order = {
+            symbol: 'BTC/ETH',
+            side: 'seLL',
+            type: 'market',
+            quantity: '0.000001',
+        };
+
+        const expectation = {
+            symbol: 'BTCETH',
+            side: 'SELL',
+            type: 'MARKET',
+            quantity: '0.000001',
+        };
+
+        expect(transfromZenfuseOrder(order)).toEqual(expectation);
+    });
+
+    it('should add default timeInForce for limit order', () => {
         const order = {
             symbol: 'BTC/ETH',
             side: 'buy',
             type: 'limit',
-            price: 69.6969,
-            quantity: 0.02323,
-            extra: 'whenhuobi',
+            quantity: '0.001',
         };
 
         const expectation = {
-            market: 'BTC/ETH',
-            side: 'buy',
-            type: 'limit',
-            price: 69.6969,
-            size: 0.02323,
-            extra: 'whenhuobi',
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'LIMIT',
+            quantity: '0.001',
         };
 
-        expect(transfromZenfuseOrder(order)).toStrictEqual(expectation);
+        expect(transfromZenfuseOrder(order)).toEqual(expectation);
+    });
+
+    it('should pass custom timeInForce for limit order', () => {
+        const order = {
+            symbol: 'BTC/ETH',
+            side: 'buy',
+            type: 'limit',
+            quantity: '0.001',
+            extra: 'whenbinance',
+        };
+
+        const expectation = {
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'LIMIT',
+            quantity: '0.001',
+            extra: 'whenbinance',
+        };
+
+        expect(transfromZenfuseOrder(order)).toEqual(expectation);
     });
 });
 
-describe('transformHuobiOrder()', () => {
-    const { transfromHuobiOrder } = utils;
+describe('transformBinanceOrder()', () => {
+    const { transfromBinanceOrder } = utils;
 
-    const OrderSchema = require('../../../base/schemas/openOrder');
+    const OrderSchema = require('../../../base/schemas/openOrder').omit({
+        symbol: true,
+    });
 
     it('should transform order', () => {
-        const huobiCreatedOrder = {
-            createdAt: '2019-03-05T09:56:55.728933+00:00',
-            filledSize: 0,
-            id: 9596912,
-            market: 'ZEFU/USDT',
-            price: 10,
-            remainingSize: 31431,
-            side: 'sell',
-            size: 31431,
-            status: 'open',
-            type: 'limit',
-            reduceOnly: false,
-            ioc: false,
-            postOnly: false,
-            clientId: null,
+        const binanceCreatedOrder = {
+            symbol: 'BNBUSDT',
+            orderId: 5114608,
+            orderListId: -1,
+            clientOrderId: 'nVuwTgVfxQtsMV9uuMMXxL',
+            transactTime: 1637596926709,
+            price: '0.00000000',
+            origQty: '1.00000000',
+            executedQty: '1.00000000',
+            cummulativeQuoteQty: '1.00000000',
+            status: 'FILLED',
+            timeInForce: 'GTC',
+            type: 'MARKET',
+            side: 'BUY',
+            fills: [
+                {
+                    price: '576.30000000',
+                    qty: '0.77000000',
+                    commission: '0.00000000',
+                    commissionAsset: 'BNB',
+                    tradeId: 239238,
+                },
+                {
+                    price: '577.00000000',
+                    qty: '0.23000000',
+                    commission: '0.00000000',
+                    commissionAsset: 'BNB',
+                    tradeId: 239239,
+                },
+            ],
         };
 
-        const result = transfromHuobiOrder(huobiCreatedOrder);
+        const result = transfromBinanceOrder(binanceCreatedOrder);
 
         expect(result).toMatchSchema(OrderSchema);
+    });
+});
+
+describe('assignDefaultsInOrder()', () => {
+    const { assignDefaultsInOrder } = utils;
+
+    const DEFAULTS = {
+        limit: {
+            timeInForce: 'GTC',
+        },
+        market: {},
+    };
+
+    it('should add default timeInForce for limit order', () => {
+        const order = {
+            symbol: 'BTC/ETH',
+            side: 'buy',
+            type: 'limit',
+            quantity: '0.001',
+        };
+
+        const expectation = {
+            symbol: 'BTC/ETH',
+            side: 'buy',
+            type: 'limit',
+            quantity: '0.001',
+            timeInForce: 'GTC',
+        };
+
+        const output = assignDefaultsInOrder(order, DEFAULTS);
+
+        expect(output).toMatchObject(expectation);
+        expect(output.timeInForce).toBe(expectation.timeInForce);
+    });
+
+    it('should add defaults for market order', () => {
+        const order = {
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'MARKET',
+            quantity: '0.001',
+        };
+
+        const expectation = {
+            symbol: 'BTCETH',
+            side: 'BUY',
+            type: 'MARKET',
+            quantity: '0.001',
+        };
+
+        const output = assignDefaultsInOrder(order, DEFAULTS);
+
+        expect(output).toMatchObject(expectation);
+        expect(output.timeInForce).toBeUndefined();
     });
 });
