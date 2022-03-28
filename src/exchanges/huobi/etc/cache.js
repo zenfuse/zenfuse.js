@@ -25,7 +25,7 @@ class HuobiCache extends BaseGlobalCache {
 
         if (this.isExpired) {
             this.globalCache.updatingPromise = this.base
-                .publicFetch('v2/settings/common/currencies')
+                .publicFetch('v2/settings/common/symbols')
                 .then(this.updateCache.bind(this));
         }
     }

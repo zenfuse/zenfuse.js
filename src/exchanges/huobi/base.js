@@ -161,21 +161,21 @@ class HuobiBase extends ExchangeBase {
     /**
      * Parses huobi symbol using cache
      *
-     * @param {string} bSymbol Huobi symbol without separator
+     * @param {string} hSymbol Huobi symbol without separator
      * @returns {string} Normal symbol with separator
      */
-    parseHuobiSymbol(bSymbol) {
-        const isSymbolCached = this.cache.parsedSymbols.get(bSymbol);
+    parseHuobiSymbol(hSymbol) {
+        const isSymbolCached = this.cache.parsedSymbols.has(hSymbol);
 
         let rawSymbol = '';
 
         if (!isSymbolCached) {
-            const errorMsg = `Unnable to parse huobi ${bSymbol} symbol`;
+            const errorMsg = `Unnable to parse huobi ${hSymbol} symbol`;
 
             // 6 length symbol can devided by 2 pieces
-            if (bSymbol.length === 6) {
-                const base = bSymbol.slice(0, 3);
-                const quote = bSymbol.slice(3);
+            if (hSymbol.length === 6) {
+                const base = hSymbol.slice(0, 3);
+                const quote = hSymbol.slice(3);
                 rawSymbol = [base, quote];
                 process.emitWarning(errorMsg, {
                     code: 'ZEFU_CACHE_UNSYNC',
@@ -186,7 +186,7 @@ class HuobiBase extends ExchangeBase {
             }
         }
 
-        rawSymbol = this.cache.parsedSymbols.get(bSymbol);
+        rawSymbol = this.cache.parsedSymbols.get(hSymbol);
 
         return rawSymbol.join('/');
     }

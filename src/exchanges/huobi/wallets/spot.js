@@ -4,7 +4,6 @@ const utils = require('../utils');
 const HuobiBase = require('../base');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 const { timeIntervals } = require('../metadata');
 
@@ -130,20 +129,18 @@ class HuobiSpot extends HuobiBase {
      * @returns {PriceObject} Price object
      */
     async fetchPrice(market) {
-        const params = {};
+        let response;
 
         if (market) {
-            params.symbol = utils.transformMarketString(market);
-        }
+            response = await this.publicFetch('market/detail', {
+                searchParams: {
+                    symbol: market.toLowerCase().replace('/', ''),
+                },
+            });
 
-        const response = await this.publicFetch('api/v3/ticker/price', {
-            searchParams: params,
-        });
-
-        if (market) {
             const price = {
                 symbol: market,
-                price: parseInt(response.price),
+                price: response.tick.close,
             };
 
             utils.linkOriginalPayload(price, response);
@@ -151,25 +148,17 @@ class HuobiSpot extends HuobiBase {
             return price;
         }
 
-        const createSymbol = (symbol) => {
-            if (!this.cache.parsedSymbols.has(symbol)) {
-                throw new ZenfuseRuntimeError(
-                    `Cannot find ${symbol} in huiobi cache`,
-                    'ZEFU_CACHE_UNSYNC',
-                );
-            }
-            return this.cache.parsedSymbols.get(symbol).join('/');
-        };
+        response = await this.publicFetch('market/tickers');
 
-        const prices = response
-            .map((bPrice) => {
-                let symbol;
-
-                symbol = createSymbol(bPrice.symbol);
-
+        const prices = response.data
+            .map((t) => {
+                // NOTE: Some markets doesnt includes in list, so symbol unable to parse
+                if (!this.cache.parsedSymbols.has(t.symbol)) {
+                    return;
+                }
                 return {
-                    symbol,
-                    price: parseInt(bPrice.price),
+                    symbol: this.parseHuobiSymbol(t.symbol),
+                    price: t.close,
                 };
             })
             .filter(Boolean);
