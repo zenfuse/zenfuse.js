@@ -4,6 +4,7 @@ const HOSTNAME = 'https://api.huobi.pro';
 
 const marketsFilePath = __dirname + '/mocks/static/markets.json';
 const tickersFilePath = __dirname + '/mocks/static/tickers.json';
+const pairsFilePath = __dirname + '/mocks/static/pairs.json';
 
 /**
  * HTTP mocking scope for FTX master test
@@ -15,7 +16,7 @@ const tickersFilePath = __dirname + '/mocks/static/tickers.json';
 module.exports = (env) => ({
     root: () =>
         nock(HOSTNAME)
-            .get('/v2/settings/common/currencies')
+            .get('/v2/settings/common/symbols')
             .replyWithFile(200, marketsFilePath, {
                 'Content-Type': 'application/json',
             }),
@@ -39,35 +40,28 @@ module.exports = (env) => ({
                 }),
         'fetchPrice()': () =>
             nock(HOSTNAME)
-                .get('/api/markets')
-                .replyWithFile(200, marketsFilePath, {
+                .get('/market/tickers')
+                .replyWithFile(200, pairsFilePath, {
                     'Content-Type': 'application/json',
                 })
-                .get('/api/markets/BTC/USDT')
+                .get('/market/detail')
+                .query({
+                    symbol: 'btcusdt',
+                })
                 .reply(200, {
-                    success: true,
-                    result: {
-                        name: 'BTC/USDT',
-                        enabled: true,
-                        postOnly: false,
-                        priceIncrement: 1.0,
-                        sizeIncrement: 0.0001,
-                        minProvideSize: 0.0001,
-                        last: 41577.0,
-                        bid: 41573.0,
-                        ask: 41575.0,
-                        price: 41575.0,
-                        type: 'spot',
-                        baseCurrency: 'BTC',
-                        quoteCurrency: 'USDT',
-                        underlying: null,
-                        restricted: false,
-                        highLeverageFeeExempt: true,
-                        change1h: 0.00009622092323975848,
-                        change24h: 0.0012764317711092914,
-                        changeBod: -0.0002885517108711857,
-                        quoteVolume24h: 116192699.7696,
-                        volumeUsd24h: 116191540.1664563,
+                    ch: 'market.btcusdt.detail',
+                    status: 'ok',
+                    ts: 1648488158136,
+                    tick: {
+                        id: 301148161314,
+                        low: 44677.75,
+                        high: 47892.12,
+                        open: 44798.72,
+                        close: 47383.08,
+                        vol: 506735292.11928594,
+                        amount: 10836.476586616349,
+                        version: 301148161314,
+                        count: 591092,
                     },
                 }),
         'fetchCandleHistory()': () =>
