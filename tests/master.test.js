@@ -72,14 +72,14 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe.only('fetchMarkets()', () => {
+        describe('fetchMarkets()', () => {
             let result;
 
             it('should be defined', () => {
                 expect(exchange.fetchMarkets).toBeDefined();
             });
 
-            it.only('should fetch without errors', async () => {
+            it('should fetch without errors', async () => {
                 result = await exchange.fetchMarkets();
             });
 
@@ -122,7 +122,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchPrice()', () => {
+        describe.only('fetchPrice()', () => {
             let result;
 
             it('should be defined', () => {
