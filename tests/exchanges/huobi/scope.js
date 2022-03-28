@@ -5,6 +5,7 @@ const HOSTNAME = 'https://api.huobi.pro';
 const marketsFilePath = __dirname + '/mocks/static/markets.json';
 const tickersFilePath = __dirname + '/mocks/static/tickers.json';
 const pairsFilePath = __dirname + '/mocks/static/pairs.json';
+const candlesFilePath = __dirname + '/mocks/static/candles.json';
 
 /**
  * HTTP mocking scope for FTX master test
@@ -66,11 +67,13 @@ module.exports = (env) => ({
                 }),
         'fetchCandleHistory()': () =>
             nock(HOSTNAME)
-                .get('/api/markets/BTC/USDT/candles')
+                .get('/market/history/kline')
                 .query({
-                    resolution: 60,
+                    symbol: 'btcusdt',
+                    period: '1min',
+                    size: 2000,
                 })
-                .replyWithFile(200, tickersFilePath, {
+                .replyWithFile(200, candlesFilePath, {
                     'Content-Type': 'application/json',
                 }),
         'createOrder()': {

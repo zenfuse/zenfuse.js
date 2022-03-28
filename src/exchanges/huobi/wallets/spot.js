@@ -6,6 +6,7 @@ const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 
 const { timeIntervals } = require('../metadata');
+const ZenfuseUserError = require('../../../base/errors/user.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -17,9 +18,7 @@ const { timeIntervals } = require('../metadata');
 class HuobiSpot extends HuobiBase {
     static DEFAULT_OPTIONS = {
         defaults: {
-            limit: {
-                timeInForce: 'GTC',
-            },
+            limit: {},
             market: {},
         },
     };
@@ -84,32 +83,73 @@ class HuobiSpot extends HuobiBase {
     async fetchCandleHistory(params) {
         this.validateCandleHistoryParams(params);
 
-        const response = await this.publicFetch('api/v3/klines', {
+        // TODO: Rework intervals
+        if (timeIntervals[params.interval] === null) {
+            throw new ZenfuseUserError(
+                `Interval ${params.interval} doesn't support Huobi. Use any of these 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w, 1M`,
+                'UNSUPPORTED_FEATURE',
+            );
+        }
+
+        const response = await this.publicFetch('market/history/kline', {
             searchParams: {
-                symbol: params.symbol.replace('/', ''),
-                interval: params.interval,
-                startTime: params.startTime,
-                endTime: params.endTime,
-                limit: 1000, // Overwrite default 500 limit
+                symbol: params.symbol.toLowerCase().replace('/', ''),
+                period: timeIntervals[params.interval],
+                size: 2000, // Overwrite default 150 limit
             },
         });
 
-        const result = response.map((bCandle) => {
+        const result = response.data.map((hCandle) => {
             const zCandle = {
-                timestamp: bCandle[0],
-                open: parseFloat(bCandle[1]),
-                high: parseFloat(bCandle[2]),
-                low: parseFloat(bCandle[3]),
-                close: parseFloat(bCandle[4]),
-                volume: parseFloat(bCandle[5]),
+                timestamp: hCandle.id * 1000,
+                open: hCandle.open,
+                high: hCandle.high,
+                low: hCandle.low,
+                close: hCandle.close,
+                volume: hCandle.vol,
                 interval: params.interval,
                 symbol: params.symbol,
             };
 
-            utils.linkOriginalPayload(zCandle, bCandle);
+            utils.linkOriginalPayload(zCandle, hCandle);
 
             return zCandle;
         });
+
+        // NOTE: Huobi API doesn't support custom perioud fetching
+        // Trying to cut candles with user parameters
+        if (params.startTime || params.endTime) {
+            if (params.startTime && params.endTime) {
+                const isPossimbleToCut =
+                    result[0].timestamp < params.endTime &&
+                    result[result.length - 1].timestamp > params.startTime;
+
+                if (isPossimbleToCut) {
+                    return result.filter(({ timestamp }) => {
+                        return (
+                            timestamp < params.endTime &&
+                            timestamp > params.startTime
+                        );
+                    });
+                }
+            }
+
+            if (params.startTime && !params.endTime) {
+                const isPossimbleToCut =
+                    result[result.length - 1].timestamp > params.startTime;
+
+                if (isPossimbleToCut) {
+                    return result.filter(({ timestamp }) => {
+                        return timestamp > params.startTime;
+                    });
+                }
+            }
+
+            throw new ZenfuseUserError(
+                "Huobi API doesn't support custom period fetching, you see this error because zenfusejs unable to cut candles with your parameters",
+                'UNSUPPORTED_FEATURE',
+            );
+        }
 
         utils.linkOriginalPayload(result, response);
 
