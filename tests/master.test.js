@@ -58,6 +58,11 @@ module.exports = function masterTest(Exchange, env) {
          */
         let exchange = new Exchange['spot']();
 
+        beforeAll(async () => {
+            // NOTE: Sometimes uprating cache to long
+            await exchange.cache.globalCache.updatingPromise;
+        });
+
         describe('ping()', () => {
             it('should be defined', () => {
                 expect(exchange.ping).toBeDefined();
@@ -67,14 +72,14 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe.only('fetchMarkets()', () => {
+        describe('fetchMarkets()', () => {
             let result;
 
             it('should be defined', () => {
                 expect(exchange.fetchMarkets).toBeDefined();
             });
 
-            it.only('should fetch without errors', async () => {
+            it('should fetch without errors', async () => {
                 result = await exchange.fetchMarkets();
             });
 
@@ -117,7 +122,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchPrice()', () => {
+        describe.only('fetchPrice()', () => {
             let result;
 
             it('should be defined', () => {
