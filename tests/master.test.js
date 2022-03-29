@@ -59,11 +59,11 @@ module.exports = function masterTest(Exchange, env) {
         let exchange = new Exchange['spot']();
 
         beforeAll(async () => {
-            // NOTE: Sometimes uprating cache to long
+            // NOTE: Sometimes updating cache to long
             await exchange.cache.globalCache.updatingPromise;
         });
 
-        describe('ping()', () => {
+        describe.only('ping()', () => {
             it('should be defined', () => {
                 expect(exchange.ping).toBeDefined();
             });
@@ -393,7 +393,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchBalances()', () => {
+        describe.only('fetchBalances()', () => {
             it('should be defined', () => {
                 expect(exchange.fetchBalances).toBeDefined();
             });
