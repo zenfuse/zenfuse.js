@@ -63,7 +63,7 @@ module.exports = function masterTest(Exchange, env) {
             await exchange.cache.globalCache.updatingPromise;
         });
 
-        describe('ping()', () => {
+        describe.only('ping()', () => {
             it('should be defined', () => {
                 expect(exchange.ping).toBeDefined();
             });
@@ -393,7 +393,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchBalances()', () => {
+        describe.only('fetchBalances()', () => {
             it('should be defined', () => {
                 expect(exchange.fetchBalances).toBeDefined();
             });
