@@ -1,3 +1,4 @@
+const { createHmac } = require('crypto');
 const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
 
@@ -33,6 +34,7 @@ class HuobiBase extends ExchangeBase {
             prefixUrl: 'wss://api.huobi.pro/',
         },
     };
+
     /**
      * @type {HuobiCache}
      */
@@ -82,22 +84,36 @@ class HuobiBase extends ExchangeBase {
     async privateFetch(url, options = {}) {
         this.throwIfNotHasKeys();
 
-        if (!options.searchParams) options.searchParams = {};
-
-        options.searchParams.timestamp = Date.now();
-
-        options.searchParams.signature = createHmacSignature(
-            options.searchParams,
-            this[keysSymbol].privateKey,
-        );
-
-        options = mergeObjects(options, {
-            headers: {
-                'X-MBX-APIKEY': this[keysSymbol].publicKey,
-            },
+        const queryString = new URLSearchParams({
+            AccessKeyId: this[keysSymbol].publicKey,
+            SignatureMethod: 'HmacSHA256',
+            SignatureVersion: 2,
+            Timestamp: new Date().toISOString().replace(/.\d+Z$/g, ''), // Remove miliseconds
         });
 
-        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        if (options.searchParams) {
+            for (const [key, value] of Object.entries(options.searchParams)) {
+                queryString.append(key, value);
+            }
+        }
+
+        const method = options.method
+            ? options.method
+            : this.fetcher.defaults.options.method;
+
+        const preSignedText = `${method}\napi.huobi.pro\n/${url}\n${queryString.toString()}`;
+
+        const signature = createHmac('sha256', this[keysSymbol].privateKey)
+            .update(preSignedText)
+            .digest('base64');
+
+        queryString.append('Signature', signature);
+
+        options.searchParams = queryString;
+
+        return await this.fetcher(url, options)
+            .then(this.handleErrorResponse)
+            .catch(this.handleFetcherError);
     }
 
     /**
@@ -152,10 +168,23 @@ class HuobiBase extends ExchangeBase {
      */
     handleFetcherError(err) {
         if (err instanceof HTTPError) {
-            throw new HuobiApiError(err);
+            throw new HuobiApiError(null, err);
         }
 
         throw err;
+    }
+
+    /**
+     * @param {*} res
+     * @private
+     * @returns {*} Huobi success response
+     */
+    handleErrorResponse(res) {
+        if (res.status === 'error') {
+            throw new HuobiApiError(res);
+        }
+
+        return res;
     }
 
     /**

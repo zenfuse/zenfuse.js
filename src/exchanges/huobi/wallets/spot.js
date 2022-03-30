@@ -24,6 +24,11 @@ class HuobiSpot extends HuobiBase {
     };
 
     /**
+     * Huobi has unique id for spot account. Which required for some requests
+     */
+    accountId;
+
+    /**
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
@@ -303,15 +308,36 @@ class HuobiSpot extends HuobiBase {
     }
 
     async fetchBalances() {
-        const response = await this.privateFetch('api/v3/account');
+        await this.fetchAccountIdIfRequired();
 
-        const balances = response.balances
-            .filter((b) => b.free > 0 || b.locked > 0)
-            .map((b) => ({
-                ticker: b.asset,
-                free: parseFloat(b.free),
-                used: parseFloat(b.locked),
-            }));
+        const response = await this.privateFetch(
+            `v1/account/accounts/${this.accountId}/balance`,
+        );
+
+        const mapedBalances = response.data.list.reduce(
+            (map, { currency, type, balance }) => {
+                if (type === 'trade') {
+                    map.set(currency, {
+                        ticker: currency,
+                        free: parseFloat(balance),
+                        used: map.has(currency) ? map.get(currency).used : null,
+                    });
+                }
+                if (type === 'frozen') {
+                    map.set(currency, {
+                        ticker: currency,
+                        free: map.has(currency) ? map.get(currency).free : null,
+                        used: parseFloat(balance),
+                    });
+                }
+                return map;
+            },
+            new Map(),
+        );
+
+        const balances = Array.from(mapedBalances.values()).filter(
+            (b) => b.free > 0 || b.used > 0,
+        );
 
         utils.linkOriginalPayload(balances, response);
 
@@ -353,6 +379,17 @@ class HuobiSpot extends HuobiBase {
 
     getMarketDataStream() {
         return new MarketDataStream(this);
+    }
+
+    /**
+     * @private
+     */
+    async fetchAccountIdIfRequired() {
+        if (!this.accountId) {
+            const response = await this.privateFetch('v1/account/accounts');
+
+            this.accountId = response.data.find((a) => a.type === 'spot').id;
+        }
     }
 }
 
