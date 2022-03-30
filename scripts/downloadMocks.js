@@ -127,7 +127,11 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 return downloadEach(mocksPath, downloadList, task);
             }),
-            task('Huobi', ({ task }) => {
+            task('Huobi', ({ task, setStatus }) => {
+                if (options.only && options.only !== 'huobi') {
+                    setStatus('skipped');
+                    return;
+                }
                 const mocksPath =
                     __dirname + '/../tests/exchanges/huobi/mocks/static/';
 
