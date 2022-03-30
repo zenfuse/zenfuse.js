@@ -1,5 +1,6 @@
 const task = require('tasuku');
 const got = require('got');
+const mri = require('mri');
 
 const fs = require('fs');
 const util = require('util');
@@ -7,16 +8,34 @@ const path = require('path');
 
 const writeFile = util.promisify(fs.writeFile);
 
-const isForce = process.argv.includes('--force');
+const options = mri(process.argv.slice(2), {
+    alias: {
+        f: 'force',
+        h: 'help',
+    },
+});
+
+if (options.help) {
+    const helpMessage = `Usage: npm run download-mocks -- [options...]
+-f, --force           Download even files already exists 
+    --only=<exchange> Run for specific exchange`;
+    process.stdout.write(helpMessage);
+    process.exit(0);
+}
 
 task('Preparing mocks', async ({ task, setStatus }) => {
-    if (isForce) {
-        setStatus('Forced');
+    if (options.force) {
+        setStatus('forced');
     }
 
     await task.group(
         (task) => [
-            task('Binance', ({ task }) => {
+            task('Binance', ({ task, setStatus }) => {
+                if (options.only && options.only !== 'binance') {
+                    setStatus('skipped');
+                    return;
+                }
+
                 const mocksPath =
                     __dirname + '/../tests/exchanges/binance/mocks/static/';
 
@@ -38,7 +57,12 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
-            task('FTX', ({ task }) => {
+            task('FTX', ({ task, setStatus }) => {
+                if (options.only && options.only !== 'ftx') {
+                    setStatus('skipped');
+                    return;
+                }
+
                 const mocksPath =
                     __dirname + '/../tests/exchanges/ftx/mocks/static/';
 
@@ -56,7 +80,11 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
-            task('Bithumb', ({ task }) => {
+            task('Bithumb', ({ task, setStatus }) => {
+                if (options.only && options.only !== 'bithumb') {
+                    setStatus('skipped');
+                    return;
+                }
                 const mocksPath =
                     __dirname + '/../tests/exchanges/bithumb/mocks/static/';
 
@@ -94,7 +122,11 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
-            task('Huobi', ({ task }) => {
+            task('Huobi', ({ task, setStatus }) => {
+                if (options.only && options.only !== 'huobi') {
+                    setStatus('skipped');
+                    return;
+                }
                 const mocksPath =
                     __dirname + '/../tests/exchanges/huobi/mocks/static/';
 
@@ -134,8 +166,8 @@ const run = (mocksPath, downloadList, task) => {
         const filePath = mocksPath + filename;
 
         task(filename, async ({ setStatus, setOutput }) => {
-            if (fs.existsSync(filePath) && !isForce) {
-                setStatus('File exists');
+            if (fs.existsSync(filePath) && !options.force) {
+                setStatus('exists');
                 return;
             }
 
@@ -144,7 +176,7 @@ const run = (mocksPath, downloadList, task) => {
                     return writeFile(filePath, res.body);
                 })
                 .then(() => {
-                    setStatus('Downloaded');
+                    setStatus('downloaded');
                     setOutput(path.resolve(__dirname + '/../', filePath));
                 });
         });
