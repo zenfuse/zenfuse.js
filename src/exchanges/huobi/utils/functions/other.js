@@ -1,11 +1,5 @@
-const { createHmac } = require('crypto');
 const RuntimeError = require('../../../../base/errors/runtime.error');
 const BinanceCache = require('../../etc/cache');
-
-const createHmacSignature = (data, key) => {
-    const params = new URLSearchParams(data).toString();
-    return createHmac('sha256', key).update(params).digest('hex');
-};
 
 /**
  * Parse binance symbol from `BTCETH` and returns base an quote ticker from it
@@ -44,6 +38,5 @@ const parseBinanceSymbol = (bSymbol, { tickers, parsedSymbols }) => {
 };
 
 module.exports = {
-    createHmacSignature,
     parseBinanceSymbol,
 };

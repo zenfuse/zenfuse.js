@@ -36,7 +36,7 @@ module.exports = (env) => ({
         'fetchTickers()': () =>
             nock(HOSTNAME)
                 .get('/v2/settings/common/currencies')
-                .replyWithFile(200, marketsFilePath, {
+                .replyWithFile(200, tickersFilePath, {
                     'Content-Type': 'application/json',
                 }),
         'fetchPrice()': () =>
