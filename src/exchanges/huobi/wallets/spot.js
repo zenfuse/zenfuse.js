@@ -320,13 +320,13 @@ class HuobiSpot extends HuobiBase {
                     map.set(currency, {
                         ticker: currency,
                         free: parseFloat(balance),
-                        used: map.has(currency) ? map.get(currency).used : null,
+                        used: map.has(currency) ? map.get(currency).used : 0,
                     });
                 }
                 if (type === 'frozen') {
                     map.set(currency, {
                         ticker: currency,
-                        free: map.has(currency) ? map.get(currency).free : null,
+                        free: map.has(currency) ? map.get(currency).free : 0,
                         used: parseFloat(balance),
                     });
                 }

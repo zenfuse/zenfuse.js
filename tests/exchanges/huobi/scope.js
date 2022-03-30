@@ -216,22 +216,54 @@ module.exports = (env) => ({
         },
         'fetchBalances()': () =>
             nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-SIGN', Boolean)
-                .matchHeader('FTX-TS', Boolean)
-                .get('/api/wallet/balances')
+                .get('/v1/account/accounts')
+                .query(expectAuthParams)
                 .reply(200, {
-                    success: true,
-                    result: [
+                    status: 'ok',
+                    data: [
                         {
-                            coin: 'USDTBEAR',
-                            free: 2320.2,
-                            spotBorrow: 0.0,
-                            total: 2340.2,
-                            usdValue: 2340.2,
-                            availableWithoutBorrow: 2320.2,
+                            id: 10000001, // Account ID
+                            type: 'spot',
+                            subtype: '',
+                            state: 'working',
+                        },
+                        {
+                            id: 10000002,
+                            type: 'otc',
+                            subtype: '',
+                            state: 'working',
                         },
                     ],
+                })
+                .get('/v1/account/accounts/10000001/balance')
+                .query(expectAuthParams)
+                .reply(200, {
+                    status: 'ok',
+                    data: {
+                        id: 1000001,
+                        type: 'spot',
+                        state: 'working',
+                        list: [
+                            {
+                                currency: 'usdt',
+                                type: 'trade',
+                                balance: '91.850043797676510303',
+                                'seq-num': '477',
+                            },
+                            {
+                                currency: 'usdt',
+                                type: 'frozen',
+                                balance: '5.160000000000000015',
+                                'seq-num': '477',
+                            },
+                            {
+                                currency: 'poly',
+                                type: 'trade',
+                                balance: '147.928994082840236',
+                                'seq-num': '2',
+                            },
+                        ],
+                    },
                 }),
 
         'cancelOrderById()': () =>
@@ -337,3 +369,12 @@ module.exports = (env) => ({
                 .reply(200),
     },
 });
+
+const expectAuthParams = (query) => {
+    expect('AccessKeyId' in query);
+    expect(query.SignatureMethod).toBe('HmacSHA256');
+    expect(query.SignatureVersion).toBe('2');
+    expect('Timestamp' in query);
+    expect('Signature' in query);
+    return true;
+};
