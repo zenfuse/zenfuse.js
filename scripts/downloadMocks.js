@@ -17,18 +17,20 @@ const options = mri(process.argv.slice(2), {
     },
 });
 
+const options = mri(process.argv.slice(2), {
+    alias: {
+        f: 'force',
+        h: 'help',
+    },
+});
+
 if (options.help) {
-    const helpMessage = `Usage: downloadMocks.js [options...]
+    const helpMessage = `Usage: npm run download-mocks -- [options...]
 -f, --force           Download even files already exists 
-    --only=<exchange> Run for specific exchange
-    --clean           Delete all downloaded files`;
+    --only=<exchange> Run for specific exchange`;
     process.stdout.write(helpMessage);
-    process.stdout.write('\n');
     process.exit(0);
 }
-
-const nameExp = new RegExp(`^${options.only}`, 'i');
-const isOnly = (name) => nameExp.test(name);
 
 task('Preparing mocks', async ({ task, setStatus }) => {
     if (options.force) {
@@ -38,7 +40,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
     await task.group(
         (task) => [
             task('Binance', ({ task, setStatus }) => {
-                if (!isOnly('binance')) {
+                if (options.only && options.only !== 'binance') {
                     setStatus('skipped');
                     return;
                 }
@@ -62,14 +64,21 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     },
                 ];
 
-                if (options.clean) {
-                    return removeEach(mocksPath, downloadList, task);
+                run(mocksPath, downloadList, task);
+            }),
+            task('FTX', ({ task, setStatus }) => {
+                if (options.only && options.only !== 'ftx') {
+                    setStatus('skipped');
+                    return;
                 }
+
+                const mocksPath =
+                    __dirname + '/../tests/exchanges/ftx/mocks/static/';
 
                 return downloadEach(mocksPath, downloadList, task);
             }),
-            task('Bitglobal', ({ task, setStatus }) => {
-                if (!isOnly('bitglobal')) {
+            task('Bithumb', ({ task, setStatus }) => {
+                if (options.only && options.only !== 'bithumb') {
                     setStatus('skipped');
                     return;
                 }
@@ -159,7 +168,11 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
-            task('Huobi', ({ task }) => {
+            task('Huobi', ({ task, setStatus }) => {
+                if (options.only && options.only !== 'huobi') {
+                    setStatus('skipped');
+                    return;
+                }
                 const mocksPath =
                     __dirname + '/../tests/exchanges/huobi/mocks/static/';
 
@@ -199,35 +212,7 @@ const removeEach = (mocksPath, downloadList, task) => {
         const filePath = mocksPath + filename;
 
         task(filename, async ({ setStatus, setOutput }) => {
-            await fs
-                .rm(filePath)
-                .then(() => setStatus('removed'))
-                .then(() =>
-                    setOutput(path.resolve(__dirname + '/../', filePath)),
-                )
-                .catch((err) => {
-                    if (err.code === 'ENOENT') {
-                        setStatus('no such file');
-                    } else {
-                        throw err;
-                    }
-                });
-        });
-    }
-};
-
-const downloadEach = (mocksPath, downloadList, task) => {
-    for (const { filename, endpoint } of downloadList) {
-        const filePath = path.resolve(__dirname + '/../', mocksPath + filename);
-
-        task(filename, async ({ setStatus, setOutput }) => {
-            const isExists = await fs.stat(filePath).catch((err) => {
-                if (err.code !== 'ENOENT') {
-                    throw err;
-                }
-            });
-
-            if (isExists) {
+            if (fs.existsSync(filePath) && !options.force) {
                 setStatus('exists');
                 return;
             }
@@ -238,7 +223,7 @@ const downloadEach = (mocksPath, downloadList, task) => {
                 })
                 .then(() => {
                     setStatus('downloaded');
-                    setOutput(filePath);
+                    setOutput(path.resolve(__dirname + '/../', filePath));
                 });
         });
     }
