@@ -224,37 +224,48 @@ class HuobiSpot extends HuobiBase {
      */
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
+        await this.fetchAccountIdIfRequired();
 
-        const assignedOrder = utils.assignDefaultsInOrder(
-            zOrder,
-            this.options.defaults,
-        );
+        const hOrder = utils.transfromZenfuseOrder(zOrder);
 
-        // TODO: Assign defaults in transformation
-        const bOrder = utils.transfromZenfuseOrder(assignedOrder);
+        hOrder['account-id'] = this.accountId;
 
-        const bCreatedOrder = await this.privateFetch('api/v3/order', {
+        // NOTE: Different api for buy market order. See https://t.ly/RCzx
+        // Need to convert quantity to total
+        if (zOrder.type === 'market' && zOrder.side === 'buy') {
+            let orderTotal = null;
+
+            if (zOrder.price) {
+                orderTotal = zOrder.price * zOrder.quantity;
+            }
+
+            if (!zOrder.price) {
+                const { price } = await this.fetchPrice(zOrder.symbol);
+
+                orderTotal = price * zOrder.quantity;
+            }
+
+            hOrder.amount = orderTotal;
+        }
+
+        const response = await this.privateFetch('v1/order/orders/place', {
             method: 'POST',
-            searchParams: bOrder,
+            json: hOrder,
         });
 
-        const zCreadedOrder = utils.transfromHuobiOrder(bCreatedOrder);
+        zOrder.timestamp = Date.now();
+        zOrder.id = response.data;
+        zOrder.status = 'open';
 
-        zCreadedOrder.symbol = this.parseHuobiSymbol(bCreatedOrder.symbol);
+        this.cache.cacheOrder(zOrder);
 
-        this.cache.cacheOrder(zCreadedOrder);
+        utils.linkOriginalPayload(zOrder, response);
 
-        utils.linkOriginalPayload(zCreadedOrder, bCreatedOrder);
-
-        return zCreadedOrder;
+        return zOrder;
     }
 
     /**
      * Cancel an active order
-     *
-     * **NOTE:** Huobi required order symbol for canceling.
-     *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
-     *      TODO: Make possible to pass symbol from user
      *
      * @param {string} orderId Huobi order id
      */
