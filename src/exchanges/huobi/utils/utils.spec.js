@@ -1,46 +1,21 @@
 const utils = require('.');
 
-describe('createHmacSignature()', () => {
-    const { createHmacSignature } = utils;
-
-    it('should return valid signature', () => {
-        const data = { foo: 'bar' };
-
-        expect(createHmacSignature(data, 'testkey')).toBe(
-            'e037a467e455d7847d50df4a6fa3b1c2ebfa4234b19cb7b2a220f1ffbfe9fdb8',
-        );
-    });
-});
-
-describe('transformMarketString()', () => {
-    const { transformMarketString } = utils;
-
-    it('should delete slash', () => {
-        const result = transformMarketString('ETH/BUSD');
-        expect(result).toBe('ETHBUSD');
-    });
-    it('should upper case things', () => {
-        const result = transformMarketString('ethbusd');
-        expect(result).toBe('ETHBUSD');
-    });
-});
-
 describe('transfromZenfuseOrder()', () => {
     const { transfromZenfuseOrder } = utils;
 
-    it('should upper case symbols and transform amount', () => {
+    it('should lower case symbols and transform quantity', () => {
         const order = {
             symbol: 'BTC/ETH',
             side: 'seLL',
             type: 'market',
-            quantity: '0.000001',
+            quantity: 0.000001,
         };
 
         const expectation = {
-            symbol: 'BTCETH',
-            side: 'SELL',
-            type: 'MARKET',
-            quantity: '0.000001',
+            amount: '0.000001',
+            source: 'spot-api',
+            symbol: 'btceth',
+            type: 'sell-market',
         };
 
         expect(transfromZenfuseOrder(order)).toEqual(expectation);
@@ -48,17 +23,19 @@ describe('transfromZenfuseOrder()', () => {
 
     it('should add default timeInForce for limit order', () => {
         const order = {
-            symbol: 'BTC/ETH',
+            symbol: 'BTC/USDT',
             side: 'buy',
             type: 'limit',
-            quantity: '0.001',
+            quantity: 0.001,
+            price: 1235253,
         };
 
         const expectation = {
-            symbol: 'BTCETH',
-            side: 'BUY',
-            type: 'LIMIT',
-            quantity: '0.001',
+            amount: '0.001',
+            price: '1235253',
+            source: 'spot-api',
+            symbol: 'btcusdt',
+            type: 'buy-limit',
         };
 
         expect(transfromZenfuseOrder(order)).toEqual(expectation);
@@ -66,19 +43,19 @@ describe('transfromZenfuseOrder()', () => {
 
     it('should pass custom timeInForce for limit order', () => {
         const order = {
-            symbol: 'BTC/ETH',
+            symbol: 'ZEFU/USDT',
             side: 'buy',
             type: 'limit',
             quantity: '0.001',
-            extra: 'whenbinance',
+            extra: 'whenhuobi',
         };
 
         const expectation = {
-            symbol: 'BTCETH',
-            side: 'BUY',
-            type: 'LIMIT',
-            quantity: '0.001',
-            extra: 'whenbinance',
+            amount: '0.001',
+            source: 'spot-api',
+            symbol: 'zefuusdt',
+            type: 'buy-limit',
+            extra: 'whenhuobi',
         };
 
         expect(transfromZenfuseOrder(order)).toEqual(expectation);
