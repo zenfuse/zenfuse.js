@@ -46,54 +46,35 @@ const assignDefaultsInOrder = (order, defaults) => {
  */
 
 /**
- * Zenfuse -> Binance
+ * Zenfuse -> Huobi
  *
- * **DEV:** This function does not assign defaults values
+ * **DEV:** Doesnt include required account id
  *
  * @param {Order} zOrder Zenfuse order
  * @returns {object} Order for binance api
  */
 const transfromZenfuseOrder = (zOrder) => {
-    const TRANSFORM_LIST = [
-        'side',
-        'type',
-        'price',
-        'quantity',
-        'symbol',
-        'timeInForce',
-    ];
-    const bOrder = {};
+    const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
+    const hOrder = {};
 
-    bOrder.symbol = zOrder.symbol.replace('/', '').toUpperCase();
-
-    if (zOrder.type) {
-        bOrder.type = zOrder.type.toUpperCase();
-    }
-
-    if (zOrder.side) {
-        bOrder.side = zOrder.side.toUpperCase();
-    }
+    hOrder.symbol = zOrder.symbol.replace('/', '').toLowerCase();
+    hOrder.amount = zOrder.quantity.toString().toLowerCase();
 
     if (zOrder.price) {
-        bOrder.price = zOrder.price.toString();
+        hOrder.price = zOrder.price.toString().toLowerCase();
     }
 
-    if (zOrder.quantity) {
-        bOrder.quantity = zOrder.quantity.toString();
-    }
-
-    if (zOrder.timeInForce) {
-        bOrder.timeInForce = zOrder.timeInForce.toUpperCase();
-    }
+    hOrder.source = 'spot-api';
+    hOrder.type = `${zOrder.side}-${zOrder.type}`.toLowerCase();
 
     // Allow user extra keys
     for (const [key, value] of Object.entries(zOrder)) {
         if (!TRANSFORM_LIST.includes(key)) {
-            bOrder[key] = value;
+            hOrder[key] = value;
         }
     }
 
-    return bOrder;
+    return hOrder;
 };
 
 /**
