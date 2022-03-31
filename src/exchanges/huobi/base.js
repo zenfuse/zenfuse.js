@@ -6,7 +6,6 @@ const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const HuobiApiError = require('./errors/api.error');
 const HuobiCache = require('./etc/cache');
-const { createHmacSignature } = require('./utils');
 const ZenfuseRuntimeError = require('../../base/errors/runtime.error');
 
 const keysSymbol = Symbol('keys');
@@ -63,15 +62,9 @@ class HuobiBase extends ExchangeBase {
      * @returns {object};
      */
     async publicFetch(url, options = {}) {
-        if (this.hasKeys) {
-            options = mergeObjects(options, {
-                headers: {
-                    'X-MBX-APIKEY': this[keysSymbol].publicKey,
-                },
-            });
-        }
-
-        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        return await this.fetcher(url, options)
+            .then(this.handleErrorResponse)
+            .catch(this.handleFetcherError);
     }
 
     /**
