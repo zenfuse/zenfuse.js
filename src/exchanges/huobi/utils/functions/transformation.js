@@ -83,7 +83,7 @@ const transfromZenfuseOrder = (zOrder) => {
  * @param {*} bOrder Order fromf
  * @returns {Order} Zenfuse Order
  */
-const transfromBinanceOrder = (bOrder) => {
+const transfromHuobiOrder = (bOrder) => {
     /**
      * @type {Order}
      */
@@ -152,6 +152,6 @@ module.exports = {
     transformMarketString,
     assignDefaultsInOrder,
     transfromZenfuseOrder,
-    transfromBinanceOrder,
+    transfromHuobiOrder,
     transfornCandlestick,
 };
