@@ -63,7 +63,7 @@ describe('transfromZenfuseOrder()', () => {
 });
 
 describe('transformBinanceOrder()', () => {
-    const { transfromBinanceOrder } = utils;
+    const { transfromHuobiOrder } = utils;
 
     const OrderSchema = require('../../../base/schemas/openOrder').omit({
         symbol: true,
@@ -102,7 +102,7 @@ describe('transformBinanceOrder()', () => {
             ],
         };
 
-        const result = transfromBinanceOrder(binanceCreatedOrder);
+        const result = transfromHuobiOrder(binanceCreatedOrder);
 
         expect(result).toMatchSchema(OrderSchema);
     });
