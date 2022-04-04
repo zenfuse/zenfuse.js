@@ -254,7 +254,7 @@ class HuobiSpot extends HuobiBase {
         });
 
         zOrder.timestamp = Date.now();
-        zOrder.id = response.data;
+        zOrder.id = response.data.toString();
         zOrder.status = 'open';
 
         this.cache.cacheOrder(zOrder);
@@ -270,14 +270,9 @@ class HuobiSpot extends HuobiBase {
      * @param {string} orderId Huobi order id
      */
     async cancelOrderById(orderId) {
-        let openOrder = this.cache.getCachedOrderById(orderId);
+        let cachedOrder = this.cache.getCachedOrderById(orderId);
 
-        if (openOrder) {
-            this.cache.deleteCachedOrderById(orderId);
-        }
-
-        if (!openOrder) {
-            // TODO: Global user orders cache support
+        if (!cachedOrder) {
             const openOrders = await this.fetchOpenOrders();
 
             const response = openOrders[Symbol.for('zenfuse.originalPayload')];
@@ -290,28 +285,33 @@ class HuobiSpot extends HuobiBase {
                 throw new Error('Order symbol not found'); // TODO: Specific error desc
             }
 
-            openOrder = orderToDelete.symbol;
+            cachedOrder = orderToDelete;
         }
 
-        const response = await this.privateFetch('api/v3/order', {
-            method: 'DELETE',
-            searchParams: {
-                symbol: openOrder.symbol.replace('/', ''),
-                orderId: openOrder.id.toString(),
+        const response = await this.privateFetch(
+            `v1/order/orders/${orderId}/submitcancel`,
+            {
+                method: 'POST',
             },
-        });
+        );
 
-        const deletedOrder = utils.transfromHuobiOrder(response);
+        this.cache.deleteCachedOrderById(orderId);
 
-        utils.linkOriginalPayload(deletedOrder, response);
+        cachedOrder.status = 'canceled';
 
-        return deletedOrder;
+        utils.linkOriginalPayload(cachedOrder, response);
+
+        return cachedOrder;
     }
 
     async fetchOpenOrders() {
-        const response = await this.privateFetch('api/v3/openOrders');
+        await this.fetchAccountIdIfRequired();
 
-        // TODO: order status object
+        const response = await this.privateFetch('v1/order/openOrders', {
+            searchParams: {
+                'account-id': this.accountId,
+            },
+        });
 
         utils.linkOriginalPayload(response, response);
 
