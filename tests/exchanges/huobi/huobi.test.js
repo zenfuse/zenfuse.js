@@ -14,10 +14,10 @@ const env = {
     API_PUBLIC_KEY: process.env.HUOBI_PUBLIC_KEY || 'DUMMY_PUBLIC_KEY',
     API_PRIVATE_KEY: process.env.HUOBI_SECRET_KEY || 'DUMMY_SECRET_KEY',
     NOT_EXECUTABLE_ORDER: {
-        symbol: 'USDT/USD',
+        symbol: 'USDC/USDT',
         type: 'limit',
         side: 'buy',
-        quantity: 20,
+        quantity: 10,
         price: 0.5,
     },
 };
