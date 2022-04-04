@@ -12,6 +12,7 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
             case 'test_fn_failure':
                 this.global.isExchangeTestFailed = true;
                 break;
+            case 'test_fn_start':
             case 'test_start':
                 if (this.global.isExchangeTestFailed) {
                     event.test.mode = 'skip';
