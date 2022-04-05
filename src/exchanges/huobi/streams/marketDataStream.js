@@ -3,6 +3,7 @@ const utils = require('../utils');
 const RuntimeError = require('../../../base/errors/runtime.error');
 
 const HuobiWebsocketBase = require('./websocketBase');
+const { timeIntervals, intervalsMap } = require('../metadata');
 
 class MarketDataStream extends HuobiWebsocketBase {
     lastPayloadId = 0;
@@ -30,8 +31,7 @@ class MarketDataStream extends HuobiWebsocketBase {
      * @param {import('../base')} baseInstance
      */
     constructor(baseInstance) {
-        super();
-        this.base = baseInstance;
+        super(baseInstance);
 
         this.setMaxListeners(Infinity);
     }
@@ -51,7 +51,6 @@ class MarketDataStream extends HuobiWebsocketBase {
     }
 
     /**
-     *
      * @returns {this}
      */
     close() {
@@ -62,6 +61,9 @@ class MarketDataStream extends HuobiWebsocketBase {
         return this;
     }
 
+    /**
+     * @param {string|WebsocketEvent} event
+     */
     async subscribeTo(event) {
         return await this.editSubscribition(event, 'subscribe');
     }
@@ -87,38 +89,32 @@ class MarketDataStream extends HuobiWebsocketBase {
             throw new TypeError('Uknown command ' + command);
         }
 
-        if (event.channel === 'price') {
-            const symbol = utils
-                .transformMarketString(event.symbol)
-                .toLowerCase();
+        const symbol = event.symbol.replace('/', '').toLowerCase();
 
+        if (event.channel === 'price') {
+            const eventName = `market.${symbol}.ticker`;
             if (command === 'subscribe') {
-                await this.sendSocketSubscribe(`${symbol}@kline_1m`);
+                await this.sendSocketSubscribe(eventName);
                 return;
             }
 
             if (command === 'unsubscribe') {
-                await this.sendSocketUnsubscribe(`${symbol}@kline_1m`);
+                await this.sendSocketUnsubscribe(eventName);
                 return;
             }
         }
 
         if (event.channel === 'candle') {
-            const symbol = utils
-                .transformMarketString(event.symbol)
-                .toLowerCase();
-
+            const eventName = `market.${symbol}.kline.${
+                timeIntervals[event.interval]
+            }`;
             if (command === 'subscribe') {
-                await this.sendSocketSubscribe(
-                    `${symbol}@kline_${event.interval}`,
-                );
+                await this.sendSocketSubscribe(eventName);
                 return;
             }
 
             if (command === 'unsubscribe') {
-                await this.sendSocketUnsubscribe(
-                    `${symbol}@kline_${event.interval}`,
-                );
+                await this.sendSocketUnsubscribe(eventName);
                 return;
             }
         }
@@ -126,32 +122,16 @@ class MarketDataStream extends HuobiWebsocketBase {
         throw new TypeError(`Uknown channel name ${event.channel}`);
     }
 
-    async unsubscribeFromAllbySymbol(symbol) {
-        const symbolToDelete = utils
-            .transformMarketString(symbol)
-            .toLowerCase();
-
-        const requestPayload = {
-            method: 'LIST_SUBSCRIPTIONS',
-            id: this.createPayloadId(),
-        };
-
-        const allSubs = await this.sendSocketMessage(requestPayload);
-
-        const subsToDelete = allSubs.filter((a) => a.includes(symbolToDelete));
-
-        await this.sendSocketUnsubscribe(...subsToDelete);
-    }
-
     /**
      * @private
      * @param {import('ws').MessageEvent} msgEvent
      */
-    serverMessageHandler(msgEvent) {
+    async serverMessageHandler(msgEvent) {
         let payload;
 
         try {
-            payload = JSON.parse(msgEvent.data);
+            const dezipped = await this.unzip(msgEvent.data);
+            payload = JSON.parse(dezipped);
         } catch (error) {
             this.emit('error', error);
             debug.error(error);
@@ -170,19 +150,28 @@ class MarketDataStream extends HuobiWebsocketBase {
 
             const [resolve, reject] = this.messageQueue.get(payload.id);
 
-            const isErrorMsg = !!payload.code; // code value has only error payload on binance
+            const isErrorMsg = payload.status !== 'ok'; // code value has only error payload on binance
 
             if (isErrorMsg) {
-                reject(payload.msg);
+                reject(payload);
                 return;
             }
 
-            resolve(payload.result);
+            resolve(payload);
             return;
         }
 
-        if (payload.e === 'kline') {
+        if (payload.ping) {
+            this.sentPong(payload.ping);
+        }
+
+        if (!payload.ch) return;
+
+        if (payload.ch.endsWith('ticker')) {
             this.emitNewPrice(payload);
+        }
+
+        if (payload.ch.split('.')[2] === 'kline') {
             this.emitCandle(payload);
         }
     }
@@ -192,18 +181,21 @@ class MarketDataStream extends HuobiWebsocketBase {
      * @param {*} payload
      */
     emitNewPrice(payload) {
-        const kline = utils.transfornCandlestick(payload.k);
-        const parsedSymbol = this.base.parseHuobiSymbol(kline.symbol);
+        const parsedSymbol = this.base.parseHuobiSymbol(
+            payload.ch.split('.')[1],
+        );
+
+        const priceObject = {
+            symbol: parsedSymbol,
+            price: payload.tick.lastPrice,
+            timestamp: payload.ts,
+        };
 
         debug.log('Emit "price" Event');
-        debug.log(kline);
+        debug.log(priceObject);
 
-        // TODO: Return type
-        this.emit('newPrice', {
-            symbol: parsedSymbol,
-            price: parseFloat(kline.close),
-            timestamp: kline.timestamp,
-        });
+        utils.linkOriginalPayload(priceObject, payload);
+        this.emit('newPrice', priceObject);
     }
 
     /**
@@ -211,27 +203,36 @@ class MarketDataStream extends HuobiWebsocketBase {
      * @param {*} payload
      */
     emitCandle(payload) {
-        const kline = utils.transfornCandlestick(payload.k);
+        const kline = {
+            open: payload.tick.open,
+            high: payload.tick.open,
+            low: payload.tick.open,
+            close: payload.tick.open,
+            volume: payload.tick.vol,
+            interval: intervalsMap.get(payload.ch.split('.')[3]),
+            timestamp: payload.ts,
+        };
 
-        kline.symbol = this.base.parseHuobiSymbol(kline.symbol);
+        kline.symbol = this.base.parseHuobiSymbol(payload.ch.split('.')[1]);
 
         debug.log('Emit "candle" Event');
         debug.log(kline);
+
+        utils.linkOriginalPayload(kline, payload);
 
         this.emit('candle', kline);
     }
 
     /**
      * @private
-     * @param  {...string} eventNames
+     * @param  {string} eventName
      * @returns {Promise<object>} Server responce
      */
-    async sendSocketSubscribe(...eventNames) {
+    async sendSocketSubscribe(eventName) {
         this.checkSocketIsConneted();
 
         const payload = {
-            method: 'SUBSCRIBE',
-            params: [...eventNames],
+            sub: eventName,
             id: this.createPayloadId(),
         };
 
@@ -240,20 +241,15 @@ class MarketDataStream extends HuobiWebsocketBase {
 
     /**
      * @private
-     * @param  {string[]} eventNames
+     * @param  {string[]} eventName
      * @returns {Promise<object>} Server responce
      */
-    async sendSocketUnsubscribe(...eventNames) {
-        if (eventNames.lenght === 0) return; // nothing to do
-
+    async sendSocketUnsubscribe(eventName) {
         this.checkSocketIsConneted();
 
-        const id = this.createPayloadId();
-
         const payload = {
-            method: 'UNSUBSCRIBE',
-            params: [...eventNames],
-            id,
+            unsub: eventName,
+            id: this.createPayloadId(),
         };
 
         return await this.sendSocketMessage(payload);
@@ -264,7 +260,6 @@ class MarketDataStream extends HuobiWebsocketBase {
      * @returns {Promise<object>}
      */
     sendSocketMessage(msg) {
-        // TODO: Rename this shit
         this.checkSocketIsConneted();
 
         const msgString = JSON.stringify(msg);
@@ -298,6 +293,14 @@ class MarketDataStream extends HuobiWebsocketBase {
         if (!this.isSocketConneted) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
+    }
+
+    /**
+     * @private
+     * @param {number} integer From ping message
+     */
+    sentPong(integer) {
+        this.socket.send(`{"pong": ${integer}}`);
     }
 }
 
