@@ -12,7 +12,6 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
             case 'test_fn_failure':
                 this.global.isExchangeTestFailed = true;
                 break;
-            case 'test_fn_start':
             case 'test_start':
                 if (this.global.isExchangeTestFailed) {
                     event.test.mode = 'skip';
@@ -26,7 +25,7 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
                     this.openHttpMockingScope(event.describeBlock);
                 }
                 break;
-            case 'run_describe_===':
+            case 'run_describe_finish':
                 if (
                     !this.global.isExchangeTestFailed &&
                     event.describeBlock.mode !== 'skip'

@@ -123,7 +123,7 @@ module.exports = (env) => ({
                         expect(body.amount).toBeDefined();
                         // expect(body.price).toBeDefined();
                         expect(body.source).toBe('spot-api');
-                        expect(body.symbol).toBe('btcusdt');
+                        expect(body.symbol);
                         expect(body.type).toBe('buy-market');
                         return true;
                     })
@@ -216,41 +216,24 @@ module.exports = (env) => ({
 
         'cancelOrderById()': () =>
             nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-TS', Boolean)
-                .matchHeader('FTX-SIGN', Boolean)
                 // Order creation
-                .post('/api/orders', {
-                    market: 'USDT/USD',
-                    type: 'limit',
-                    side: 'buy',
-                    size: 20,
-                    price: 0.5,
+                .post('/v1/order/orders/place', (body) => {
+                    expect(body['account-id']).toBe(10000001);
+                    expect(body.amount);
+                    expect(body.price);
+                    expect(body.source).toBe('spot-api');
+                    expect(body.symbol);
+                    expect(body.type).toBe('buy-limit');
+                    return true;
                 })
+                .query(expectAuthParams)
                 .reply(200, {
-                    success: true,
-                    result: {
-                        id: 112590877630,
-                        clientId: null,
-                        market: 'USDT/USD',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 0.5,
-                        size: 20,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 20,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:21:19.188847+00:00',
-                        future: null,
-                    },
+                    status: 'ok',
+                    data: '356501383558845',
                 })
                 // Order deletion
-                .delete(`/api/orders/112590877630`)
+                .post(`/v1/order/orders/356501383558845/submitcancel`)
+                .query(expectAuthParams)
                 .reply(200),
 
         'fetchOrderById()': () =>
