@@ -1,7 +1,8 @@
 const { EventEmitter } = require('events');
 const { WebSocket } = require('ws');
+const { gunzip } = require('zlib');
 
-class ExchangeWebsocketBase extends EventEmitter {
+class HuobiWebsocketBase extends EventEmitter {
     /**
      * @param {import('../base')} baseInstance
      */
@@ -31,6 +32,16 @@ class ExchangeWebsocketBase extends EventEmitter {
     handleConnectionError(err) {
         throw err; // TODO: Websocket connection error
     }
+
+    unzip(buffer) {
+        return new Promise((resolve, reject) => {
+            gunzip(buffer, (err, dezipped) => {
+                if (err) reject(err);
+
+                resolve(dezipped.toString());
+            });
+        });
+    }
 }
 
-module.exports = ExchangeWebsocketBase;
+module.exports = HuobiWebsocketBase;
