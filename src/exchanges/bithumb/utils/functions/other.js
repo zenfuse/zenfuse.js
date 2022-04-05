@@ -13,7 +13,7 @@ const { createHmac } = require('crypto');
 const createHmacSignature = (sigParams, privateKey) => {
     const charsToDel = ['{', '}', '"'];
 
-    const signaturePayload = JSON.stringify(sigParams)
+    let signaturePayload = JSON.stringify(sigParams)
         .slice(1, -1)
         .split(',')
         .join('&')
@@ -21,7 +21,7 @@ const createHmacSignature = (sigParams, privateKey) => {
         .join('=');
 
     charsToDel.forEach((item) => {
-        signaturePayload.split(item).join('');
+        signaturePayload = signaturePayload.split(item).join('');
     });
 
     return createHmac('sha256', privateKey)

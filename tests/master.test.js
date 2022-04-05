@@ -219,7 +219,7 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: 'BTC/USDT',
                         type: 'market',
                         side: 'buy',
-                        quantity: 0.0004,
+                        quantity: 5,
                     });
                 });
 
@@ -242,7 +242,7 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: 'BTC/USDT',
                         type: 'market',
                         side: 'sell',
-                        quantity: 0.0004,
+                        quantity: 0.0001,
                     });
                 });
 
@@ -286,7 +286,7 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: 'BTC/USDT',
                         type: 'limit',
                         side: 'sell',
-                        quantity: 0.0004,
+                        quantity: 0.0001,
                         price: 55000,
                     });
                 });

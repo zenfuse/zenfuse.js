@@ -128,6 +128,7 @@ class BithumbSpot extends BithumbBase {
      * Create new spot order on Bithumb
      *
      * @param {Order} zOrder Order to create
+     * @returns {Order} zCreatedOrder
      */
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
