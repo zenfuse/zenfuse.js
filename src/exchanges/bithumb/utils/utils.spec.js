@@ -13,7 +13,7 @@ describe('createHmacSignature()', () => {
         const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
         const madeSign = createHmacSignature(params, key);
         const signature =
-            '31dac2c4416eb03c6ef5e81aa40716b71ad116ce896645bd35cba38ab4287696';
+            '9c5bd5874218fb8ed252b8c14e411600b6be3f53d56c266224131c545dfca0e4';
 
         expect(madeSign).toBe(signature);
     });
