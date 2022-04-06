@@ -18,7 +18,7 @@ const createHmacSignature = ({ ts, method, path, body = '' }, key) => {
 
     const signaturePayload = [ts, method, path, body].join('');
 
-    return createHmac('sha256', key).update(signaturePayload).digest('hex');
+    return createHmac('sha256', key).update(signaturePayload).digest('base64');
 };
 
 module.exports = { createHmacSignature };

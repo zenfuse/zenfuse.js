@@ -1,6 +1,7 @@
 const Binance = require('./exchanges/binance');
 const FTX = require('./exchanges/ftx');
 const Bithumb = require('./exchanges/bithumb');
+const OKX = require('./exchanges/okx');
 
 /**
  * @enum
@@ -10,6 +11,7 @@ module.exports = {
     FTX,
     Bithumb,
     Bitglobal: Bithumb, // TODO: Rename all githumb classes
+    OKX,
     /**
      * Object with lower case names for uid usage
      */
@@ -17,6 +19,7 @@ module.exports = {
         binance: Binance,
         ftx: FTX,
         bithumb: Bithumb,
+        okx: OKX,
     },
 };
 

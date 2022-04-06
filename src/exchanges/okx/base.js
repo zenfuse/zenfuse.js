@@ -23,7 +23,7 @@ class OkxBase extends ExchangeBase {
     static DEFAULT_OPTIONS = {
         httpClientOptions: {
             responseType: 'json',
-            prefixUrl: 'https://www.okex.com/',
+            prefixUrl: 'https://www.okx.com/',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -85,14 +85,12 @@ class OkxBase extends ExchangeBase {
             this[keysSymbol].privateKey,
         );
 
-        const passphrase = '10Rekvin_87';
-
         options = mergeObjects(options, {
             headers: {
                 'OK-ACCESS-KEY': this[keysSymbol].publicKey,
                 'OK-ACCESS-TIMESTAMP': timestamp,
                 'OK-ACCESS-SIGN': signature,
-                'OK-ACCESS-PASSPHRASE': passphrase,
+                'OK-ACCESS-PASSPHRASE': this[keysSymbol].passphrase,
             },
         });
 
@@ -136,7 +134,7 @@ class OkxBase extends ExchangeBase {
      * @public
      */
     async ping() {
-        await this.publicFetch('api/general/v3/time');
+        await this.publicFetch('api/v5/public/time');
     }
 
     /**

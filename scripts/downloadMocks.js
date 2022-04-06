@@ -75,6 +75,25 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
+            task('OKX', ({ task }) => {
+                const mocksPath =
+                    __dirname + '/../tests/exchanges/okx/mocks/static/';
+
+                const downloadList = [
+                    {
+                        filename: 'spot.json',
+                        endpoint:
+                            'https://okx.com/api/v5/public/instruments?instType=SPOT',
+                    },
+                    // {
+                    //     filename: 'history.json',
+                    //     endpoint:
+                    //         'https://ftx.com/api/markets/BTC/USDT/candles?resolution=60',
+                    // },
+                ];
+
+                run(mocksPath, downloadList, task);
+            }),
         ],
         {
             concurrency: Infinity,

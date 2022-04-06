@@ -1,68 +1,73 @@
 /**
- * Zenfuse -> FTX
+ * Zenfuse -> OKX
  *
  * @param {Order} zOrder Order from
  * @returns {object} Order for ftx api
  */
-const transfromZenfuseOrder = (zOrder) => {
+const transformZenfuseOrder = (zOrder) => {
     const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
 
-    const fOrder = {
-        market: zOrder.symbol,
-        type: zOrder.type,
+    const xOrder = {
+        instId: zOrder.symbol,
+        ordType: zOrder.type,
         side: zOrder.side,
-        size: zOrder.quantity,
+        sz: zOrder.quantity,
+        tdMode: 'cash',
     };
 
     if (zOrder.price) {
-        fOrder.price = zOrder.price;
+        xOrder.px = zOrder.price;
     }
 
     if (zOrder.type === 'market') {
-        fOrder.price = null;
+        xOrder.px = null;
     }
 
     // Allow user extra keys
     for (const [key, value] of Object.entries(zOrder)) {
         if (!TRANSFORM_LIST.includes(key)) {
-            fOrder[key] = value;
+            xOrder[key] = value;
         }
     }
 
-    return fOrder;
+    return xOrder;
 };
 
 /**
- * FTX -> Zenfuse
+ * OKX -> Zenfuse
  *
- * @param {*} fOrder Order from FTX
+ * @param {*} fOrder Order from OKX
  * @returns {Order} Zenfuse Order
  */
-const transfromFtxOrder = (fOrder) => {
+const transformOkxOrder = (xOrder) => {
     /**
      * @type {Order}
      */
     const zOrder = {};
 
-    zOrder.id = fOrder.id.toString();
-    zOrder.timestamp = Date.parse(fOrder.createdAt);
-    zOrder.symbol = fOrder.market;
-    zOrder.type = fOrder.type;
-    zOrder.side = fOrder.side;
-    zOrder.quantity = parseFloat(fOrder.size);
-    zOrder.price = fOrder.price ? parseFloat(fOrder.price) : undefined;
+    zOrder.id = xOrder.ordId.toString();
+    zOrder.timestamp = parseFloat(xOrder.cTime);
+    zOrder.symbol = xOrder.instId.replace('-', '/');
+    zOrder.type = xOrder.ordType;
+    zOrder.side = xOrder.side;
+    zOrder.quantity = parseFloat(xOrder.sz);
+    zOrder.price = xOrder.px ? parseFloat(xOrder.px) : undefined;
     // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
 
-    if (fOrder.status === 'new') {
+    if (xOrder.state === 'live' || xOrder.state === 'partially_filled') {
         zOrder.status = 'open';
-    } else {
-        zOrder.status = fOrder.status;
+    } 
+    else if (xOrder.state === 'filled') {
+        zOrder.status = 'close';
+    }
+    else {
+        zOrder.status = xOrder.state;
     }
 
     return zOrder;
 };
 
 module.exports = {
-    transfromZenfuseOrder,
-    transfromFtxOrder,
+    transformZenfuseOrder,
+    transformOkxOrder,
 };

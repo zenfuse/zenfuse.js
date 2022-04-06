@@ -7,14 +7,15 @@ describe('createHmacSignature()', () => {
         const params = {
             ts: 1588591511721,
             method: 'GET',
-            path: '/api/markets',
+            path: '/api/v5/market/tickers',
         };
 
-        const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
+        const key = '0b3695c7-94d8-4d9e-8d40-e442a94dd90f';
         const signature =
-            'dbc62ec300b2624c580611858d94f2332ac636bb86eccfa1167a7777c496ee6f';
+            'MdQTOHiC6aAfDCjy+9ZV4/dqY4tZDpPn5cJrYk7VUxM=';
+        const trueSign = createHmacSignature(params, key);
 
-        expect(createHmacSignature(params, key)).toBe(signature);
+        expect(trueSign).toBe(signature);
     });
 
     it('should return valid signature with body', () => {
@@ -37,62 +38,85 @@ describe('createHmacSignature()', () => {
 
         const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
         const signature =
-            '2832d853e55db715f59aaadd966cdc51913967da8bf687aad8457a5ac609313e';
+            'KDLYU+VdtxX1mqrdlmzcUZE5Z9qL9oeq2EV6WsYJMT4=';
+        const trueSign = createHmacSignature(params, key);
 
-        expect(createHmacSignature(params, key)).toBe(signature);
+        expect(trueSign).toBe(signature);
     });
 });
 
-describe('transfromZenfuseOrder()', () => {
-    const { transfromZenfuseOrder } = utils;
+describe('transformZenfuseOrder()', () => {
+    const { transformZenfuseOrder } = utils;
 
     it('should transform limit order', () => {
         const order = {
-            symbol: 'BTC/ETH',
+            symbol: 'BTC-USDT',
             side: 'buy',
             type: 'limit',
-            price: 69.6969,
-            quantity: 0.02323,
+            price: "69.6969",
+            quantity: "0.02323",
             extra: 'whenbinance',
         };
 
         const expectation = {
-            market: 'BTC/ETH',
-            side: 'buy',
-            type: 'limit',
-            price: 69.6969,
-            size: 0.02323,
+            instId: "BTC-USDT",
+            tdMode: "cash",
+            side: "buy",
+            ordType: "limit",
+            px: "69.6969",
+            sz: "0.02323",
             extra: 'whenbinance',
         };
 
-        expect(transfromZenfuseOrder(order)).toStrictEqual(expectation);
+        expect(transformZenfuseOrder(order)).toStrictEqual(expectation);
     });
 });
 
-describe('transformFtxOrder()', () => {
-    const { transfromFtxOrder } = utils;
+describe('transformOkxOrder()', () => {
+    const { transformOkxOrder } = utils;
 
     const OrderSchema = require('../../../base/schemas/openOrder');
 
     it('should transform order', () => {
-        const ftxCreatedOrder = {
-            createdAt: '2019-03-05T09:56:55.728933+00:00',
-            filledSize: 0,
-            id: 9596912,
-            market: 'ZEFU/USDT',
-            price: 10,
-            remainingSize: 31431,
-            side: 'sell',
-            size: 31431,
-            status: 'open',
-            type: 'limit',
-            reduceOnly: false,
-            ioc: false,
-            postOnly: false,
-            clientId: null,
-        };
+        const okxCreatedOrder = {
+            instType: "SPOT",
+            instId: "BTC-USDT",
+            ccy: "",
+            ordId: "312269865356374016",
+            clOrdId: "b1",
+            tag: "",
+            px: "999",
+            sz: "3",
+            pnl: "5",
+            ordType: "limit",
+            side: "buy",
+            posSide: "long",
+            tdMode: "isolated",
+            accFillSz: "0",
+            fillPx: "0",
+            tradeId: "0",
+            fillSz: "0",
+            fillTime: "0",
+            state: "live",
+            avgPx: "0",
+            lever: "20",
+            tpTriggerPx: "",
+            tpTriggerPxType: "last",
+            tpOrdPx: "",
+            slTriggerPx: "",
+            slTriggerPxType: "last",
+            slOrdPx: "",
+            feeCcy: "",
+            fee: "",
+            rebateCcy: "",
+            rebate: "",
+            tgtCcy:"",
+            category: "",
+            uTime: "1649288117964",
+            cTime: "1649288117964"
+          };
 
-        const result = transfromFtxOrder(ftxCreatedOrder);
+        const result = transformOkxOrder(okxCreatedOrder);
 
         expect(result).toMatchSchema(OrderSchema);
     });

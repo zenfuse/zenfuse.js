@@ -1,4 +1,4 @@
-const FtxBase = require('../base');
+const OkxBase = require('../base');
 const mergeObjects = require('deepmerge');
 
 const utils = require('../utils');
@@ -11,9 +11,9 @@ const MarketDataStream = require('../streams/marketDataStream');
  */
 
 /**
- * FTX class for spot wallet API
+ * OKX class for spot wallet API
  */
-class FtxSpot extends FtxBase {
+class OkxSpot extends OkxBase {
     static DEFAULT_OPTIONS = {
         defaults: {
             limit: {},
@@ -25,7 +25,7 @@ class FtxSpot extends FtxBase {
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
-        const fullOptions = mergeObjects(FtxSpot.DEFAULT_OPTIONS, options);
+        const fullOptions = mergeObjects(OkxSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
     }
 
@@ -47,7 +47,7 @@ class FtxSpot extends FtxBase {
     }
 
     /**
-     * @returns {string[]} Array of ticker pairs on FTX
+     * @returns {string[]} Array of ticker pairs on OKX
      */
     async fetchMarkets() {
         const response = await this.publicFetch('api/markets');
@@ -100,7 +100,7 @@ class FtxSpot extends FtxBase {
         const prices = response.result
             .filter((market) => market.type === 'spot')
             .map((market) => {
-                // NOTE: FTX Return dead tokens with null price
+                // NOTE: OKX Return dead tokens with null price
                 return {
                     symbol: market.name,
                     price: market.price || 0,
@@ -166,21 +166,21 @@ class FtxSpot extends FtxBase {
      */
 
     /**
-     * Create new spot order on FTX
+     * Create new spot order on OKX
      *
      * @param {Order} zOrder Order to create
      */
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const fOrder = utils.transfromZenfuseOrder(zOrder);
+        const fOrder = utils.transformZenfuseOrder(zOrder);
 
         const fCreatedOrder = await this.privateFetch('api/orders', {
             method: 'POST',
             json: fOrder,
         });
 
-        const zCreatedOrder = utils.transfromFtxOrder(fCreatedOrder.result);
+        const zCreatedOrder = utils.transformOkxOrder(fCreatedOrder.result);
 
         this.cache.cacheOrder(zCreatedOrder);
 
@@ -192,7 +192,7 @@ class FtxSpot extends FtxBase {
     /**
      * Cancel an active order
      *
-     * @param {string} orderId Ftx order id
+     * @param {string} orderId Okx order id
      */
     async cancelOrderById(orderId) {
         const response = await this.privateFetch(`api/orders/${orderId}`, {
@@ -242,7 +242,7 @@ class FtxSpot extends FtxBase {
     async fetchOrderById(orderId) {
         const responce = await this.privateFetch(`api/orders/${orderId}`);
 
-        const zOrder = utils.transfromFtxOrder(responce.result);
+        const zOrder = utils.transformOkxOrder(responce.result);
 
         return zOrder;
     }
@@ -256,4 +256,4 @@ class FtxSpot extends FtxBase {
     }
 }
 
-module.exports = FtxSpot;
+module.exports = OkxSpot;

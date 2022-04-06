@@ -1,9 +1,9 @@
 const { createHmac } = require('crypto');
 
 const utils = require('../utils');
-const FtxWebsocketBase = require('./websocketBase');
+const OkxWebsocketBase = require('./websocketBase');
 
-class AccountDataStream extends FtxWebsocketBase {
+class AccountDataStream extends OkxWebsocketBase {
     /**
      * @type {import('ws').WebSocket}
      */
