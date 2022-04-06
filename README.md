@@ -6,7 +6,7 @@
 [![Version](https://img.shields.io/npm/v/zenfuse?logo=npm)](https://www.npmjs.com/package/zenfuse)
 </br>
 [![Last Commit](https://img.shields.io/github/last-commit/zenfuse/zenfuse.js?logo=git)](https://github.com/zenfuse/zenfuse.js/commits)
-[![Zenfuse Dev Tool](https://gist.githubusercontent.com/izzqz/1b76f1e64b7883a602440ad6559159c2/raw/5fde4394256555e38b825abd8ada901739143388/badge.svg)](https://zenfuse.io)
+[![Zenfuse Dev Tool](https://zenfuse.io/badges/devtool.svg)](https://zenfuse.io)
 
 <!-- TOC depthfrom:2 updateonsave:false -->
 
