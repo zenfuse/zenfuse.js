@@ -1,10 +1,28 @@
 const { z } = require('zod');
+/**
+ * @typedef {import('../src/index.js').Order} Order
+ * @typedef {import('../src/index.js').timeInterval} timeInterval
+ */
 
 /**
  * @typedef {object} MasterTestEnvironment
  * @property {string} API_PUBLIC_KEY
  * @property {string} API_PRIVATE_KEY
- * @property {import('../src/index.js').Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usualy a pair of stablecoins for less than one.
+ * @property {object} CANDLES_REQUEST
+ * @property {string} CANDLES_REQUEST.symbol
+ * @property {timeInterval} CANDLES_REQUEST.interval
+ * @property {Order} BUY_MARKET_ORDER
+ * @property {Order} SELL_MARKET_ORDER
+ * @property {Order} BUY_LIMIT_ORDER
+ * @property {Order} SELL_LIMIT_ORDER
+ * @property {Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usualy a pair of stablecoins for a half price.
+ * @property {object} PRICE_SUBSCRIPTION
+ * @property {string} PRICE_SUBSCRIPTION.channel
+ * @property {string} PRICE_SUBSCRIPTION.symbol
+ * @property {object} CANDLE_SUBSCRIPTION
+ * @property {string} CANDLE_SUBSCRIPTION.channel
+ * @property {string} CANDLE_SUBSCRIPTION.symbol
+ * @property {timeInterval} CANDLE_SUBSCRIPTION.interval
  */
 
 const NotAuthenticatedError = require('../src/base/errors/notAuthenticated.error.js');
@@ -145,10 +163,7 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should fetch history without errors', async () => {
-                result = await exchange.fetchCandleHistory({
-                    symbol: 'BTC/USDT',
-                    interval: '1m',
-                });
+                result = await exchange.fetchCandleHistory(env.CANDLES_REQUEST);
             });
 
             it('should return valid schema', () => {
@@ -156,8 +171,8 @@ module.exports = function masterTest(Exchange, env) {
                 expect(result).toMatchSchema(schema);
 
                 result.forEach((kline) => {
-                    expect(kline.interval).toBe('1m');
-                    expect(kline.symbol).toBe('BTC/USDT');
+                    expect(kline.interval).toBe(env.CANDLES_REQUEST.interval);
+                    expect(kline.symbol).toBe(env.CANDLES_REQUEST.symbol);
                     expect(
                         kline[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -215,18 +230,18 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder({
-                        symbol: 'BTC/USDT',
-                        type: 'market',
-                        side: 'buy',
-                        quantity: 5,
-                    });
+                    result = await exchange.createOrder(env.BUY_MARKET_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-                    // TODO: Fix output validation
                     expect(result).toMatchSchema(OrderSchema);
+                    expect(result).toMatchObject({
+                        symbol: env.BUY_MARKET_ORDER.symbol,
+                        type: env.BUY_MARKET_ORDER.type,
+                        side: env.BUY_MARKET_ORDER.side,
+                        status: 'open',
+                    });
 
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -238,17 +253,18 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder({
-                        symbol: 'BTC/USDT',
-                        type: 'market',
-                        side: 'sell',
-                        quantity: 0.0001,
-                    });
+                    result = await exchange.createOrder(env.SELL_MARKET_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
                     expect(result).toMatchSchema(OrderSchema);
+                    expect(result).toMatchObject({
+                        symbol: env.SELL_MARKET_ORDER.symbol,
+                        type: env.SELL_MARKET_ORDER.type,
+                        side: env.SELL_MARKET_ORDER.side,
+                        status: 'open',
+                    });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -259,19 +275,18 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder({
-                        symbol: 'BTC/USDT',
-                        type: 'limit',
-                        side: 'buy',
-                        quantity: 0.0004,
-                        price: 35000,
-                    });
+                    result = await exchange.createOrder(env.BUY_LIMIT_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
                     expect(result).toMatchSchema(OrderSchema);
-
+                    expect(result).toMatchObject({
+                        symbol: env.BUY_LIMIT_ORDER.symbol,
+                        type: env.BUY_LIMIT_ORDER.type,
+                        side: env.BUY_LIMIT_ORDER.side,
+                        status: 'open',
+                    });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -282,19 +297,18 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder({
-                        symbol: 'BTC/USDT',
-                        type: 'limit',
-                        side: 'sell',
-                        quantity: 0.0001,
-                        price: 55000,
-                    });
+                    result = await exchange.createOrder(env.SELL_LIMIT_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
                     expect(result).toMatchSchema(OrderSchema);
-
+                    expect(result).toMatchObject({
+                        symbol: env.SELL_LIMIT_ORDER.symbol,
+                        type: env.SELL_LIMIT_ORDER.type,
+                        side: env.SELL_LIMIT_ORDER.side,
+                        status: 'open',
+                    });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -334,7 +348,6 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                // TODO: Test output
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
                 ).toBeDefined();
@@ -550,10 +563,7 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should emit "newPrice" event', (done) => {
-                marketDataStream.subscribeTo({
-                    channel: 'price',
-                    symbol: 'BTC/USDT',
-                });
+                marketDataStream.subscribeTo(env.PRICE_SUBSCRIPTION);
 
                 marketDataStream.once('newPrice', (p) => {
                     const schema = z.object({
@@ -563,35 +573,24 @@ module.exports = function masterTest(Exchange, env) {
                         price: z.number(),
                     });
                     expect(p).toMatchSchema(schema);
-                    expect(p.symbol).toBe('BTC/USDT');
+                    expect(p.symbol).toBe(env.PRICE_SUBSCRIPTION.price);
 
                     marketDataStream
-                        .unsubscribeFrom({
-                            channel: 'price',
-                            symbol: 'BTC/USDT',
-                        })
+                        .unsubscribeFrom(env.PRICE_SUBSCRIPTION)
                         .then(done);
                 });
             });
 
             it('should emit "candle" event', (done) => {
-                marketDataStream.subscribeTo({
-                    channel: 'candle',
-                    symbol: 'BTC/USDT',
-                    interval: '1m',
-                });
+                marketDataStream.subscribeTo(env.CANDLE_SUBSCRIPTION);
 
                 marketDataStream.once('candle', (p) => {
                     expect(p).toMatchSchema(KlineSchema);
-                    expect(p.symbol).toBe('BTC/USDT');
-                    expect(p.interval).toBe('1m');
+                    expect(p.symbol).toBe(env.CANDLE_SUBSCRIPTION.symbol);
+                    expect(p.interval).toBe(env.CANDLE_SUBSCRIPTION.interval);
 
                     marketDataStream
-                        .unsubscribeFrom({
-                            channel: 'candle',
-                            symbol: 'BTC/USDT',
-                            interval: '1m',
-                        })
+                        .unsubscribeFrom(env.CANDLE_SUBSCRIPTION)
                         .then(done);
                 });
             });
@@ -605,15 +604,9 @@ module.exports = function masterTest(Exchange, env) {
             it('should unsubsctibed from specific event', async () => {
                 expect(marketDataStream.isSocketConnected).toBe(true);
 
-                await marketDataStream.subscribeTo({
-                    channel: 'price',
-                    symbol: 'BTC/USDT',
-                });
+                await marketDataStream.subscribeTo(env.PRICE_SUBSCRIPTION);
 
-                await marketDataStream.unsubscribeFrom({
-                    channel: 'price',
-                    symbol: 'BTC/USDT',
-                });
+                await marketDataStream.unsubscribeFrom(env.PRICE_SUBSCRIPTION);
 
                 const listener = jest.fn();
 
