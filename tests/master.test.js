@@ -240,7 +240,6 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: env.BUY_MARKET_ORDER.symbol,
                         type: env.BUY_MARKET_ORDER.type,
                         side: env.BUY_MARKET_ORDER.side,
-                        status: 'open',
                     });
 
                     expect(
@@ -263,7 +262,6 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: env.SELL_MARKET_ORDER.symbol,
                         type: env.SELL_MARKET_ORDER.type,
                         side: env.SELL_MARKET_ORDER.side,
-                        status: 'open',
                     });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -285,7 +283,6 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: env.BUY_LIMIT_ORDER.symbol,
                         type: env.BUY_LIMIT_ORDER.type,
                         side: env.BUY_LIMIT_ORDER.side,
-                        status: 'open',
                     });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -307,7 +304,6 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: env.SELL_LIMIT_ORDER.symbol,
                         type: env.SELL_LIMIT_ORDER.type,
                         side: env.SELL_LIMIT_ORDER.side,
-                        status: 'open',
                     });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
