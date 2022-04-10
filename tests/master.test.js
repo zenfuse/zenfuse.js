@@ -569,7 +569,7 @@ module.exports = function masterTest(Exchange, env) {
                         price: z.number(),
                     });
                     expect(p).toMatchSchema(schema);
-                    expect(p.symbol).toBe(env.PRICE_SUBSCRIPTION.price);
+                    expect(p.symbol).toBe(env.PRICE_SUBSCRIPTION.symbol);
 
                     marketDataStream
                         .unsubscribeFrom(env.PRICE_SUBSCRIPTION)

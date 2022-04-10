@@ -100,7 +100,7 @@ class BithumbSpot extends BithumbBase {
         if (market) {
             const price = {
                 symbol: market,
-                price: parseFloat(response.data.c),
+                price: parseFloat(response.data[0].c),
             };
 
             utils.linkOriginalPayload(price, response);
@@ -134,6 +134,20 @@ class BithumbSpot extends BithumbBase {
         this.validateOrderParams(zOrder);
 
         const bOrder = transformZenfuseOrder(zOrder);
+
+        if (zOrder.type === 'market' && zOrder.side === 'buy') {
+            let orderTotal = null;
+
+            const { price } = await this.fetchPrice(zOrder.symbol);
+
+            console.log(price);
+
+            orderTotal = price * zOrder.quantity;
+
+            bOrder.quantity = orderTotal.toString();
+        }
+
+        // console.log(zOrder);
 
         const bCreatedOrder = await this.privateFetch('spot/placeOrder', {
             method: 'POST',
