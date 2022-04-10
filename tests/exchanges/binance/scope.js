@@ -437,11 +437,5 @@ module.exports = (env) => ({
     },
 });
 
-const toBinanceStyle = (value) => {
-    if (typeof value === 'number') {
-        return value.toString();
-    }
-    if (typeof value === 'string') {
-        return value.replace('/', '').toUpperCase();
-    }
-};
+const toBinanceStyle = (value) =>
+    value.toString().replace('/', '').toUpperCase();
