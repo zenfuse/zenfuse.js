@@ -84,7 +84,7 @@ module.exports = (env) => ({
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
                     .get('/openapi/v1/spot/ticker')
-                    .query({ symbol: 'BTC-USDT' })
+                    .query({ symbol: env.BUY_MARKET_ORDER.symbol })
                     .reply(200, {
                         data: [
                             {
