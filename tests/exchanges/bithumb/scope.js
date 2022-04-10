@@ -83,21 +83,41 @@ module.exports = (env) => ({
             'buy by market': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
+                    .get('/openapi/v1/spot/ticker')
+                    .query({ symbol: 'BTC-USDT' })
+                    .reply(200, {
+                        data: [
+                            {
+                                p: '0.0273',
+                                ver: '55739042',
+                                vol: '30247196.39470500',
+                                c: '38249.00',
+                                s: 'BTC-USDT',
+                                t: '30247196.39470500',
+                                v: '793.849850',
+                                h: '39096.19',
+                                l: '36818.21',
+                                lev: '10',
+                            },
+                        ],
+                        code: '0',
+                        msg: 'success',
+                        timestamp: 1643713512523,
+                        startTime: null,
+                    })
                     .post('/openapi/v1/spot/placeOrder', (b) => {
                         expect(b).toMatchObject({
                             symbol: toBithumbStyle(env.BUY_MARKET_ORDER.symbol),
                             type: 'market',
                             side: 'buy',
                             price: '-1',
-                            quantity: toBithumbStyle(
-                                env.BUY_MARKET_ORDER.quantity,
-                            ),
                         });
 
                         expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
                         expect(b.msgNo).toBeDefined();
                         expect(b.timestamp).toBeDefined();
                         expect(b.signature).toBeDefined();
+                        expect(b.quantity).toBeDefined();
                         return true;
                     })
                     .reply(201, {
