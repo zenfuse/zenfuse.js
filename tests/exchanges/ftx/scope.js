@@ -300,7 +300,7 @@ module.exports = (env) => ({
                         avgFillPrice: null,
                         postOnly: false,
                         ioc: false,
-                        createdAt: new Date(),
+                        createdAt: '2022-04-10T21:10:29.520Z',
                         future: null,
                     },
                 })
@@ -324,7 +324,7 @@ module.exports = (env) => ({
                         avgFillPrice: null,
                         postOnly: false,
                         ioc: false,
-                        createdAt: new Date(),
+                        createdAt: '2022-04-10T21:10:29.520Z',
                         future: null,
                     },
                 })
