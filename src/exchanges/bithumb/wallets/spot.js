@@ -140,14 +140,10 @@ class BithumbSpot extends BithumbBase {
 
             const { price } = await this.fetchPrice(zOrder.symbol);
 
-            console.log(price);
-
             orderTotal = price * zOrder.quantity;
 
             bOrder.quantity = orderTotal.toString();
         }
-
-        // console.log(zOrder);
 
         const bCreatedOrder = await this.privateFetch('spot/placeOrder', {
             method: 'POST',
@@ -212,8 +208,6 @@ class BithumbSpot extends BithumbBase {
                 // coinType: 'BTC',
             },
         });
-
-        // console.log(response);
 
         const balances = response.data
             .filter((b) => parseFloat(b.count) > 0)
