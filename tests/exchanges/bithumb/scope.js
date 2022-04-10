@@ -68,8 +68,10 @@ module.exports = (env) => ({
             nock(HOSTNAME)
                 .get('/openapi/v1/spot/kline')
                 .query((q) => {
-                    expect(q.symbol).toBe('BTC-USDT');
-                    expect(q.type).toBe('m1');
+                    expect(q.symbol).toBe(
+                        toBithumbStyle(env.CANDLES_REQUEST.symbol),
+                    );
+                    expect(q.type).toBe('m1'); // TODO: Find healthy way to convert intervals
                     expect(q.start).toBeDefined();
                     expect(q.end).toBeDefined();
                     return true;
@@ -83,14 +85,16 @@ module.exports = (env) => ({
                     .matchHeader('Content-Type', 'application/json')
                     .post('/openapi/v1/spot/placeOrder', (b) => {
                         expect(b).toMatchObject({
-                            symbol: 'BTC-USDT',
+                            symbol: toBithumbStyle(env.BUY_MARKET_ORDER.symbol),
                             type: 'market',
                             side: 'buy',
                             price: '-1',
-                            quantity: '0.0004',
+                            quantity: toBithumbStyle(
+                                env.BUY_MARKET_ORDER.quantity,
+                            ),
                         });
 
-                        expect(b.apiKey).toBeDefined();
+                        expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
                         expect(b.msgNo).toBeDefined();
                         expect(b.timestamp).toBeDefined();
                         expect(b.signature).toBeDefined();
@@ -99,11 +103,11 @@ module.exports = (env) => ({
                     .reply(201, {
                         data: {
                             orderId: '23132134242',
-                            symbol: 'BTC-USDT',
+                            symbol: toBithumbStyle(env.BUY_MARKET_ORDER.symbol),
                         },
                         code: '0',
                         msg: 'success',
-                        timestamp: 1551346473238,
+                        timestamp: Date.now(),
                         params: [],
                     }),
             'sell by market': () =>
@@ -111,14 +115,18 @@ module.exports = (env) => ({
                     .matchHeader('Content-Type', 'application/json')
                     .post('/openapi/v1/spot/placeOrder', (b) => {
                         expect(b).toMatchObject({
-                            symbol: 'BTC-USDT',
+                            symbol: toBithumbStyle(
+                                env.SELL_MARKET_ORDER.symbol,
+                            ),
                             type: 'market',
                             side: 'sell',
                             price: '-1',
-                            quantity: '0.0004',
+                            quantity: toBithumbStyle(
+                                env.SELL_MARKET_ORDER.quantity,
+                            ),
                         });
 
-                        expect(b.apiKey).toBeDefined();
+                        expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
                         expect(b.msgNo).toBeDefined();
                         expect(b.timestamp).toBeDefined();
                         expect(b.signature).toBeDefined();
@@ -127,35 +135,39 @@ module.exports = (env) => ({
                     .reply(201, {
                         data: {
                             orderId: '23132134242',
-                            symbol: 'BTC-USDT',
+                            symbol: toBithumbStyle(
+                                env.SELL_MARKET_ORDER.symbol,
+                            ),
                         },
                         code: '0',
                         msg: 'success',
-                        timestamp: 1551346473238,
+                        timestamp: Date.now(),
                         params: [],
                     }),
             'buy by limit': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
-                    .post('/openapi/v1/spot/placeOrder', (q) => {
-                        expect(q).toMatchObject({
-                            symbol: 'BTC-USDT',
+                    .post('/openapi/v1/spot/placeOrder', (b) => {
+                        expect(b).toMatchObject({
+                            symbol: toBithumbStyle(env.BUY_LIMIT_ORDER.symbol),
                             type: 'limit',
                             side: 'buy',
-                            price: '35000',
-                            quantity: '0.0004',
+                            price: toBithumbStyle(env.BUY_LIMIT_ORDER.price),
+                            quantity: toBithumbStyle(
+                                env.BUY_LIMIT_ORDER.quantity,
+                            ),
                         });
 
-                        expect(q.apiKey).toBeDefined();
-                        expect(q.msgNo).toBeDefined();
-                        expect(q.timestamp).toBeDefined();
-                        expect(q.signature).toBeDefined();
+                        expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
+                        expect(b.msgNo).toBeDefined();
+                        expect(b.timestamp).toBeDefined();
+                        expect(b.signature).toBeDefined();
                         return true;
                     })
                     .reply(201, {
                         data: {
                             orderId: '23132134242',
-                            symbol: 'BTC-USDT',
+                            symbol: toBithumbStyle(env.BUY_LIMIT_ORDER.symbol),
                         },
                         code: '0',
                         msg: 'success',
@@ -167,14 +179,16 @@ module.exports = (env) => ({
                     .matchHeader('Content-Type', 'application/json')
                     .post('/openapi/v1/spot/placeOrder', (b) => {
                         expect(b).toMatchObject({
-                            symbol: 'BTC-USDT',
+                            symbol: toBithumbStyle(env.SELL_LIMIT_ORDER.symbol),
                             type: 'limit',
                             side: 'sell',
-                            price: '55000',
-                            quantity: '0.0004',
+                            price: toBithumbStyle(env.SELL_LIMIT_ORDER.price),
+                            quantity: toBithumbStyle(
+                                env.SELL_LIMIT_ORDER.quantity,
+                            ),
                         });
 
-                        expect(b.apiKey).toBeDefined();
+                        expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
                         expect(b.msgNo).toBeDefined();
                         expect(b.timestamp).toBeDefined();
                         expect(b.signature).toBeDefined();
@@ -183,7 +197,7 @@ module.exports = (env) => ({
                     .reply(201, {
                         data: {
                             orderId: '23132134242',
-                            symbol: 'BTC-USDT',
+                            symbol: toBithumbStyle(env.SELL_LIMIT_ORDER.symbol),
                         },
                         code: '0',
                         msg: 'success',
@@ -227,14 +241,16 @@ module.exports = (env) => ({
                 // Order creation
                 .post('/openapi/v1/spot/placeOrder', (b) => {
                     expect(b).toMatchObject({
-                        symbol: 'USDT-USD',
-                        type: 'limit',
-                        side: 'buy',
-                        quantity: '20',
-                        price: '0.5',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        type: env.NOT_EXECUTABLE_ORDER.type,
+                        side: env.NOT_EXECUTABLE_ORDER.side,
+                        quantity: toBithumbStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
+                        price: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.price),
                     });
 
-                    expect(b.apiKey).toBeDefined();
+                    expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
                     expect(b.msgNo).toBeDefined();
                     expect(b.timestamp).toBeDefined();
                     expect(b.signature).toBeDefined();
@@ -243,21 +259,21 @@ module.exports = (env) => ({
                 .reply(201, {
                     data: {
                         orderId: '23132134242',
-                        symbol: 'USDT-USD',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     },
                     code: '0',
                     msg: 'success',
-                    timestamp: 1551346473238,
+                    timestamp: Date.now(),
                     params: [],
                 })
                 // Order deletion
                 .post(`/openapi/v1/spot/cancelOrder`, (q) => {
                     expect(q).toMatchObject({
                         orderId: '23132134242',
-                        symbol: 'USDT-USD',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     });
 
-                    expect(q.apiKey).toBeDefined();
+                    expect(q.apiKey).toBe(env.API_PUBLIC_KEY);
                     expect(q.msgNo).toBeDefined();
                     expect(q.timestamp).toBeDefined();
                     expect(q.signature).toBeDefined();
@@ -276,14 +292,16 @@ module.exports = (env) => ({
                 // Order creation
                 .post('/openapi/v1/spot/placeOrder', (b) => {
                     expect(b).toMatchObject({
-                        symbol: 'USDT-USD',
-                        type: 'limit',
-                        side: 'buy',
-                        quantity: '20',
-                        price: '0.5',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        type: env.NOT_EXECUTABLE_ORDER.type,
+                        side: env.NOT_EXECUTABLE_ORDER.side,
+                        quantity: toBithumbStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
+                        price: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.price),
                     });
 
-                    expect(b.apiKey).toBeDefined();
+                    expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
                     expect(b.msgNo).toBeDefined();
                     expect(b.timestamp).toBeDefined();
                     expect(b.signature).toBeDefined();
@@ -292,7 +310,7 @@ module.exports = (env) => ({
                 .reply(201, {
                     data: {
                         orderId: '23132134242',
-                        symbol: 'USDT-USD',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     },
                     code: '0',
                     msg: 'success',
@@ -303,10 +321,10 @@ module.exports = (env) => ({
                 .post('/openapi/v1/spot/singleOrder', (b) => {
                     expect(b).toMatchObject({
                         orderId: '23132134242',
-                        symbol: 'USDT-USD',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     });
 
-                    expect(b.apiKey).toBeDefined();
+                    expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
                     expect(b.msgNo).toBeDefined();
                     expect(b.timestamp).toBeDefined();
                     expect(b.signature).toBeDefined();
@@ -315,40 +333,44 @@ module.exports = (env) => ({
                 .reply(200, {
                     data: {
                         orderId: '23132134242',
-                        symbol: 'USDT-USD',
-                        price: '0.5',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        price: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.price),
                         tradedNum: '0.01',
-                        quantity: '20',
+                        quantity: toBithumbStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
                         avgPrice: '0',
                         status: 'pending',
-                        type: 'limit',
-                        side: 'buy',
-                        createTime: '1551346473238',
+                        type: env.NOT_EXECUTABLE_ORDER.type,
+                        side: env.NOT_EXECUTABLE_ORDER.side,
+                        createTime: Date.now().toString(),
                         tradeTotal: '0.5',
                     },
                     code: '0',
                     msg: 'success',
-                    timestamp: 1551346473238,
+                    timestamp: Date.now(),
                     params: [],
                 })
                 // Order deletion
-                .post(`/openapi/v1/spot/cancelOrder`, (q) => {
-                    expect(q).toMatchObject({
+                .post(`/openapi/v1/spot/cancelOrder`, (b) => {
+                    expect(b).toMatchObject({
                         orderId: '23132134242',
-                        symbol: 'USDT-USD',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     });
 
-                    expect(q.apiKey).toBeDefined();
-                    expect(q.msgNo).toBeDefined();
-                    expect(q.timestamp).toBeDefined();
-                    expect(q.signature).toBeDefined();
+                    expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
                     return true;
                 })
                 .reply(200, {
                     code: '0',
                     msg: 'success',
-                    timestamp: 1551346473238,
+                    timestamp: Date.now(),
                     params: [],
                 }),
     },
 });
+
+const toBithumbStyle = (value) => value.toString().replace('/', '-');
