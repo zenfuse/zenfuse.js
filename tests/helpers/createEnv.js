@@ -8,8 +8,6 @@ const mergeObjects = require('deepmerge');
  * @type {MasterTestEnvironment}
  */
 const DEFAULTS = {
-    API_PUBLIC_KEY: 'DUMMY_PUBLIC_KEY',
-    API_PRIVATE_KEY: 'DUMMY_SECRET_KEY',
     CANDLES_REQUEST: {
         symbol: 'BTC/USDT',
         interval: '1m',
@@ -62,4 +60,19 @@ const DEFAULTS = {
  * @param {MasterTestEnvironment} extra
  * @returns {MasterTestEnvironment}
  */
-module.exports = (extra) => mergeObjects(DEFAULTS, extra);
+module.exports = (extra) => {
+    const merdged = mergeObjects(DEFAULTS, extra);
+
+    // For deepmerge undefined is a legit default value
+    // Overwrite it if keys doesn't exist in the environment
+
+    if (merdged.API_PRIVATE_KEY === undefined) {
+        merdged.API_PRIVATE_KEY = 'DUMMY_PRIVATE_KEY';
+    }
+
+    if (merdged.API_PUBLIC_KEY === undefined) {
+        merdged.API_PUBLIC_KEY = 'DUMMY_PUBLIC_KEY';
+    }
+
+    return merdged;
+};
