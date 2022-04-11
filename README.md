@@ -72,6 +72,7 @@ Zenfuse.js is crypto exchanges connector library. Currently, in active developme
 
 -   [Binance](https://www.binance.com/en)
 -   [FTX](https://ftx.com/)
+-   [Bitglobal](https://www.bitglobal.com/en-us)
 
 ## Installation
 
@@ -87,11 +88,12 @@ Any class of spot wallet has the same interface.
 New instance has own options and namespace for one account.
 
 ```js
-const { Binance, FTX } = require('zenfuse');
+const { Binance, FTX, Bithumb } = require('zenfuse');
 // Imported exchanges classes of wallets, currently only spot markets.
 
 const binance = new Binance['spot']();
-const FTX = new FTX['spot']();
+const ftx = new FTX['spot']();
+const bithumb = new Bithumb['spot']();
 ```
 
 ### Public fetching
@@ -105,11 +107,12 @@ Fetching all markets that exist in exchange.
 ```js
 await binance.fetchMarkets();
 // ['BTC/BUSD', 'ETH/USDT', ...]
-```
 
-```js
 await ftx.fetchMarkets();
 // ['BTC/USD', 'ETH/USDT', ... ]
+
+await bithumb.fetchMarkets();
+// ['BTC/USDT', 'ETH/USDT', ... ]
 ```
 
 ### `.fetchTickers`
@@ -122,7 +125,12 @@ await binance.fetchTickers();
 
 await ftx.fetchTickers();
 // ['BTC', 'USD', ... ]
+
+await bithumb.fetchTickers()
+// ['BTC', 'ETH', ... ]
 ```
+
+
 
 ### `.fetchPrice`
 
