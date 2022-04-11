@@ -1,3 +1,8 @@
+export type structualizedMarket = {
+    symbol: string;
+    baseTicker: string;
+    quoteTicker: string;
+};
 /**
  * @param {Array} symbols Array of symbols from `api/v3/exchangeInfo`
  * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
@@ -9,17 +14,15 @@ export function extractTickersFromSymbols(symbols: any[]): string[];
  */
 export function extractSpotMarkets(symbols: any[]): any[];
 /**
+ * @typedef {object} structualizedMarket
+ * @property {string} symbol
+ * @property {string} baseTicker
+ * @property {string} quoteTicker
+ */
+/**
  * Structualizing all markets to one interface
  *
  * @param {Array} markets
- * @returns {{
- *      symbol: string,
- *      baseTicker: string
- *      quoteTicker: string
- * }}
+ * @returns {structualizedMarket}
  */
-export function structualizeMarkets(markets: any[]): {
-    symbol: string;
-    baseTicker: string;
-    quoteTicker: string;
-};
+export function structualizeMarkets(markets: any[]): structualizedMarket;

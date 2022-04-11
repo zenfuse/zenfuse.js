@@ -42,8 +42,10 @@ export type Kline = {
 export type timeInterval = '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '6h' | '8h' | '12h' | '1d' | '3d' | '1w' | '1M';
 import Binance = require("./exchanges/binance");
 import FTX = require("./exchanges/ftx");
+import Bithumb = require("./exchanges/bithumb");
 export declare namespace exchanges {
     export { Binance as binance };
     export { FTX as ftx };
+    export { Bithumb as bithumb };
 }
-export { Binance, FTX };
+export { Binance, FTX, Bithumb };

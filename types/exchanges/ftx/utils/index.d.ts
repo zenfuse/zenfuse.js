@@ -5,12 +5,7 @@ declare const _exports: {
         path: string;
         body?: any;
     }, key: string) => string;
-    transfromZenfuseOrder: (zOrder: Order) => {
-        market: any;
-        type: any;
-        side: any;
-        size: any;
-    };
+    transfromZenfuseOrder: (zOrder: Order) => any;
     transfromFtxOrder: (fOrder: any) => Order;
     extractSpotMarkets: (markets: any[]) => any[];
     extractTickersFromMarkets: (markets: any[]) => any[];

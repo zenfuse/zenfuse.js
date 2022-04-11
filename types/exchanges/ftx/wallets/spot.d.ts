@@ -4,8 +4,6 @@ export = FtxSpot;
  */
 /**
  * FTX class for spot wallet API
- *
- * @important should have same
  */
 declare class FtxSpot extends FtxBase {
     static DEFAULT_OPTIONS: {
@@ -27,12 +25,20 @@ declare class FtxSpot extends FtxBase {
      */
     fetchMarkets(): string[];
     /**
-     *
-     * @note If the symbol is not sent, prices for all symbols will be returned in an array.
-     * @param {string} market Ticker pair aka symbol
-     * @returns Last price
+     * @typedef {object} PriceObject
+     * @property {string} symbol
+     * @property {number} price
      */
-    fetchPrice(market?: string): Promise<any>;
+    /**
+     * **NOTE:** If the symbol is not sent, prices for all symbols will be returned in an array.
+     *
+     * @param {string} market Ticker pair aka symbol
+     * @returns {PriceObject} Last price
+     */
+    fetchPrice(market?: string): {
+        symbol: string;
+        price: number;
+    };
     /**
      * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
      * @typedef {import('../metadata').timeIntervals} timeIntervals

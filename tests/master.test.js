@@ -1,10 +1,28 @@
 const { z } = require('zod');
+/**
+ * @typedef {import('../src/index.js').Order} Order
+ * @typedef {import('../src/index.js').timeInterval} timeInterval
+ */
 
 /**
  * @typedef {object} MasterTestEnvironment
  * @property {string} API_PUBLIC_KEY
  * @property {string} API_PRIVATE_KEY
- * @property {import('../src/index.js').Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usualy a pair of stablecoins for less than one.
+ * @property {object} CANDLES_REQUEST
+ * @property {string} CANDLES_REQUEST.symbol
+ * @property {timeInterval} CANDLES_REQUEST.interval
+ * @property {Order} BUY_MARKET_ORDER
+ * @property {Order} SELL_MARKET_ORDER
+ * @property {Order} BUY_LIMIT_ORDER
+ * @property {Order} SELL_LIMIT_ORDER
+ * @property {Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usualy a pair of stablecoins for a half price.
+ * @property {object} PRICE_SUBSCRIPTION
+ * @property {string} PRICE_SUBSCRIPTION.channel
+ * @property {string} PRICE_SUBSCRIPTION.symbol
+ * @property {object} CANDLE_SUBSCRIPTION
+ * @property {string} CANDLE_SUBSCRIPTION.channel
+ * @property {string} CANDLE_SUBSCRIPTION.symbol
+ * @property {timeInterval} CANDLE_SUBSCRIPTION.interval
  */
 
 const NotAuthenticatedError = require('../src/base/errors/notAuthenticated.error.js');
@@ -26,7 +44,7 @@ module.exports = function masterTest(Exchange, env) {
     //////////////////////////////////////  HTTP INTERFACE  ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    describe.skip('Spot Wallet HTTP interface', () => {
+    describe('Spot Wallet HTTP interface', () => {
         /**
          * @type {FtxSpot}
          */
@@ -145,10 +163,7 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should fetch history without errors', async () => {
-                result = await exchange.fetchCandleHistory({
-                    symbol: 'BTC/USDT',
-                    interval: '1m',
-                });
+                result = await exchange.fetchCandleHistory(env.CANDLES_REQUEST);
             });
 
             it('should return valid schema', () => {
@@ -156,8 +171,8 @@ module.exports = function masterTest(Exchange, env) {
                 expect(result).toMatchSchema(schema);
 
                 result.forEach((kline) => {
-                    expect(kline.interval).toBe('1m');
-                    expect(kline.symbol).toBe('BTC/USDT');
+                    expect(kline.interval).toBe(env.CANDLES_REQUEST.interval);
+                    expect(kline.symbol).toBe(env.CANDLES_REQUEST.symbol);
                     expect(
                         kline[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -215,18 +230,17 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder({
-                        symbol: 'BTC/USDT',
-                        type: 'market',
-                        side: 'buy',
-                        quantity: 0.0004,
-                    });
+                    result = await exchange.createOrder(env.BUY_MARKET_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
-                    // TODO: Fix output validation
                     expect(result).toMatchSchema(OrderSchema);
+                    expect(result).toMatchObject({
+                        symbol: env.BUY_MARKET_ORDER.symbol,
+                        type: env.BUY_MARKET_ORDER.type,
+                        side: env.BUY_MARKET_ORDER.side,
+                    });
 
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -238,17 +252,17 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder({
-                        symbol: 'BTC/USDT',
-                        type: 'market',
-                        side: 'sell',
-                        quantity: 0.0004,
-                    });
+                    result = await exchange.createOrder(env.SELL_MARKET_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
                     expect(result).toMatchSchema(OrderSchema);
+                    expect(result).toMatchObject({
+                        symbol: env.SELL_MARKET_ORDER.symbol,
+                        type: env.SELL_MARKET_ORDER.type,
+                        side: env.SELL_MARKET_ORDER.side,
+                    });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -259,19 +273,17 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder({
-                        symbol: 'BTC/USDT',
-                        type: 'limit',
-                        side: 'buy',
-                        quantity: 0.0004,
-                        price: 35000,
-                    });
+                    result = await exchange.createOrder(env.BUY_LIMIT_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
                     expect(result).toMatchSchema(OrderSchema);
-
+                    expect(result).toMatchObject({
+                        symbol: env.BUY_LIMIT_ORDER.symbol,
+                        type: env.BUY_LIMIT_ORDER.type,
+                        side: env.BUY_LIMIT_ORDER.side,
+                    });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -282,19 +294,17 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder({
-                        symbol: 'BTC/USDT',
-                        type: 'limit',
-                        side: 'sell',
-                        quantity: 0.0004,
-                        price: 55000,
-                    });
+                    result = await exchange.createOrder(env.SELL_LIMIT_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
                     expect(result).toBeDefined();
                     expect(result).toMatchSchema(OrderSchema);
-
+                    expect(result).toMatchObject({
+                        symbol: env.SELL_LIMIT_ORDER.symbol,
+                        type: env.SELL_LIMIT_ORDER.type,
+                        side: env.SELL_LIMIT_ORDER.side,
+                    });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
@@ -334,7 +344,6 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                // TODO: Test output
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
                 ).toBeDefined();
@@ -379,7 +388,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should run only with keys', () => {
                 expect(
-                    exchange.cancelOrderById.bind(new Exchange['spot'](), ''),
+                    exchange.fetchOrderById.bind(new Exchange['spot'](), ''),
                 ).rejects.toThrowError(NotAuthenticatedError);
             });
 
@@ -421,7 +430,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
      */
 
-    describe.skip('Spot Wallet Private Stream', () => {
+    describe('Spot Wallet Private Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -448,7 +457,7 @@ module.exports = function masterTest(Exchange, env) {
         });
 
         afterAll(() => {
-            if (isExchangeTestFailed) {
+            if (isExchangeTestFailed && accountDataStream.socket) {
                 accountDataStream.socket.terminate();
             }
         });
@@ -462,10 +471,14 @@ module.exports = function masterTest(Exchange, env) {
             it('should connect to websocket', async () => {
                 await accountDataStream.open();
 
-                expect(accountDataStream.isSocketConneted).toBe(true);
+                expect(accountDataStream.isSocketConnected).toBe(true);
+
+                accountDataStream.close();
             });
 
             it('should emit "orderUpdate"', async () => {
+                await accountDataStream.open();
+
                 const eventPromice = new Promise((resolve) => {
                     accountDataStream.once('orderUpdate', (order) => {
                         expect(order).toMatchSchema(OrderSchema);
@@ -487,11 +500,11 @@ module.exports = function masterTest(Exchange, env) {
         describe('close()', () => {
             beforeAll(() => accountDataStream.open());
             it('should close connection', () => {
-                expect(accountDataStream.isSocketConneted).toBe(true);
+                expect(accountDataStream.isSocketConnected).toBe(true);
 
                 accountDataStream.close();
 
-                expect(accountDataStream.isSocketConneted).toBe(false);
+                expect(accountDataStream.isSocketConnected).toBe(false);
             });
         });
     });
@@ -500,7 +513,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
      */
 
-    describe.only('Spot Wallet Public Stream', () => {
+    describe('Spot Wallet Public Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
@@ -536,20 +549,17 @@ module.exports = function masterTest(Exchange, env) {
             it('should connect to websocket', async () => {
                 await marketDataStream.open();
 
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
             });
         });
 
         describe('subscribeTo()', () => {
             beforeEach(async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
             });
 
-            it.skip('should emit "newPrice" event', (done) => {
-                marketDataStream.subscribeTo({
-                    channel: 'price',
-                    symbol: 'BTC/USDT',
-                });
+            it('should emit "newPrice" event', (done) => {
+                marketDataStream.subscribeTo(env.PRICE_SUBSCRIPTION);
 
                 marketDataStream.once('newPrice', (p) => {
                     const schema = z.object({
@@ -559,35 +569,24 @@ module.exports = function masterTest(Exchange, env) {
                         price: z.number(),
                     });
                     expect(p).toMatchSchema(schema);
-                    expect(p.symbol).toBe('BTC/USDT');
+                    expect(p.symbol).toBe(env.PRICE_SUBSCRIPTION.symbol);
 
                     marketDataStream
-                        .unsubscribeFrom({
-                            channel: 'price',
-                            symbol: 'BTC/USDT',
-                        })
+                        .unsubscribeFrom(env.PRICE_SUBSCRIPTION)
                         .then(done);
                 });
             });
 
             it('should emit "candle" event', (done) => {
-                marketDataStream.subscribeTo({
-                    channel: 'candle',
-                    symbol: 'BTC/USDT',
-                    interval: '1m',
-                });
+                marketDataStream.subscribeTo(env.CANDLE_SUBSCRIPTION);
 
                 marketDataStream.once('candle', (p) => {
                     expect(p).toMatchSchema(KlineSchema);
-                    expect(p.symbol).toBe('BTC/USDT');
-                    expect(p.interval).toBe('1m');
+                    expect(p.symbol).toBe(env.CANDLE_SUBSCRIPTION.symbol);
+                    expect(p.interval).toBe(env.CANDLE_SUBSCRIPTION.interval);
 
                     marketDataStream
-                        .unsubscribeFrom({
-                            channel: 'candle',
-                            symbol: 'BTC/USDT',
-                            interval: '1m',
-                        })
+                        .unsubscribeFrom(env.CANDLE_SUBSCRIPTION)
                         .then(done);
                 });
             });
@@ -595,21 +594,15 @@ module.exports = function masterTest(Exchange, env) {
 
         describe('unsubscribeFrom()', () => {
             beforeEach(async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
             });
 
             it('should unsubsctibed from specific event', async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
 
-                await marketDataStream.subscribeTo({
-                    channel: 'price',
-                    symbol: 'BTC/USDT',
-                });
+                await marketDataStream.subscribeTo(env.PRICE_SUBSCRIPTION);
 
-                await marketDataStream.unsubscribeFrom({
-                    channel: 'price',
-                    symbol: 'BTC/USDt',
-                });
+                await marketDataStream.unsubscribeFrom(env.PRICE_SUBSCRIPTION);
 
                 const listener = jest.fn();
 
@@ -622,78 +615,15 @@ module.exports = function masterTest(Exchange, env) {
                     }, 3000);
                 });
             });
-
-            // TODO: FTX Websocket subscription list memory
-            // Should be skipped for now, FTX websocket doesnt have "get subscription" support
-            it.skip('should unsubscribe by string', async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
-
-                await marketDataStream.subscribeTo('BTC/USDT');
-
-                await marketDataStream.unsubscribeFrom('BTC/USDT');
-
-                const listener = jest.fn();
-
-                marketDataStream.once('kline', listener);
-
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        expect(listener).not.toHaveBeenCalled();
-                        resolve();
-                    });
-                    global.testTimeout * 0.3;
-                });
-            });
-
-            it.skip('should unsubscribe by string from all events with the same symbol', async () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
-
-                await marketDataStream.subscribeTo({
-                    channel: 'kline',
-                    symbol: 'BTC/USDT',
-                    interval: '15m',
-                });
-
-                await marketDataStream.subscribeTo({
-                    channel: 'kline',
-                    symbol: 'BTC/USDT',
-                    interval: '1h',
-                });
-
-                await marketDataStream.subscribeTo({
-                    channel: 'kline',
-                    symbol: 'BNB/BUSD',
-                    interval: '1m',
-                });
-
-                await marketDataStream.unsubscribeFrom('BTC/USDT');
-
-                const listener = jest.fn();
-
-                marketDataStream.once('kline', listener);
-
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        expect(listener).toHaveBeenCalled();
-                        listener.mock.calls.forEach((call) => {
-                            const kline = call[0];
-
-                            expect(kline.symbol).toBe('BNBBUSD');
-                            expect(kline.interval).toBe('1m');
-                        });
-                        resolve();
-                    }, global.testTimeout * 0.3);
-                });
-            });
         });
 
         describe('close()', () => {
             it('should close connection', () => {
-                expect(marketDataStream.isSocketConneted).toBe(true);
+                expect(marketDataStream.isSocketConnected).toBe(true);
 
                 marketDataStream.close();
 
-                expect(marketDataStream.isSocketConneted).toBe(false);
+                expect(marketDataStream.isSocketConnected).toBe(false);
             });
         });
     });

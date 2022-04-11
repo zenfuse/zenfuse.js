@@ -49,7 +49,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
      * @returns {this}
      */
     close() {
-        if (this.isSocketConneted) {
+        if (this.isSocketConnected) {
             this.socket.close();
         }
 
@@ -57,7 +57,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
         return this;
     }
 
-    get isSocketConneted() {
+    get isSocketConnected() {
         if (!this.socket) return false;
 
         return this.socket.readyState === WebSocket.OPEN;
@@ -116,7 +116,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
     }
 
     checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
+        if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
     }

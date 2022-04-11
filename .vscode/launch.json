@@ -16,6 +16,17 @@
             }
         },
         {
+            "name": "Bithumb E2E Tests",
+            "request": "launch",
+            "runtimeArgs": ["run-script", "test:e2e", "bithumb"],
+            "runtimeExecutable": "npm",
+            "skipFiles": ["<node_internals>/**/*"],
+            "type": "node",
+            "env": {
+                "NODE_DEBUG": "zenfuse*"
+            }
+        },
+        {
             "name": "FTX E2E Tests",
             "request": "launch",
             "runtimeArgs": ["run-script", "test:e2e", "ftx"],
@@ -41,6 +52,17 @@
             "name": "Binance Integration Tests",
             "request": "launch",
             "runtimeArgs": ["run-script", "test:integration", "binance"],
+            "runtimeExecutable": "npm",
+            "skipFiles": ["<node_internals>/**/*"],
+            "type": "node",
+            "env": {
+                "NODE_DEBUG": "zenfuse*"
+            }
+        },
+        {
+            "name": "Bithumb Integration Tests",
+            "request": "launch",
+            "runtimeArgs": ["run-script", "test:integration", "bithumb"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**/*"],
             "type": "node",

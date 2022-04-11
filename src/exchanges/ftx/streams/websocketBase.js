@@ -56,8 +56,9 @@ class FtxWebsocketBase extends EventEmitter {
      * @returns {this}
      */
     close() {
-        if (this.isSocketConneted) {
+        if (this.isSocketConnected) {
             clearInterval(this.pingIntervalId);
+
             this.socket.close();
         }
 
@@ -69,12 +70,12 @@ class FtxWebsocketBase extends EventEmitter {
     }
 
     checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
+        if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
     }
 
-    get isSocketConneted() {
+    get isSocketConnected() {
         if (!this.socket) return false;
 
         return this.socket.readyState === WebSocket.OPEN;

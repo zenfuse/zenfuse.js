@@ -28,16 +28,22 @@ declare class MarketDataStream extends BinanceWebsocketBase {
     close(): this;
     subscribeTo(event: any): Promise<void>;
     /**
-     * @param {string|WesocketEvent} event
+     * @param {string|WebsocketEvent} event
      */
-    unsubscribeFrom(event: string | WesocketEvent): Promise<void>;
+    unsubscribeFrom(event: string | {
+        channel: string;
+        symbol: string;
+        /**
+         * Required if channel is candle
+         */
+        interval?: string;
+    }): Promise<void>;
     /**
      * @private
      * @typedef {object} WebsocketEvent
      * @property {string} channel
      * @property {string} symbol
      * @property {string} [interval] Required if channel is candle
-     * @property {string} channel
      * @param {WebsocketEvent} event
      * @param {'subscribe'|'unsubscribe'} command
      */
@@ -80,7 +86,7 @@ declare class MarketDataStream extends BinanceWebsocketBase {
      * @returns {number} Actual payload id
      */
     private createPayloadId;
-    get isSocketConneted(): boolean;
+    get isSocketConnected(): boolean;
     checkSocketIsConneted(): void;
 }
 import BinanceWebsocketBase = require("./websocketBase");

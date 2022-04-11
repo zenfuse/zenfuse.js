@@ -6,9 +6,9 @@ declare class FtxWebsocketBase extends EventEmitter {
      */
     constructor(baseInstance: import('../wallets/spot'));
     /**
-     * @type {NodeJS.Timeout}
+     * @type {number}
      */
-    pingInterval: NodeJS.Timeout;
+    pingIntervalId: number;
     /**
      * @type {import('ws').WebSocket}
      */
@@ -17,16 +17,16 @@ declare class FtxWebsocketBase extends EventEmitter {
     /**
      * Opens websocket connection
      *
-     * @returns {Promice<void>}
+     * @returns {Promise<void>}
      */
-    open(): Promice<void>;
+    open(): Promise<void>;
     /**
      * @returns {this}
      */
     close(): this;
     handleConnectionError(err: any): void;
     checkSocketIsConneted(): void;
-    get isSocketConneted(): boolean;
+    get isSocketConnected(): boolean;
     /**
      * @param {object} msg
      * @returns {void}

@@ -56,11 +56,6 @@ class FtxCandleStream {
         this.parentStream = parentStream;
 
         this.parentStream.on('payload', this.serverPayloadHandler.bind(this));
-
-        this.parentStream.on('candle', (candle) => {
-            require('inspector').console.log('Candle event');
-            require('inspector').console.log(candle);
-        });
     }
 
     /**

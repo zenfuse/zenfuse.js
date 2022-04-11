@@ -65,22 +65,26 @@ module.exports = (env) => ({
                     .post('/api/v3/order')
                     .query((q) => {
                         expect(q).toMatchObject({
-                            symbol: 'BTCUSDT',
                             type: 'MARKET',
                             side: 'BUY',
-                            quantity: '0.0004',
                         });
+                        expect(q.symbol).toBe(
+                            toBinanceStyle(env.BUY_MARKET_ORDER.symbol),
+                        );
+                        expect(q.quantity).toBe(
+                            toBinanceStyle(env.BUY_MARKET_ORDER.quantity),
+                        );
 
                         expect(q.timestamp).toBeDefined();
                         expect(q.signature).toBeDefined();
                         return true;
                     })
                     .reply(201, {
-                        symbol: 'BNBUSDT',
+                        symbol: toBinanceStyle(env.BUY_MARKET_ORDER.symbol),
                         orderId: 5114608,
                         orderListId: -1,
                         clientOrderId: 'nVuwTgVfxQtsMV9uuMMXxL',
-                        transactTime: 1637596926709,
+                        transactTime: Date.now(),
                         price: '0.00000000',
                         origQty: '1.00000000',
                         executedQty: '1.00000000',
@@ -112,17 +116,19 @@ module.exports = (env) => ({
                     .post('/api/v3/order')
                     .query((q) => {
                         expect(q).toMatchObject({
-                            symbol: 'BTCUSDT',
                             type: 'MARKET',
                             side: 'SELL',
-                            quantity: '0.0004',
                         });
-                        expect(q.timestamp).toBeDefined();
-                        expect(q.signature).toBeDefined();
+                        expect(q.symbol).toBe(
+                            toBinanceStyle(env.SELL_MARKET_ORDER.symbol),
+                        );
+                        expect(q.quantity).toBe(
+                            toBinanceStyle(env.SELL_MARKET_ORDER.quantity),
+                        );
                         return true;
                     })
                     .reply(201, {
-                        symbol: 'BNBUSDT',
+                        symbol: toBinanceStyle(env.SELL_MARKET_ORDER.symbol),
                         orderId: 5115833,
                         orderListId: -1,
                         clientOrderId: 'AWSXsBUMbl6XT0BpXeT0DN',
@@ -151,25 +157,25 @@ module.exports = (env) => ({
                     .post('/api/v3/order')
                     .query((q) => {
                         expect(q).toMatchObject({
-                            symbol: 'BTCUSDT',
                             type: 'LIMIT',
                             side: 'BUY',
-                            price: '35000',
-                            quantity: '0.0004',
-                            timeInForce: 'GTC',
                         });
-                        expect(q.timestamp).toBeDefined();
-                        expect(q.signature).toBeDefined();
+                        expect(q.symbol).toBe(
+                            toBinanceStyle(env.BUY_LIMIT_ORDER.symbol),
+                        );
+                        expect(q.quantity).toBe(
+                            toBinanceStyle(env.BUY_LIMIT_ORDER.quantity),
+                        );
                         return true;
                     })
                     .reply(201, {
-                        symbol: 'BNBUSDT',
+                        symbol: toBinanceStyle(env.BUY_LIMIT_ORDER.symbol),
                         orderId: 5123847,
                         orderListId: -1,
                         clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
                         transactTime: 1637599759459,
-                        price: '500.00000000',
-                        origQty: '1.00000000',
+                        price: toBinanceStyle(env.BUY_LIMIT_ORDER.price),
+                        origQty: toBinanceStyle(env.BUY_LIMIT_ORDER.quantity),
                         executedQty: '0.00000000',
                         cummulativeQuoteQty: '0.00000000',
                         status: 'NEW',
@@ -184,31 +190,31 @@ module.exports = (env) => ({
                     .post('/api/v3/order')
                     .query((q) => {
                         expect(q).toMatchObject({
-                            symbol: 'BTCUSDT',
                             type: 'LIMIT',
                             side: 'SELL',
-                            price: '55000',
-                            quantity: '0.0004',
-                            timeInForce: 'GTC',
                         });
-                        expect(q.timestamp).toBeDefined();
-                        expect(q.signature).toBeDefined();
+                        expect(q.symbol).toBe(
+                            toBinanceStyle(env.SELL_LIMIT_ORDER.symbol),
+                        );
+                        expect(q.quantity).toBe(
+                            toBinanceStyle(env.SELL_LIMIT_ORDER.quantity),
+                        );
                         return true;
                     })
                     .reply(201, {
-                        symbol: 'BNBUSDT',
+                        symbol: toBinanceStyle(env.SELL_LIMIT_ORDER.symbol),
                         orderId: 5123847,
                         orderListId: -1,
                         clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
                         transactTime: 1637599759459,
-                        price: '500.00000000',
-                        origQty: '1.00000000',
+                        price: toBinanceStyle(env.SELL_LIMIT_ORDER.price),
+                        origQty: toBinanceStyle(env.SELL_LIMIT_ORDER.quantity),
                         executedQty: '0.00000000',
                         cummulativeQuoteQty: '0.00000000',
                         status: 'NEW',
                         timeInForce: 'IOC',
                         type: 'LIMIT',
-                        side: 'BUY',
+                        side: 'SELL',
                         fills: [],
                     }),
         },
@@ -282,38 +288,40 @@ module.exports = (env) => ({
                 .post('/api/v3/order')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        symbol: 'USDCUSDT',
-                        type: 'LIMIT',
-                        side: 'BUY',
-                        price: '0.8',
-                        quantity: '20',
-                        timeInForce: 'GTC',
+                        symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        type: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.type),
+                        side: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.side),
+                        price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        quantity: toBinanceStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
                     });
+                    expect(q.timeInForce).toBeDefined();
                     expect(q.timestamp).toBeDefined();
                     expect(q.signature).toBeDefined();
                     return true;
                 })
                 .reply(200, {
-                    symbol: 'BUSDUSDT',
+                    symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     orderId: 5123847,
                     orderListId: -1,
                     clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
                     transactTime: 1637599759459,
-                    price: '500.00000000',
-                    origQty: '1.00000000',
+                    price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                    origQty: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.quantity),
                     executedQty: '0.00000000',
                     cummulativeQuoteQty: '0.00000000',
                     status: 'NEW',
                     timeInForce: 'GTC',
-                    type: 'LIMIT',
-                    side: 'BUY',
+                    type: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.type),
+                    side: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.side),
                     fills: [],
                 })
                 // Order deletion
                 .delete('/api/v3/order')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        symbol: 'BUSDUSDT',
+                        symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                         orderId: '5123847',
                     });
                     expect(q.signature).toBeDefined();
@@ -321,13 +329,13 @@ module.exports = (env) => ({
                     return true;
                 })
                 .reply(200, {
-                    symbol: 'BUSDUSDT',
+                    symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     orderId: 5123847,
                     orderListId: -1,
                     clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
                     transactTime: 1637599759459,
-                    price: '500.00000000',
-                    origQty: '1.00000000',
+                    price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                    origQty: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.quantity),
                     executedQty: '0.00000000',
                     cummulativeQuoteQty: '0.00000000',
                     status: 'NEW',
@@ -343,38 +351,40 @@ module.exports = (env) => ({
                 .post('/api/v3/order')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        symbol: 'USDCUSDT',
-                        type: 'LIMIT',
-                        side: 'BUY',
-                        price: '0.8',
-                        quantity: '20',
-                        timeInForce: 'GTC',
+                        symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        type: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.type),
+                        side: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.side),
+                        price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        quantity: toBinanceStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
                     });
+                    expect(q.timeInForce).toBeDefined();
                     expect(q.timestamp).toBeDefined();
                     expect(q.signature).toBeDefined();
                     return true;
                 })
                 .reply(200, {
-                    symbol: 'BUSDUSDT',
+                    symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     orderId: 5123847,
                     orderListId: -1,
                     clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
                     transactTime: 1637599759459,
-                    price: '500.00000000',
-                    origQty: '1.00000000',
+                    price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                    origQty: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.quantity),
                     executedQty: '0.00000000',
                     cummulativeQuoteQty: '0.00000000',
                     status: 'NEW',
                     timeInForce: 'GTC',
-                    type: 'LIMIT',
-                    side: 'BUY',
+                    type: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.type),
+                    side: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.side),
                     fills: [],
                 })
                 // Order status fetch
                 .get('/api/v3/order')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        symbol: 'BUSDUSDT',
+                        symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                         orderId: '5123847',
                     });
                     expect(q.signature).toBeDefined();
@@ -382,26 +392,26 @@ module.exports = (env) => ({
                     return true;
                 })
                 .reply(200, {
-                    symbol: 'BUSDUSDT',
+                    symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     orderId: 5123847,
                     orderListId: -1,
                     clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
                     transactTime: 1637599759459,
-                    price: '500.00000000',
-                    origQty: '1.00000000',
+                    price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                    origQty: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.quantity),
                     executedQty: '0.00000000',
                     cummulativeQuoteQty: '0.00000000',
                     status: 'NEW',
                     timeInForce: 'GTC',
-                    type: 'LIMIT',
-                    side: 'BUY',
+                    type: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.type),
+                    side: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.side),
                     fills: [],
                 })
                 // Order deletion
                 .delete('/api/v3/order')
                 .query((q) => {
                     expect(q).toMatchObject({
-                        symbol: 'BUSDUSDT',
+                        symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                         orderId: '5123847',
                     });
                     expect(q.signature).toBeDefined();
@@ -409,20 +419,23 @@ module.exports = (env) => ({
                     return true;
                 })
                 .reply(200, {
-                    symbol: 'BUSDUSDT',
+                    symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
                     orderId: 5123847,
                     orderListId: -1,
                     clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
                     transactTime: 1637599759459,
-                    price: '500.00000000',
-                    origQty: '1.00000000',
+                    price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                    origQty: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.quantity),
                     executedQty: '0.00000000',
                     cummulativeQuoteQty: '0.00000000',
                     status: 'NEW',
                     timeInForce: 'GTC',
-                    type: 'LIMIT',
-                    side: 'BUY',
+                    type: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.type),
+                    side: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.side),
                     fills: [],
                 }),
     },
 });
+
+const toBinanceStyle = (value) =>
+    value.toString().replace('/', '').toUpperCase();

@@ -1,5 +1,6 @@
 const Binance = require('./exchanges/binance');
 const FTX = require('./exchanges/ftx');
+const Bithumb = require('./exchanges/bithumb');
 
 /**
  * @enum
@@ -7,12 +8,14 @@ const FTX = require('./exchanges/ftx');
 module.exports = {
     Binance,
     FTX,
+    Bithumb,
     /**
      * Object with lower case names for uid usage
      */
     exchanges: {
         binance: Binance,
         ftx: FTX,
+        bithumb: Bithumb,
     },
 };
 

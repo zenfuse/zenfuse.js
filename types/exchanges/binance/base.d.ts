@@ -2,7 +2,7 @@ export = BinanceBase;
 /**
  * Binance base class for method which included in any wallet type
  *
- * @important Any class what extends ExchangeBase should have same public interface
+ * **DEV:** Any class what extends ExchangeBase should have same public interface
  */
 declare class BinanceBase extends ExchangeBase {
     /**

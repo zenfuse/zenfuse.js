@@ -29,7 +29,7 @@ class MarketDataStream extends FtxWebsocketBase {
      * @returns {this}
      */
     async open() {
-        if (this.isSocketConneted) return this;
+        if (this.isSocketConnected) return this;
 
         await super.open();
 
@@ -96,6 +96,7 @@ class MarketDataStream extends FtxWebsocketBase {
     }
 
     /**
+     * @private
      * @param {WebsocketEvent} event Candle stream event subscribtion
      */
     async setupCandleStream(event) {
@@ -196,7 +197,7 @@ class MarketDataStream extends FtxWebsocketBase {
     }
 
     checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
+        if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
     }

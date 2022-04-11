@@ -15,7 +15,8 @@ declare class FtxCache extends BaseGlobalCache {
     /**
      * Cache order in local cache
      *
-     * @reason In some cases FTX doesnt return order from REST interface. Zenfuse return cached order.
+     * **DEV:** In some cases FTX doesnt return order from REST interface. Zenfuse return cached order.
+     *
      * @param {ZenfuseOrder} order
      */
     cacheOrder(order: ZenfuseOrder): void;
@@ -28,8 +29,8 @@ declare class FtxCache extends BaseGlobalCache {
     /**
      *
      * @param {string} orderId
-     * @returns {boolead}
+     * @returns {boolean}
      */
-    deleteCachedOrderById(orderId: string): boolead;
+    deleteCachedOrderById(orderId: string): boolean;
 }
 import BaseGlobalCache = require("../../../base/etc/cache");

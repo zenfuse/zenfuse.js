@@ -109,7 +109,7 @@ const transfromBinanceOrder = (bOrder) => {
     const zOrder = {};
 
     zOrder.id = bOrder.orderId.toString();
-    zOrder.timestamp = bOrder.transactTime;
+    zOrder.timestamp = bOrder.transactTime || bOrder.time;
     // zOrder.status = bOrder.status.toLowerCase();
     // zOrder.timeInForce = bOrder.timeInForce;
     zOrder.type = bOrder.type.toLowerCase();
