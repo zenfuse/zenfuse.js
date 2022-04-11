@@ -84,7 +84,7 @@ module.exports = (env) => ({
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')
                     .get('/openapi/v1/spot/ticker')
-                    .query({ symbol: env.BUY_MARKET_ORDER.symbol })
+                    .query({ symbol: toBithumbStyle(env.BUY_MARKET_ORDER.symbol) })
                     .reply(200, {
                         data: [
                             {
