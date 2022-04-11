@@ -9,6 +9,7 @@ module.exports = {
     Binance,
     FTX,
     Bithumb,
+    Bitglobal: Bithumb, // TODO: Rename all githumb classes
     /**
      * Object with lower case names for uid usage
      */
