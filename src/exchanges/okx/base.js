@@ -23,13 +23,13 @@ class OkxBase extends ExchangeBase {
     static DEFAULT_OPTIONS = {
         httpClientOptions: {
             responseType: 'json',
-            prefixUrl: 'https://www.okx.com/',
+            prefixUrl: 'https://okx.com/',
             headers: {
                 'Content-Type': 'application/json',
             },
         },
         wsClientOptions: {
-            prefixUrl: 'wss://real.okex.com:8443/ws/v3',
+            prefixUrl: 'wss://real.okex.com:8443/ws/v5',
         },
     };
 
@@ -103,7 +103,7 @@ class OkxBase extends ExchangeBase {
      * @param {object} keys
      * @param {string} keys.publicKey
      * @param {string} keys.privateKey Same as secret key
-     * @param {string} keys.passphrase 
+     * @param {string} keys.passphrase
      * @returns {this}
      */
     auth({ publicKey, privateKey, passphrase }) {
@@ -134,7 +134,6 @@ class OkxBase extends ExchangeBase {
      * @public
      */
     async ping() {
-        console.log('PING');
         await this.publicFetch('api/v5/public/time');
     }
 

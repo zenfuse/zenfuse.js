@@ -191,7 +191,7 @@ module.exports = function masterTest(Exchange, env) {
         //// Private API Zone
         ///////////////////////////////////////////////////////////////
 
-        describe('auth()', () => {
+        describe.skip('auth()', () => {
             it('should bo defined', () => {
                 expect(exchange.auth).toBeDefined();
             });

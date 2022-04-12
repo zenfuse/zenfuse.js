@@ -63,10 +63,11 @@ class OkxSpot extends OkxBase {
         // TODO: Cache update here
 
         const markets = response.data.map((m) => {
+            let ticker = m.instId.split('-');
             return {
                 symbol: m.instId,
-                baseTicker: m.baseCcy,
-                quoteTicker: m.quoteCcy,
+                baseTicker: ticker[0],
+                quoteTicker: ticker[1],
             };
         });
 
@@ -98,7 +99,7 @@ class OkxSpot extends OkxBase {
             });
             const price = {
                 symbol: market,
-                price: response.data[0].last,
+                price: parseFloat(response.data[0].last),
             };
 
             utils.linkOriginalPayload(price, response);
@@ -114,13 +115,12 @@ class OkxSpot extends OkxBase {
             },
         });
 
-        const prices = response.data
-            .map((market) => {
-                return {
-                    symbol: market.instId,
-                    price: market.last || 0,
-                };
-            });
+        const prices = response.data.map((market) => {
+            return {
+                symbol: market.instId.replace('-', '/'),
+                price: parseFloat(market.last) || 0,
+            };
+        });
 
         utils.linkOriginalPayload(prices, response);
 
@@ -144,29 +144,31 @@ class OkxSpot extends OkxBase {
         this.validateCandleHistoryParams(params);
 
         const response = await this.publicFetch(
-            `api/markets/${params.symbol}/candles`,
+            'api/v5/market/history-candles',
             {
                 searchParams: {
-                    resolution: utils.timeIntervalToSeconds(params.interval),
-                    start_time: params.startTime,
-                    end_time: params.endTime,
+                    instId: params.symbol.replace('/', '-'),
+                    bar: params.interval,
+                    before: params.startTime,
+                    after: params.endTime,
                 },
             },
         );
 
-        const result = response.result.map((fCandle) => {
+        const result = response.data.map((oCandle) => {
+            oCandle = oCandle.map(Number);
             const zCandle = {
-                timestamp: new Date(fCandle.startTime).getTime(),
-                open: fCandle.open,
-                high: fCandle.high,
-                low: fCandle.low,
-                close: fCandle.close,
-                volume: fCandle.volume,
+                timestamp: new Date(oCandle[0]).getTime(),
+                open: oCandle[1],
+                high: oCandle[2],
+                low: oCandle[3],
+                close: oCandle[4],
+                volume: oCandle[5],
                 interval: params.interval,
                 symbol: params.symbol,
             };
 
-            utils.linkOriginalPayload(zCandle, fCandle);
+            utils.linkOriginalPayload(zCandle, oCandle);
 
             return zCandle;
         });
@@ -188,20 +190,20 @@ class OkxSpot extends OkxBase {
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const fOrder = utils.transformZenfuseOrder(zOrder);
+        const xOrder = utils.transformZenfuseOrder(zOrder);
 
-        const fCreatedOrder = await this.privateFetch('api/orders', {
+        const xCreatedOrder = await this.privateFetch('api/v5/trade/order', {
             method: 'POST',
-            json: fOrder,
+            json: xOrder,
         });
 
-        const zCreatedOrder = utils.transformOkxOrder(fCreatedOrder.result);
+        // const zCreatedOrder = utils.transformOkxOrder(xCreatedOrder, zOrder);
 
-        this.cache.cacheOrder(zCreatedOrder);
+        this.cache.cacheOrder(zOrder);
 
-        utils.linkOriginalPayload(zCreatedOrder, fCreatedOrder);
+        utils.linkOriginalPayload(zOrder, xCreatedOrder);
 
-        return zCreatedOrder;
+        return zOrder;
     }
 
     /**
@@ -210,8 +212,8 @@ class OkxSpot extends OkxBase {
      * @param {string} orderId Okx order id
      */
     async cancelOrderById(orderId) {
-        const response = await this.privateFetch(`api/orders/${orderId}`, {
-            method: 'DELETE',
+        const response = await this.privateFetch('api/v5/trade/cancel-order', {
+            method: 'POST',
         });
 
         let deletedOrder = this.cache.getCachedOrderById(orderId);
@@ -233,15 +235,15 @@ class OkxSpot extends OkxBase {
     }
 
     async fetchBalances() {
-        const response = await this.privateFetch('api/wallet/balances');
+        const response = await this.privateFetch('api/v5/account/balance');
 
-        const balances = response.result
-            .filter((b) => b.total > 0)
+        const balances = response.data.details
+            .filter((b) => b.cashBal > 0)
             .map((b) => {
                 return {
-                    ticker: b.coin,
-                    free: parseFloat(b.free),
-                    used: parseFloat(b.total) - parseFloat(b.free),
+                    ticker: b.ccy,
+                    free: parseFloat(b.cashBal),
+                    used: parseFloat(b.frozenBal),
                 };
             });
 
@@ -255,7 +257,12 @@ class OkxSpot extends OkxBase {
      * @param {string} orderId
      */
     async fetchOrderById(orderId) {
-        const responce = await this.privateFetch(`api/orders/${orderId}`);
+        const responce = await this.privateFetch('api/v5/trade/order', {
+            method: 'GET',
+            searchParams: {
+                //TODO: ordId or clOrdId
+            },
+        });
 
         const zOrder = utils.transformOkxOrder(responce.result);
 

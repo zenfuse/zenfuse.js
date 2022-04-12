@@ -8,15 +8,16 @@ const transformZenfuseOrder = (zOrder) => {
     const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
 
     const xOrder = {
-        instId: zOrder.symbol,
+        instId: zOrder.symbol.replace('/', '-'),
+        clOrdId: zOrder.id,
         ordType: zOrder.type,
         side: zOrder.side,
-        sz: zOrder.quantity,
+        sz: zOrder.quantity.toString(),
         tdMode: 'cash',
     };
 
     if (zOrder.price) {
-        xOrder.px = zOrder.price;
+        xOrder.px = zOrder.price.toString();
     }
 
     if (zOrder.type === 'market') {
@@ -37,6 +38,7 @@ const transformZenfuseOrder = (zOrder) => {
  * OKX -> Zenfuse
  *
  * @param {*} fOrder Order from OKX
+ * @param xOrder
  * @returns {Order} Zenfuse Order
  */
 const transformOkxOrder = (xOrder) => {
@@ -45,7 +47,7 @@ const transformOkxOrder = (xOrder) => {
      */
     const zOrder = {};
 
-    zOrder.id = xOrder.ordId.toString();
+    zOrder.id = xOrder.clOrdId;
     zOrder.timestamp = parseFloat(xOrder.cTime);
     zOrder.symbol = xOrder.instId.replace('-', '/');
     zOrder.type = xOrder.ordType;
@@ -56,11 +58,9 @@ const transformOkxOrder = (xOrder) => {
 
     if (xOrder.state === 'live' || xOrder.state === 'partially_filled') {
         zOrder.status = 'open';
-    } 
-    else if (xOrder.state === 'filled') {
+    } else if (xOrder.state === 'filled') {
         zOrder.status = 'close';
-    }
-    else {
+    } else {
         zOrder.status = xOrder.state;
     }
 

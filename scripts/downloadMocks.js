@@ -85,11 +85,11 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                         endpoint:
                             'https://okx.com/api/v5/market/tickers?instType=SPOT',
                     },
-                    // {
-                    //     filename: 'history.json',
-                    //     endpoint:
-                    //         'https://ftx.com/api/markets/BTC/USDT/candles?resolution=60',
-                    // },
+                    {
+                        filename: 'history.json',
+                        endpoint:
+                            'https://okx.com/api/v5/market/history-candles?instId=BTC-USDT',
+                    },
                 ];
 
                 run(mocksPath, downloadList, task);

@@ -4,7 +4,11 @@ const checkProcessHasVariables = require('../../helpers/validateEnv');
 const { OKX } = require('zenfuse');
 
 if (isEnd2EndTest) {
-    checkProcessHasVariables(['OKX_PUBLIC_KEY', 'OKX_SECRET_KEY', 'OKX_PASSPHRASE']);
+    checkProcessHasVariables([
+        'OKX_PUBLIC_KEY',
+        'OKX_SECRET_KEY',
+        'OKX_PASSPHRASE',
+    ]);
 }
 
 /**

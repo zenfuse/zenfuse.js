@@ -1,6 +1,6 @@
 const nock = require('nock');
 
-const HOSTNAME = 'https://okx.com/';
+const HOSTNAME = 'https://okx.com';
 
 const spotFilePath = __dirname + '/mocks/static/spot.json';
 const historyFilePath = __dirname + '/mocks/static/history.json';
@@ -19,13 +19,13 @@ module.exports = (env) => ({
             nock(HOSTNAME)
                 .get('/api/v5/public/time')
                 .reply(200, {
-                    code: "0",
+                    code: '0',
                     data: [
                         {
-                            ts: "1649719640855"
-                        }
+                            ts: Date.now(),
+                        },
                     ],
-                    msg: ""
+                    msg: '',
                 }),
         'fetchMarkets()': () =>
             nock(HOSTNAME)
@@ -51,34 +51,35 @@ module.exports = (env) => ({
                 .get('/api/v5/market/ticker')
                 .query({ instId: 'BTC-USDT' })
                 .reply(200, {
-                    code: "0",
-                    msg: "",
+                    code: '0',
+                    msg: '',
                     data: [
                         {
-                            instType: "SPOT",
-                            instId: "BTC-USDT",
-                            last: "39466.5",
-                            lastSz: "0.02413831",
-                            askPx: "39466.5",
-                            askSz: "0.33213231",
-                            bidPx: "39466.4",
-                            bidSz: "0.13488312",
-                            open24h: "42105",
-                            high24h: "42410",
-                            low24h: "39190",
-                            volCcy24h: "549944177.76344598",
-                            vol24h: "13468.43820924",
-                            ts: "1649721511728",
-                            sodUtc0: "42149.3",
-                            sodUtc8: "40580.1"
+                            instType: 'SPOT',
+                            instId: 'BTC-USDT',
+                            last: '39466.5',
+                            lastSz: '0.02413831',
+                            askPx: '39466.5',
+                            askSz: '0.33213231',
+                            bidPx: '39466.4',
+                            bidSz: '0.13488312',
+                            open24h: '42105',
+                            high24h: '42410',
+                            low24h: '39190',
+                            volCcy24h: '549944177.76344598',
+                            vol24h: '13468.43820924',
+                            ts: '1649721511728',
+                            sodUtc0: '42149.3',
+                            sodUtc8: '40580.1',
                         },
                     ],
                 }),
         'fetchCandleHistory()': () =>
             nock(HOSTNAME)
-                .get('/api/markets/BTC/USDT/candles')
+                .get('/api/v5/market/history-candles')
                 .query({
-                    resolution: 60,
+                    instId: 'BTC-USDT',
+                    bar: '1m',
                 })
                 .replyWithFile(200, historyFilePath, {
                     'Content-Type': 'application/json',
@@ -86,9 +87,10 @@ module.exports = (env) => ({
         'createOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', Boolean)
-                    .matchHeader('FTX-SIGN', Boolean)
+                    .matchHeader('OKX-ACCESS-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('OKX-ACCESS-TIMESTAMP', Boolean)
+                    .matchHeader('OKX-ACCESS-SIGN', Boolean)
+                    .matchHeader('OKX-ACCESS-PASSPHRASE', Boolean)
                     .post('/api/orders', {
                         market: 'BTC/USDT',
                         side: 'buy',
@@ -97,26 +99,17 @@ module.exports = (env) => ({
                         size: 0.0004,
                     })
                     .reply(201, {
-                        success: true,
-                        result: {
-                            id: 112582179056,
-                            clientId: null,
-                            market: 'BTC/USDT',
-                            type: 'market',
-                            side: 'buy',
-                            price: null,
-                            size: 0.0004,
-                            status: 'new',
-                            filledSize: 0,
-                            remainingSize: 0.0004,
-                            reduceOnly: false,
-                            liquidation: null,
-                            avgFillPrice: null,
-                            postOnly: false,
-                            ioc: true,
-                            createdAt: '2022-01-11T17:41:47.235109+00:00',
-                            future: null,
-                        },
+                        code: '0',
+                        msg: '',
+                        data: [
+                            {
+                                // clOrdId: "oktswap6",
+                                ordId: '312269865356374016',
+                                tag: '',
+                                sCode: '0',
+                                sMsg: '',
+                            },
+                        ],
                     }),
             'sell by market': () =>
                 nock(HOSTNAME)
