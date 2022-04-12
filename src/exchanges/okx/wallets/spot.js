@@ -33,13 +33,17 @@ class OkxSpot extends OkxBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const markets = await this.publicFetch('api/markets');
+        const markets = await this.publicFetch('api/v5/market/tickers', {
+            searchParams: {
+                instType: 'SPOT',
+            },
+        });
 
         // TODO: Cache update here
 
-        const spotMarkets = utils.extractSpotMarkets(markets.result);
+        const tickers = utils.extractSpotTickers(markets.data);
 
-        const tickers = utils.extractTickersFromMarkets(spotMarkets);
+        // const tickers = utils.extractTickersFromMarkets(spotMarkets);
 
         utils.linkOriginalPayload(tickers, markets);
 
@@ -50,17 +54,19 @@ class OkxSpot extends OkxBase {
      * @returns {string[]} Array of ticker pairs on OKX
      */
     async fetchMarkets() {
-        const response = await this.publicFetch('api/markets');
+        const response = await this.publicFetch('api/v5/market/tickers', {
+            searchParams: {
+                instType: 'SPOT',
+            },
+        });
 
         // TODO: Cache update here
 
-        const spotMarkets = utils.extractSpotMarkets(response.result);
-
-        const markets = spotMarkets.map((m) => {
+        const markets = response.data.map((m) => {
             return {
-                symbol: m.name,
-                baseTicker: m.baseCurrency,
-                quoteTicker: m.quoteCurrency,
+                symbol: m.instId,
+                baseTicker: m.baseCcy,
+                quoteTicker: m.quoteCcy,
             };
         });
 
@@ -82,14 +88,17 @@ class OkxSpot extends OkxBase {
      * @returns {PriceObject} Last price
      */
     async fetchPrice(market = '') {
-        const requestPath = market ? `api/markets/${market}` : 'api/markets';
-
-        const response = await this.publicFetch(requestPath);
-
         if (market) {
+            const requestPath = 'api/v5/market/ticker';
+            const instId = market.replace('/', '-');
+            const response = await this.publicFetch(requestPath, {
+                searchParams: {
+                    instId: instId,
+                },
+            });
             const price = {
                 symbol: market,
-                price: response.result.price,
+                price: response.data[0].last,
             };
 
             utils.linkOriginalPayload(price, response);
@@ -97,13 +106,19 @@ class OkxSpot extends OkxBase {
             return price;
         }
 
-        const prices = response.result
-            .filter((market) => market.type === 'spot')
+        const requestPath = 'api/v5/market/tickers';
+        const instType = 'SPOT';
+        const response = await this.publicFetch(requestPath, {
+            searchParams: {
+                instType: instType,
+            },
+        });
+
+        const prices = response.data
             .map((market) => {
-                // NOTE: OKX Return dead tokens with null price
                 return {
-                    symbol: market.name,
-                    price: market.price || 0,
+                    symbol: market.instId,
+                    price: market.last || 0,
                 };
             });
 

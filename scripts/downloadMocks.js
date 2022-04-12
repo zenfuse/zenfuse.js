@@ -83,7 +83,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     {
                         filename: 'spot.json',
                         endpoint:
-                            'https://okx.com/api/v5/public/instruments?instType=SPOT',
+                            'https://okx.com/api/v5/market/tickers?instType=SPOT',
                     },
                     // {
                     //     filename: 'history.json',

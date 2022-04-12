@@ -1,27 +1,13 @@
 /**
- * @param {object[]} markets Markets from FTX `/api/markets` endpoint
+ * @param {object[]} payload Markets from OKX `/api/v5/public/instruments` endpoint
  * @returns {object[]}
  */
-const extractSpotMarkets = (markets) => {
-    return markets.filter((market) => market.type === 'spot');
-};
+const extractSpotTickers = (payload) => {
+    const markets = payload.map((ticker) => ticker.instId);
 
-/**
- * @param {object[]} markets Markets from FTX `/api/markets` endpoint
- * @returns {object[]}
- */
-const extractTickersFromMarkets = (markets) => {
-    const tickers = markets
-        .map((market) => {
-            return [market.baseCurrency, market.quoteCurrency];
-        })
-        .flat()
-        .filter(Boolean);
-
-    return tickers;
+    return markets;
 };
 
 module.exports = {
-    extractSpotMarkets,
-    extractTickersFromMarkets,
+    extractSpotTickers,
 };

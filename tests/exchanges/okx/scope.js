@@ -1,68 +1,78 @@
 const nock = require('nock');
 
-const HOSTNAME = 'https://ftx.com/';
+const HOSTNAME = 'https://okx.com/';
 
-const marketsFilePath = __dirname + '/mocks/static/markets.json';
+const spotFilePath = __dirname + '/mocks/static/spot.json';
 const historyFilePath = __dirname + '/mocks/static/history.json';
 
 /**
- * HTTP mocking scope for FTX master test
+ * HTTP mocking scope for OKX master test
  * Should be as
  *
  * @param {import('../../master.test').MasterTestEnvironment} env
- * @returns {object} Object with test names witch opens nock scope
+ * @returns {object} Object with test names which opens nock scope
  */
 module.exports = (env) => ({
     root: null,
     'Spot Wallet HTTP interface': {
         'ping()': () =>
             nock(HOSTNAME)
-                .get('/api')
-                .reply(200, { success: true, result: true }),
+                .get('/api/v5/public/time')
+                .reply(200, {
+                    code: "0",
+                    data: [
+                        {
+                            ts: "1649719640855"
+                        }
+                    ],
+                    msg: ""
+                }),
         'fetchMarkets()': () =>
             nock(HOSTNAME)
-                .get('/api/markets')
-                .replyWithFile(200, marketsFilePath, {
+                .get('/api/v5/market/tickers')
+                .query({ instType: 'SPOT' })
+                .replyWithFile(200, spotFilePath, {
                     'Content-Type': 'application/json',
                 }),
         'fetchTickers()': () =>
             nock(HOSTNAME)
-                .get('/api/markets')
-                .replyWithFile(200, marketsFilePath, {
+                .get('/api/v5/market/tickers')
+                .query({ instType: 'SPOT' })
+                .replyWithFile(200, spotFilePath, {
                     'Content-Type': 'application/json',
                 }),
         'fetchPrice()': () =>
             nock(HOSTNAME)
-                .get('/api/markets')
-                .replyWithFile(200, marketsFilePath, {
+                .get('/api/v5/market/tickers')
+                .query({ instType: 'SPOT' })
+                .replyWithFile(200, spotFilePath, {
                     'Content-Type': 'application/json',
                 })
-                .get('/api/markets/BTC/USDT')
+                .get('/api/v5/market/ticker')
+                .query({ instId: 'BTC-USDT' })
                 .reply(200, {
-                    success: true,
-                    result: {
-                        name: 'BTC/USDT',
-                        enabled: true,
-                        postOnly: false,
-                        priceIncrement: 1.0,
-                        sizeIncrement: 0.0001,
-                        minProvideSize: 0.0001,
-                        last: 41577.0,
-                        bid: 41573.0,
-                        ask: 41575.0,
-                        price: 41575.0,
-                        type: 'spot',
-                        baseCurrency: 'BTC',
-                        quoteCurrency: 'USDT',
-                        underlying: null,
-                        restricted: false,
-                        highLeverageFeeExempt: true,
-                        change1h: 0.00009622092323975848,
-                        change24h: 0.0012764317711092914,
-                        changeBod: -0.0002885517108711857,
-                        quoteVolume24h: 116192699.7696,
-                        volumeUsd24h: 116191540.1664563,
-                    },
+                    code: "0",
+                    msg: "",
+                    data: [
+                        {
+                            instType: "SPOT",
+                            instId: "BTC-USDT",
+                            last: "39466.5",
+                            lastSz: "0.02413831",
+                            askPx: "39466.5",
+                            askSz: "0.33213231",
+                            bidPx: "39466.4",
+                            bidSz: "0.13488312",
+                            open24h: "42105",
+                            high24h: "42410",
+                            low24h: "39190",
+                            volCcy24h: "549944177.76344598",
+                            vol24h: "13468.43820924",
+                            ts: "1649721511728",
+                            sodUtc0: "42149.3",
+                            sodUtc8: "40580.1"
+                        },
+                    ],
                 }),
         'fetchCandleHistory()': () =>
             nock(HOSTNAME)

@@ -134,6 +134,7 @@ class OkxBase extends ExchangeBase {
      * @public
      */
     async ping() {
+        console.log('PING');
         await this.publicFetch('api/v5/public/time');
     }
 
