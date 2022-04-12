@@ -32,6 +32,9 @@ if (options.help) {
     process.exit(0);
 }
 
+const nameExp = new RegExp(`^${options.only}`, 'i');
+const shouldRun = (name) => nameExp.test(name);
+
 task('Preparing mocks', async ({ task, setStatus }) => {
     if (options.force) {
         setStatus('forced');
@@ -40,7 +43,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
     await task.group(
         (task) => [
             task('Binance', ({ task, setStatus }) => {
-                if (options.only && options.only !== 'binance') {
+                if (!shouldRun('binance')) {
                     setStatus('skipped');
                     return;
                 }
@@ -67,7 +70,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                 run(mocksPath, downloadList, task);
             }),
             task('FTX', ({ task, setStatus }) => {
-                if (options.only && options.only !== 'ftx') {
+                if (!shouldRun('ftx')) {
                     setStatus('skipped');
                     return;
                 }
@@ -78,7 +81,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                 return downloadEach(mocksPath, downloadList, task);
             }),
             task('Bithumb', ({ task, setStatus }) => {
-                if (options.only && options.only !== 'bithumb') {
+                if (!shouldRun('bithumb')) {
                     setStatus('skipped');
                     return;
                 }
@@ -169,7 +172,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                 run(mocksPath, downloadList, task);
             }),
             task('Huobi', ({ task, setStatus }) => {
-                if (options.only && options.only !== 'huobi') {
+                if (!shouldRun('huobi')) {
                     setStatus('skipped');
                     return;
                 }
