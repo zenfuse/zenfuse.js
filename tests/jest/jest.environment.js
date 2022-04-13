@@ -25,7 +25,7 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
                     this.openHttpMockingScope(event.describeBlock);
                 }
                 break;
-            case 'run_describe_finish':
+            case 'run_describe_===':
                 if (
                     !this.global.isExchangeTestFailed &&
                     event.describeBlock.mode !== 'skip'
