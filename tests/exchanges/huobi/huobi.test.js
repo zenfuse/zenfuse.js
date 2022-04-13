@@ -1,7 +1,9 @@
+const { Huobi } = require('zenfuse');
+
 const masterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
-const { Huobi } = require('zenfuse');
+const createEnv = require('../../helpers/createEnv');
 
 if (isEnd2EndTest) {
     checkProcessHasVariables(['HUOBI_PUBLIC_KEY', 'HUOBI_SECRET_KEY']);
@@ -10,9 +12,9 @@ if (isEnd2EndTest) {
 /**
  * @type {import('../../master.test').MasterTestEnvironment}
  */
-const env = {
-    API_PUBLIC_KEY: process.env.HUOBI_PUBLIC_KEY || 'DUMMY_PUBLIC_KEY',
-    API_PRIVATE_KEY: process.env.HUOBI_SECRET_KEY || 'DUMMY_SECRET_KEY',
+const env = createEnv({
+    API_PUBLIC_KEY: process.env.HUOBI_PUBLIC_KEY,
+    API_PRIVATE_KEY: process.env.HUOBI_SECRET_KEY,
     NOT_EXECUTABLE_ORDER: {
         symbol: 'USDC/USDT',
         type: 'limit',
@@ -20,7 +22,7 @@ const env = {
         quantity: 10,
         price: 0.5,
     },
-};
+});
 
 global.httpScope = createScope(env);
 
