@@ -482,10 +482,13 @@ module.exports = function masterTest(Exchange, env) {
                 expect(result).toBeDefined();
 
                 expect(result.symbol).toBe(createdOrder.symbol);
-                expect(result.type).toBe(createdOrder.type);
                 expect(result.side).toBe(createdOrder.side);
-                expect(result.quantity).toBe(createdOrder.quantity);
                 expect(result.price).toBe(createdOrder.price);
+                expect(result.quantity).toBe(createdOrder.quantity);
+                expect(result.status).toBe(createdOrder.status);
+                expect(result.type).toBe(createdOrder.type);
+
+                // TODO: Solve not equal timstamps in some cases
                 expect(result.timestamp).toBeCloseTo(
                     createdOrder.timestamp,
                     -100,
