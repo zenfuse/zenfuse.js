@@ -2,6 +2,10 @@ const nock = require('nock');
 
 const HOSTNAME = 'https://api.huobi.pro';
 
+const OPTIONS = {
+    conditionally: () => true,
+};
+
 const marketsFilePath = __dirname + '/mocks/static/markets.json';
 const tickersFilePath = __dirname + '/mocks/static/tickers.json';
 const pairsFilePath = __dirname + '/mocks/static/pairs.json';
@@ -16,7 +20,7 @@ const candlesFilePath = __dirname + '/mocks/static/candles.json';
  */
 module.exports = (env) => ({
     root: () =>
-        nock(HOSTNAME)
+        nock(HOSTNAME, OPTIONS)
             .get('/v2/settings/common/symbols')
             .replyWithFile(200, marketsFilePath, {
                 'Content-Type': 'application/json',
@@ -42,24 +46,24 @@ module.exports = (env) => ({
             }),
     'Spot Wallet HTTP interface': {
         'ping()': () =>
-            nock(HOSTNAME).get('/v1/common/timestamp').reply(200, {
+            nock(HOSTNAME, OPTIONS).get('/v1/common/timestamp').reply(200, {
                 status: 'ok',
                 data: 1629715504949,
             }),
         'fetchMarkets()': () =>
-            nock(HOSTNAME)
+            nock(HOSTNAME, OPTIONS)
                 .get('/v2/settings/common/symbols')
                 .replyWithFile(200, marketsFilePath, {
                     'Content-Type': 'application/json',
                 }),
         'fetchTickers()': () =>
-            nock(HOSTNAME)
+            nock(HOSTNAME, OPTIONS)
                 .get('/v2/settings/common/currencies')
                 .replyWithFile(200, tickersFilePath, {
                     'Content-Type': 'application/json',
                 }),
         'fetchPrice()': () =>
-            nock(HOSTNAME)
+            nock(HOSTNAME, OPTIONS)
                 .get('/market/tickers')
                 .replyWithFile(200, pairsFilePath, {
                     'Content-Type': 'application/json',
@@ -85,7 +89,7 @@ module.exports = (env) => ({
                     },
                 }),
         'fetchCandleHistory()': () =>
-            nock(HOSTNAME)
+            nock(HOSTNAME, OPTIONS)
                 .get('/market/history/kline')
                 .query({
                     symbol: 'btcusdt',
@@ -97,15 +101,18 @@ module.exports = (env) => ({
                 }),
         'createOrder()': {
             'buy by market': () =>
-                nock(HOSTNAME)
+                nock(HOSTNAME, OPTIONS)
                     .get('/market/detail')
                     .query({
-                        symbol: 'btcusdt',
+                        symbol: toHuobiStyle(env.BUY_MARKET_ORDER.symbol),
                     })
                     .reply(200, {
-                        ch: 'market.btcusdt.detail',
+                        ch:
+                            'market' +
+                            toHuobiStyle(env.BUY_MARKET_ORDER.symbol) +
+                            '.detail',
                         status: 'ok',
-                        ts: 1648488158136,
+                        ts: Date.now(),
                         tick: {
                             id: 301148161314,
                             low: 44677.75,
@@ -120,10 +127,13 @@ module.exports = (env) => ({
                     })
                     .post('/v1/order/orders/place', (body) => {
                         expect(body['account-id']).toBe(10000001);
-                        expect(body.amount).toBeDefined();
-                        // expect(body.price).toBeDefined();
+                        expect(body.amount).not.toBe(
+                            env.BUY_MARKET_ORDER.quantity.toString(),
+                        );
                         expect(body.source).toBe('spot-api');
-                        expect(body.symbol);
+                        expect(body.symbol).toBe(
+                            toHuobiStyle(env.BUY_MARKET_ORDER.symbol),
+                        );
                         expect(body.type).toBe('buy-market');
                         return true;
                     })
@@ -133,10 +143,12 @@ module.exports = (env) => ({
                         data: '356501383558845',
                     }),
             'sell by market': () =>
-                nock(HOSTNAME)
+                nock(HOSTNAME, OPTIONS)
                     .post('/v1/order/orders/place', (body) => {
                         expect(body['account-id']).toBe(10000001);
-                        expect(body.amount).toBeDefined();
+                        expect(body.amount).toBe(
+                            env.SELL_MARKET_ORDER.quantity.toString(),
+                        );
                         // expect(body.price).toBeDefined();
                         expect(body.source).toBe('spot-api');
                         expect(body.symbol);
@@ -149,7 +161,7 @@ module.exports = (env) => ({
                         data: '356501383558845',
                     }),
             'buy by limit': () =>
-                nock(HOSTNAME)
+                nock(HOSTNAME, OPTIONS)
                     .post('/v1/order/orders/place', (body) => {
                         expect(body['account-id']).toBe(10000001);
                         expect(body.amount);
@@ -165,7 +177,7 @@ module.exports = (env) => ({
                         data: '356501383558845',
                     }),
             'sell by limit': () =>
-                nock(HOSTNAME)
+                nock(HOSTNAME, OPTIONS)
                     .post('/v1/order/orders/place', (body) => {
                         expect(body['account-id']).toBe(10000001);
                         expect(body.amount);
@@ -182,7 +194,7 @@ module.exports = (env) => ({
                     }),
         },
         'fetchBalances()': () =>
-            nock(HOSTNAME)
+            nock(HOSTNAME, OPTIONS)
                 .get('/v1/account/accounts/10000001/balance')
                 .query(expectAuthParams)
                 .reply(200, {
@@ -215,7 +227,7 @@ module.exports = (env) => ({
                 }),
 
         'cancelOrderById()': () =>
-            nock(HOSTNAME)
+            nock(HOSTNAME, OPTIONS)
                 // Order creation
                 .post('/v1/order/orders/place', (body) => {
                     expect(body['account-id']).toBe(10000001);
@@ -237,66 +249,48 @@ module.exports = (env) => ({
                 .reply(200),
 
         'fetchOrderById()': () =>
-            nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-TS', Boolean)
-                .matchHeader('FTX-SIGN', Boolean)
+            nock(HOSTNAME, OPTIONS)
                 // Order creation
-                .post('/api/orders', {
-                    market: 'USDT/USD',
-                    type: 'limit',
-                    side: 'buy',
-                    size: 20,
-                    price: 0.5,
+                .post('/v1/order/orders/place', (body) => {
+                    expect(body['account-id']).toBe(10000001);
+                    expect(body.amount);
+                    expect(body.price);
+                    expect(body.source).toBe('spot-api');
+                    expect(body.symbol);
+                    expect(body.type).toBe('buy-limit');
+                    return true;
                 })
+                .query(expectAuthParams)
                 .reply(200, {
-                    success: true,
-                    result: {
-                        id: 112590877631,
-                        clientId: null,
-                        market: 'USDT/USD',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 0.5,
-                        size: 20,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 20,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:21:19.188847+00:00',
-                        future: null,
-                    },
+                    status: 'ok',
+                    data: '357632718898331',
                 })
                 // Order status fetch
-                .get('/api/orders/112590877631')
+                .get('/v1/order/orders/357632718898331')
+                .query(expectAuthParams)
                 .reply(200, {
-                    success: true,
-                    result: {
-                        id: 112590877631,
-                        clientId: null,
-                        market: 'USDT/USD',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 0.5,
-                        size: 20,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 20,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:21:19.188847+00:00',
-                        future: null,
+                    status: 'ok',
+                    data: {
+                        id: 357632718898331,
+                        symbol: toHuobiStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        'account-id': 13496526,
+                        'client-order-id': '23456',
+                        amount: toHuobiStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                        price: toHuobiStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        'created-at': Date.now(),
+                        type: 'buy-limit',
+                        'field-amount': '0.0',
+                        'field-cash-amount': '0.0',
+                        'field-fees': '0.0',
+                        'finished-at': 0,
+                        source: 'spot-api',
+                        state: 'submitted',
+                        'canceled-at': 0,
                     },
                 })
                 // Order deletion
-                .delete(`/api/orders/112590877631`)
+                .post(`/v1/order/orders/357632718898331/submitcancel`)
+                .query(expectAuthParams)
                 .reply(200),
     },
 });
@@ -309,3 +303,9 @@ const expectAuthParams = (query) => {
     expect(query.Signature).toBeDefined();
     return true;
 };
+
+/**
+ * @param {number|string} value
+ * @returns {string}
+ */
+const toHuobiStyle = (value) => value.toString().replace('/', '').toLowerCase();
