@@ -80,33 +80,40 @@ const transfromZenfuseOrder = (zOrder) => {
 /**
  * Binance -> Zenfuse
  *
- * @param {*} bOrder Order fromf
+ * @param {*} hOrder Order fromf
  * @returns {Order} Zenfuse Order
  */
-const transfromHuobiOrder = (bOrder) => {
+const transfromHuobiOrder = (hOrder) => {
     /**
      * @type {Order}
      */
     const zOrder = {};
 
-    zOrder.id = bOrder.orderId.toString();
-    zOrder.timestamp = bOrder.transactTime;
-    // zOrder.status = bOrder.status.toLowerCase();
-    // zOrder.timeInForce = bOrder.timeInForce;
-    zOrder.type = bOrder.type.toLowerCase();
-    zOrder.symbol = bOrder.symbol; // TODO: Binance symbol transformation
-    // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
-    zOrder.side = bOrder.side.toLowerCase();
-    zOrder.price = parseFloat(bOrder.price);
-    zOrder.quantity = parseFloat(bOrder.origQty);
+    zOrder.id = hOrder.id.toString();
+    zOrder.timestamp = hOrder['created-at'];
 
-    if (bOrder.status === 'FILLED') {
-        zOrder.status = 'close'; // TODO: Normal statuses
-    } else if (bOrder.status === 'NEW') {
-        zOrder.status = 'close';
-    } else {
-        zOrder.status = bOrder.status.toLowerCase();
+    switch (hOrder.state) {
+        case 'created':
+        case 'submitted':
+        case 'partial-filled':
+            zOrder.status = 'open';
+            break;
+        case 'filled':
+            zOrder.status = 'close';
+            break;
+        default:
+            zOrder.status = 'canceled';
+            break;
     }
+
+    zOrder.symbol = hOrder.symbol;
+
+    const [side, type] = hOrder.type.split('-');
+
+    zOrder.side = side;
+    zOrder.type = type;
+    zOrder.price = parseFloat(hOrder.price);
+    zOrder.quantity = parseFloat(hOrder.amount);
 
     return zOrder;
 };
