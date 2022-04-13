@@ -41,28 +41,41 @@ const transformZenfuseOrder = (zOrder) => {
  * @param xOrder
  * @returns {Order} Zenfuse Order
  */
-const transformOkxOrder = (xOrder) => {
+const transformOkxOrder = (xOrder, zInitialOrder = {}) => {
     /**
      * @type {Order}
      */
     const zOrder = {};
+    xOrder = xOrder.data[0];
 
-    zOrder.id = xOrder.clOrdId;
-    zOrder.timestamp = parseFloat(xOrder.cTime);
-    zOrder.symbol = xOrder.instId.replace('-', '/');
-    zOrder.type = xOrder.ordType;
-    zOrder.side = xOrder.side;
-    zOrder.quantity = parseFloat(xOrder.sz);
-    zOrder.price = xOrder.px ? parseFloat(xOrder.px) : undefined;
-    // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+    zOrder.id = xOrder.ordId;
+    if (Object.entries(zInitialOrder).length === 0) {
+        zOrder.timestamp = parseFloat(xOrder.cTime);
+        zOrder.symbol = xOrder.instId.replace('-', '/');
+        zOrder.type = xOrder.ordType;
+        zOrder.side = xOrder.side;
+        zOrder.quantity = parseFloat(xOrder.sz);
+        zOrder.price = xOrder.px ? parseFloat(xOrder.px) : undefined;
+        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
 
-    if (xOrder.state === 'live' || xOrder.state === 'partially_filled') {
-        zOrder.status = 'open';
-    } else if (xOrder.state === 'filled') {
-        zOrder.status = 'close';
-    } else {
-        zOrder.status = xOrder.state;
+        if (xOrder.state === 'live' || xOrder.state === 'partially_filled') {
+            zOrder.status = 'open';
+        } else if (xOrder.state === 'filled') {
+            zOrder.status = 'close';
+        } else {
+            zOrder.status = xOrder.state;
+        }
     }
+    else {
+        zOrder.timestamp = zInitialOrder.timestamp ? zInitialOrder.timestamp : Date.now();
+        zOrder.symbol = zInitialOrder.symbol;
+        zOrder.type = zInitialOrder.type;
+        zOrder.side = zInitialOrder.side;
+        zOrder.quantity = parseFloat(zInitialOrder.quantity);
+        zOrder.price = zInitialOrder.price ? parseFloat(zInitialOrder.price) : undefined;
+        zOrder.status = zInitialOrder.status ? zInitialOrder.status : 'open';
+    }
+    
 
     return zOrder;
 };

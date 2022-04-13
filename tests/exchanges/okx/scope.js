@@ -87,23 +87,54 @@ module.exports = (env) => ({
         'createOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME)
-                    .matchHeader('OKX-ACCESS-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('OKX-ACCESS-TIMESTAMP', Boolean)
-                    .matchHeader('OKX-ACCESS-SIGN', Boolean)
-                    .matchHeader('OKX-ACCESS-PASSPHRASE', Boolean)
-                    .post('/api/orders', {
-                        market: 'BTC/USDT',
-                        side: 'buy',
-                        type: 'market',
-                        price: null,
-                        size: 0.0004,
+                    .get('/api/v5/market/ticker')
+                    .query({ instId: toOkxStyle(env.BUY_MARKET_ORDER.symbol) })
+                    .reply(200, {
+                        code: '0',
+                        msg: '',
+                        data: [
+                            {
+                                instType: 'SPOT',
+                                instId: 'BTC-USDT',
+                                last: '39466.5',
+                                lastSz: '0.02413831',
+                                askPx: '39466.5',
+                                askSz: '0.33213231',
+                                bidPx: '39466.4',
+                                bidSz: '0.13488312',
+                                open24h: '42105',
+                                high24h: '42410',
+                                low24h: '39190',
+                                volCcy24h: '549944177.76344598',
+                                vol24h: '13468.43820924',
+                                ts: '1649721511728',
+                                sodUtc0: '42149.3',
+                                sodUtc8: '40580.1',
+                            },
+                        ],
+                    })
+                    .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                    .matchHeader('OK-ACCESS-SIGN', Boolean)
+                    .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                    .post('/api/v5/trade/order', (b) => {
+                        expect(b).toMatchObject({
+                            instId: toOkxStyle(env.BUY_MARKET_ORDER.symbol),
+                            tdMode: 'cash',
+                            side: 'buy',
+                            ordType: 'market',
+                            px: null,
+                        });
+                        
+                        expect(b.sz).toBeDefined();
+                        return true;
                     })
                     .reply(201, {
                         code: '0',
                         msg: '',
                         data: [
                             {
-                                // clOrdId: "oktswap6",
+                                clOrdId: '',
                                 ordId: '312269865356374016',
                                 tag: '',
                                 sCode: '0',
@@ -113,166 +144,227 @@ module.exports = (env) => ({
                     }),
             'sell by market': () =>
                 nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', Boolean)
-                    .matchHeader('FTX-SIGN', Boolean)
-                    .post('/api/orders', {
-                        market: 'BTC/USDT',
-                        side: 'sell',
-                        type: 'market',
-                        price: null,
-                        size: 0.0004,
+                    .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                    .matchHeader('OK-ACCESS-SIGN', Boolean)
+                    .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                    .post('/api/v5/trade/order', (b) => {
+                        expect(b).toMatchObject({
+                            instId: toOkxStyle(env.SELL_MARKET_ORDER.symbol),
+                            tdMode: 'cash',
+                            side: 'sell',
+                            ordType: 'market',
+                            px: null,
+                            sz: toOkxStyle(env.SELL_MARKET_ORDER.quantity),
+                        });
+
+                        return true;
                     })
                     .reply(201, {
-                        success: true,
-                        result: {
-                            id: 112587218515,
-                            clientId: null,
-                            market: 'BTC/USDT',
-                            type: 'market',
-                            side: 'sell',
-                            price: null,
-                            size: 0.0004,
-                            status: 'new',
-                            filledSize: 0,
-                            remainingSize: 0.0004,
-                            reduceOnly: false,
-                            liquidation: null,
-                            avgFillPrice: null,
-                            postOnly: false,
-                            ioc: true,
-                            createdAt: '2022-01-11T18:04:55.627232+00:00',
-                            future: null,
-                        },
+                        code: '0',
+                        msg: '',
+                        data: [
+                            {
+                                clOrdId: '',
+                                ordId: '312269865356374016',
+                                tag: '',
+                                sCode: '0',
+                                sMsg: '',
+                            },
+                        ],
                     }),
             'buy by limit': () =>
                 nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', Boolean)
-                    .matchHeader('FTX-SIGN', Boolean)
-                    .post('/api/orders', {
-                        market: 'BTC/USDT',
-                        type: 'limit',
-                        side: 'buy',
-                        size: 0.0004,
-                        price: 35000,
+                    .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                    .matchHeader('OK-ACCESS-SIGN', Boolean)
+                    .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                    .post('/api/v5/trade/order', (b) => {
+                        expect(b).toMatchObject({
+                            instId: toOkxStyle(env.BUY_LIMIT_ORDER.symbol),
+                            tdMode: 'cash',
+                            side: 'buy',
+                            ordType: 'limit',
+                            px: toOkxStyle(env.BUY_LIMIT_ORDER.price),
+                            sz: toOkxStyle(env.BUY_LIMIT_ORDER.quantity),
+                        });
+                        
+                        return true;
                     })
                     .reply(201, {
-                        success: true,
-                        result: {
-                            id: 112588036315,
-                            clientId: null,
-                            market: 'BTC/USDT',
-                            type: 'limit',
-                            side: 'buy',
-                            price: 35000,
-                            size: 0.0004,
-                            status: 'new',
-                            filledSize: 0,
-                            remainingSize: 0.0004,
-                            reduceOnly: false,
-                            liquidation: null,
-                            avgFillPrice: null,
-                            postOnly: false,
-                            ioc: false,
-                            createdAt: '2022-01-11T18:08:16.731842+00:00',
-                            future: null,
-                        },
+                        code: '0',
+                        msg: '',
+                        data: [
+                            {
+                                clOrdId: '',
+                                ordId: '312269865356374016',
+                                tag: '',
+                                sCode: '0',
+                                sMsg: '',
+                            },
+                        ],
                     }),
             'sell by limit': () =>
                 nock(HOSTNAME)
-                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('FTX-TS', Boolean)
-                    .matchHeader('FTX-SIGN', Boolean)
-                    .post('/api/orders', {
-                        market: 'BTC/USDT',
-                        type: 'limit',
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .post('/api/v5/trade/order', (b) => {
+                    expect(b).toMatchObject({
+                        instId: toOkxStyle(env.SELL_LIMIT_ORDER.symbol),
+                        tdMode: 'cash',
                         side: 'sell',
-                        size: 0.0004,
-                        price: 55000,
-                    })
-                    .reply(201, {
-                        success: true,
-                        result: {
-                            id: 112589159471,
-                            clientId: null,
-                            market: 'BTC/USDT',
-                            type: 'limit',
-                            side: 'sell',
-                            price: 55000,
-                            size: 0.0004,
-                            status: 'new',
-                            filledSize: 0,
-                            remainingSize: 0.0004,
-                            reduceOnly: false,
-                            liquidation: null,
-                            avgFillPrice: null,
-                            postOnly: false,
-                            ioc: false,
-                            createdAt: '2022-01-11T18:13:38.138876+00:00',
-                            future: null,
-                        },
-                    }),
-        },
-        'fetchBalances()': () =>
-            nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-SIGN', Boolean)
-                .matchHeader('FTX-TS', Boolean)
-                .get('/api/wallet/balances')
-                .reply(200, {
-                    success: true,
-                    result: [
+                        ordType: 'limit',
+                        px: toOkxStyle(env.SELL_LIMIT_ORDER.price),
+                        sz: toOkxStyle(env.SELL_LIMIT_ORDER.quantity),
+                    });
+                    
+                    return true;
+                })
+                .reply(201, {
+                    code: '0',
+                    msg: '',
+                    data: [
                         {
-                            coin: 'USDTBEAR',
-                            free: 2320.2,
-                            spotBorrow: 0.0,
-                            total: 2340.2,
-                            usdValue: 2340.2,
-                            availableWithoutBorrow: 2320.2,
+                            clOrdId: '',
+                            ordId: '312269865356374016',
+                            tag: '',
+                            sCode: '0',
+                            sMsg: '',
                         },
                     ],
                 }),
-
+        },
+        'fetchBalances()': () =>
+            nock(HOSTNAME)
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .get('/api/v5/account/balance')
+                .reply(200, {
+                    code: "0",
+                    data: [
+                        {
+                            adjEq: "10679688.0460531643092577",
+                            details: [
+                                {
+                                    availBal: "",
+                                    availEq: "9930359.9998",
+                                    cashBal: "9930359.9998",
+                                    ccy: "USDT",
+                                    crossLiab: "0",
+                                    disEq: "9439737.0772999514",
+                                    eq: "9930359.9998",
+                                    eqUsd: "9933041.196999946",
+                                    frozenBal: "0",
+                                    interest: "0",
+                                    isoEq: "0",
+                                    isoLiab: "0",
+                                    isoUpl:"0",
+                                    liab: "0",
+                                    maxLoan: "10000",
+                                    mgnRatio: "",
+                                    notionalLever: "",
+                                    ordFrozen: "0",
+                                    twap: "0",
+                                    uTime: "1620722938250",
+                                    upl: "0",
+                                    uplLiab: "0",
+                                    stgyEq:"0"
+                                },
+                                {
+                                    availBal: "",
+                                    availEq: "33.6799714158199414",
+                                    cashBal: "33.2009985",
+                                    ccy: "BTC",
+                                    crossLiab: "0",
+                                    disEq: "1239950.9687532129092577",
+                                    eq: "33.771820625136023",
+                                    eqUsd: "1239950.9687532129092577",
+                                    frozenBal: "0.0918492093160816",
+                                    interest: "0",
+                                    isoEq: "0",
+                                    isoLiab: "0",
+                                    isoUpl:"0",
+                                    liab: "0",
+                                    maxLoan: "1453.92289531493594",
+                                    mgnRatio: "",
+                                    notionalLever: "",
+                                    ordFrozen: "0",
+                                    twap: "0",
+                                    uTime: "1620722938250",
+                                    upl: "0.570822125136023",
+                                    uplLiab: "0",
+                                    stgyEq:"0"
+                                }
+                            ],
+                            imr: "3372.2942371050594217",
+                            isoEq: "0",
+                            mgnRatio: "70375.35408747017",
+                            mmr: "134.8917694842024",
+                            notionalUsd: "33722.9423710505978888",
+                            ordFroz: "0",
+                            totalEq: "11172992.1657531589092577",
+                            uTime: "1623392334718"
+                        }
+                    ],
+                    msg: ""
+                }),
         'cancelOrderById()': () =>
             nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-TS', Boolean)
-                .matchHeader('FTX-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
                 // Order creation
-                .post('/api/orders', {
-                    market: 'USDT/USD',
-                    type: 'limit',
-                    side: 'buy',
-                    size: 20,
-                    price: 0.5,
+                .post('/api/v5/trade/order', (b) => {
+                    expect(b).toMatchObject({
+                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        tdMode: 'cash',
+                        side: toOkxStyle(env.NOT_EXECUTABLE_ORDER.side),
+                        ordType: toOkxStyle(env.NOT_EXECUTABLE_ORDER.type),
+                        px: toOkxStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        sz: toOkxStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                    });
+                    
+                    return true;
                 })
-                .reply(200, {
-                    success: true,
-                    result: {
-                        id: 112590877630,
-                        clientId: null,
-                        market: 'USDT/USD',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 0.5,
-                        size: 20,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 20,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:21:19.188847+00:00',
-                        future: null,
-                    },
+                .reply(201, {
+                    code: '0',
+                    msg: '',
+                    data: [
+                        {
+                            clOrdId: '',
+                            ordId: '312269865356374016',
+                            tag: '',
+                            sCode: '0',
+                            sMsg: '',
+                        },
+                    ],
                 })
                 // Order deletion
-                .delete(`/api/orders/112590877630`)
-                .reply(200),
+                .post('/api/v5/trade/cancel-order', (b) => {
+                    expect(b).toMatchObject({
+                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        ordId: '312269865356374016',
+                    });
 
+                    return true;
+                })
+                .reply(200, {
+                    code: "0",
+                    msg: "",
+                    data: [
+                        {
+                            clOrdId: "",
+                            ordId: "312269865356374016",
+                            sCode: "0",
+                            sMsg: ""
+                        }
+                    ]
+                }),
         'fetchOrderById()': () =>
             nock(HOSTNAME)
                 .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
@@ -337,3 +429,5 @@ module.exports = (env) => ({
                 .reply(200),
     },
 });
+
+const toOkxStyle = (value) => value.toString().replace('/', '-');

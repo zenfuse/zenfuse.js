@@ -191,7 +191,7 @@ module.exports = function masterTest(Exchange, env) {
         //// Private API Zone
         ///////////////////////////////////////////////////////////////
 
-        describe.skip('auth()', () => {
+        describe('auth()', () => {
             it('should bo defined', () => {
                 expect(exchange.auth).toBeDefined();
             });
@@ -200,6 +200,7 @@ module.exports = function masterTest(Exchange, env) {
                 const keys = {
                     publicKey: env.API_PUBLIC_KEY,
                     privateKey: env.API_PRIVATE_KEY,
+                    addKey: env.API_ADD_KEY ? env.API_ADD_KEY : undefined,
                 };
 
                 expect(exchange.hasKeys).toBe(false);

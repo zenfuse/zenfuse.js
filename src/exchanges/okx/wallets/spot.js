@@ -192,18 +192,28 @@ class OkxSpot extends OkxBase {
 
         const xOrder = utils.transformZenfuseOrder(zOrder);
 
+        if (zOrder.type === 'market' && zOrder.side === 'buy') {
+            let orderTotal = null;
+
+            const { price } = await this.fetchPrice(zOrder.symbol);
+
+            orderTotal = price * zOrder.quantity;
+
+            xOrder.sz = orderTotal.toString();
+        }
+
         const xCreatedOrder = await this.privateFetch('api/v5/trade/order', {
             method: 'POST',
             json: xOrder,
         });
 
-        // const zCreatedOrder = utils.transformOkxOrder(xCreatedOrder, zOrder);
+        const zCreatedOrder = utils.transformOkxOrder(xCreatedOrder, zOrder);
 
-        this.cache.cacheOrder(zOrder);
+        this.cache.cacheOrder(zCreatedOrder);
 
-        utils.linkOriginalPayload(zOrder, xCreatedOrder);
+        utils.linkOriginalPayload(zCreatedOrder, xCreatedOrder);
 
-        return zOrder;
+        return zCreatedOrder;
     }
 
     /**
@@ -212,21 +222,27 @@ class OkxSpot extends OkxBase {
      * @param {string} orderId Okx order id
      */
     async cancelOrderById(orderId) {
+        let orderToDelete = this.cache.getCachedOrderById(orderId);
+
+        console.log(orderToDelete);
+
+        if (!orderToDelete) {
+            orderToDelete = this.fetchOrderById(orderId);
+        }
+
         const response = await this.privateFetch('api/v5/trade/cancel-order', {
             method: 'POST',
+            json: {
+                instId: orderToDelete.symbol.replace('/', '-'),
+                ordId: orderId,
+            },
         });
-
-        let deletedOrder = this.cache.getCachedOrderById(orderId);
-
-        if (!deletedOrder) {
-            deletedOrder = this.fetchOrderById(orderId);
-        }
 
         this.cache.deleteCachedOrderById(orderId);
 
-        utils.linkOriginalPayload(deletedOrder, response);
+        utils.linkOriginalPayload(orderToDelete, response);
 
-        return deletedOrder;
+        return orderToDelete;
     }
 
     // TODO: Test for this
@@ -235,9 +251,13 @@ class OkxSpot extends OkxBase {
     }
 
     async fetchBalances() {
-        const response = await this.privateFetch('api/v5/account/balance');
+        const response = await this.privateFetch('api/v5/account/balance', {
+            method: 'GET',
+        });
 
-        const balances = response.data.details
+        let data = response.data[0].details;
+
+        const balances = data
             .filter((b) => b.cashBal > 0)
             .map((b) => {
                 return {
