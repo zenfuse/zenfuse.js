@@ -360,22 +360,11 @@ class HuobiSpot extends HuobiBase {
      * @param {string} orderId
      */
     async fetchOrderById(orderId) {
-        let orderToDelete = this.cache.getCachedOrderById(orderId);
+        const response = await this.privateFetch(`v1/order/orders/${orderId}`);
 
-        if (!orderToDelete) {
-            throw 'TODO: Fix cache'; // TODO:!!!
-        }
+        const zOrder = utils.transfromHuobiOrder(response.data);
 
-        const response = await this.privateFetch('api/v3/order', {
-            searchParams: {
-                symbol: orderToDelete.symbol.replace('/', ''),
-                orderId: orderToDelete.id.toString(),
-            },
-        });
-
-        const zOrder = utils.transfromHuobiOrder(response);
-
-        zOrder.symbol = this.parseHuobiSymbol(response.symbol);
+        zOrder.symbol = this.parseHuobiSymbol(response.data.symbol);
 
         this.cache.cacheOrder(zOrder);
 
