@@ -18,6 +18,12 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
     openScopes = new Map();
 
     async handleTestEvent(event, state) {
+        if (!this.context.httpScope) {
+            if (super.handleTestEvent) {
+                await super.handleTestEvent(event, state);
+            }
+            return;
+        }
         switch (event.name) {
             case 'setup':
                 this.global.testTimeout = state.testTimeout;
