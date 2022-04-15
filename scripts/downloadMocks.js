@@ -22,6 +22,10 @@ const options = mri(process.argv.slice(2), {
         f: 'force',
         h: 'help',
     },
+    default: {
+        only: '',
+        force: false,
+    },
 });
 
 if (options.help) {
