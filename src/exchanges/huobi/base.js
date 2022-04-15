@@ -1,7 +1,7 @@
-const { createHmac } = require('crypto');
 const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
 
+const utils = require('./utils');
 const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const HuobiApiError = require('./errors/api.error');
@@ -90,15 +90,14 @@ class HuobiBase extends ExchangeBase {
             }
         }
 
-        const method = options.method
-            ? options.method
-            : this.fetcher.defaults.options.method;
+        const method = options.method || this.fetcher.defaults.options.method;
 
-        const preSignedText = `${method}\napi.huobi.pro\n/${url}\n${queryString.toString()}`;
-
-        const signature = createHmac('sha256', this[keysSymbol].privateKey)
-            .update(preSignedText)
-            .digest('base64');
+        const signature = utils.createHmacSignature(
+            method,
+            url,
+            queryString,
+            this[keysSymbol].privateKey,
+        );
 
         queryString.append('Signature', signature);
 
