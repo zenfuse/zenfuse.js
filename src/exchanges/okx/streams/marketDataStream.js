@@ -31,7 +31,7 @@ class MarketDataStream extends FtxWebsocketBase {
     async open() {
         if (this.isSocketConneted) return this;
 
-        await super.open();
+        await super.open('public');
 
         this.socket.addEventListener(
             'message',
@@ -77,8 +77,12 @@ class MarketDataStream extends FtxWebsocketBase {
         if (event.channel === 'price') {
             return this.sendSocketMessage({
                 op: command,
-                channel: 'ticker',
-                market: event.symbol,
+                args: [
+                    {
+                        channel: 'tickers',
+                        instId: event.symbol.replace('/', '-'),
+                    },
+                ]
             });
         }
 

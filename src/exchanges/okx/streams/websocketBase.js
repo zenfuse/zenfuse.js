@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const { WebSocket } = require('ws');
 
-class FtxWebsocketBase extends EventEmitter {
+class OkxWebsocketBase extends EventEmitter {
     static PING_INTERVAL = 15000; // 15 sec
 
     /**
@@ -28,10 +28,10 @@ class FtxWebsocketBase extends EventEmitter {
      *
      * @returns {Promise<void>}
      */
-    open() {
+    open(path) {
         const { wsClientOptions } = this.base.options;
 
-        const url = new URL('ws', wsClientOptions.prefixUrl);
+        const url = new URL(path, wsClientOptions.prefixUrl);
 
         const socket = new WebSocket(url, wsClientOptions);
 
@@ -45,7 +45,7 @@ class FtxWebsocketBase extends EventEmitter {
 
                 this.pingIntervalId = setInterval(() => {
                     this.socket.send('{"op": "ping"}');
-                }, FtxWebsocketBase.PING_INTERVAL);
+                }, OkxWebsocketBase.PING_INTERVAL);
 
                 resolve();
             });
@@ -56,7 +56,7 @@ class FtxWebsocketBase extends EventEmitter {
      * @returns {this}
      */
     close() {
-        if (this.isSocketConneted) {
+        if (this.isSocketConnected) {
             clearInterval(this.pingIntervalId);
             this.socket.close();
         }
@@ -68,13 +68,13 @@ class FtxWebsocketBase extends EventEmitter {
         throw err; // TODO: Websocket connection error
     }
 
-    checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
+    checkSocketIsConnected() {
+        if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
     }
 
-    get isSocketConneted() {
+    get isSocketConnected() {
         if (!this.socket) return false;
 
         return this.socket.readyState === WebSocket.OPEN;
@@ -85,7 +85,7 @@ class FtxWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg) {
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const msgString = JSON.stringify(msg);
 
@@ -93,4 +93,4 @@ class FtxWebsocketBase extends EventEmitter {
     }
 }
 
-module.exports = FtxWebsocketBase;
+module.exports = OkxWebsocketBase;

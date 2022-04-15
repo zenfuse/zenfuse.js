@@ -88,7 +88,9 @@ module.exports = (env) => ({
             'buy by market': () =>
                 nock(HOSTNAME)
                     .get('/api/v5/market/ticker')
-                    .query({ instId: toOkxStyle(env.BUY_MARKET_ORDER.symbol) })
+                    .query({ 
+                        instId: toOkxStyle(env.BUY_MARKET_ORDER.symbol),
+                    })
                     .reply(200, {
                         code: '0',
                         msg: '',
@@ -113,10 +115,6 @@ module.exports = (env) => ({
                             },
                         ],
                     })
-                    .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                    .matchHeader('OK-ACCESS-SIGN', Boolean)
-                    .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
                     .post('/api/v5/trade/order', (b) => {
                         expect(b).toMatchObject({
                             instId: toOkxStyle(env.BUY_MARKET_ORDER.symbol),
@@ -345,6 +343,10 @@ module.exports = (env) => ({
                     ],
                 })
                 // Order deletion
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
                 .post('/api/v5/trade/cancel-order', (b) => {
                     expect(b).toMatchObject({
                         instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
@@ -367,66 +369,107 @@ module.exports = (env) => ({
                 }),
         'fetchOrderById()': () =>
             nock(HOSTNAME)
-                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('FTX-TS', Boolean)
-                .matchHeader('FTX-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
                 // Order creation
-                .post('/api/orders', {
-                    market: 'USDT/USD',
-                    type: 'limit',
-                    side: 'buy',
-                    size: 20,
-                    price: 0.5,
+                .post('/api/v5/trade/order', (b) => {
+                    expect(b).toMatchObject({
+                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        tdMode: 'cash',
+                        side: toOkxStyle(env.NOT_EXECUTABLE_ORDER.side),
+                        ordType: toOkxStyle(env.NOT_EXECUTABLE_ORDER.type),
+                        px: toOkxStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        sz: toOkxStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                    });
+                    
+                    return true;
                 })
-                .reply(200, {
-                    success: true,
-                    result: {
-                        id: 112590877631,
-                        clientId: null,
-                        market: 'USDT/USD',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 0.5,
-                        size: 20,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 20,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:21:19.188847+00:00',
-                        future: null,
-                    },
+                .reply(201, {
+                    code: '0',
+                    msg: '',
+                    data: [
+                        {
+                            clOrdId: '',
+                            ordId: '312269865356374016',
+                            tag: '',
+                            sCode: '0',
+                            sMsg: '',
+                        },
+                    ],
                 })
                 // Order status fetch
-                .get('/api/orders/112590877631')
+                .get('/api/v5/trade/orders-pending')
                 .reply(200, {
-                    success: true,
-                    result: {
-                        id: 112590877631,
-                        clientId: null,
-                        market: 'USDT/USD',
-                        type: 'limit',
-                        side: 'buy',
-                        price: 0.5,
-                        size: 20,
-                        status: 'new',
-                        filledSize: 0,
-                        remainingSize: 20,
-                        reduceOnly: false,
-                        liquidation: null,
-                        avgFillPrice: null,
-                        postOnly: false,
-                        ioc: false,
-                        createdAt: '2022-01-11T18:21:19.188847+00:00',
-                        future: null,
-                    },
+                    code: "0",
+                    msg: "",
+                    data: [
+                        {
+                            accFillSz: "0",
+                            avgPx: "",
+                            cTime: "1618235248028",
+                            category: "normal",
+                            ccy: "",
+                            clOrdId: "",
+                            fee: "0",
+                            feeCcy: "BTC",
+                            fillPx: "",
+                            fillSz: "0",
+                            fillTime: "",
+                            instId: "BTC-USDT",
+                            instType: "SPOT",
+                            lever: "5.6",
+                            ordId: "312269865356374016",
+                            ordType: "limit",
+                            pnl: "0",
+                            posSide: "net",
+                            px: "59200",
+                            rebate: "0",
+                            rebateCcy: "USDT",
+                            side: "buy",
+                            slOrdPx: "",
+                            slTriggerPx: "",
+                            slTriggerPxType: "last",
+                            state: "live",
+                            sz: "1",
+                            tag: "",
+                            tgtCcy: "",
+                            tdMode: "cross",
+                            source:"",
+                            tpOrdPx: "",
+                            tpTriggerPx: "",
+                            tpTriggerPxType: "last",
+                            tradeId: "",
+                            uTime: "1618235248028"
+                        }
+                    ]
                 })
                 // Order deletion
-                .delete(`/api/orders/112590877631`)
-                .reply(200),
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .post('/api/v5/trade/cancel-order', (b) => {
+                    expect(b).toMatchObject({
+                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        ordId: '312269865356374016',
+                    });
+
+                    return true;
+                })
+                .reply(200, {
+                    code: "0",
+                    msg: "",
+                    data: [
+                        {
+                            clOrdId: "",
+                            ordId: "312269865356374016",
+                            sCode: "0",
+                            sMsg: ""
+                        }
+                    ]
+                }),
     },
 });
 

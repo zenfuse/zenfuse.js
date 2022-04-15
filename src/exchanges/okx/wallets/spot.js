@@ -5,6 +5,7 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
+const ZenfuseBaseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -224,16 +225,29 @@ class OkxSpot extends OkxBase {
     async cancelOrderById(orderId) {
         let orderToDelete = this.cache.getCachedOrderById(orderId);
 
-        console.log(orderToDelete);
-
+        let symbol = orderToDelete ? orderToDelete.symbol : undefined;
         if (!orderToDelete) {
-            orderToDelete = this.fetchOrderById(orderId);
+            const pendingOrders = await this.privateFetch('api/v5/trade/orders-pending', {
+                searchParams: {
+                    instType: 'SPOT',
+                },
+            });
+
+            orderToDelete = pendingOrders.data.find((order) => order.ordId === orderId);
+
+            if (!orderToDelete) {
+                throw new ZenfuseBaseError(`Order with ${orderId} id does not exists`);
+            }
+
+            symbol = orderToDelete.instId;
+
+            orderToDelete = utils.transformOkxOrder(orderToDelete);
         }
 
         const response = await this.privateFetch('api/v5/trade/cancel-order', {
             method: 'POST',
             json: {
-                instId: orderToDelete.symbol.replace('/', '-'),
+                instId: symbol.replace('/', '-'),
                 ordId: orderId,
             },
         });
@@ -277,16 +291,35 @@ class OkxSpot extends OkxBase {
      * @param {string} orderId
      */
     async fetchOrderById(orderId) {
-        const responce = await this.privateFetch('api/v5/trade/order', {
-            method: 'GET',
-            searchParams: {
-                //TODO: ordId or clOrdId
-            },
-        });
+        const orderToFetch = this.cache.getCachedOrderById(orderId);
 
-        const zOrder = utils.transformOkxOrder(responce.result);
+        if (!orderToFetch) {
+            const pendingOrders = await this.privateFetch('api/v5/trade/orders-pending', {
+                searchParams: {
+                    instType: 'SPOT',
+                },
+            });
 
-        return zOrder;
+            orderToFetch = pendingOrders.data.find((order) => order.ordId === orderId);
+
+            if (!orderToFetch) {
+                throw new ZenfuseBaseError(`Order with ${orderId} id does not exists`);
+            }
+
+            const zOrder = utils.transformOkxOrder(orderToFetch);
+
+            return zOrder;
+        }
+
+        // const responce = await this.privateFetch('api/v5/trade/order', {
+        //     method: 'GET',
+        //     searchParams: {
+        //         instId: symbol,
+        //         ordId: orderId,
+        //     },
+        // });
+
+        return orderToFetch;
     }
 
     getAccountDataStream() {

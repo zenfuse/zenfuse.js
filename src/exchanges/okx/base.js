@@ -29,7 +29,7 @@ class OkxBase extends ExchangeBase {
             },
         },
         wsClientOptions: {
-            prefixUrl: 'wss://real.okex.com:8443/ws/v5',
+            prefixUrl: 'wss://ws.okx.com:8443',
         },
     };
 
@@ -71,10 +71,10 @@ class OkxBase extends ExchangeBase {
     async privateFetch(url, options = {}) {
         this.throwIfNotHasKeys();
 
-        const timestamp = Date.now();
+        const timestamp = new Date(Date.now());
 
         const sigParams = {
-            ts: timestamp,
+            ts: timestamp.toISOString(),
             method: options.method || 'GET',
             path: `/${url}`,
             body: options.json,
@@ -88,7 +88,7 @@ class OkxBase extends ExchangeBase {
         options = mergeObjects(options, {
             headers: {
                 'OK-ACCESS-KEY': this[keysSymbol].publicKey,
-                'OK-ACCESS-TIMESTAMP': timestamp,
+                'OK-ACCESS-TIMESTAMP': timestamp.toISOString(),
                 'OK-ACCESS-SIGN': signature,
                 'OK-ACCESS-PASSPHRASE': this[keysSymbol].addKey,
             },
@@ -151,6 +151,7 @@ class OkxBase extends ExchangeBase {
      * @private
      */
     handleFetcherError(err) {
+        console.log(err.response.body);
         if (err instanceof HTTPError) {
             throw new OkxApiError(err);
         }
