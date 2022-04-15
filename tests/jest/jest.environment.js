@@ -73,11 +73,18 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
         this.scopesToOpen = new Map();
 
         if (jestState.hasFocusedTests) {
-            entries.forEach(([block, scope]) => {
-                if (block.mode === 'only' && scope) {
+            for (const [block, scope] of entries) {
+                if (block.mode === 'only') {
+
+
+
+                    // TODO: Add every childred of only block
+
+
+
                     this.scopesToOpen.set(block.name, scope);
                 }
-            });
+            }
         } else {
             entries.forEach(([block, scope]) => {
                 if (block.mode !== 'skip' && scope) {
