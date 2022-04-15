@@ -62,102 +62,29 @@ describe('transfromZenfuseOrder()', () => {
     });
 });
 
-describe('transformBinanceOrder()', () => {
-    const { transfromHuobiOrder } = utils;
+describe('createHmacSignature()', () => {
+    const { createHmacSignature } = utils;
 
-    const OrderSchema = require('../../../base/schemas/openOrder').omit({
-        symbol: true,
-    });
-
-    it('should transform order', () => {
-        const binanceCreatedOrder = {
-            symbol: 'BNBUSDT',
-            orderId: 5114608,
-            orderListId: -1,
-            clientOrderId: 'nVuwTgVfxQtsMV9uuMMXxL',
-            transactTime: 1637596926709,
-            price: '0.00000000',
-            origQty: '1.00000000',
-            executedQty: '1.00000000',
-            cummulativeQuoteQty: '1.00000000',
-            status: 'FILLED',
-            timeInForce: 'GTC',
-            type: 'MARKET',
-            side: 'BUY',
-            fills: [
-                {
-                    price: '576.30000000',
-                    qty: '0.77000000',
-                    commission: '0.00000000',
-                    commissionAsset: 'BNB',
-                    tradeId: 239238,
-                },
-                {
-                    price: '577.00000000',
-                    qty: '0.23000000',
-                    commission: '0.00000000',
-                    commissionAsset: 'BNB',
-                    tradeId: 239239,
-                },
-            ],
+    it('should return valid signature', () => {
+        const args = {
+            method: 'GET',
+            url: '/test/url',
+            queryString: new URLSearchParams({
+                AccessKeyId: 'sirwhenairdrop',
+                SignatureMethod: 'HmacSHA256',
+                SignatureVersion: 2,
+                Timestamp: '2019-09-01T18:16:16',
+            }),
+            privateKey: 'someprivatekey',
         };
 
-        const result = transfromHuobiOrder(binanceCreatedOrder);
-
-        expect(result).toMatchSchema(OrderSchema);
-    });
-});
-
-describe('assignDefaultsInOrder()', () => {
-    const { assignDefaultsInOrder } = utils;
-
-    const DEFAULTS = {
-        limit: {
-            timeInForce: 'GTC',
-        },
-        market: {},
-    };
-
-    it('should add default timeInForce for limit order', () => {
-        const order = {
-            symbol: 'BTC/ETH',
-            side: 'buy',
-            type: 'limit',
-            quantity: '0.001',
-        };
-
-        const expectation = {
-            symbol: 'BTC/ETH',
-            side: 'buy',
-            type: 'limit',
-            quantity: '0.001',
-            timeInForce: 'GTC',
-        };
-
-        const output = assignDefaultsInOrder(order, DEFAULTS);
-
-        expect(output).toMatchObject(expectation);
-        expect(output.timeInForce).toBe(expectation.timeInForce);
-    });
-
-    it('should add defaults for market order', () => {
-        const order = {
-            symbol: 'BTCETH',
-            side: 'BUY',
-            type: 'MARKET',
-            quantity: '0.001',
-        };
-
-        const expectation = {
-            symbol: 'BTCETH',
-            side: 'BUY',
-            type: 'MARKET',
-            quantity: '0.001',
-        };
-
-        const output = assignDefaultsInOrder(order, DEFAULTS);
-
-        expect(output).toMatchObject(expectation);
-        expect(output.timeInForce).toBeUndefined();
+        expect(
+            createHmacSignature(
+                args.method,
+                args.url,
+                args.queryString,
+                args.privateKey,
+            ),
+        ).toBe('dJHp68/PcTyEqQ3o346YSTQNlPn07edHgYRU90qVRtI=');
     });
 });
