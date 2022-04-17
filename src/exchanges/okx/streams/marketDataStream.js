@@ -2,7 +2,6 @@ const debug = require('../../../base/etc/debug');
 const utils = require('../utils');
 
 const FtxWebsocketBase = require('./websocketBase');
-const CandleStream = require('./additional/candleStream');
 const metadata = require('../metadata');
 
 /**
