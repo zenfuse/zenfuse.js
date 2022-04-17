@@ -98,7 +98,7 @@ class MarketDataStream extends FtxWebsocketBase {
                         instId: event.symbol.replace('/', '-'),
                     },
                 ],
-            })
+            });
 
             return;
         }
@@ -126,8 +126,7 @@ class MarketDataStream extends FtxWebsocketBase {
                     if (payload.data) {
                         this.emitNewPrice(payload);
                     }
-                }
-                else if (payload.arg.channel.includes('candle')) {
+                } else if (payload.arg.channel.includes('candle')) {
                     this.emitNewCandle(payload);
                 }
             }
@@ -170,7 +169,9 @@ class MarketDataStream extends FtxWebsocketBase {
             low: parseFloat(payload.data[0][3]),
             close: parseFloat(payload.data[0][4]),
             timestamp: parseFloat(payload.data[0][0]),
-            interval: Object.keys(metadata.timeIntervals).find(key => metadata.timeIntervals[key] === payload.arg.channel),
+            interval: Object.keys(metadata.timeIntervals).find(
+                (key) => metadata.timeIntervals[key] === payload.arg.channel,
+            ),
             symbol: payload.arg.instId.replace('-', '/'),
             volume: parseFloat(payload.data[0][5]),
         };

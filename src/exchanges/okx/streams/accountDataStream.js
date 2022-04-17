@@ -59,8 +59,7 @@ class AccountDataStream extends OkxWebsocketBase {
                 if (payload.arg.channel === 'orders') {
                     this.emitOrderUpdateEvent(payload);
                 }
-            }
-            else if (payload.event === 'login' && payload.code === '0') {
+            } else if (payload.event === 'login' && payload.code === '0') {
                 this.sendSocketMessage({
                     op: 'subscribe',
                     args: [
