@@ -1,5 +1,3 @@
-const { createHmac } = require('crypto');
-
 const utils = require('../utils');
 const OkxWebsocketBase = require('./websocketBase');
 
@@ -21,46 +19,71 @@ class AccountDataStream extends OkxWebsocketBase {
      * @returns {this}
      */
     async open() {
-        await super.open();
+        await super.open('ws/v5/private');
 
         this.socket.on('message', this.serverMessageHandler.bind(this));
 
         const keysSymbol = Symbol.for('zenfuse.keyVault');
-        const { publicKey, privateKey } = this.base[keysSymbol];
-        const timestamp = Date.now();
-        const signature = createHmac('sha256', privateKey)
-            .update(`${timestamp}websocket_login`)
-            .digest('hex');
+        const { publicKey, privateKey, addKey } = this.base[keysSymbol];
+        const timestamp = Date.now() / 1000;
+        const sigParams = {
+            ts: timestamp,
+            method: 'GET',
+            path: '/users/self/verify',
+            body: '',
+        };
+        const signature = utils.createHmacSignature(sigParams, privateKey);
 
         this.sendSocketMessage({
             op: 'login',
-            args: {
-                key: publicKey,
-                sign: signature,
-                time: timestamp,
-            },
+            args: [
+                {
+                    apiKey: publicKey,
+                    passphrase: addKey,
+                    timestamp: timestamp,
+                    sign: signature,
+                },
+            ],
         });
-
-        this.sendSocketMessage({ op: 'subscribe', channel: 'orders' });
 
         return this;
     }
 
     serverMessageHandler(msgString) {
-        const payload = JSON.parse(msgString);
+        if (msgString.toString() !== 'pong') {
+            const payload = JSON.parse(msgString);
 
-        if (payload.type === 'update') {
-            if (payload.channel === 'orders') {
-                this.emitOrderUpdateEvent(payload);
+            console.log(payload);
+
+            if (payload.arg && !payload.event) {
+                if (payload.arg.channel === 'orders') {
+                    this.emitOrderUpdateEvent(payload);
+                }
             }
-        }
+            else if (payload.event === 'login' && payload.code === '0') {
+                this.sendSocketMessage({
+                    op: 'subscribe',
+                    args: [
+                        {
+                            channel: 'orders',
+                            instType: 'SPOT',
+                        },
+                    ],
+                });
+            }
 
-        this.emit('payload', payload);
+            this.emit('payload', payload);
+        }
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transfromFtxOrder(payload.data);
+        //Code for multiple orders in one ws message
 
+        // const orders = payload.data.map((order) => {
+        //     utils.transformOkxOrder(order);
+        // });
+
+        const order = utils.transformOkxOrder(payload);
         utils.linkOriginalPayload(order, payload);
 
         this.emit('orderUpdate', order);

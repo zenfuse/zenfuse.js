@@ -227,16 +227,23 @@ class OkxSpot extends OkxBase {
 
         let symbol = orderToDelete ? orderToDelete.symbol : undefined;
         if (!orderToDelete) {
-            const pendingOrders = await this.privateFetch('api/v5/trade/orders-pending', {
-                searchParams: {
-                    instType: 'SPOT',
+            const pendingOrders = await this.privateFetch(
+                'api/v5/trade/orders-pending',
+                {
+                    searchParams: {
+                        instType: 'SPOT',
+                    },
                 },
-            });
+            );
 
-            orderToDelete = pendingOrders.data.find((order) => order.ordId === orderId);
+            orderToDelete = pendingOrders.data.find(
+                (order) => order.ordId === orderId,
+            );
 
             if (!orderToDelete) {
-                throw new ZenfuseBaseError(`Order with ${orderId} id does not exists`);
+                throw new ZenfuseBaseError(
+                    `Order with ${orderId} id does not exists`,
+                );
             }
 
             symbol = orderToDelete.instId;
@@ -294,16 +301,23 @@ class OkxSpot extends OkxBase {
         const orderToFetch = this.cache.getCachedOrderById(orderId);
 
         if (!orderToFetch) {
-            const pendingOrders = await this.privateFetch('api/v5/trade/orders-pending', {
-                searchParams: {
-                    instType: 'SPOT',
+            const pendingOrders = await this.privateFetch(
+                'api/v5/trade/orders-pending',
+                {
+                    searchParams: {
+                        instType: 'SPOT',
+                    },
                 },
-            });
+            );
 
-            orderToFetch = pendingOrders.data.find((order) => order.ordId === orderId);
+            orderToFetch = pendingOrders.data.find(
+                (order) => order.ordId === orderId,
+            );
 
             if (!orderToFetch) {
-                throw new ZenfuseBaseError(`Order with ${orderId} id does not exists`);
+                throw new ZenfuseBaseError(
+                    `Order with ${orderId} id does not exists`,
+                );
             }
 
             const zOrder = utils.transformOkxOrder(orderToFetch);

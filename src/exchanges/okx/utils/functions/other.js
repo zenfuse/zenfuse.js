@@ -1,10 +1,10 @@
 const { createHmac } = require('crypto');
 
 /**
- * Create HMAC signature specific for FTX
+ * Create HMAC signature specific for OKX
  *
  * @param {object} params
- * @param {number} params.ts UNIX Timestapm
+ * @param {number} params.ts ISO Date
  * @param {string} params.method HTTP Method
  * @param {string} params.path URL request path
  * @param {object} [params.body] Request body

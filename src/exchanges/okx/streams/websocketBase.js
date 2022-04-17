@@ -26,6 +26,7 @@ class OkxWebsocketBase extends EventEmitter {
     /**
      * Opens websocket connection
      *
+     * @param path
      * @returns {Promise<void>}
      */
     open(path) {
@@ -44,7 +45,7 @@ class OkxWebsocketBase extends EventEmitter {
                 this.socket.on('error', this.handleConnectionError.bind(this));
 
                 this.pingIntervalId = setInterval(() => {
-                    this.socket.send('{"op": "ping"}');
+                    this.socket.send('ping');
                 }, OkxWebsocketBase.PING_INTERVAL);
 
                 resolve();

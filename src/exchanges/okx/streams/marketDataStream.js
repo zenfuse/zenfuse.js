@@ -3,6 +3,7 @@ const utils = require('../utils');
 
 const FtxWebsocketBase = require('./websocketBase');
 const CandleStream = require('./additional/candleStream');
+const metadata = require('../metadata');
 
 /**
  * @typedef {object} WebsocketEvent
@@ -31,12 +32,13 @@ class MarketDataStream extends FtxWebsocketBase {
     async open() {
         if (this.isSocketConneted) return this;
 
-        await super.open('public');
+        await super.open('ws/v5/public');
 
-        this.socket.addEventListener(
-            'message',
-            this.serverMessageHandler.bind(this),
-        );
+        // this.socket.addEventListener(
+        //     'message',
+        //     this.serverMessageHandler.bind(this),
+        // );
+        this.socket.on('message', this.serverMessageHandler.bind(this));
 
         return this;
     }
@@ -75,58 +77,33 @@ class MarketDataStream extends FtxWebsocketBase {
         }
 
         if (event.channel === 'price') {
-            return this.sendSocketMessage({
+            this.sendSocketMessage({
                 op: command,
                 args: [
                     {
                         channel: 'tickers',
                         instId: event.symbol.replace('/', '-'),
                     },
-                ]
+                ],
             });
+            return;
         }
-
+        //TODO: candleStream
         if (event.channel === 'candle') {
-            if (command === 'subscribe') {
-                await this.setupCandleStream(event);
-            }
-            if (command === 'unsubscribe') {
-                await this.unsetupCandleStream(event);
-            }
+            this.sendSocketMessage({
+                op: command,
+                args: [
+                    {
+                        channel: metadata.timeIntervals[event.interval],
+                        instId: event.symbol.replace('/', '-'),
+                    },
+                ],
+            })
+
             return;
         }
 
         throw new Error('Uknown channel name ' + event.channel);
-    }
-
-    /**
-     * @param {WebsocketEvent} event Candle stream event subscribtion
-     */
-    async setupCandleStream(event) {
-        if (this.candleStreams.has(event)) {
-            return; // Alredy registered
-        }
-
-        const candleStream = new CandleStream(this);
-
-        await candleStream.register(event);
-
-        this.candleStreams.set(event, candleStream);
-    }
-
-    /**
-     * @param {WebsocketEvent} event Candle stream event subscribtion
-     */
-    async unsetupCandleStream(event) {
-        const candleStream = this.candleStreams.get(event);
-
-        if (!candleStream) {
-            return; // Nothing to unregister
-        }
-
-        await candleStream.unregister();
-
-        this.candleStreams.delete(event);
     }
 
     // TODO: Sav8sde all subscribition
@@ -139,12 +116,20 @@ class MarketDataStream extends FtxWebsocketBase {
      * @param {import('ws').MessageEvent} msgEvent
      */
     serverMessageHandler(msgEvent) {
-        const payload = JSON.parse(msgEvent.data);
-        this.emit('payload', payload);
+        if (msgEvent.toString() !== 'pong') {
+            const payload = JSON.parse(msgEvent);
+            console.log(payload);
+            this.emit('payload', payload);
 
-        if (payload.type === 'update') {
-            if (payload.channel === 'ticker') {
-                this.emitNewPrice(payload);
+            if (payload.arg && !payload.event) {
+                if (payload.arg.channel === 'tickers') {
+                    if (payload.data) {
+                        this.emitNewPrice(payload);
+                    }
+                }
+                else if (payload.arg.channel.includes('candle')) {
+                    this.emitNewCandle(payload);
+                }
             }
         }
     }
@@ -155,9 +140,9 @@ class MarketDataStream extends FtxWebsocketBase {
      */
     emitNewPrice(payload) {
         const priceObject = {
-            symbol: payload.market,
-            price: payload.data.last,
-            timestamp: payload.data.time,
+            symbol: payload.data[0].instId.replace('-', '/'),
+            price: parseFloat(payload.data[0].last),
+            timestamp: payload.data[0].ts,
         };
 
         utils.linkOriginalPayload(priceObject, payload);
@@ -176,6 +161,41 @@ class MarketDataStream extends FtxWebsocketBase {
          * }}
          */
         this.emit('newPrice', priceObject);
+    }
+
+    emitNewCandle(payload) {
+        const candleObject = {
+            open: parseFloat(payload.data[0][1]),
+            high: parseFloat(payload.data[0][2]),
+            low: parseFloat(payload.data[0][3]),
+            close: parseFloat(payload.data[0][4]),
+            timestamp: parseFloat(payload.data[0][0]),
+            interval: Object.keys(metadata.timeIntervals).find(key => metadata.timeIntervals[key] === payload.arg.channel),
+            symbol: payload.arg.instId.replace('-', '/'),
+            volume: parseFloat(payload.data[0][5]),
+        };
+
+        utils.linkOriginalPayload(candleObject, payload);
+
+        debug.log('Emit "newCandle" Event');
+        debug.log(candleObject);
+
+        /**
+         * Event represent new
+         *
+         * @event MarketDataStream#newCandle
+         * @type {{
+         *      open: number,
+         *      high: number,
+         *      low: number,
+         *      close: number,
+         *      timestamp: number,
+         *      interval: string,
+         *      symbol: string,
+         *      volume: number
+         * }}
+         */
+        this.emit('candle', candleObject);
     }
 
     /**
@@ -199,8 +219,8 @@ class MarketDataStream extends FtxWebsocketBase {
         return await this.sendSocketMessage(payload);
     }
 
-    checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
+    checkSocketIsConnected() {
+        if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
     }

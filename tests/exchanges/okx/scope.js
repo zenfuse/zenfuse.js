@@ -88,7 +88,7 @@ module.exports = (env) => ({
             'buy by market': () =>
                 nock(HOSTNAME)
                     .get('/api/v5/market/ticker')
-                    .query({ 
+                    .query({
                         instId: toOkxStyle(env.BUY_MARKET_ORDER.symbol),
                     })
                     .reply(200, {
@@ -123,7 +123,7 @@ module.exports = (env) => ({
                             ordType: 'market',
                             px: null,
                         });
-                        
+
                         expect(b.sz).toBeDefined();
                         return true;
                     })
@@ -186,7 +186,7 @@ module.exports = (env) => ({
                             px: toOkxStyle(env.BUY_LIMIT_ORDER.price),
                             sz: toOkxStyle(env.BUY_LIMIT_ORDER.quantity),
                         });
-                        
+
                         return true;
                     })
                     .reply(201, {
@@ -204,35 +204,35 @@ module.exports = (env) => ({
                     }),
             'sell by limit': () =>
                 nock(HOSTNAME)
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
-                .post('/api/v5/trade/order', (b) => {
-                    expect(b).toMatchObject({
-                        instId: toOkxStyle(env.SELL_LIMIT_ORDER.symbol),
-                        tdMode: 'cash',
-                        side: 'sell',
-                        ordType: 'limit',
-                        px: toOkxStyle(env.SELL_LIMIT_ORDER.price),
-                        sz: toOkxStyle(env.SELL_LIMIT_ORDER.quantity),
-                    });
-                    
-                    return true;
-                })
-                .reply(201, {
-                    code: '0',
-                    msg: '',
-                    data: [
-                        {
-                            clOrdId: '',
-                            ordId: '312269865356374016',
-                            tag: '',
-                            sCode: '0',
-                            sMsg: '',
-                        },
-                    ],
-                }),
+                    .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                    .matchHeader('OK-ACCESS-SIGN', Boolean)
+                    .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                    .post('/api/v5/trade/order', (b) => {
+                        expect(b).toMatchObject({
+                            instId: toOkxStyle(env.SELL_LIMIT_ORDER.symbol),
+                            tdMode: 'cash',
+                            side: 'sell',
+                            ordType: 'limit',
+                            px: toOkxStyle(env.SELL_LIMIT_ORDER.price),
+                            sz: toOkxStyle(env.SELL_LIMIT_ORDER.quantity),
+                        });
+
+                        return true;
+                    })
+                    .reply(201, {
+                        code: '0',
+                        msg: '',
+                        data: [
+                            {
+                                clOrdId: '',
+                                ordId: '312269865356374016',
+                                tag: '',
+                                sCode: '0',
+                                sMsg: '',
+                            },
+                        ],
+                    }),
         },
         'fetchBalances()': () =>
             nock(HOSTNAME)
@@ -242,73 +242,73 @@ module.exports = (env) => ({
                 .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
                 .get('/api/v5/account/balance')
                 .reply(200, {
-                    code: "0",
+                    code: '0',
                     data: [
                         {
-                            adjEq: "10679688.0460531643092577",
+                            adjEq: '10679688.0460531643092577',
                             details: [
                                 {
-                                    availBal: "",
-                                    availEq: "9930359.9998",
-                                    cashBal: "9930359.9998",
-                                    ccy: "USDT",
-                                    crossLiab: "0",
-                                    disEq: "9439737.0772999514",
-                                    eq: "9930359.9998",
-                                    eqUsd: "9933041.196999946",
-                                    frozenBal: "0",
-                                    interest: "0",
-                                    isoEq: "0",
-                                    isoLiab: "0",
-                                    isoUpl:"0",
-                                    liab: "0",
-                                    maxLoan: "10000",
-                                    mgnRatio: "",
-                                    notionalLever: "",
-                                    ordFrozen: "0",
-                                    twap: "0",
-                                    uTime: "1620722938250",
-                                    upl: "0",
-                                    uplLiab: "0",
-                                    stgyEq:"0"
+                                    availBal: '',
+                                    availEq: '9930359.9998',
+                                    cashBal: '9930359.9998',
+                                    ccy: 'USDT',
+                                    crossLiab: '0',
+                                    disEq: '9439737.0772999514',
+                                    eq: '9930359.9998',
+                                    eqUsd: '9933041.196999946',
+                                    frozenBal: '0',
+                                    interest: '0',
+                                    isoEq: '0',
+                                    isoLiab: '0',
+                                    isoUpl: '0',
+                                    liab: '0',
+                                    maxLoan: '10000',
+                                    mgnRatio: '',
+                                    notionalLever: '',
+                                    ordFrozen: '0',
+                                    twap: '0',
+                                    uTime: '1620722938250',
+                                    upl: '0',
+                                    uplLiab: '0',
+                                    stgyEq: '0',
                                 },
                                 {
-                                    availBal: "",
-                                    availEq: "33.6799714158199414",
-                                    cashBal: "33.2009985",
-                                    ccy: "BTC",
-                                    crossLiab: "0",
-                                    disEq: "1239950.9687532129092577",
-                                    eq: "33.771820625136023",
-                                    eqUsd: "1239950.9687532129092577",
-                                    frozenBal: "0.0918492093160816",
-                                    interest: "0",
-                                    isoEq: "0",
-                                    isoLiab: "0",
-                                    isoUpl:"0",
-                                    liab: "0",
-                                    maxLoan: "1453.92289531493594",
-                                    mgnRatio: "",
-                                    notionalLever: "",
-                                    ordFrozen: "0",
-                                    twap: "0",
-                                    uTime: "1620722938250",
-                                    upl: "0.570822125136023",
-                                    uplLiab: "0",
-                                    stgyEq:"0"
-                                }
+                                    availBal: '',
+                                    availEq: '33.6799714158199414',
+                                    cashBal: '33.2009985',
+                                    ccy: 'BTC',
+                                    crossLiab: '0',
+                                    disEq: '1239950.9687532129092577',
+                                    eq: '33.771820625136023',
+                                    eqUsd: '1239950.9687532129092577',
+                                    frozenBal: '0.0918492093160816',
+                                    interest: '0',
+                                    isoEq: '0',
+                                    isoLiab: '0',
+                                    isoUpl: '0',
+                                    liab: '0',
+                                    maxLoan: '1453.92289531493594',
+                                    mgnRatio: '',
+                                    notionalLever: '',
+                                    ordFrozen: '0',
+                                    twap: '0',
+                                    uTime: '1620722938250',
+                                    upl: '0.570822125136023',
+                                    uplLiab: '0',
+                                    stgyEq: '0',
+                                },
                             ],
-                            imr: "3372.2942371050594217",
-                            isoEq: "0",
-                            mgnRatio: "70375.35408747017",
-                            mmr: "134.8917694842024",
-                            notionalUsd: "33722.9423710505978888",
-                            ordFroz: "0",
-                            totalEq: "11172992.1657531589092577",
-                            uTime: "1623392334718"
-                        }
+                            imr: '3372.2942371050594217',
+                            isoEq: '0',
+                            mgnRatio: '70375.35408747017',
+                            mmr: '134.8917694842024',
+                            notionalUsd: '33722.9423710505978888',
+                            ordFroz: '0',
+                            totalEq: '11172992.1657531589092577',
+                            uTime: '1623392334718',
+                        },
                     ],
-                    msg: ""
+                    msg: '',
                 }),
         'cancelOrderById()': () =>
             nock(HOSTNAME)
@@ -326,7 +326,7 @@ module.exports = (env) => ({
                         px: toOkxStyle(env.NOT_EXECUTABLE_ORDER.price),
                         sz: toOkxStyle(env.NOT_EXECUTABLE_ORDER.quantity),
                     });
-                    
+
                     return true;
                 })
                 .reply(201, {
@@ -356,16 +356,16 @@ module.exports = (env) => ({
                     return true;
                 })
                 .reply(200, {
-                    code: "0",
-                    msg: "",
+                    code: '0',
+                    msg: '',
                     data: [
                         {
-                            clOrdId: "",
-                            ordId: "312269865356374016",
-                            sCode: "0",
-                            sMsg: ""
-                        }
-                    ]
+                            clOrdId: '',
+                            ordId: '312269865356374016',
+                            sCode: '0',
+                            sMsg: '',
+                        },
+                    ],
                 }),
         'fetchOrderById()': () =>
             nock(HOSTNAME)
@@ -383,7 +383,7 @@ module.exports = (env) => ({
                         px: toOkxStyle(env.NOT_EXECUTABLE_ORDER.price),
                         sz: toOkxStyle(env.NOT_EXECUTABLE_ORDER.quantity),
                     });
-                    
+
                     return true;
                 })
                 .reply(201, {
@@ -402,48 +402,48 @@ module.exports = (env) => ({
                 // Order status fetch
                 .get('/api/v5/trade/orders-pending')
                 .reply(200, {
-                    code: "0",
-                    msg: "",
+                    code: '0',
+                    msg: '',
                     data: [
                         {
-                            accFillSz: "0",
-                            avgPx: "",
-                            cTime: "1618235248028",
-                            category: "normal",
-                            ccy: "",
-                            clOrdId: "",
-                            fee: "0",
-                            feeCcy: "BTC",
-                            fillPx: "",
-                            fillSz: "0",
-                            fillTime: "",
-                            instId: "BTC-USDT",
-                            instType: "SPOT",
-                            lever: "5.6",
-                            ordId: "312269865356374016",
-                            ordType: "limit",
-                            pnl: "0",
-                            posSide: "net",
-                            px: "59200",
-                            rebate: "0",
-                            rebateCcy: "USDT",
-                            side: "buy",
-                            slOrdPx: "",
-                            slTriggerPx: "",
-                            slTriggerPxType: "last",
-                            state: "live",
-                            sz: "1",
-                            tag: "",
-                            tgtCcy: "",
-                            tdMode: "cross",
-                            source:"",
-                            tpOrdPx: "",
-                            tpTriggerPx: "",
-                            tpTriggerPxType: "last",
-                            tradeId: "",
-                            uTime: "1618235248028"
-                        }
-                    ]
+                            accFillSz: '0',
+                            avgPx: '',
+                            cTime: '1618235248028',
+                            category: 'normal',
+                            ccy: '',
+                            clOrdId: '',
+                            fee: '0',
+                            feeCcy: 'BTC',
+                            fillPx: '',
+                            fillSz: '0',
+                            fillTime: '',
+                            instId: 'BTC-USDT',
+                            instType: 'SPOT',
+                            lever: '5.6',
+                            ordId: '312269865356374016',
+                            ordType: 'limit',
+                            pnl: '0',
+                            posSide: 'net',
+                            px: '59200',
+                            rebate: '0',
+                            rebateCcy: 'USDT',
+                            side: 'buy',
+                            slOrdPx: '',
+                            slTriggerPx: '',
+                            slTriggerPxType: 'last',
+                            state: 'live',
+                            sz: '1',
+                            tag: '',
+                            tgtCcy: '',
+                            tdMode: 'cross',
+                            source: '',
+                            tpOrdPx: '',
+                            tpTriggerPx: '',
+                            tpTriggerPxType: 'last',
+                            tradeId: '',
+                            uTime: '1618235248028',
+                        },
+                    ],
                 })
                 // Order deletion
                 .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
@@ -459,16 +459,16 @@ module.exports = (env) => ({
                     return true;
                 })
                 .reply(200, {
-                    code: "0",
-                    msg: "",
+                    code: '0',
+                    msg: '',
                     data: [
                         {
-                            clOrdId: "",
-                            ordId: "312269865356374016",
-                            sCode: "0",
-                            sMsg: ""
-                        }
-                    ]
+                            clOrdId: '',
+                            ordId: '312269865356374016',
+                            sCode: '0',
+                            sMsg: '',
+                        },
+                    ],
                 }),
     },
 });

@@ -452,6 +452,7 @@ module.exports = function masterTest(Exchange, env) {
             exchange = new Exchange['spot']().auth({
                 publicKey: env.API_PUBLIC_KEY,
                 privateKey: env.API_PRIVATE_KEY,
+                addKey: env.API_ADD_KEY ? env.API_ADD_KEY : undefined,
             });
 
             accountDataStream = exchange.getAccountDataStream();

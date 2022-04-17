@@ -39,6 +39,7 @@ const transformZenfuseOrder = (zOrder) => {
  *
  * @param {*} fOrder Order from OKX
  * @param xOrder
+ * @param zInitialOrder
  * @returns {Order} Zenfuse Order
  */
 const transformOkxOrder = (xOrder, zInitialOrder = {}) => {
@@ -46,7 +47,7 @@ const transformOkxOrder = (xOrder, zInitialOrder = {}) => {
      * @type {Order}
      */
     const zOrder = {};
-    xOrder = xOrder.data[0];
+    xOrder = xOrder.data ? xOrder.data[0] : xOrder;
 
     zOrder.id = xOrder.ordId;
     if (Object.entries(zInitialOrder).length === 0) {
@@ -65,17 +66,19 @@ const transformOkxOrder = (xOrder, zInitialOrder = {}) => {
         } else {
             zOrder.status = xOrder.state;
         }
-    }
-    else {
-        zOrder.timestamp = zInitialOrder.timestamp ? zInitialOrder.timestamp : Date.now();
+    } else {
+        zOrder.timestamp = zInitialOrder.timestamp
+            ? zInitialOrder.timestamp
+            : Date.now();
         zOrder.symbol = zInitialOrder.symbol;
         zOrder.type = zInitialOrder.type;
         zOrder.side = zInitialOrder.side;
         zOrder.quantity = parseFloat(zInitialOrder.quantity);
-        zOrder.price = zInitialOrder.price ? parseFloat(zInitialOrder.price) : undefined;
+        zOrder.price = zInitialOrder.price
+            ? parseFloat(zInitialOrder.price)
+            : undefined;
         zOrder.status = zInitialOrder.status ? zInitialOrder.status : 'open';
     }
-    
 
     return zOrder;
 };
