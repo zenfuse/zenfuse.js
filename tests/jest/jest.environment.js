@@ -1,40 +1,63 @@
 const ParentEnvironment = require('jest-environment-node');
 
 class ZenfuseJestEnvironment extends ParentEnvironment {
+    /**
+     * List scopes with should run
+     *
+     * @type {Map<string, Function>}
+     */
+    scopesToOpen = new Map();
+
+    /**
+     * List all scopes by block object
+     *
+     * @type {Map<{ name: string, mode: 'only'|'skip' }, Function>}
+     */
+    allScopes = new Map();
+
+    openScopes = new Map();
+
     async handleTestEvent(event, state) {
+        if (!this.context.httpScope) {
+            if (super.handleTestEvent) {
+                await super.handleTestEvent(event, state);
+            }
+            return;
+        }
         switch (event.name) {
             case 'setup':
                 this.global.testTimeout = state.testTimeout;
                 this.global.isExchangeTestFailed = false;
-                this.context.openScopes = new Map();
+                break;
+            case 'finish_describe_definition':
+                this.allScopes.set(
+                    {
+                        name: event.blockName,
+                        mode: event.mode,
+                    },
+                    this.getScopeByBlockName(event.blockName),
+                );
+                break;
+            case 'run_start':
+                this.fillScopesToOpen(state);
                 break;
             case 'hook_failure':
             case 'test_fn_failure':
                 this.global.isExchangeTestFailed = true;
                 break;
-            case 'test_fn_start':
+            case 'test_start':
                 if (this.global.isExchangeTestFailed) {
                     event.test.mode = 'skip';
                 }
                 break;
             case 'run_describe_start':
-                if (
-                    !this.global.isExchangeTestFailed &&
-                    event.describeBlock.mode !== 'skip'
-                ) {
+                if (!this.global.isExchangeTestFailed) {
                     this.openHttpMockingScope(event.describeBlock);
-                } else {
-                    event.describeBlock.mode = 'skip';
                 }
                 break;
-            case 'run_describe_stop':
-                if (
-                    !this.global.isExchangeTestFailed &&
-                    event.describeBlock.mode !== 'skip'
-                ) {
-                    this.closeHttpMockingScope(event.describeBlock);
-                } else {
-                    event.describeBlock.mode = 'skip';
+            case 'run_describe_finish':
+                if (!this.global.isExchangeTestFailed) {
+                    this.closeHttpMockingScope(event.describeBlock, state);
                 }
                 break;
         }
@@ -44,69 +67,93 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
         }
     }
 
-    openHttpMockingScope(test) {
-        const scope = this.getScopeOfBlock(test);
-        if (scope) {
-            this.context.openScopes.set(scope, scope());
+    fillScopesToOpen(jestState) {
+        const entries = [...this.allScopes.entries()];
+
+        this.scopesToOpen = new Map();
+
+        if (jestState.hasFocusedTests) {
+            for (const [block, scope] of entries) {
+                if (block.mode === 'only') {
+
+
+
+                    // TODO: Add every childred of only block
+
+
+
+                    this.scopesToOpen.set(block.name, scope);
+                }
+            }
+        } else {
+            entries.forEach(([block, scope]) => {
+                if (block.mode !== 'skip' && scope) {
+                    this.scopesToOpen.set(block.name, scope);
+                }
+            });
+        }
+
+        if (this.context.httpScope.root) {
+            this.scopesToOpen.set(
+                'ROOT_DESCRIBE_BLOCK',
+                this.context.httpScope.root,
+            );
         }
     }
 
-    closeHttpMockingScope(test) {
-        const scope = this.getScopeOfBlock(test);
-        if (scope) {
-            const nockScope = this.context.openScopes.get(scope);
+    openHttpMockingScope(block) {
+        if (this.scopesToOpen.has(block.name)) {
+            const scope = this.scopesToOpen.get(block.name);
+            this.openScopes.set(scope, scope());
+        }
+    }
+
+    closeHttpMockingScope(block, jestState) {
+        if (this.scopesToOpen.has(block.name)) {
+            const scope = this.openScopes.get(block.name);
 
             try {
-                nockScope.done();
-            } catch (nockAssertionError) {
-                // TODO: Beautify this error output
-                throw test.name + '\n' + nockAssertionError.message;
+                if (scope) scope.done();
+            } catch (err) {
+                jestState.unhandledErrors.push(err);
             }
         }
     }
 
     /**
-     * Do not touch, magic happens here
      *
-     * @param {object} block Jest test block
-     * @todo refactor this cheap fuck
-     * @returns {void}
+     * @param {string} name name of describe block
+     * @returns {Function}
      */
-    getScopeOfBlock(block) {
-        let objectPath = [];
-
-        if (block.name === 'ROOT_DESCRIBE_BLOCK') {
+    getScopeByBlockName(name) {
+        if (name === 'ROOT_DESCRIBE_BLOCK') {
             if (this.context.httpScope) {
                 return this.context.httpScope.root;
             }
         }
 
-        const recursiveWritePath = (test) => {
-            if (test.name === 'ROOT_DESCRIBE_BLOCK') return;
-            if (test.parent) {
-                recursiveWritePath(test.parent);
+        const recursivelyFind = (block) => {
+            for (let [key, value] of Object.entries(block)) {
+                if (value === null) {
+                    continue;
+                }
+                if (key === name && typeof value === 'function') {
+                    return value;
+                }
+
+                if (typeof value === 'object') {
+                    const scope = recursivelyFind(value);
+
+                    if (scope) {
+                        return scope;
+                    } else {
+                        continue;
+                    }
+                }
             }
-            objectPath.push(test.name);
         };
 
-        recursiveWritePath(block);
-
-        if (objectPath.length === 0) return;
-
-        let scope = this.context.httpScope || {};
-
-        for (const key of objectPath) {
-            if (!scope[key]) {
-                return; // scope doesnt exists
-            }
-            if (scope[key]) {
-                scope = scope[key];
-            }
-        }
-
-        if (typeof scope === 'function') {
-            return scope;
-        }
+        return recursivelyFind(this.context.httpScope);
     }
 }
 
