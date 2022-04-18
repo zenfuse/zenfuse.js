@@ -151,7 +151,6 @@ class OkxBase extends ExchangeBase {
      * @private
      */
     handleFetcherError(err) {
-        console.log(err.response.body);
         if (err instanceof HTTPError) {
             throw new OkxApiError(err);
         }

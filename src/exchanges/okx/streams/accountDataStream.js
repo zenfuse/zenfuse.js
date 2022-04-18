@@ -83,8 +83,8 @@ class AccountDataStream extends OkxWebsocketBase {
             payload.arg && !payload.event && payload.arg.channel === 'orders';
 
         if (isOrdersMessage) {
-            payload.data.forEach((o) => {
-                this.emitOrderUpdateEvent(payload);
+            payload.data.forEach((ord) => {
+                this.emitOrderUpdateEvent(ord);
             });
         }
 
