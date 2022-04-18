@@ -48,15 +48,10 @@ class AccountDataStream extends OkxWebsocketBase {
 
         const loginPromise = new Promise((resolve) => {
             this.socket.on('message', (payload) => {
-                // if (payload.toString() === 'pong') {
-                //     reject();
-                // }
-                console.log('PROMISE PENDING')
                 if (payload.toString() !== 'pong') {
                     payload = JSON.parse(payload);
-                    if (payload.code) {
-                        if (payload.code === '0') {
-                            console.log('RESOLVE');
+                    if (payload.event) {
+                        if (payload.event === 'login' && payload.code === '0') {
                             resolve();
                         }
                     }
@@ -90,11 +85,6 @@ class AccountDataStream extends OkxWebsocketBase {
                     this.emitOrderUpdateEvent(payload);
                 }
             }
-            // else if (payload.event) {
-            //     if (payload.event === 'login' && payload.code === '0') {
-            //         this.emit('login', payload);
-            //     }
-            // }
 
             this.emit('payload', payload);
         }

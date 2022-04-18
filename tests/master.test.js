@@ -44,7 +44,7 @@ module.exports = function masterTest(Exchange, env) {
     //////////////////////////////////////  HTTP INTERFACE  ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    describe.skip('Spot Wallet HTTP interface', () => {
+    describe('Spot Wallet HTTP interface', () => {
         /**
          * @type {FtxSpot}
          */
@@ -470,7 +470,7 @@ module.exports = function masterTest(Exchange, env) {
                 accountDataStream.close();
             });
 
-            it.skip('should connect to websocket', async () => {
+            it('should connect to websocket', async () => {
                 await accountDataStream.open();
 
                 expect(accountDataStream.isSocketConnected).toBe(true);
@@ -515,7 +515,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
      */
 
-    describe.skip('Spot Wallet Public Stream', () => {
+    describe('Spot Wallet Public Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websoket test skipped');
