@@ -18,25 +18,24 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
     openScopes = new Map();
 
     async handleTestEvent(event, state) {
-        if (!this.context.httpScope) {
+        if (
+            event.name !== 'setup' &&
+            event.name !== 'test_fn_failure' &&
+            !this.context.httpScope
+        ) {
             if (super.handleTestEvent) {
                 await super.handleTestEvent(event, state);
             }
             return;
         }
+
         switch (event.name) {
             case 'setup':
                 this.global.testTimeout = state.testTimeout;
                 this.global.isExchangeTestFailed = false;
                 break;
             case 'finish_describe_definition':
-                this.allScopes.set(
-                    {
-                        name: event.blockName,
-                        mode: event.mode,
-                    },
-                    this.getScopeByBlockName(event.blockName),
-                );
+                this.addBlockToScopes(event);
                 break;
             case 'run_start':
                 this.fillScopesToOpen(state);
@@ -67,6 +66,20 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
         }
     }
 
+    addBlockToScopes(event) {
+        const scope = this.getScopeByBlockName(event.blockName);
+
+        if (!scope) return;
+
+        this.allScopes.set(
+            {
+                name: event.blockName,
+                mode: event.mode,
+            },
+            scope,
+        );
+    }
+
     fillScopesToOpen(jestState) {
         const entries = [...this.allScopes.entries()];
 
@@ -75,12 +88,7 @@ class ZenfuseJestEnvironment extends ParentEnvironment {
         if (jestState.hasFocusedTests) {
             for (const [block, scope] of entries) {
                 if (block.mode === 'only') {
-
-
-
                     // TODO: Add every childred of only block
-
-
 
                     this.scopesToOpen.set(block.name, scope);
                 }
