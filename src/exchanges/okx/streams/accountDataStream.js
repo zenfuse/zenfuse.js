@@ -16,7 +16,7 @@ class AccountDataStream extends OkxWebsocketBase {
 
     /**
      *
-     * @returns {this}
+     * @returns {Promise<this>}
      */
     async open() {
         await super.open('ws/v5/private');
@@ -46,52 +46,50 @@ class AccountDataStream extends OkxWebsocketBase {
             ],
         });
 
-        const loginPromise = new Promise((resolve) => {
+        await new Promise((resolve) => {
             this.socket.on('message', (payload) => {
-                if (payload.toString() !== 'pong') {
-                    payload = JSON.parse(payload);
-                    if (payload.event) {
-                        if (payload.event === 'login' && payload.code === '0') {
-                            resolve();
-                        }
-                    }
-                }
+                if (payload.toString() === 'pong') return;
+
+                payload = JSON.parse(payload);
+
+                const isSuccessfulLogin =
+                    payload.event &&
+                    payload.event === 'login' &&
+                    payload.code === '0';
+
+                if (isSuccessfulLogin) resolve();
             });
         });
 
-        await loginPromise.then(() => {
-            this.sendSocketMessage({
-                op: 'subscribe',
-                args: [
-                    {
-                        channel: 'orders',
-                        instType: 'SPOT',
-                    },
-                ],
-            });
+        this.sendSocketMessage({
+            op: 'subscribe',
+            args: [
+                {
+                    channel: 'orders',
+                    instType: 'SPOT',
+                },
+            ],
         });
 
         return this;
     }
 
     serverMessageHandler(msgString) {
-        if (msgString.toString() !== 'pong') {
-            const payload = JSON.parse(msgString);
+        if (msgString.toString() === 'pong') return;
 
-            console.log(payload);
+        const payload = JSON.parse(msgString);
 
-            if (payload.arg && !payload.event) {
-                if (payload.arg.channel === 'orders') {
-                    this.emitOrderUpdateEvent(payload);
-                }
+        if (payload.arg && !payload.event) {
+            if (payload.arg.channel === 'orders') {
+                this.emitOrderUpdateEvent(payload);
             }
-
-            this.emit('payload', payload);
         }
+
+        this.emit('payload', payload);
     }
 
     emitOrderUpdateEvent(payload) {
-        //Code for multiple orders in one ws message
+        // Code for multiple orders in one ws message
 
         // const orders = payload.data.map((order) => {
         //     utils.transformOkxOrder(order);
