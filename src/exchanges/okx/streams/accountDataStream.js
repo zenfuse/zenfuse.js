@@ -79,8 +79,6 @@ class AccountDataStream extends OkxWebsocketBase {
 
         const payload = JSON.parse(msgString);
 
-        // console.log(payload);
-
         const isOrdersMessage =
             payload.arg && !payload.event && payload.arg.channel === 'orders';
 

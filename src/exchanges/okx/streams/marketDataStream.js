@@ -117,7 +117,7 @@ class MarketDataStream extends FtxWebsocketBase {
     serverMessageHandler(msgEvent) {
         if (msgEvent.toString() !== 'pong') {
             const payload = JSON.parse(msgEvent);
-            console.log(payload);
+
             this.emit('payload', payload);
 
             if (payload.arg && !payload.event) {
