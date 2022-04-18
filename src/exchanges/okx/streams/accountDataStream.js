@@ -79,22 +79,21 @@ class AccountDataStream extends OkxWebsocketBase {
 
         const payload = JSON.parse(msgString);
 
-        if (payload.arg && !payload.event) {
-            if (payload.arg.channel === 'orders') {
+        // console.log(payload);
+
+        const isOrdersMessage =
+            payload.arg && !payload.event && payload.arg.channel === 'orders';
+
+        if (isOrdersMessage) {
+            payload.data.forEach((o) => {
                 this.emitOrderUpdateEvent(payload);
-            }
+            });
         }
 
         this.emit('payload', payload);
     }
 
     emitOrderUpdateEvent(payload) {
-        // Code for multiple orders in one ws message
-
-        // const orders = payload.data.map((order) => {
-        //     utils.transformOkxOrder(order);
-        // });
-
         const order = utils.transformOkxOrder(payload);
         utils.linkOriginalPayload(order, payload);
 

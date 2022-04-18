@@ -116,10 +116,10 @@ class OkxSpot extends OkxBase {
             },
         });
 
-        const prices = response.data.map((market) => {
+        const prices = response.data.map((m) => {
             return {
-                symbol: market.instId.replace('-', '/'),
-                price: parseFloat(market.last) || 0,
+                symbol: m.instId.replace('-', '/'),
+                price: parseFloat(m.last) || 0,
             };
         });
 
@@ -298,7 +298,7 @@ class OkxSpot extends OkxBase {
      * @param {string} orderId
      */
     async fetchOrderById(orderId) {
-        const orderToFetch = this.cache.getCachedOrderById(orderId);
+        let orderToFetch = this.cache.getCachedOrderById(orderId);
 
         if (!orderToFetch) {
             const pendingOrders = await this.privateFetch(
