@@ -48,15 +48,17 @@ describe('transformZenfuseOrder()', () => {
 
     it('should transform limit order', () => {
         const order = {
+            id: 1,
             symbol: 'BTC-USDT',
             side: 'buy',
             type: 'limit',
-            price: '69.6969',
-            quantity: '0.02323',
+            price: 69.6969,
+            quantity: 0.02323,
             extra: 'whenbinance',
         };
 
         const expectation = {
+            ordId: '1',
             instId: 'BTC-USDT',
             tdMode: 'cash',
             side: 'buy',

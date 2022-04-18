@@ -5,11 +5,18 @@
  * @returns {object} Order for ftx api
  */
 const transformZenfuseOrder = (zOrder) => {
-    const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
+    const TRANSFORM_LIST = [
+        'id',
+        'side',
+        'type',
+        'price',
+        'quantity',
+        'symbol',
+    ];
 
     const xOrder = {
         instId: zOrder.symbol.replace('/', '-'),
-        clOrdId: zOrder.id,
+        ordId: zOrder.id ? zOrder.id.toString() : undefined,
         ordType: zOrder.type,
         side: zOrder.side,
         sz: zOrder.quantity.toString(),
