@@ -58,11 +58,11 @@ class OkxSpot extends OkxBase {
         });
 
         const markets = response.data.map((m) => {
-            let ticker = m.instId.split('-');
+            const [baseTicker, quoteTicker] = m.instId.split('-');
             return {
                 symbol: m.instId,
-                baseTicker: ticker[0],
-                quoteTicker: ticker[1],
+                baseTicker,
+                quoteTicker,
             };
         });
 
@@ -85,13 +85,14 @@ class OkxSpot extends OkxBase {
      */
     async fetchPrice(market = '') {
         if (market) {
-            const requestPath = 'api/v5/market/ticker';
-            const instId = market.replace('/', '-');
-            const response = await this.publicFetch(requestPath, {
+            const symbol = market.replace('/', '-');
+
+            const response = await this.publicFetch('api/v5/market/ticker', {
                 searchParams: {
-                    instId: instId,
+                    instId: symbol,
                 },
             });
+
             const price = {
                 symbol: market,
                 price: parseFloat(response.data[0].last),
@@ -102,11 +103,9 @@ class OkxSpot extends OkxBase {
             return price;
         }
 
-        const requestPath = 'api/v5/market/tickers';
-        const instType = 'SPOT';
-        const response = await this.publicFetch(requestPath, {
+        const response = await this.publicFetch('api/v5/market/tickers', {
             searchParams: {
-                instType: instType,
+                instType: 'SPOT',
             },
         });
 
@@ -198,12 +197,18 @@ class OkxSpot extends OkxBase {
             xOrder.sz = orderTotal.toString();
         }
 
-        const xCreatedOrder = await this.privateFetch('api/v5/trade/order', {
+        const response = await this.privateFetch('api/v5/trade/order', {
             method: 'POST',
             json: xOrder,
         });
 
-        const zCreatedOrder = utils.transformOkxOrder(xCreatedOrder, zOrder);
+        const xCreatedOrder = response.data[0];
+
+        const zCreatedOrder = Object.assign({}, zOrder);
+
+        zCreatedOrder.id = xCreatedOrder.ordId;
+        zCreatedOrder.status = 'open';
+        zCreatedOrder.timestamp = Date.now();
 
         this.cache.cacheOrder(zCreatedOrder);
 
@@ -263,9 +268,7 @@ class OkxSpot extends OkxBase {
             method: 'GET',
         });
 
-        let data = response.data[0].details;
-
-        const balances = data
+        const balances = response.data[0].details
             .filter((b) => b.cashBal > 0)
             .map((b) => {
                 return {

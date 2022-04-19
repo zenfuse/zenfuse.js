@@ -1,7 +1,7 @@
-const debug = require('../../../base/etc/debug');
 const utils = require('../utils');
 
 const OkxWebsocketBase = require('./websocketBase');
+const { timeIntervals } = require('../metadata');
 
 /**
  * @typedef {object} WebsocketEvent
@@ -96,19 +96,20 @@ class MarketDataStream extends OkxWebsocketBase {
      * @param {import('ws').MessageEvent} msgEvent
      */
     serverMessageHandler(msgEvent) {
-        if (msgEvent.toString() !== 'pong') {
-            const payload = JSON.parse(msgEvent);
+        if (msgEvent.toString() === 'pong') return;
 
-            this.emit('payload', payload);
+        const payload = JSON.parse(msgEvent);
 
-            if (payload.arg && !payload.event) {
-                if (payload.arg.channel === 'tickers') {
-                    if (payload.data) {
-                        this.emitNewPrice(payload);
-                    }
-                } else if (payload.arg.channel.includes('candle')) {
-                    this.emitNewCandle(payload);
+        this.emit('payload', payload);
+
+        if (payload.arg && !payload.event) {
+            if (payload.arg.channel === 'tickers') {
+                if (payload.data) {
+                    this.emitNewPrice(payload);
                 }
+            }
+            if (payload.arg.channel.includes('candle')) {
+                this.emitNewCandle(payload);
             }
         }
     }
@@ -118,10 +119,12 @@ class MarketDataStream extends OkxWebsocketBase {
      * @param {*} payload
      */
     emitNewPrice(payload) {
+        const ticker = payload.data[0];
+
         const priceObject = {
-            symbol: payload.data[0].instId.replace('-', '/'),
-            price: parseFloat(payload.data[0].last),
-            timestamp: payload.data[0].ts,
+            symbol: ticker.instId.replace('-', '/'),
+            price: parseFloat(ticker.last),
+            timestamp: parseFloat(ticker.ts),
         };
 
         utils.linkOriginalPayload(priceObject, payload);
@@ -140,23 +143,22 @@ class MarketDataStream extends OkxWebsocketBase {
     }
 
     emitNewCandle(payload) {
-        const candleObject = {
-            open: parseFloat(payload.data[0][1]),
-            high: parseFloat(payload.data[0][2]),
-            low: parseFloat(payload.data[0][3]),
-            close: parseFloat(payload.data[0][4]),
-            timestamp: parseFloat(payload.data[0][0]),
-            interval: Object.keys(metadata.timeIntervals).find(
-                (key) => metadata.timeIntervals[key] === payload.arg.channel,
+        const [timestamp, open, high, low, close, volume] = payload.data[0];
+
+        const candle = {
+            open: parseFloat(open),
+            high: parseFloat(high),
+            low: parseFloat(low),
+            close: parseFloat(close),
+            timestamp: parseFloat(timestamp),
+            interval: Object.keys(timeIntervals).find(
+                (key) => timeIntervals[key] === payload.arg.channel,
             ),
             symbol: payload.arg.instId.replace('-', '/'),
-            volume: parseFloat(payload.data[0][5]),
+            volume: parseFloat(volume),
         };
 
-        utils.linkOriginalPayload(candleObject, payload);
-
-        debug.log('Emit "newCandle" Event');
-        debug.log(candleObject);
+        utils.linkOriginalPayload(candle, payload);
 
         /**
          * Event represent new

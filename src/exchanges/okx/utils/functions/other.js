@@ -12,9 +12,7 @@ const { createHmac } = require('crypto');
  * @returns {string} Hex HMAC Signature
  */
 const createHmacSignature = ({ ts, method, path, body = '' }, key) => {
-    if (body !== '') {
-        body = JSON.stringify(body);
-    }
+    if (body) body = JSON.stringify(body);
 
     const signaturePayload = [ts, method, path, body].join('');
 
