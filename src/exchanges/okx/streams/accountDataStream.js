@@ -46,18 +46,21 @@ class AccountDataStream extends OkxWebsocketBase {
             ],
         });
 
-        await new Promise((resolve) => {
+        await new Promise((resolve, reject) => {
             this.socket.on('message', (payload) => {
                 if (payload.toString() === 'pong') return;
 
                 payload = JSON.parse(payload);
 
-                const isSuccessfulLogin =
-                    payload.event &&
-                    payload.event === 'login' &&
-                    payload.code === '0';
+                const isLoginEvent = payload.event && payload.event === 'login';
 
-                if (isSuccessfulLogin) resolve();
+                if (isLoginEvent) {
+                    if (payload.code === 0) {
+                        resolve();
+                    } else {
+                        reject(payload); // TODO: Invalid credentials error
+                    }
+                }
             });
         });
 
