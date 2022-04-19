@@ -442,7 +442,9 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             afterAll(() => {
-                exchange.cancelOrderById(createdOrder.id);
+                if (createdOrder) {
+                    exchange.cancelOrderById(createdOrder.id);
+                }
             });
 
             it('should be defined', () => {
