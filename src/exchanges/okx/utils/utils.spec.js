@@ -49,7 +49,7 @@ describe('transformZenfuseOrder()', () => {
     it('should transform limit order', () => {
         const order = {
             id: 1,
-            symbol: 'BTC-USDT',
+            symbol: 'BTC/USDT',
             side: 'buy',
             type: 'limit',
             price: 69.6969,
@@ -116,8 +116,20 @@ describe('transformOkxOrder()', () => {
             cTime: '1649288117964',
         };
 
+        const expectation = {
+            id: '312269865356374016',
+            timestamp: 1649288117964,
+            symbol: 'BTC/USDT',
+            type: 'limit',
+            side: 'buy',
+            quantity: 3,
+            price: 999,
+            status: 'open',
+        };
+
         const result = transformOkxOrder(okxCreatedOrder);
 
         expect(result).toMatchSchema(OrderSchema);
+        expect(result).toStrictEqual(expectation);
     });
 });
