@@ -361,6 +361,35 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
+        describe('cancelOrder()', () => {
+            it('should be defined', () => {
+                expect(exchange.cancelOrder).toBeDefined();
+            });
+
+            it('should run only with keys', () => {
+                expect(
+                    exchange.cancelOrder.bind(new Exchange['spot'](), '7787'),
+                ).rejects.toThrowError(NotAuthenticatedError);
+            });
+
+            let result;
+
+            it('should cancel order without errors', async () => {
+                const createdOrder = await exchange.createOrder(
+                    env.NOT_EXECUTABLE_ORDER,
+                );
+
+                result = await exchange.cancelOrder(createdOrder);
+            });
+
+            it('should have valid originalResponse', () => {
+                expect(result).toBeDefined();
+                expect(
+                    result[Symbol.for('zenfuse.originalPayload')],
+                ).toBeDefined();
+            });
+        });
+
         describe('cancelOrderById()', () => {
             it('should be defined', () => {
                 expect(exchange.cancelOrderById).toBeDefined();
