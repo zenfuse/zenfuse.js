@@ -71,7 +71,7 @@ class OkxBase extends ExchangeBase {
     async privateFetch(url, options = {}) {
         this.throwIfNotHasKeys();
 
-        const timestamp = new Date(Date.now());
+        const timestamp = new Date();
 
         const sigParams = {
             ts: timestamp.toISOString(),
@@ -103,7 +103,7 @@ class OkxBase extends ExchangeBase {
      * @param {object} keys
      * @param {string} keys.publicKey
      * @param {string} keys.privateKey Same as secret key
-     * @param {string} keys.addKey
+     * @param {string} keys.addKey OKX passphrase
      * @returns {this}
      */
     auth({ publicKey, privateKey, addKey }) {

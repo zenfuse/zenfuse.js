@@ -1,8 +1,7 @@
 const debug = require('../../../base/etc/debug');
 const utils = require('../utils');
 
-const FtxWebsocketBase = require('./websocketBase');
-const metadata = require('../metadata');
+const OkxWebsocketBase = require('./websocketBase');
 
 /**
  * @typedef {object} WebsocketEvent
@@ -12,19 +11,7 @@ const metadata = require('../metadata');
  * @param {WebsocketEvent} event
  */
 
-class MarketDataStream extends FtxWebsocketBase {
-    /**
-     * @param {import('../wallets/spot')} baseInstance
-     */
-    constructor(baseInstance) {
-        super(baseInstance);
-    }
-
-    /**
-     * @type {Map<WebsocketEvent, CandleStream>}
-     */
-    candleStreams = new Map();
-
+class MarketDataStream extends OkxWebsocketBase {
     /**
      * @returns {this}
      */
@@ -87,27 +74,21 @@ class MarketDataStream extends FtxWebsocketBase {
             });
             return;
         }
-        //TODO: candleStream
+
         if (event.channel === 'candle') {
             this.sendSocketMessage({
                 op: command,
                 args: [
                     {
-                        channel: metadata.timeIntervals[event.interval],
+                        channel: timeIntervals[event.interval],
                         instId: event.symbol.replace('/', '-'),
                     },
                 ],
             });
-
             return;
         }
 
         throw new Error('Uknown channel name ' + event.channel);
-    }
-
-    // TODO: Sav8sde all subscribition
-    async unsubscribeFromAllbySymbol() {
-        throw 'Not implemented';
     }
 
     /**
@@ -144,9 +125,6 @@ class MarketDataStream extends FtxWebsocketBase {
         };
 
         utils.linkOriginalPayload(priceObject, payload);
-
-        debug.log('Emit "newPrice" Event');
-        debug.log(priceObject);
 
         /**
          * Event represent new
@@ -195,28 +173,7 @@ class MarketDataStream extends FtxWebsocketBase {
          *      volume: number
          * }}
          */
-        this.emit('candle', candleObject);
-    }
-
-    /**
-     * @private
-     * @param  {string[]} eventNames
-     * @returns {Promise<object>} Server responce
-     */
-    async sendSocketUnsubscribe(...eventNames) {
-        if (eventNames.lenght === 0) return; // nothing to do
-
-        this.checkSocketIsConneted();
-
-        const id = this.createPayloadId();
-
-        const payload = {
-            method: 'UNSUBSCRIBE',
-            params: [...eventNames],
-            id,
-        };
-
-        return await this.sendSocketMessage(payload);
+        this.emit('candle', candle);
     }
 
     checkSocketIsConnected() {

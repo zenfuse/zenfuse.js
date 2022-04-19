@@ -40,11 +40,7 @@ class OkxSpot extends OkxBase {
             },
         });
 
-        // TODO: Cache update here
-
-        const tickers = utils.extractSpotTickers(markets.data);
-
-        // const tickers = utils.extractTickersFromMarkets(spotMarkets);
+        const tickers = markets.data.map((ticker) => ticker.instId);
 
         utils.linkOriginalPayload(tickers, markets);
 
@@ -60,8 +56,6 @@ class OkxSpot extends OkxBase {
                 instType: 'SPOT',
             },
         });
-
-        // TODO: Cache update here
 
         const markets = response.data.map((m) => {
             let ticker = m.instId.split('-');
@@ -158,6 +152,7 @@ class OkxSpot extends OkxBase {
 
         const result = response.data.map((oCandle) => {
             oCandle = oCandle.map(Number);
+
             const zCandle = {
                 timestamp: new Date(oCandle[0]).getTime(),
                 open: oCandle[1],
@@ -225,7 +220,6 @@ class OkxSpot extends OkxBase {
     async cancelOrderById(orderId) {
         let orderToDelete = this.cache.getCachedOrderById(orderId);
 
-        let symbol = orderToDelete ? orderToDelete.symbol : undefined;
         if (!orderToDelete) {
             const pendingOrders = await this.privateFetch(
                 'api/v5/trade/orders-pending',
@@ -246,15 +240,13 @@ class OkxSpot extends OkxBase {
                 );
             }
 
-            symbol = orderToDelete.instId;
-
             orderToDelete = utils.transformOkxOrder(orderToDelete);
         }
 
         const response = await this.privateFetch('api/v5/trade/cancel-order', {
             method: 'POST',
             json: {
-                instId: symbol.replace('/', '-'),
+                instId: orderToDelete.symbol.replace('/', '-'),
                 ordId: orderId,
             },
         });
@@ -264,11 +256,6 @@ class OkxSpot extends OkxBase {
         utils.linkOriginalPayload(orderToDelete, response);
 
         return orderToDelete;
-    }
-
-    // TODO: Test for this
-    async fetchOpenOrders() {
-        throw 'Not implemented';
     }
 
     async fetchBalances() {

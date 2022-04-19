@@ -200,7 +200,7 @@ module.exports = function masterTest(Exchange, env) {
                 const keys = {
                     publicKey: env.API_PUBLIC_KEY,
                     privateKey: env.API_PRIVATE_KEY,
-                    addKey: env.API_ADD_KEY ? env.API_ADD_KEY : undefined,
+                    addKey: env.API_ADD_KEY,
                 };
 
                 expect(exchange.hasKeys).toBe(false);
