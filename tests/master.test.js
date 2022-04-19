@@ -418,7 +418,10 @@ module.exports = function masterTest(Exchange, env) {
                 expect(result.side).toBe(createdOrder.side);
                 expect(result.quantity).toBe(createdOrder.quantity);
                 expect(result.price).toBe(createdOrder.price);
-                expect(result.timestamp).toBeCloseTo(createdOrder.timestamp, -100);
+                expect(result.timestamp).toBeCloseTo(
+                    createdOrder.timestamp,
+                    -100,
+                );
             });
 
             it('should return valid schema', () => {

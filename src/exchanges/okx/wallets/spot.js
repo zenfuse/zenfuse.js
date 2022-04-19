@@ -287,7 +287,7 @@ class OkxSpot extends OkxBase {
      *
      * @param {string} orderId
      */
-     async fetchOrderById(orderId) {
+    async fetchOrderById(orderId) {
         let orderToFetch = this.cache.getCachedOrderById(orderId);
 
         if (!orderToFetch) {
@@ -319,15 +319,12 @@ class OkxSpot extends OkxBase {
             return zOrder;
         }
 
-        const fetchedOrder = await this.privateFetch(
-            'api/v5/trade/order',
-            {
-                searchParams: {
-                    instId: orderToFetch.symbol.replace('/', '-'),
-                    ordId: orderId,
-                },
+        const fetchedOrder = await this.privateFetch('api/v5/trade/order', {
+            searchParams: {
+                instId: orderToFetch.symbol.replace('/', '-'),
+                ordId: orderId,
             },
-        );
+        });
 
         const zOrder = utils.transformOkxOrder(fetchedOrder.data[0]);
 
