@@ -200,6 +200,7 @@ module.exports = function masterTest(Exchange, env) {
                 const keys = {
                     publicKey: env.API_PUBLIC_KEY,
                     privateKey: env.API_PRIVATE_KEY,
+                    addKey: env.API_ADD_KEY,
                 };
 
                 expect(exchange.hasKeys).toBe(false);
@@ -412,7 +413,15 @@ module.exports = function masterTest(Exchange, env) {
                 expect(createdOrder).toBeDefined();
                 expect(result).toBeDefined();
 
-                expect(result).toEqual(createdOrder);
+                expect(result.symbol).toBe(createdOrder.symbol);
+                expect(result.type).toBe(createdOrder.type);
+                expect(result.side).toBe(createdOrder.side);
+                expect(result.quantity).toBe(createdOrder.quantity);
+                expect(result.price).toBe(createdOrder.price);
+                expect(result.timestamp).toBeCloseTo(
+                    createdOrder.timestamp,
+                    -100,
+                );
             });
 
             it('should return valid schema', () => {
@@ -451,6 +460,7 @@ module.exports = function masterTest(Exchange, env) {
             exchange = new Exchange['spot']().auth({
                 publicKey: env.API_PUBLIC_KEY,
                 privateKey: env.API_PRIVATE_KEY,
+                addKey: env.API_ADD_KEY ? env.API_ADD_KEY : undefined,
             });
 
             accountDataStream = exchange.getAccountDataStream();

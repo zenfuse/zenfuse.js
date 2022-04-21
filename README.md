@@ -126,11 +126,9 @@ await binance.fetchTickers();
 await ftx.fetchTickers();
 // ['BTC', 'USD', ... ]
 
-await bithumb.fetchTickers()
+await bithumb.fetchTickers();
 // ['BTC', 'ETH', ... ]
 ```
-
-
 
 ### `.fetchPrice`
 

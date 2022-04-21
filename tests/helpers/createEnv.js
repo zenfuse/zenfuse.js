@@ -74,5 +74,9 @@ module.exports = (extra) => {
         merdged.API_PUBLIC_KEY = 'DUMMY_PUBLIC_KEY';
     }
 
+    if (merdged.API_ADD_KEY === undefined) {
+        merdged.API_ADD_KEY = 'DUMMY_ADD_KEY';
+    }
+
     return merdged;
 };
