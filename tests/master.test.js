@@ -368,7 +368,10 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should run only with keys', () => {
                 expect(
-                    exchange.cancelOrder.bind(new Exchange['spot'](), '7787'),
+                    exchange.cancelOrder.bind(
+                        new Exchange['spot'](),
+                        env.NOT_EXECUTABLE_ORDER,
+                    ),
                 ).rejects.toThrowError(NotAuthenticatedError);
             });
 

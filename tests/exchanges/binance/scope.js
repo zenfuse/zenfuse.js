@@ -281,6 +281,69 @@ module.exports = (env) => ({
                     ],
                     permissions: ['SPOT'],
                 }),
+        'cancelOrder()': () =>
+            nock(HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
+                // Order creation
+                .post('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        type: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.type),
+                        side: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.side),
+                        price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        quantity: toBinanceStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
+                    });
+                    expect(q.timeInForce).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    expect(q.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                    orderId: 5123847,
+                    orderListId: -1,
+                    clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
+                    transactTime: 1637599759459,
+                    price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                    origQty: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                    executedQty: '0.00000000',
+                    cummulativeQuoteQty: '0.00000000',
+                    status: 'NEW',
+                    timeInForce: 'GTC',
+                    type: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.type),
+                    side: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.side),
+                    fills: [],
+                })
+                // Order deletion
+                .delete('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        orderId: '5123847',
+                    });
+                    expect(q.signature).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                    orderId: 5123847,
+                    orderListId: -1,
+                    clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
+                    transactTime: 1637599759459,
+                    price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                    origQty: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                    executedQty: '0.00000000',
+                    cummulativeQuoteQty: '0.00000000',
+                    status: 'NEW',
+                    timeInForce: 'GTC',
+                    type: 'LIMIT',
+                    side: 'BUY',
+                    fills: [],
+                }),
         'cancelOrderById()': () =>
             nock(HOSTNAME)
                 .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
