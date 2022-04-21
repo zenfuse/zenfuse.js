@@ -9,7 +9,7 @@ const { createHmac } = require('crypto');
  * @param {string} params.path URL request path
  * @param {object} [params.body] Request body
  * @param {string} key HMAC Key
- * @returns {string} Hex HMAC Signature
+ * @returns {string} Base64 HMAC Signature
  */
 const createHmacSignature = ({ ts, method, path, body = '' }, key) => {
     if (body) body = JSON.stringify(body);
@@ -19,12 +19,4 @@ const createHmacSignature = ({ ts, method, path, body = '' }, key) => {
     return createHmac('sha256', key).update(signaturePayload).digest('base64');
 };
 
-const propsAsString = (obj) => {
-    return Object.keys(obj)
-        .map((k) => {
-            return k + '=' + obj[k];
-        })
-        .join('&');
-};
-
-module.exports = { createHmacSignature, propsAsString };
+module.exports = { createHmacSignature };

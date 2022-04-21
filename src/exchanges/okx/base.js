@@ -5,7 +5,7 @@ const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const OkxApiError = require('./errors/api.error');
 const OkxCache = require('./etc/cache');
-const { createHmacSignature, propsAsString } = require('./utils');
+const { createHmacSignature } = require('./utils');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
 
@@ -71,16 +71,18 @@ class OkxBase extends ExchangeBase {
     async privateFetch(url, options = {}) {
         this.throwIfNotHasKeys();
 
-        const timestamp = new Date();
+        const timestamp = new Date().toISOString();
 
-        const searchParams = options.searchParams
-            ? '?' + propsAsString(options.searchParams)
-            : '';
+        let query = '';
+
+        if (options.searchParams) {
+            query = '?' + new URLSearchParams(options.searchParams).toString();
+        }
 
         const sigParams = {
-            ts: timestamp.toISOString(),
+            ts: timestamp,
             method: options.method || 'GET',
-            path: `/${url}${searchParams}`,
+            path: `/${url}${query}`,
             body: options.json,
         };
 
@@ -92,7 +94,7 @@ class OkxBase extends ExchangeBase {
         options = mergeObjects(options, {
             headers: {
                 'OK-ACCESS-KEY': this[keysSymbol].publicKey,
-                'OK-ACCESS-TIMESTAMP': timestamp.toISOString(),
+                'OK-ACCESS-TIMESTAMP': timestamp,
                 'OK-ACCESS-SIGN': signature,
                 'OK-ACCESS-PASSPHRASE': this[keysSymbol].addKey,
             },
