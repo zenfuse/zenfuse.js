@@ -19,4 +19,12 @@ const createHmacSignature = ({ ts, method, path, body = '' }, key) => {
     return createHmac('sha256', key).update(signaturePayload).digest('base64');
 };
 
-module.exports = { createHmacSignature };
+const propsAsString = (obj) => {
+    return Object.keys(obj)
+        .map((k) => {
+            return k + '=' + obj[k];
+        })
+        .join('&');
+};
+
+module.exports = { createHmacSignature, propsAsString };

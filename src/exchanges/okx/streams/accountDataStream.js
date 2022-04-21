@@ -55,7 +55,7 @@ class AccountDataStream extends OkxWebsocketBase {
                 const isLoginEvent = payload.event && payload.event === 'login';
 
                 if (isLoginEvent) {
-                    if (payload.code === 0) {
+                    if (payload.code === '0') {
                         resolve();
                     } else {
                         reject(payload); // TODO: Invalid credentials error

@@ -5,7 +5,7 @@ const ExchangeBase = require('../../base/exchange');
 const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const OkxApiError = require('./errors/api.error');
 const OkxCache = require('./etc/cache');
-const { createHmacSignature } = require('./utils');
+const { createHmacSignature, propsAsString } = require('./utils');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
 
@@ -73,10 +73,14 @@ class OkxBase extends ExchangeBase {
 
         const timestamp = new Date();
 
+        const searchParams = options.searchParams
+            ? '?' + propsAsString(options.searchParams)
+            : '';
+
         const sigParams = {
             ts: timestamp.toISOString(),
             method: options.method || 'GET',
-            path: `/${url}`,
+            path: `/${url}${searchParams}`,
             body: options.json,
         };
 

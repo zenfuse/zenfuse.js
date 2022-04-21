@@ -321,8 +321,8 @@ class OkxSpot extends OkxBase {
 
         const fetchedOrder = await this.privateFetch('api/v5/trade/order', {
             searchParams: {
-                instId: orderToFetch.symbol.replace('/', '-'),
                 ordId: orderId,
+                instId: orderToFetch.symbol.replace('/', '-'),
             },
         });
 
