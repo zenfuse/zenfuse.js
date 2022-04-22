@@ -17,9 +17,27 @@ jobs:
                   cache: 'npm'
             - run: npm install --only=dev
             - run: npm run lint
+            
+    mocks:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  cache: 'npm'
+            - run: npm ci
+            - run: npm run download-mocks
+            
+            - name: Cache Mocks
+              uses: actions/cache@v3.0.2
+              with:
+                path: ~/tests/exchanges/*/mocks/static/*
+                key: heavy-mocks
 
     test:
-        needs: lint
+        needs: |
+            lint
+            mocks
         runs-on: ubuntu-latest
         strategy:
             matrix:
@@ -32,10 +50,11 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
 
-            - run: npm ci
-            
-            - name: Download mocks
-            - run: npm run download-mocks
-            
-            - name: Tests
+            - name: Restore mocks
+              uses: actions/cache@v3.0.2
+              with:
+                path: ~/tests/exchanges/*/mocks/static/*
+                key: heavy-mocks
+                restore-keys: heavy-mocks
+
             - run: npm test
