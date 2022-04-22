@@ -12,15 +12,6 @@ module.exports = {
     Bithumb,
     Bitglobal: Bithumb, // TODO: Rename all githumb classes
     OKX,
-    /**
-     * Object with lower case names for uid usage
-     */
-    exchanges: {
-        binance: Binance,
-        ftx: FTX,
-        bithumb: Bithumb,
-        okx: OKX,
-    },
 };
 
 /**
