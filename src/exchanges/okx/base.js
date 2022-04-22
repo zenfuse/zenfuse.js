@@ -2,10 +2,10 @@ const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
 
 const ExchangeBase = require('../../base/exchange');
-const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const OkxApiError = require('./errors/api.error');
 const OkxCache = require('./etc/cache');
 const { createHmacSignature } = require('./utils');
+const UserError = require('../../base/errors/user.error');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
 
@@ -148,7 +148,7 @@ class OkxBase extends ExchangeBase {
      */
     throwIfNotHasKeys() {
         if (!this.hasKeys) {
-            throw new NotAuathenticatedError();
+            throw new UserError(null, 'NOT_AUTHENTICATED');
         }
     }
 
