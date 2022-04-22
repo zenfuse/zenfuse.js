@@ -17,15 +17,19 @@ const transformMarketString = (libString) => {
 };
 
 /**
+ * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+ */
+
+/**
  * Insert default values for specific order type
  *
  * **DEV** All values should be for zenfuse interface
  *
- * @param {Order} order
+ * @param {OrderParams} order
  * @param {object} defaults
- * @param {Order} defaults.limit
- * @param {Order} defaults.market
- * @returns {Order} TODO: Order type
+ * @param {OrderParams} defaults.limit
+ * @param {OrderParams} defaults.market
+ * @returns {OrderParams}
  */
 const assignDefaultsInOrder = (order, defaults) => {
     let newOrder;
@@ -42,15 +46,11 @@ const assignDefaultsInOrder = (order, defaults) => {
 };
 
 /**
- * @typedef {import('../../../../index').Order} Order
- */
-
-/**
  * Zenfuse -> Binance
  *
  * **DEV:** This function does not assign defaults values
  *
- * @param {Order} zOrder Zenfuse order
+ * @param {OrderParams} zOrder Zenfuse order
  * @returns {object} Order for binance api
  */
 const transfromZenfuseOrder = (zOrder) => {
@@ -97,34 +97,38 @@ const transfromZenfuseOrder = (zOrder) => {
 };
 
 /**
+ * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+ */
+
+/**
  * Binance -> Zenfuse
  *
  * @param {*} bOrder Order fromf
- * @returns {Order} Zenfuse Order
+ * @returns {PlacedOrder} Zenfuse Order
  */
 const transfromBinanceOrder = (bOrder) => {
     /**
-     * @type {Order}
+     * @type {PlacedOrder}
      */
     const zOrder = {};
 
     zOrder.id = bOrder.orderId.toString();
     zOrder.timestamp = bOrder.transactTime || bOrder.time;
-    // zOrder.status = bOrder.status.toLowerCase();
-    // zOrder.timeInForce = bOrder.timeInForce;
     zOrder.type = bOrder.type.toLowerCase();
-    zOrder.symbol = bOrder.symbol; // TODO: Binance symbol transformation
-    // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
     zOrder.side = bOrder.side.toLowerCase();
     zOrder.price = parseFloat(bOrder.price);
     zOrder.quantity = parseFloat(bOrder.origQty);
 
-    if (bOrder.status === 'FILLED') {
-        zOrder.status = 'close'; // TODO: Normal statuses
-    } else if (bOrder.status === 'NEW') {
-        zOrder.status = 'close';
-    } else {
-        zOrder.status = bOrder.status.toLowerCase();
+    switch (bOrder.status) {
+        case 'NEW':
+        case 'PARTIALLY_FILLED':
+            zOrder.status = 'open';
+            break;
+        case 'FILLED':
+            zOrder.status = 'closed';
+            break;
+        default:
+            zOrder.status = 'canceled';
     }
 
     return zOrder;
