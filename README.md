@@ -73,6 +73,7 @@ Zenfuse.js is crypto exchanges connector library. Currently, in active developme
 -   [Binance](https://www.binance.com/en)
 -   [FTX](https://ftx.com/)
 -   [Bitglobal](https://www.bitglobal.com/en-us)
+-   [OkX](https://www.okx.com/)
 
 ## Installation
 
