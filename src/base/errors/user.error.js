@@ -9,6 +9,7 @@ class ZenfuseUserError extends ZenfuseBaseError {
             'This exchange API does not support basic feature which has zenfuse js API',
         NOT_AUTHENTICATED:
             'Instance does not have keys for authentication. Use auth() first for private API usage',
+        VALIDATION_FAILED: 'Object validation did not pass',
     };
 
     /**
