@@ -32,13 +32,18 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
 
-            - run: npm run download-mocks
-
-            - name: Cache-mocks
+            - name: Restore cached mocks
+              id: cache-mocks
               uses: actions/cache@v3.0.2
               with:
                 path: ./tests/exchanges/*/mocks/static/*
                 key: heavy-mocks
-
+                restore-keys: heavy-mocks
+                
             - run: npm ci
+            
+            - name: Download mocks
+              if: steps.cache-mocks.outputs.cache-hit != 'true'
+              run: npm run download-mocks
+            
             - run: npm test
