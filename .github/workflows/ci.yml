@@ -35,7 +35,7 @@ jobs:
             - run: npm ci
             
             - name: Download mocks
-              run: npm run download-mocks
+            - run: npm run download-mocks
             
             - name: Tests
             - run: npm test
