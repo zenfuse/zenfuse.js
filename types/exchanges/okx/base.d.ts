@@ -1,17 +1,18 @@
-export = BithumbBase;
+export = OkxBase;
 /**
- * Bithumb base class for method which included in any wallet type
+ * Okx base class for method which included in any wallet type
+ *
+ * **DEV:** Any class what extends ExchangeBase should have same public interface
  */
-declare class BithumbBase extends ExchangeBase {
+declare class OkxBase extends ExchangeBase {
     /**
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options: import('../../base/exchange').BaseOptions);
     /**
-     * @type {BithumbCache}
+     * @type {OkxCache}
      */
-    cache: BithumbCache;
-    msgNo: number;
+    cache: OkxCache;
     /**
      * Make http request based on constructor settings
      *
@@ -34,11 +35,13 @@ declare class BithumbBase extends ExchangeBase {
      * @param {object} keys
      * @param {string} keys.publicKey
      * @param {string} keys.privateKey Same as secret key
+     * @param {string} keys.addKey OKX passphrase
      * @returns {this}
      */
-    auth({ publicKey, privateKey }: {
+    auth({ publicKey, privateKey, addKey }: {
         publicKey: string;
         privateKey: string;
+        addKey: string;
     }): this;
     /**
      * Is instanse has keys to authenticate on not
@@ -47,7 +50,7 @@ declare class BithumbBase extends ExchangeBase {
      */
     get hasKeys(): boolean;
     /**
-     * Ping bithumb servers
+     * Ping Okx servers
      *
      * @public
      */
@@ -61,9 +64,8 @@ declare class BithumbBase extends ExchangeBase {
      * @private
      */
     private handleFetcherError;
-    handleUnexpectedResponse(response: any): any;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");
-import BithumbCache = require("./etc/cache");
+import OkxCache = require("./etc/cache");
 declare const keysSymbol: unique symbol;

@@ -1,28 +1,30 @@
+export type OrderParams = import('../../../../base/schemas/orderParams').ZenfuseOrderParams;
+export type PlacedOrder = import('../../../../base/schemas/openOrder').PlacedOrder;
+/**
+ * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+ */
 /**
  * Zenfuse -> Bithumb
  *
- * @param {Order} zOrder Order from
- * @returns Order for bithumb api
+ * @param {OrderParams} zOrder
+ * @returns {object} Order for bithumb api
  */
-export function transformZenfuseOrder(zOrder: Order): {
-    symbol: any;
-    type: any;
-    side: any;
-    quantity: any;
-    timestamp: string;
-};
+export function transformZenfuseOrder(zOrder: OrderParams): object;
+/**
+ * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+ */
 /**
  * Bithumb -> Zenfuse
  *
  * @param {*} bOrder Order from Bithumb REST
  * @param {object} zInitialOrder
- * @returns {Order} Zenfuse Order
+ * @returns {PlacedOrder} Zenfuse Order
  */
-export function transformBithumbOrder(bOrder: any, zInitialOrder?: object): Order;
+export function transformBithumbOrder(bOrder: any, zInitialOrder?: object): PlacedOrder;
 /**
  * Bithumb -> Zenfuse
  *
  * @param {*} bOrder Order from Bithumb WS
- * @returns {Order} Zenfuse Order
+ * @returns {PlacedOrder} Zenfuse Order
  */
-export function transformBithumbOrderWS(bOrder: any): Order;
+export function transformBithumbOrderWS(bOrder: any): PlacedOrder;

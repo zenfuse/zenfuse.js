@@ -1,4 +1,4 @@
-export = FtxCandleStream;
+export = BithumbCandleStream;
 /**
  * Creates candlestick stream for FTX, wich based only on trades.
  *
@@ -6,7 +6,7 @@ export = FtxCandleStream;
  *
  * **DEV:** This class exists only for exchanges which does not supports kline streams natively
  */
-declare class FtxCandleStream {
+declare class BithumbCandleStream {
     /**
      * @param {MarketDataStream} parentStream
      */
@@ -27,7 +27,8 @@ declare class FtxCandleStream {
      * @typedef {object} TradeDto
      * @property {string} p price
      * @property {string} v quantity
-     * @property {string} price
+     * @property {string} t timestamp
+     * @property {string} symbol
      * @property {'sell'|'buy'} s trade type
      */
     /**
@@ -44,12 +45,20 @@ declare class FtxCandleStream {
          * quantity
          */
         v: string;
-        price: string;
+        /**
+         * timestamp
+         */
+        t: string;
+        symbol: string;
         /**
          * trade type
          */
         s: 'sell' | 'buy';
     }[];
+    /**
+     * Trades for last candlestick
+     */
+    previusTrades: any[];
     /**
      * @returns {boolean}
      */
@@ -83,7 +92,11 @@ declare class FtxCandleStream {
          * quantity
          */
         v: string;
-        price: string;
+        /**
+         * timestamp
+         */
+        t: string;
+        symbol: string;
         /**
          * trade type
          */
@@ -101,7 +114,11 @@ declare class FtxCandleStream {
          * quantity
          */
         v: string;
-        price: string;
+        /**
+         * timestamp
+         */
+        t: string;
+        symbol: string;
         /**
          * trade type
          */
@@ -110,9 +127,9 @@ declare class FtxCandleStream {
     fetchLastCandle(): Promise<any>;
     serverPayloadHandler(payload: any): void;
     /**
-     * @param {TradeDto[]} trades
+     * @param {TradeDto} trade
      */
-    handleNewTrades(trades: {
+    handleNewTrade(trade: {
         /**
          * price
          */
@@ -121,12 +138,16 @@ declare class FtxCandleStream {
          * quantity
          */
         v: string;
-        price: string;
+        /**
+         * timestamp
+         */
+        t: string;
+        symbol: string;
         /**
          * trade type
          */
         s: 'sell' | 'buy';
-    }[]): void;
+    }): void;
     onCloseCandle(): void;
     emitNewCandleStatus(additional: any): void;
 }

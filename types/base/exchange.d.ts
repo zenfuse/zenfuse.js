@@ -34,39 +34,39 @@ declare class ExchangeBase {
     }, "passthrough", z.ZodTypeAny, {
         symbol?: string;
         type?: string;
-        side?: string;
-        price?: number;
         quantity?: number;
+        price?: number;
+        side?: string;
     }, {
         symbol?: string;
         type?: string;
-        side?: string;
-        price?: number;
         quantity?: number;
+        price?: number;
+        side?: string;
     }>, {
         symbol?: string;
         type?: string;
-        side?: string;
-        price?: number;
         quantity?: number;
+        price?: number;
+        side?: string;
     }, {
         symbol?: string;
         type?: string;
-        side?: string;
-        price?: number;
         quantity?: number;
+        price?: number;
+        side?: string;
     }>, {
         symbol?: string;
         type?: string;
-        side?: string;
-        price?: number;
         quantity?: number;
+        price?: number;
+        side?: string;
     }, {
         symbol?: string;
         type?: string;
-        side?: string;
-        price?: number;
         quantity?: number;
+        price?: number;
+        side?: string;
     }>;
     validateOrderParams(order: any): void;
     validateCandleHistoryParams(params: any): void;

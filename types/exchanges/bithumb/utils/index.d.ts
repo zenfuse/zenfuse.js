@@ -4,15 +4,9 @@ declare const _exports: {
         ts: number;
         body?: any;
     }, privateKey: string) => string;
-    transformZenfuseOrder: (zOrder: Order) => {
-        symbol: any;
-        type: any;
-        side: any;
-        quantity: any;
-        timestamp: string;
-    };
-    transformBithumbOrder: (bOrder: any, zInitialOrder?: any) => Order;
-    transformBithumbOrderWS: (bOrder: any) => Order;
+    transformZenfuseOrder: (zOrder: import("../../../base/schemas/orderParams").ZenfuseOrderParams) => any;
+    transformBithumbOrder: (bOrder: any, zInitialOrder?: any) => import("../../../base/schemas/openOrder").PlacedOrder;
+    transformBithumbOrderWS: (bOrder: any) => import("../../../base/schemas/openOrder").PlacedOrder;
     extractSpotMarkets: (markets: any[]) => any[];
     extractTickersFromMarkets: (markets: any[]) => any[];
     extractSpotTickers: (payload: any) => any;

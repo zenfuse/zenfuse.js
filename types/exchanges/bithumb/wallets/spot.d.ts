@@ -47,15 +47,16 @@ declare class BithumbSpot extends BithumbBase {
      * Create new spot order on Bithumb
      *
      * @param {Order} zOrder Order to create
+     * @returns {Order} zCreatedOrder
      */
-    createOrder(zOrder: any): Promise<Order>;
+    createOrder(zOrder: any): any;
     /**
      * Cancel an active order
      *
      * @param {string} orderId Bithumb order id
      * @param {string} symbol
      */
-    cancelOrderById(orderId: string, symbol?: string): Promise<ZenfuseOrder>;
+    cancelOrderById(orderId: string, symbol?: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
     fetchOpenOrders(): Promise<void>;
     fetchBalances(): Promise<any>;
     /**
@@ -63,9 +64,15 @@ declare class BithumbSpot extends BithumbBase {
      * @param {string} orderId
      * @param {string} symbol
      */
-    fetchOrderById(orderId: string, symbol?: string): Promise<Order>;
+    fetchOrderById(orderId: string, symbol?: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
     /**
      * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     */
+    /**
+     * **NOTE:** Not stable
+     *
+     * @see https://github.com/bithumb-pro/bithumb.pro-official-api-docs/issues/78
+     * @see https://github.com/bithumb-pro/bithumb.pro-official-api-docs/issues/67
      * @param {object} params
      * @param {string} params.symbol
      * @param {timeIntervals} params.interval

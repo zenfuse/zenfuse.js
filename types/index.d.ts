@@ -1,17 +1,4 @@
 export type exports = any;
-export type Order = {
-    id: string;
-    timestamp: number;
-    status: 'open' | 'closed' | 'canceled';
-    symbol: string;
-    type: 'market' | 'limit';
-    side: 'buy' | 'sell';
-    /**
-     * Required for limit orders
-     */
-    price?: number | string;
-    quantity: number | string;
-};
 export type Trade = {
     /**
      * Exchange trade id
@@ -43,9 +30,11 @@ export type timeInterval = '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4
 import Binance = require("./exchanges/binance");
 import FTX = require("./exchanges/ftx");
 import Bithumb = require("./exchanges/bithumb");
+import OKX = require("./exchanges/okx");
 export declare namespace exchanges {
     export { Binance as binance };
     export { FTX as ftx };
     export { Bithumb as bithumb };
+    export { OKX as okx };
 }
-export { Binance, FTX, Bithumb };
+export { Binance, FTX, Bithumb, Bithumb as Bitglobal, OKX };

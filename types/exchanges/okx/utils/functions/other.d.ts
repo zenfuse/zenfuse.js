@@ -1,0 +1,17 @@
+/**
+ * Create HMAC signature specific for OKX
+ *
+ * @param {object} params
+ * @param {number} params.ts ISO Date
+ * @param {string} params.method HTTP Method
+ * @param {string} params.path URL request path
+ * @param {object} [params.body] Request body
+ * @param {string} key HMAC Key
+ * @returns {string} Base64 HMAC Signature
+ */
+export function createHmacSignature({ ts, method, path, body }: {
+    ts: number;
+    method: string;
+    path: string;
+    body?: object;
+}, key: string): string;

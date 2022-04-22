@@ -4,19 +4,19 @@ export type PlacedOrder = import('../../../../base/schemas/openOrder').PlacedOrd
  * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
  */
 /**
- * Zenfuse -> FTX
+ * Zenfuse -> OKX
  *
  * @param {OrderParams} zOrder Order from
  * @returns {object} Order for ftx api
  */
-export function transfromZenfuseOrder(zOrder: OrderParams): object;
+export function transformZenfuseOrder(zOrder: OrderParams): object;
 /**
  * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
  */
 /**
- * FTX -> Zenfuse
+ * OKX -> Zenfuse
  *
- * @param {*} fOrder Order from FTX
- * @returns {PlacedOrder} Zenfuse Order
+ * @param {*} xOrder Order from OKX
+ * @returns {PlacedOrder} Zenfuse placed Order
  */
-export function transfromFtxOrder(fOrder: any): PlacedOrder;
+export function transformOkxOrder(xOrder: any): PlacedOrder;

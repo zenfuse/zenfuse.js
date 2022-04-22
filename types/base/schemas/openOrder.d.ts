@@ -1,8 +1,19 @@
-export = ZenfuseOpenOrder;
-declare const ZenfuseOpenOrder: z.ZodObject<{
+export = ZenfusePlacedOrder;
+/**
+ * @typedef {object} PlacedOrder
+ * @property {string} id
+ * @property {number} timestamp
+ * @property {'open'|'closed'|'canceled'} status
+ * @property {string} symbol
+ * @property {'market'|'limit'} type
+ * @property {'buy'|'sell'} side
+ * @property {number|string} [price] Required for limit orders
+ * @property {number|string} quantity
+ */
+declare const ZenfusePlacedOrder: z.ZodObject<{
     id: z.ZodString;
     timestamp: z.ZodNumber;
-    status: z.ZodEnum<["open", "close", "canceled"]>;
+    status: z.ZodEnum<["open", "closed", "canceled"]>;
     symbol: z.ZodEffects<z.ZodString, string, string>;
     type: z.ZodEnum<["market", "limit"]>;
     side: z.ZodEnum<["buy", "sell"]>;
@@ -12,19 +23,35 @@ declare const ZenfuseOpenOrder: z.ZodObject<{
     symbol?: string;
     type?: "market" | "limit";
     id?: string;
-    status?: "open" | "canceled" | "close";
-    timestamp?: number;
-    side?: "buy" | "sell";
-    price?: number;
+    status?: "closed" | "open" | "canceled";
     quantity?: number;
+    price?: number;
+    side?: "buy" | "sell";
+    timestamp?: number;
 }, {
     symbol?: string;
     type?: "market" | "limit";
     id?: string;
-    status?: "open" | "canceled" | "close";
-    timestamp?: number;
-    side?: "buy" | "sell";
-    price?: number;
+    status?: "closed" | "open" | "canceled";
     quantity?: number;
+    price?: number;
+    side?: "buy" | "sell";
+    timestamp?: number;
 }>;
+declare namespace ZenfusePlacedOrder {
+    export { PlacedOrder };
+}
 import { z } from "zod";
+type PlacedOrder = {
+    id: string;
+    timestamp: number;
+    status: 'open' | 'closed' | 'canceled';
+    symbol: string;
+    type: 'market' | 'limit';
+    side: 'buy' | 'sell';
+    /**
+     * Required for limit orders
+     */
+    price?: number | string;
+    quantity: number | string;
+};

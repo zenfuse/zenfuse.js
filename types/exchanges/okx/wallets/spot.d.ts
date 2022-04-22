@@ -1,16 +1,14 @@
-export = BinanceSpot;
+export = OkxSpot;
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
  */
 /**
- * Binance class for spot wallet API
+ * OKX class for spot wallet API
  */
-declare class BinanceSpot extends BinanceBase {
+declare class OkxSpot extends OkxBase {
     static DEFAULT_OPTIONS: {
         defaults: {
-            limit: {
-                timeInForce: string;
-            };
+            limit: {};
             market: {};
         };
     };
@@ -23,65 +21,59 @@ declare class BinanceSpot extends BinanceBase {
      */
     fetchTickers(): string[];
     /**
-     * @typedef {import('../utils/functions/agregation').structualizedMarket} structualizedMarket
+     * @returns {string[]} Array of ticker pairs on OKX
      */
-    /**
-     * @returns {structualizedMarket} Array of ticker pairs on this exchange
-     */
-    fetchMarkets(): import("../utils/functions/agregation").structualizedMarket;
-    /**
-     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
-     * @param {object} params
-     * @param {string} params.symbol
-     * @param {timeIntervals} params.interval
-     * @param {number} [params.startTime]
-     * @param {number} [params.endTime]
-     * @returns {Kline[]}
-     */
-    fetchCandleHistory(params: {
-        symbol: string;
-        interval: timeIntervals;
-        startTime?: number;
-        endTime?: number;
-    }): import("../../../base/schemas/kline.js").ZenfuseKline[];
+    fetchMarkets(): string[];
     /**
      * @typedef {object} PriceObject
      * @property {string} symbol
      * @property {number} price
      */
     /**
-     * **DEV:** If the symbol is not sent, prices for all symbols will be returned in an array.
+     * **NOTE:** If the symbol is not sent, prices for all symbols will be returned in an array.
      *
      * @param {string} market Ticker pair aka symbol
-     * @returns {PriceObject} Price object
+     * @returns {PriceObject} Last price
      */
-    fetchPrice(market: string): {
+    fetchPrice(market?: string): {
         symbol: string;
         price: number;
     };
     /**
+     * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
+     * @typedef {import('../metadata').timeIntervals} timeIntervals
+     */
+    /**
+     * @param {object} params
+     * @param {string} params.symbol
+     * @param {timeIntervals} params.interval
+     * @param {number} [params.startTime]
+     * @param {number} [params.endTime]
+     * @returns {Promise<Kline[]>}
+     */
+    fetchCandleHistory(params: {
+        symbol: string;
+        interval: import("../../..").timeInterval;
+        startTime?: number;
+        endTime?: number;
+    }): Promise<import("../../../base/schemas/kline.js").ZenfuseKline[]>;
+    /**
      * @typedef {import('../utils/functions/transformation').Order} Order
      */
     /**
-     * Create new spot order on Binance
+     * Create new spot order on OKX
      *
      * @param {Order} zOrder Order to create
      */
-    createOrder(zOrder: any): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    createOrder(zOrder: any): Promise<any>;
     /**
      * Cancel an active order
      *
-     * **NOTE:** Binance required order symbol for canceling.
-     *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
-     *      TODO: Make possible to pass symbol from user
-     *
-     * @param {string} orderId Binance order id
+     * @param {string} orderId Okx order id
      */
     cancelOrderById(orderId: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
-    fetchOpenOrders(): Promise<any>;
     fetchBalances(): Promise<any>;
     /**
-     * **NOTE:** Binance requires symbol for fetching order.
      *
      * @param {string} orderId
      */
@@ -89,11 +81,10 @@ declare class BinanceSpot extends BinanceBase {
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }
-declare namespace BinanceSpot {
+declare namespace OkxSpot {
     export { BaseOptions };
 }
-import BinanceBase = require("../base");
-import { timeIntervals } from "../metadata";
+import OkxBase = require("../base");
 import AccountDataStream = require("../streams/accountDataStream");
 import MarketDataStream = require("../streams/marketDataStream");
 type BaseOptions = import('../../../base/exchange').BaseOptions;

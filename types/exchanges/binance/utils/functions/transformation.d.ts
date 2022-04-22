@@ -1,4 +1,5 @@
-export type Order = import('../../../../index').Order;
+export type OrderParams = import('../../../../base/schemas/orderParams').ZenfuseOrderParams;
+export type PlacedOrder = import('../../../../base/schemas/openOrder').PlacedOrder;
 /**
  * Transform market string specialy for Binance
  *
@@ -11,39 +12,42 @@ export type Order = import('../../../../index').Order;
  */
 export function transformMarketString(libString: string): string;
 /**
+ * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+ */
+/**
  * Insert default values for specific order type
  *
  * **DEV** All values should be for zenfuse interface
  *
- * @param {Order} order
+ * @param {OrderParams} order
  * @param {object} defaults
- * @param {Order} defaults.limit
- * @param {Order} defaults.market
- * @returns {Order} TODO: Order type
+ * @param {OrderParams} defaults.limit
+ * @param {OrderParams} defaults.market
+ * @returns {OrderParams}
  */
-export function assignDefaultsInOrder(order: Order, defaults: {
-    limit: Order;
-    market: Order;
-}): Order;
-/**
- * @typedef {import('../../../../index').Order} Order
- */
+export function assignDefaultsInOrder(order: OrderParams, defaults: {
+    limit: OrderParams;
+    market: OrderParams;
+}): OrderParams;
 /**
  * Zenfuse -> Binance
  *
  * **DEV:** This function does not assign defaults values
  *
- * @param {Order} zOrder Zenfuse order
+ * @param {OrderParams} zOrder Zenfuse order
  * @returns {object} Order for binance api
  */
-export function transfromZenfuseOrder(zOrder: Order): object;
+export function transfromZenfuseOrder(zOrder: OrderParams): object;
+/**
+ * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+ */
 /**
  * Binance -> Zenfuse
  *
  * @param {*} bOrder Order fromf
- * @returns {Order} Zenfuse Order
+ * @returns {PlacedOrder} Zenfuse Order
  */
-export function transfromBinanceOrder(bOrder: any): Order;
+export function transfromBinanceOrder(bOrder: any): PlacedOrder;
 /**
  * Transforms candlestick data from binance websocket
  *
