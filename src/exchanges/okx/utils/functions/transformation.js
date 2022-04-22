@@ -1,7 +1,11 @@
 /**
+ * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+ */
+
+/**
  * Zenfuse -> OKX
  *
- * @param {Order} zOrder Order from
+ * @param {OrderParams} zOrder Order from
  * @returns {object} Order for ftx api
  */
 const transformZenfuseOrder = (zOrder) => {
@@ -42,14 +46,18 @@ const transformZenfuseOrder = (zOrder) => {
 };
 
 /**
+ * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+ */
+
+/**
  * OKX -> Zenfuse
  *
  * @param {*} xOrder Order from OKX
- * @returns {Order} Zenfuse Order
+ * @returns {PlacedOrder} Zenfuse placed Order
  */
 const transformOkxOrder = (xOrder) => {
     /**
-     * @type {Order}
+     * @type {PlacedOrder}
      */
     const zOrder = {};
 

@@ -3,7 +3,7 @@ const ZenfuseBaseError = require('../../../base/errors/base.error');
 
 class BithumbApiError extends ZenfuseBaseError {
     /**
-     * @param {import('got').HTTPError | Promise<Response>} err
+     * @param {import('got').HTTPError | *} err
      */
     constructor(err) {
         if (err instanceof HTTPError) {

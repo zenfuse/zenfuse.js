@@ -13,19 +13,22 @@ declare class FtxCache extends BaseGlobalCache {
         openOrders: Map<any, any>;
     };
     /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+    /**
      * Cache order in local cache
      *
      * **DEV:** In some cases FTX doesnt return order from REST interface. Zenfuse return cached order.
      *
-     * @param {ZenfuseOrder} order
+     * @param {PlacedOrder} order
      */
-    cacheOrder(order: ZenfuseOrder): void;
+    cacheOrder(order: import("../../../base/schemas/openOrder").PlacedOrder): void;
     /**
      *
      * @param {string} orderId
-     * @returns {ZenfuseOrder}
+     * @returns {PlacedOrder}
      */
-    getCachedOrderById(orderId: string): ZenfuseOrder;
+    getCachedOrderById(orderId: string): import("../../../base/schemas/openOrder").PlacedOrder;
     /**
      *
      * @param {string} orderId

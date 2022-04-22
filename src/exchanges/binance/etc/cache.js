@@ -61,11 +61,15 @@ class BinanceCache extends BaseGlobalCache {
     }
 
     /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+
+    /**
      * Cache order in local cache
      *
      * **DEV:** Binance requires order symbol for many requests. So we should cache orders to delete it just by id.
      *
-     * @param {ZenfuseOrder} order
+     * @param {PlacedOrder} order
      */
     cacheOrder(order) {
         this.localCache.openOrders.set(order.id, order);
@@ -74,7 +78,7 @@ class BinanceCache extends BaseGlobalCache {
     /**
      *
      * @param {string} orderId
-     * @returns {ZenfuseOrder}
+     * @returns {PlacedOrder}
      */
     getCachedOrderById(orderId) {
         return this.localCache.openOrders.get(orderId);

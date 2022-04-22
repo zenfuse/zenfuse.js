@@ -6,11 +6,7 @@ export = MarketDataStream;
  * @property {string} [interval] Required if channel is kline
  * @param {WebsocketEvent} event
  */
-declare class MarketDataStream extends FtxWebsocketBase {
-    /**
-     * @type {Map<WebsocketEvent, CandleStream>}
-     */
-    candleStreams: Map<WebsocketEvent, CandleStream>;
+declare class MarketDataStream extends OkxWebsocketBase {
     /**
      * @returns {this}
      */
@@ -31,16 +27,6 @@ declare class MarketDataStream extends FtxWebsocketBase {
     private editSubscribition;
     /**
      * @private
-     * @param {WebsocketEvent} event Candle stream event subscribtion
-     */
-    private setupCandleStream;
-    /**
-     * @param {WebsocketEvent} event Candle stream event subscribtion
-     */
-    unsetupCandleStream(event: WebsocketEvent): Promise<void>;
-    unsubscribeFromAllbySymbol(): Promise<void>;
-    /**
-     * @private
      * @param {import('ws').MessageEvent} msgEvent
      */
     private serverMessageHandler;
@@ -49,17 +35,12 @@ declare class MarketDataStream extends FtxWebsocketBase {
      * @param {*} payload
      */
     emitNewPrice(payload: any): void;
-    /**
-     * @private
-     * @param  {string[]} eventNames
-     * @returns {Promise<object>} Server responce
-     */
-    private sendSocketUnsubscribe;
+    emitNewCandle(payload: any): void;
 }
 declare namespace MarketDataStream {
     export { WebsocketEvent };
 }
-import FtxWebsocketBase = require("./websocketBase");
+import OkxWebsocketBase = require("./websocketBase");
 type WebsocketEvent = {
     channel: string;
     symbol: string;
@@ -68,4 +49,3 @@ type WebsocketEvent = {
      */
     interval?: string;
 };
-import CandleStream = require("./additional/candleStream");

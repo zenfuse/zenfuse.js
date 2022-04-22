@@ -5,12 +5,12 @@ declare const _exports: {
         id: string | number;
     }) => void;
     transformMarketString: (libString: string) => string;
-    assignDefaultsInOrder: (order: import("../../..").Order, defaults: {
-        limit: import("../../..").Order;
-        market: import("../../..").Order;
-    }) => import("../../..").Order;
-    transfromZenfuseOrder: (zOrder: import("../../..").Order) => any;
-    transfromBinanceOrder: (bOrder: any) => import("../../..").Order;
+    assignDefaultsInOrder: (order: import("../../../base/schemas/orderParams").ZenfuseOrderParams, defaults: {
+        limit: import("../../../base/schemas/orderParams").ZenfuseOrderParams;
+        market: import("../../../base/schemas/orderParams").ZenfuseOrderParams;
+    }) => import("../../../base/schemas/orderParams").ZenfuseOrderParams;
+    transfromZenfuseOrder: (zOrder: import("../../../base/schemas/orderParams").ZenfuseOrderParams) => any;
+    transfromBinanceOrder: (bOrder: any) => import("../../../base/schemas/openOrder").PlacedOrder;
     transfornCandlestick: (k: {
         t: number;
         T: number;

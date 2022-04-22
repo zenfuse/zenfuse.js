@@ -5,10 +5,8 @@ declare const _exports: {
         path: string;
         body?: any;
     }, key: string) => string;
-    transfromZenfuseOrder: (zOrder: import("../../../base/schemas/orderParams").ZenfuseOrderParams) => any;
-    transfromFtxOrder: (fOrder: any) => import("../../../base/schemas/openOrder").PlacedOrder;
-    extractSpotMarkets: (markets: any[]) => any[];
-    extractTickersFromMarkets: (markets: any[]) => any[];
+    transformZenfuseOrder: (zOrder: import("../../../base/schemas/orderParams").ZenfuseOrderParams) => any;
+    transformOkxOrder: (xOrder: any) => import("../../../base/schemas/openOrder").PlacedOrder;
     linkOriginalPayload: (object: any, originalPayload: any) => void;
     timeIntervalToSeconds: (interval: any) => any;
 };

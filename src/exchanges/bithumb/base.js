@@ -11,8 +11,6 @@ const keysSymbol = Symbol.for('zenfuse.keyVault');
 
 /**
  * Bithumb base class for method which included in any wallet type
- *
- * @important Any class that extends ExchangeBase should have same public interface
  */
 class BithumbBase extends ExchangeBase {
     /**

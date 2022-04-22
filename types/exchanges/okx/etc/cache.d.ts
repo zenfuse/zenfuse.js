@@ -1,12 +1,12 @@
-export = BithumbCache;
-declare class BithumbCache extends BaseGlobalCache {
+export = OkxCache;
+declare class OkxCache extends BaseGlobalCache {
     /**
-     * @param {BithumbBase} baseInstance
+     * @param {OkxBase} baseInstance
      */
     constructor(baseInstance: import("../base"));
     /**
-     * @typedef {import('../base')} BithumbBase
-     * @type {BithumbBase}
+     * @typedef {import('../base')} OkxBase
+     * @type {OkxBase}
      */
     base: import("../base");
     localCache: {
@@ -22,6 +22,7 @@ declare class BithumbCache extends BaseGlobalCache {
      */
     cacheOrder(order: import("../../../base/schemas/openOrder").PlacedOrder): void;
     /**
+     *
      * @param {string} orderId
      * @returns {PlacedOrder}
      */

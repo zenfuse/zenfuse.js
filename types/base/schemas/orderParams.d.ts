@@ -1,4 +1,13 @@
 export = ZenfuseOrderParams;
+/**
+ * @typedef {object} ZenfuseOrderParams
+ * @property {string} symbol
+ * @property {number|string} quantity
+ * @property {number|string} [price] Required for limit orders
+ * @property {'market'|'limit'} type
+ * @property {number} timestamp
+ * @property {'buy'|'sell'} side
+ */
 declare const ZenfuseOrderParams: z.ZodEffects<z.ZodObject<{
     symbol: z.ZodString;
     quantity: z.ZodNumber;
@@ -14,26 +23,40 @@ declare const ZenfuseOrderParams: z.ZodEffects<z.ZodObject<{
 }, "passthrough", z.ZodTypeAny, {
     symbol?: string;
     type?: string;
-    side?: string;
-    price?: number;
     quantity?: number;
+    price?: number;
+    side?: string;
 }, {
     symbol?: string;
     type?: string;
-    side?: string;
-    price?: number;
     quantity?: number;
+    price?: number;
+    side?: string;
 }>, {
     symbol?: string;
     type?: string;
-    side?: string;
-    price?: number;
     quantity?: number;
+    price?: number;
+    side?: string;
 }, {
     symbol?: string;
     type?: string;
-    side?: string;
-    price?: number;
     quantity?: number;
+    price?: number;
+    side?: string;
 }>;
+declare namespace ZenfuseOrderParams {
+    export { ZenfuseOrderParams };
+}
 import { z } from "zod";
+type ZenfuseOrderParams = {
+    symbol: string;
+    quantity: number | string;
+    /**
+     * Required for limit orders
+     */
+    price?: number | string;
+    type: 'market' | 'limit';
+    timestamp: number;
+    side: 'buy' | 'sell';
+};

@@ -1,5 +1,15 @@
 const { z } = require('zod');
 
+/**
+ * @typedef {object} ZenfuseOrderParams
+ * @property {string} symbol
+ * @property {number|string} quantity
+ * @property {number|string} [price] Required for limit orders
+ * @property {'market'|'limit'} type
+ * @property {number} timestamp
+ * @property {'buy'|'sell'} side
+ */
+
 const ZenfuseOrderParams = z
     .object({
         symbol: z.string(),
