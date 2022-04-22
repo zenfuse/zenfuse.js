@@ -35,9 +35,7 @@ jobs:
                 key: heavy-mocks
 
     test:
-        needs: |
-            lint
-            mocks
+        needs: [lint, mocks]
         runs-on: ubuntu-latest
         strategy:
             matrix:
