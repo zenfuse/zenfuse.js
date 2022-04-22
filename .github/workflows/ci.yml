@@ -25,14 +25,15 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
-            - run: npm ci
-            - run: npm run download-mocks
+            - run: npm ci --only=dev
             
             - name: Cache Mocks
               uses: actions/cache@v3.0.2
               with:
-                path: ~/tests/exchanges/*/mocks/static/*
+                path: tests/exchanges/*/mocks/static/*
                 key: heavy-mocks
+            
+            - run: npm run download-mocks
 
     test:
         needs: [lint, mocks]
@@ -54,5 +55,6 @@ jobs:
                 path: ~/tests/exchanges/*/mocks/static/*
                 key: heavy-mocks
                 restore-keys: heavy-mocks
-
+                
+            - run: npm ci
             - run: npm test
