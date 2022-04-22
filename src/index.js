@@ -24,18 +24,6 @@ module.exports = {
 };
 
 /**
- * @typedef {object} Order
- * @property {string} id
- * @property {number} timestamp
- * @property {'open'|'closed'|'canceled'} status
- * @property {string} symbol
- * @property {'market'|'limit'} type
- * @property {'buy'|'sell'} side
- * @property {number|string} [price] Required for limit orders
- * @property {number|string} quantity
- */
-
-/**
  * @typedef {object} Trade
  * @property {string} id Exchange trade id
  * @property {number} timestamp Time when trade executed

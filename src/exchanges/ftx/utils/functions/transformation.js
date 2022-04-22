@@ -1,7 +1,11 @@
 /**
+ * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+ */
+
+/**
  * Zenfuse -> FTX
  *
- * @param {Order} zOrder Order from
+ * @param {OrderParams} zOrder Order from
  * @returns {object} Order for ftx api
  */
 const transfromZenfuseOrder = (zOrder) => {
@@ -33,14 +37,18 @@ const transfromZenfuseOrder = (zOrder) => {
 };
 
 /**
+ * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+ */
+
+/**
  * FTX -> Zenfuse
  *
  * @param {*} fOrder Order from FTX
- * @returns {Order} Zenfuse Order
+ * @returns {PlacedOrder} Zenfuse Order
  */
 const transfromFtxOrder = (fOrder) => {
     /**
-     * @type {Order}
+     * @type {PlacedOrder}
      */
     const zOrder = {};
 

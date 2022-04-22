@@ -19,9 +19,13 @@ class OkxCache extends BaseGlobalCache {
     }
 
     /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+
+    /**
      * Cache order in local cache
      *
-     * @param {ZenfuseOrder} order
+     * @param {PlacedOrder} order
      */
     cacheOrder(order) {
         this.localCache.openOrders.set(order.id, order);
@@ -30,7 +34,7 @@ class OkxCache extends BaseGlobalCache {
     /**
      *
      * @param {string} orderId
-     * @returns {ZenfuseOrder}
+     * @returns {PlacedOrder}
      */
     getCachedOrderById(orderId) {
         return this.localCache.openOrders.get(orderId);

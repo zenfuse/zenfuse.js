@@ -1,8 +1,12 @@
 /**
+ * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+ */
+
+/**
  * Zenfuse -> Bithumb
  *
- * @param {Order} zOrder Order from
- * @returns Order for bithumb api
+ * @param {OrderParams} zOrder
+ * @returns {object} Order for bithumb api
  */
 const transformZenfuseOrder = (zOrder) => {
     const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
@@ -34,17 +38,23 @@ const transformZenfuseOrder = (zOrder) => {
 };
 
 /**
+ * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+ */
+
+/**
  * Bithumb -> Zenfuse
  *
  * @param {*} bOrder Order from Bithumb REST
  * @param {object} zInitialOrder
- * @returns {Order} Zenfuse Order
+ * @returns {PlacedOrder} Zenfuse Order
  */
 const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
     /**
-     * @type {Order}
+     * @type {PlacedOrder}
      */
     const zOrder = {};
+
+    // TODO: Refactor this
 
     zOrder.id = bOrder.data.orderId;
     if (Object.entries(zInitialOrder).length === 0) {
@@ -87,11 +97,11 @@ const transformBithumbOrder = (bOrder, zInitialOrder = {}) => {
  * Bithumb -> Zenfuse
  *
  * @param {*} bOrder Order from Bithumb WS
- * @returns {Order} Zenfuse Order
+ * @returns {PlacedOrder} Zenfuse Order
  */
 const transformBithumbOrderWS = (bOrder) => {
     /**
-     * @type {Order}
+     * @type {PlacedOrder}
      */
     const zOrder = {};
 
