@@ -27,7 +27,7 @@ const env = createEnv({
 
 global.httpScope = createScope(env);
 
-// masterTest(Binance, env);
+masterTest(Binance, env);
 
 describe('Error Handling', () => {
     describe('INVALID_CREDENTIALS code', () => {
@@ -66,6 +66,9 @@ describe('Error Handling', () => {
                             price: 0.00003,
                             timeInForce: 'GTC',
                         },
+                    })
+                    .then(() => {
+                        throw 'Not caught';
                     });
             } catch (e) {
                 expect(e).toBeInstanceOf(BinanceApiExeption);
@@ -84,7 +87,10 @@ describe('Error Handling', () => {
                         publicKey: env.API_PUBLIC_KEY,
                         privateKey: env.API_PRIVATE_KEY,
                     })
-                    .privateFetch('api/v3/myTrades');
+                    .privateFetch('api/v3/myTrades')
+                    .then(() => {
+                        throw 'Not caught';
+                    });
             } catch (e) {
                 expect(e).toBeInstanceOf(BinanceApiExeption);
                 expect(e.code).toBe(errorCodes.UNKNOWN_EXEPTION);
