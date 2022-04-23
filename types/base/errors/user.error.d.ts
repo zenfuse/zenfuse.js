@@ -5,6 +5,8 @@ declare class ZenfuseUserError extends ZenfuseBaseError {
      */
     static details: {
         UNSUPPORTED_FEATURE: string;
+        NOT_AUTHENTICATED: string;
+        VALIDATION_FAILED: string;
     };
     /**
      * @param {string} msg message

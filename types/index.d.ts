@@ -31,10 +31,12 @@ import Binance = require("./exchanges/binance");
 import FTX = require("./exchanges/ftx");
 import Bithumb = require("./exchanges/bithumb");
 import OKX = require("./exchanges/okx");
-export declare namespace exchanges {
-    export { Binance as binance };
-    export { FTX as ftx };
-    export { Bithumb as bithumb };
-    export { OKX as okx };
-}
+export declare const errorCodes: {
+    INVALID_CREDENTIALS: symbol;
+    INSUFFICIENT_FUNDS: symbol; /**
+     * @enum
+     */
+    INVALID_ORDER: symbol;
+    UNKNOWN_EXEPTION: symbol;
+};
 export { Binance, FTX, Bithumb, Bithumb as Bitglobal, OKX };

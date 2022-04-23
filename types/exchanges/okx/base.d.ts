@@ -64,6 +64,7 @@ declare class OkxBase extends ExchangeBase {
      * @private
      */
     private handleFetcherError;
+    handleUnexpectedResponse(body: any): any;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");
