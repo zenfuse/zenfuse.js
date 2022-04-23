@@ -1,18 +1,45 @@
 const { HTTPError } = require('got');
-const ZenfuseBaseError = require('../../../base/errors/base.error');
+const ExchangeBaseExeption = require('../../../base/errors/exchange.error');
+const utils = require('../utils');
 
-class BithumbApiError extends ZenfuseBaseError {
+const codes = ExchangeBaseExeption.errorCodes;
+
+class BithumbApiError extends ExchangeBaseExeption {
+    static codesMap = new Map([
+        ['9000', codes.INVALID_CREDENTIALS],
+        ['9002', codes.INVALID_CREDENTIALS],
+        ['9005', codes.INVALID_CREDENTIALS],
+        ['9005', codes.INVALID_CREDENTIALS],
+        ['20003', codes.INSUFFICIENT_FUNDS],
+    ]);
+
     /**
      * @param {import('got').HTTPError | *} err
      */
     constructor(err) {
+        let bErrCode;
+
         if (err instanceof HTTPError) {
-            super(err.response.body.error);
+            super(err.response.body.msg);
+
+            bErrCode = err.response.body.code;
+
             this.response = err.response.body;
             this.httpError = err;
+            utils.linkOriginalPayload(this, err.response);
         } else {
             super(err.msg);
+
+            bErrCode = err.code;
+
             this.response = err;
+            utils.linkOriginalPayload(this, err);
+        }
+
+        if (BithumbApiError.codesMap.has(bErrCode)) {
+            this.code = BithumbApiError.codesMap.get(bErrCode);
+        } else {
+            this.code = codes.UNKNOWN_EXEPTION;
         }
     }
 }

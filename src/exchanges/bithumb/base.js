@@ -104,8 +104,6 @@ class BithumbBase extends ExchangeBase {
 
         options.json = reqBody;
 
-        // console.log(options);
-
         this.msgNo += 1;
 
         return await this.fetcher(url, options)
