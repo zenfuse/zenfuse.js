@@ -7,6 +7,7 @@ const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 const { transformZenfuseOrder } = require('../utils');
 const { timeIntervals } = require('../metadata');
+const ZenfuseBaseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -160,6 +161,35 @@ class BithumbSpot extends BithumbBase {
         utils.linkOriginalPayload(zCreatedOrder, bCreatedOrder);
 
         return zCreatedOrder;
+    }
+
+    /**
+     * Cancel an active order
+     *
+     * @param {Order} zOrder Active order to cancel
+     */
+     async cancelOrder(zOrder) {
+        this.validateOrderParams(zOrder);
+
+        const response = await this.privateFetch('spot/cancelOrder', {
+            method: 'POST',
+            json: {
+                orderId: zOrder.id,
+                symbol: zOrder.symbol.replace('/', '-'),
+            },
+        });
+
+        const orderToDelete = this.cache.getCachedOrderById(zOrder.id);
+
+        if (!orderToDelete) {
+            throw ZenfuseBaseError('ZEFU_CACHE_UNSYNC');
+        }
+
+        this.cache.deleteCachedOrderById(zOrder.id);
+
+        utils.linkOriginalPayload(orderToDelete, response);
+
+        return orderToDelete;
     }
 
     /**
