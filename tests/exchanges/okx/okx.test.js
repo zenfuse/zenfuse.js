@@ -72,7 +72,7 @@ const env = {
 
 global.httpScope = createScope(env);
 
-// masterTest(OKX, env);
+masterTest(OKX, env);
 
 describe('Error Handling', () => {
     describe('INVALID_CREDENTIALS code', () => {
@@ -91,7 +91,6 @@ describe('Error Handling', () => {
                         throw 'Not caught';
                     });
             } catch (e) {
-                console.log(e);
                 expect(e).toBeInstanceOf(OkxApiException);
                 expect(e.code).toBe(errorCodes.INVALID_CREDENTIALS);
                 expect(e.message).toBeDefined();
@@ -127,7 +126,6 @@ describe('Error Handling', () => {
                         throw 'Not caught';
                     });
             } catch (e) {
-                console.log(e);
                 expect(e).toBeInstanceOf(OkxApiException);
                 expect(e.code).toBe(errorCodes.INSUFFICIENT_FUNDS);
                 expect(e.message).toBeDefined();
@@ -154,7 +152,6 @@ describe('Error Handling', () => {
                         throw 'Not caught';
                     });
             } catch (e) {
-                console.log(e);
                 expect(e).toBeInstanceOf(OkxApiException);
                 expect(e.code).toBe(errorCodes.UNKNOWN_EXEPTION);
                 expect(e.message).toBeDefined();

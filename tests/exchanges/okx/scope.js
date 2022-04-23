@@ -449,51 +449,6 @@ module.exports = (env) => ({
                         },
                     ],
                 })
-                // .get('/api/v5/trade/orders-pending')
-                // .reply(200, {
-                //     code: '0',
-                //     msg: '',
-                //     data: [
-                //         {
-                //             accFillSz: '0',
-                //             avgPx: '',
-                //             cTime: '1618235248028',
-                //             category: 'normal',
-                //             ccy: '',
-                //             clOrdId: '',
-                //             fee: '0',
-                //             feeCcy: 'BTC',
-                //             fillPx: '',
-                //             fillSz: '0',
-                //             fillTime: '',
-                //             instId: 'BTC-USDT',
-                //             instType: 'SPOT',
-                //             lever: '5.6',
-                //             ordId: '312269865356374016',
-                //             ordType: 'limit',
-                //             pnl: '0',
-                //             posSide: 'net',
-                //             px: '59200',
-                //             rebate: '0',
-                //             rebateCcy: 'USDT',
-                //             side: 'buy',
-                //             slOrdPx: '',
-                //             slTriggerPx: '',
-                //             slTriggerPxType: 'last',
-                //             state: 'live',
-                //             sz: '1',
-                //             tag: '',
-                //             tgtCcy: '',
-                //             tdMode: 'cross',
-                //             source: '',
-                //             tpOrdPx: '',
-                //             tpTriggerPx: '',
-                //             tpTriggerPxType: 'last',
-                //             tradeId: '',
-                //             uTime: '1618235248028',
-                //         },
-                //     ],
-                // })
                 // Order deletion
                 .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
                 .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
@@ -518,6 +473,51 @@ module.exports = (env) => ({
                             sMsg: '',
                         },
                     ],
+                }),
+    },
+    'Error Handling': {
+        'INVALID_CREDENTIALS code': () =>
+            nock(HOSTNAME)
+                .matchHeader('OK-ACCESS-KEY', 'invalidPublicKey')
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .get('/api/v5/trade/orders-pending')
+                .reply(401, { msg: 'Invalid OK-ACCESS-KEY', code: '50111' }),
+
+        'INSUFFICIENT_FUNDS code': () =>
+            nock(HOSTNAME)
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .post('/api/v5/trade/order', () => true)
+                .query(() => true)
+                .reply(400, {
+                    code: '1',
+                    data: [
+                        {
+                            clOrdId: 'b15',
+                            ordId: '',
+                            sCode: '51008',
+                            sMsg: 'Order placement failed due to insufficient balance ',
+                            tag: '',
+                        },
+                    ],
+                    msg: 'Operation failed.',
+                }),
+        'UNKNOWN_EXEPTION code': () =>
+            nock(HOSTNAME)
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .post('/api/v5/account/set-leverage')
+                .query(() => true)
+                .reply(400, {
+                    code: '50000',
+                    data: [],
+                    msg: 'Body can not be empty.',
                 }),
     },
 });
