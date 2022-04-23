@@ -1,7 +1,9 @@
+const { OKX, errorCodes } = require('zenfuse');
+
 const masterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
-const { OKX } = require('zenfuse');
+const OkxApiException = require('../../../src/exchanges/okx/errors/api.error');
 
 if (isEnd2EndTest) {
     checkProcessHasVariables([
@@ -70,4 +72,94 @@ const env = {
 
 global.httpScope = createScope(env);
 
-masterTest(OKX, env);
+// masterTest(OKX, env);
+
+describe('Error Handling', () => {
+    describe('INVALID_CREDENTIALS code', () => {
+        it('should throw INVALID_CREDENTIALS', async () => {
+            try {
+                await new OKX.spot()
+                    .auth({
+                        publicKey: 'invalidPublicKey',
+                        privateKey: 'invalidSectetKey',
+                        addKey: 'invalidAddKey',
+                    })
+                    .privateFetch('api/v5/trade/orders-pending')
+                    .then((body) => {
+                        // eslint-disable-next-line no-console
+                        console.error(body);
+                        throw 'Not caught';
+                    });
+            } catch (e) {
+                console.log(e);
+                expect(e).toBeInstanceOf(OkxApiException);
+                expect(e.code).toBe(errorCodes.INVALID_CREDENTIALS);
+                expect(e.message).toBeDefined();
+                expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
+            }
+        });
+    });
+
+    describe('INSUFFICIENT_FUNDS code', () => {
+        it('should throw INSUFFICIENT_FUNDS', async () => {
+            try {
+                await new OKX.spot()
+                    .auth({
+                        publicKey: env.API_PUBLIC_KEY,
+                        privateKey: env.API_PRIVATE_KEY,
+                        addKey: env.API_ADD_KEY,
+                    })
+                    .privateFetch('api/v5/trade/order', {
+                        method: 'POST',
+                        json: {
+                            instId: 'ELON-USDT',
+                            tdMode: 'cash',
+                            clOrdId: 'b15',
+                            side: 'sell',
+                            ordType: 'limit',
+                            px: '0.00000099595',
+                            sz: '9999999999999',
+                        },
+                    })
+                    .then((body) => {
+                        // eslint-disable-next-line no-console
+                        console.error(body);
+                        throw 'Not caught';
+                    });
+            } catch (e) {
+                console.log(e);
+                expect(e).toBeInstanceOf(OkxApiException);
+                expect(e.code).toBe(errorCodes.INSUFFICIENT_FUNDS);
+                expect(e.message).toBeDefined();
+                expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
+            }
+        });
+    });
+
+    describe('UNKNOWN_EXEPTION code', () => {
+        it('should throw UNKNOWN_EXEPTION', async () => {
+            try {
+                await new OKX.spot()
+                    .auth({
+                        publicKey: env.API_PUBLIC_KEY,
+                        privateKey: env.API_PRIVATE_KEY,
+                        addKey: env.API_ADD_KEY,
+                    })
+                    .privateFetch('api/v5/account/set-leverage', {
+                        method: 'POST',
+                    })
+                    .then((body) => {
+                        // eslint-disable-next-line no-console
+                        console.error(body);
+                        throw 'Not caught';
+                    });
+            } catch (e) {
+                console.log(e);
+                expect(e).toBeInstanceOf(OkxApiException);
+                expect(e.code).toBe(errorCodes.UNKNOWN_EXEPTION);
+                expect(e.message).toBeDefined();
+                expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
+            }
+        });
+    });
+});
