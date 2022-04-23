@@ -38,7 +38,12 @@ describe('Error Handling', () => {
                         publicKey: 'invalidPublicKey',
                         privateKey: 'invalidSectetKey',
                     })
-                    .privateFetch('api/v3/openOrders');
+                    .privateFetch('api/v3/openOrders')
+                    .then((body) => {
+                        // eslint-disable-next-line no-console
+                        console.error(body);
+                        throw 'Not caught';
+                    });
             } catch (e) {
                 expect(e).toBeInstanceOf(BinanceApiExeption);
                 expect(e.code).toBe(errorCodes.INVALID_CREDENTIALS);
@@ -67,7 +72,9 @@ describe('Error Handling', () => {
                             timeInForce: 'GTC',
                         },
                     })
-                    .then(() => {
+                    .then((body) => {
+                        // eslint-disable-next-line no-console
+                        console.error(body);
                         throw 'Not caught';
                     });
             } catch (e) {
@@ -88,7 +95,9 @@ describe('Error Handling', () => {
                         privateKey: env.API_PRIVATE_KEY,
                     })
                     .privateFetch('api/v3/myTrades')
-                    .then(() => {
+                    .then((body) => {
+                        // eslint-disable-next-line no-console
+                        console.error(body);
                         throw 'Not caught';
                     });
             } catch (e) {
