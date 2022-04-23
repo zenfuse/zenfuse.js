@@ -1,6 +1,6 @@
 const { FTX, errorCodes } = require('zenfuse');
 
-// const masterTest = require('../../master.test');
+const masterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
 const createEnv = require('../../helpers/createEnv');
@@ -27,7 +27,7 @@ const env = createEnv({
 
 global.httpScope = createScope(env);
 
-// masterTest(FTX, env);
+masterTest(FTX, env);
 
 describe('Error Handling', () => {
     describe('INVALID_CREDENTIALS code', () => {
@@ -42,6 +42,9 @@ describe('Error Handling', () => {
                         searchParams: {
                             market: 'BTC-USD',
                         },
+                    })
+                    .then(() => {
+                        throw 'Not caught';
                     });
             } catch (e) {
                 expect(e).toBeInstanceOf(FtxApiException);
@@ -69,6 +72,9 @@ describe('Error Handling', () => {
                             size: 999999,
                             price: 0.00003,
                         },
+                    })
+                    .then(() => {
+                        throw 'Not caught';
                     });
             } catch (e) {
                 expect(e).toBeInstanceOf(FtxApiException);
@@ -87,7 +93,12 @@ describe('Error Handling', () => {
                         publicKey: env.API_PUBLIC_KEY,
                         privateKey: env.API_PRIVATE_KEY,
                     })
-                    .privateFetch('api/options/requests');
+                    .privateFetch('api/orders/invalid_order_id/modify', {
+                        method: 'POST',
+                    })
+                    .then(() => {
+                        throw 'Not caught';
+                    });
             } catch (e) {
                 expect(e).toBeInstanceOf(FtxApiException);
                 expect(e.code).toBe(errorCodes.UNKNOWN_EXEPTION);
