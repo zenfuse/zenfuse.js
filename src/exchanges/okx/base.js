@@ -58,7 +58,9 @@ class OkxBase extends ExchangeBase {
      * @returns {object};
      */
     async publicFetch(url, options = {}) {
-        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        return await this.fetcher(url, options)
+            .then(this.handleUnexpectedResponse)
+            .catch(this.handleFetcherError);
     }
 
     /**
@@ -100,7 +102,9 @@ class OkxBase extends ExchangeBase {
             },
         });
 
-        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        return await this.fetcher(url, options)
+            .then(this.handleUnexpectedResponse)
+            .catch(this.handleFetcherError);
     }
 
     /**
@@ -157,11 +161,19 @@ class OkxBase extends ExchangeBase {
      * @private
      */
     handleFetcherError(err) {
-        if (err instanceof HTTPError) {
+        if (err instanceof HTTPError && err.response.body.msg) {
             throw new OkxApiError(err);
         }
 
         throw err;
+    }
+
+    handleUnexpectedResponse(body) {
+        if (parseFloat(body.code) > 0) {
+            throw new OkxApiError(null, body);
+        }
+
+        return body;
     }
 }
 
