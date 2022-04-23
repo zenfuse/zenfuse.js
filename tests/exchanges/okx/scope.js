@@ -310,6 +310,63 @@ module.exports = (env) => ({
                     ],
                     msg: '',
                 }),
+        'cancelOrder()': () =>
+            nock(HOSTNAME)
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                // Order creation
+                .post('/api/v5/trade/order', (b) => {
+                    expect(b).toMatchObject({
+                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        tdMode: 'cash',
+                        side: toOkxStyle(env.NOT_EXECUTABLE_ORDER.side),
+                        ordType: toOkxStyle(env.NOT_EXECUTABLE_ORDER.type),
+                        px: toOkxStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        sz: toOkxStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                    });
+
+                    return true;
+                })
+                .reply(201, {
+                    code: '0',
+                    msg: '',
+                    data: [
+                        {
+                            clOrdId: '',
+                            ordId: '312269865356374016',
+                            tag: '',
+                            sCode: '0',
+                            sMsg: '',
+                        },
+                    ],
+                })
+                // Order deletion
+                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                .matchHeader('OK-ACCESS-SIGN', Boolean)
+                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .post('/api/v5/trade/cancel-order', (b) => {
+                    expect(b).toMatchObject({
+                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        ordId: '312269865356374016',
+                    });
+
+                    return true;
+                })
+                .reply(200, {
+                    code: '0',
+                    msg: '',
+                    data: [
+                        {
+                            clOrdId: '',
+                            ordId: '312269865356374016',
+                            sCode: '0',
+                            sMsg: '',
+                        },
+                    ],
+                }),
         'cancelOrderById()': () =>
             nock(HOSTNAME)
                 .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)

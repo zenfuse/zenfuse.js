@@ -168,7 +168,7 @@ class BithumbSpot extends BithumbBase {
      *
      * @param {Order} zOrder Active order to cancel
      */
-     async cancelOrder(zOrder) {
+    async cancelOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
         const response = await this.privateFetch('spot/cancelOrder', {

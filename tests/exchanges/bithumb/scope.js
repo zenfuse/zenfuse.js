@@ -140,15 +140,9 @@ module.exports = (env) => ({
                             symbol: toBithumbStyle(
                                 env.SELL_MARKET_ORDER.symbol,
                             ),
-                            type: toBithumbStyle(
-                                env.SELL_MARKET_ORDER.type,
-                            ),
-                            side: toBithumbStyle(
-                                env.SELL_MARKET_ORDER.side,
-                            ),
-                            price: toBithumbStyle(
-                                env.SELL_MARKET_ORDER.price,
-                            ),
+                            type: toBithumbStyle(env.SELL_MARKET_ORDER.type),
+                            side: toBithumbStyle(env.SELL_MARKET_ORDER.side),
+                            price: toBithumbStyle(env.SELL_MARKET_ORDER.price),
                             quantity: toBithumbStyle(
                                 env.SELL_MARKET_ORDER.quantity,
                             ),

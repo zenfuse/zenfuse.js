@@ -220,6 +220,35 @@ class OkxSpot extends OkxBase {
     /**
      * Cancel an active order
      *
+     * @param {Order} zOrder Active Okx order to cancel
+     */
+    async cancelOrder(zOrder) {
+        this.validateOrderParams(zOrder);
+
+        const response = await this.privateFetch('api/v5/trade/cancel-order', {
+            method: 'POST',
+            json: {
+                instId: zOrder.symbol.replace('/', '-'),
+                ordId: zOrder.id,
+            },
+        });
+
+        const orderToDelete = this.cache.getCachedOrderById(zOrder.id);
+
+        if (!orderToDelete) {
+            throw ZenfuseBaseError('ZEFU_CACHE_UNSYNC');
+        }
+
+        this.cache.deleteCachedOrderById(zOrder.id);
+
+        utils.linkOriginalPayload(orderToDelete, response);
+
+        return orderToDelete;
+    }
+
+    /**
+     * Cancel an active order
+     *
      * @param {string} orderId Okx order id
      */
     async cancelOrderById(orderId) {
