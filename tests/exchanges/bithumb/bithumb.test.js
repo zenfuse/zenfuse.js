@@ -80,9 +80,13 @@ describe('Error Handling', () => {
                         json: {
                             assetType: 'spot',
                         },
+                    })
+                    .then((body) => {
+                        // eslint-disable-next-line no-console
+                        console.error(body);
+                        throw 'Not caught';
                     });
             } catch (e) {
-                console.log(e);
                 expect(e).toBeInstanceOf(BithumbApiError);
                 expect(e.code).toBe(errorCodes.INVALID_CREDENTIALS);
                 expect(e.message).toBeDefined();
@@ -108,9 +112,13 @@ describe('Error Handling', () => {
                             quantity: 1,
                             price: 50000,
                         },
+                    })
+                    .then((body) => {
+                        // eslint-disable-next-line no-console
+                        console.error(body);
+                        throw 'Not caught';
                     });
             } catch (e) {
-                console.log(e);
                 expect(e).toBeInstanceOf(BithumbApiError);
                 expect(e.code).toBe(errorCodes.INSUFFICIENT_FUNDS);
                 expect(e.message).toBeDefined();
@@ -129,9 +137,13 @@ describe('Error Handling', () => {
                     })
                     .privateFetch('spot/openOrders', {
                         method: 'POST',
+                    })
+                    .then((body) => {
+                        // eslint-disable-next-line no-console
+                        console.error(body);
+                        throw 'Not caught';
                     });
             } catch (e) {
-                console.log(e);
                 expect(e).toBeInstanceOf(BithumbApiError);
                 expect(e.code).toBe(errorCodes.UNKNOWN_EXEPTION);
                 expect(e.message).toBeDefined();
