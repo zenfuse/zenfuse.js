@@ -27,7 +27,7 @@ const env = createEnv({
 
 global.httpScope = createScope(env);
 
-masterTest(Binance, env);
+// masterTest(Binance, env);
 
 describe('Error Handling', () => {
     describe('INVALID_CREDENTIALS code', () => {
