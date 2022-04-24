@@ -179,11 +179,13 @@ class BithumbSpot extends BithumbBase {
             },
         });
 
-        const orderToDelete = this.cache.getCachedOrderById(zOrder.id);
+        let orderToDelete = this.cache.getCachedOrderById(zOrder.id);
 
         if (!orderToDelete) {
             throw ZenfuseBaseError('ZEFU_CACHE_UNSYNC');
         }
+
+        orderToDelete.status = 'canceled';
 
         this.cache.deleteCachedOrderById(zOrder.id);
 
