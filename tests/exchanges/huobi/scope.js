@@ -226,6 +226,28 @@ module.exports = (env) => ({
                     },
                 }),
 
+        'cancelOrder()': () =>
+            nock(HOSTNAME, OPTIONS)
+                // Order creation
+                .post('/v1/order/orders/place', (body) => {
+                    expect(body['account-id']).toBe(10000001);
+                    expect(body.amount);
+                    expect(body.price);
+                    expect(body.source).toBe('spot-api');
+                    expect(body.symbol);
+                    expect(body.type).toBe('buy-limit');
+                    return true;
+                })
+                .query(expectAuthParams)
+                .reply(200, {
+                    status: 'ok',
+                    data: '356501383558845',
+                })
+                // Order deletion
+                .post(`/v1/order/orders/356501383558845/submitcancel`)
+                .query(expectAuthParams)
+                .reply(200),
+
         'cancelOrderById()': () =>
             nock(HOSTNAME, OPTIONS)
                 // Order creation

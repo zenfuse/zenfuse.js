@@ -7,6 +7,7 @@ const MarketDataStream = require('../streams/marketDataStream');
 
 const { timeIntervals } = require('../metadata');
 const ZenfuseUserError = require('../../../base/errors/user.error');
+const ZenfuseBaseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -262,6 +263,34 @@ class HuobiSpot extends HuobiBase {
         utils.linkOriginalPayload(zOrder, response);
 
         return zOrder;
+    }
+
+    /**
+     * Cancel an active order
+     *
+     * @param {Order} zOrder Huobi active order to cancel
+     */
+    async cancelOrder(zOrder) {
+        const response = await this.privateFetch(
+            `v1/order/orders/${zOrder.id}/submitcancel`,
+            {
+                method: 'POST',
+            },
+        );
+
+        const cachedOrder = this.cache.getCachedOrderById(zOrder.id);
+
+        if (!cachedOrder) {
+            throw ZenfuseBaseError('ZEFU_CACHE_UNSYNC');
+        }
+
+        this.cache.deleteCachedOrderById(zOrder.id);
+
+        cachedOrder.status = 'canceled';
+
+        utils.linkOriginalPayload(cachedOrder, response);
+
+        return cachedOrder;
     }
 
     /**
