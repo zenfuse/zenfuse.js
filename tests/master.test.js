@@ -1,4 +1,4 @@
-const { z, custom } = require('zod');
+const { z } = require('zod');
 const zenfuse = require('zenfuse');
 
 const MockedAgent = require('./mocks/agent');
