@@ -21,6 +21,8 @@ module.exports = {
         bithumb: Bithumb,
         okx: OKX,
     },
+
+    config: require('./base/conf/configurator'),
 };
 
 /**
