@@ -7,7 +7,7 @@ const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 const { transformZenfuseOrder } = require('../utils');
 const { timeIntervals } = require('../metadata');
-const ZenfuseBaseError = require('../../../base/errors/base.error');
+const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -182,7 +182,7 @@ class BithumbSpot extends BithumbBase {
         let orderToDelete = this.cache.getCachedOrderById(zOrder.id);
 
         if (!orderToDelete) {
-            throw ZenfuseBaseError('ZEFU_CACHE_UNSYNC');
+            throw ZenfuseRuntimeError('ZEFU_CACHE_UNSYNC');
         }
 
         orderToDelete.status = 'canceled';

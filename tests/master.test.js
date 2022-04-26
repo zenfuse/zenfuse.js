@@ -367,12 +367,15 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should run only with keys', () => {
-                expect(
+                try {
                     exchange.cancelOrder.bind(
                         new Exchange['spot'](),
                         env.NOT_EXECUTABLE_ORDER,
-                    ),
-                ).rejects.toThrowError(NotAuthenticatedError);
+                    );
+                } catch (e) {
+                    expect(e).toBeInstanceOf(UserError);
+                    expect(e.code).toBe('NOT_AUTHENTICATED');
+                }
             });
 
             let result;

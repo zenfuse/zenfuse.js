@@ -5,7 +5,7 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const ZenfuseBaseError = require('../../../base/errors/base.error');
+const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -205,7 +205,7 @@ class FtxSpot extends FtxBase {
         let deletedOrder = this.cache.getCachedOrderById(zOrder.id);
 
         if (!deletedOrder) {
-            throw ZenfuseBaseError('ZEFU_CACHE_UNSYNC');
+            throw ZenfuseRuntimeError('ZEFU_CACHE_UNSYNC');
         }
 
         deletedOrder.status = 'canceled';
