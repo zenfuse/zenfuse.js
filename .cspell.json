@@ -6,6 +6,20 @@
         "zefu",
         "bithumb",
         "bitglobal",
-        "binance"
+        "binance",
+        "APIKEY",
+        "UNSYNC",
+        "structuralize",
+        "structuralized",
+        "kline",
+        "klines",
+        "candlestream",
+        "unsetup",
+        "ETHBUSD",
+        "BTCETH",
+        "BTCUSDT",
+        "BNBUSDT",
+        "PERP",
+        "whenbinance"
     ]
 }
