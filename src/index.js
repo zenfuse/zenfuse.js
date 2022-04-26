@@ -13,7 +13,7 @@ module.exports = {
     Bithumb,
     Bitglobal: Bithumb, // TODO: Rename all githumb classes
     OKX,
-  
+
     errorCodes: ExchangeBaseException.errorCodes,
     config: require('./base/conf/configurator'),
 };

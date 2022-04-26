@@ -22,7 +22,9 @@ class BinanceApiException extends ExchangeBaseException {
         const bErrCode = err.response.body.code;
 
         if (BinanceApiException.codesMap.has(bErrCode)) {
-            this.code = BinanceApiException.codesMap.get(err.response.body.code);
+            this.code = BinanceApiException.codesMap.get(
+                err.response.body.code,
+            );
         } else {
             this.code = codes.UNKNOWN_EXCEPTION;
         }
