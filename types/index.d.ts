@@ -38,5 +38,11 @@ export declare const errorCodes: {
      */
     INVALID_ORDER: symbol;
     UNKNOWN_EXEPTION: symbol;
+}
+export declare const config: {
+    get(key: any): any;
+    set(key: any, value: any): any;
+    delete(key: any): any;
+    has(key: any): any;
 };
 export { Binance, FTX, Bithumb, Bithumb as Bitglobal, OKX };
