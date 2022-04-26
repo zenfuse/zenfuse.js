@@ -1,10 +1,10 @@
+/* eslint-disable @cspell/spellchecker */
 const nock = require('nock');
 
 const HOSTNAME = 'https://global-openapi.bithumb.pro';
 
 const spotFilePath = __dirname + '/mocks/static/spot.json';
 const klineFilePath = __dirname + '/mocks/static/kline.json';
-// const mockedMarkets = JSON.parse(readFileSync(marketsFilePath, 'utf-8'));
 
 /**
  * HTTP mocking scope for FTX master test
