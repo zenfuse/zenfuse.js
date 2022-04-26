@@ -1,4 +1,8 @@
 const { z } = require('zod');
+const zenfuse = require('zenfuse');
+
+const MockedAgent = require('./mocks/agent');
+
 /**
  * @typedef {import('../src/index.js').Order} Order
  * @typedef {import('../src/index.js').timeInterval} timeInterval
@@ -634,6 +638,48 @@ module.exports = function masterTest(Exchange, env) {
                 marketDataStream.close();
 
                 expect(marketDataStream.isSocketConnected).toBe(false);
+            });
+        });
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////  Global Configurations  ///////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    describe('Global Configurations', () => {
+        if (isIntegrationTest) {
+            // TODO: Mock websocket
+            // console.warn('Websoket test skipped');
+            return;
+        }
+        describe("'httpsAgent' option", () => {
+            it('should use custom agent on fetching', async () => {
+                const customAgent = new MockedAgent();
+
+                zenfuse.config.set('httpsAgent', customAgent);
+
+                await new Exchange.spot().ping();
+
+                expect(customAgent.createConnection).toHaveBeenCalled();
+            });
+
+            it('should use custom agent on websockets', async () => {
+                const customAgent = new MockedAgent();
+
+                zenfuse.config.set('httpsAgent', customAgent);
+
+                const exchange = new Exchange.spot();
+
+                expect(
+                    exchange.fetcher.defaults.options.agent.https,
+                ).toBeInstanceOf(MockedAgent);
+
+                await exchange
+                    .getMarketDataStream()
+                    .open()
+                    .then((e) => e.close());
+
+                expect(customAgent.createConnection).toHaveBeenCalled();
             });
         });
     });

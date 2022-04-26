@@ -2,6 +2,7 @@ const got = require('got');
 const mergeObjects = require('deepmerge');
 const z = require('zod');
 
+const Configurator = require('./conf/configurator');
 const pkg = require('../../package.json');
 const ZenfuseValidationError = require('./errors/validation.error');
 const OrderParamsSchema = require('./schemas/orderParams');
@@ -32,11 +33,15 @@ class ExchangeBase {
             headers: {
                 'user-agent': userAgent,
             },
+            agent: {
+                https: null,
+            },
         },
         wsClientOptions: {
             headers: {
                 'user-agent': userAgent,
             },
+            agent: null,
             rejectUnauthorized: true,
         },
     };
@@ -51,6 +56,12 @@ class ExchangeBase {
         );
 
         this.options = assignedOptions;
+
+        if (Configurator.has('httpsAgent')) {
+            const customAgent = Configurator.get('httpsAgent');
+            this.options.httpClientOptions.agent.https = customAgent;
+            this.options.wsClientOptions.agent = customAgent;
+        }
 
         this.fetcher = got.extend(this.options.httpClientOptions);
 
