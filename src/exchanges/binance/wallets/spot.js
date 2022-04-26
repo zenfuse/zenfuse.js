@@ -219,6 +219,31 @@ class BinanceSpot extends BinanceBase {
     /**
      * Cancel an active order
      *
+     * @param {Order} zOrder Order to cancel
+     */
+    async cancelOrder(zOrder) {
+        this.cache.deleteCachedOrderById(zOrder.id);
+
+        const response = await this.privateFetch('api/v3/order', {
+            method: 'DELETE',
+            searchParams: {
+                symbol: zOrder.symbol.replace('/', ''),
+                orderId: zOrder.id.toString(),
+            },
+        });
+
+        const deletedOrder = utils.transfromBinanceOrder(response);
+
+        deletedOrder.status = 'canceled';
+
+        utils.linkOriginalPayload(deletedOrder, response);
+
+        return deletedOrder;
+    }
+
+    /**
+     * Cancel an active order
+     *
      * **NOTE:** Binance required order symbol for canceling.
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
      *      TODO: Make possible to pass symbol from user

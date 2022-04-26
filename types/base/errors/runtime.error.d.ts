@@ -5,6 +5,7 @@ declare class ZenfuseRuntimeError extends Error {
      */
     static details: {
         ZEFU_CACHE_UNSYNC: string;
+        ZEFU_ORDER_NOT_FOUND: string;
     };
     /**
      * @param {string} msg Error massage

@@ -71,6 +71,12 @@ declare class BinanceSpot extends BinanceBase {
     /**
      * Cancel an active order
      *
+     * @param {Order} zOrder Order to cancel
+     */
+    cancelOrder(zOrder: any): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    /**
+     * Cancel an active order
+     *
      * **NOTE:** Binance required order symbol for canceling.
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
      *      TODO: Make possible to pass symbol from user

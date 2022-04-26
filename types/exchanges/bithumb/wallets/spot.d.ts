@@ -53,6 +53,12 @@ declare class BithumbSpot extends BithumbBase {
     /**
      * Cancel an active order
      *
+     * @param {Order} zOrder Active order to cancel
+     */
+    cancelOrder(zOrder: any): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    /**
+     * Cancel an active order
+     *
      * @param {string} orderId Bithumb order id
      * @param {string} symbol
      */

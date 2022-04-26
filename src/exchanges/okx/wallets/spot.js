@@ -5,7 +5,7 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const ZenfuseBaseError = require('../../../base/errors/base.error');
+const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -220,6 +220,29 @@ class OkxSpot extends OkxBase {
     /**
      * Cancel an active order
      *
+     * @param {Order} zOrder Active Okx order to cancel
+     */
+    async cancelOrder(zOrder) {
+        const response = await this.privateFetch('api/v5/trade/cancel-order', {
+            method: 'POST',
+            json: {
+                instId: zOrder.symbol.replace('/', '-'),
+                ordId: zOrder.id,
+            },
+        });
+
+        zOrder.status = 'canceled';
+
+        this.cache.deleteCachedOrderById(zOrder.id);
+
+        utils.linkOriginalPayload(zOrder, response);
+
+        return zOrder;
+    }
+
+    /**
+     * Cancel an active order
+     *
      * @param {string} orderId Okx order id
      */
     async cancelOrderById(orderId) {
@@ -240,8 +263,9 @@ class OkxSpot extends OkxBase {
             );
 
             if (!orderToDelete) {
-                throw new ZenfuseBaseError(
+                throw new ZenfuseRuntimeError(
                     `Order with ${orderId} id does not exists`,
+                    'ZEFU_ORDER_NOT_FOUND',
                 );
             }
 
@@ -305,8 +329,9 @@ class OkxSpot extends OkxBase {
             );
 
             if (!orderToFetch) {
-                throw new ZenfuseBaseError(
+                throw new ZenfuseRuntimeError(
                     `Order with ${orderId} id does not exists`,
+                    'ZEFU_ORDER_NOT_FOUND',
                 );
             }
 

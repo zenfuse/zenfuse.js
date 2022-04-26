@@ -165,6 +165,29 @@ class BithumbSpot extends BithumbBase {
     /**
      * Cancel an active order
      *
+     * @param {Order} zOrder Active order to cancel
+     */
+    async cancelOrder(zOrder) {
+        const response = await this.privateFetch('spot/cancelOrder', {
+            method: 'POST',
+            json: {
+                orderId: zOrder.id,
+                symbol: zOrder.symbol.replace('/', '-'),
+            },
+        });
+
+        zOrder.status = 'canceled';
+
+        this.cache.deleteCachedOrderById(zOrder.id);
+
+        utils.linkOriginalPayload(zOrder, response);
+
+        return zOrder;
+    }
+
+    /**
+     * Cancel an active order
+     *
      * @param {string} orderId Bithumb order id
      * @param {string} symbol
      */

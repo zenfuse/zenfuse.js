@@ -1,6 +1,6 @@
 const { Bithumb, errorCodes } = require('zenfuse');
 
-// const masterTest = require('../../master.test');
+const masterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
 const createEnv = require('../../helpers/createEnv');
@@ -64,7 +64,7 @@ const env = createEnv({
 
 global.httpScope = createScope(env);
 
-// masterTest(Bithumb, env);
+masterTest(Bithumb, env);
 
 describe('Error Handling', () => {
     describe('INVALID_CREDENTIALS code', () => {

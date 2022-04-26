@@ -69,6 +69,12 @@ declare class OkxSpot extends OkxBase {
     /**
      * Cancel an active order
      *
+     * @param {Order} zOrder Active Okx order to cancel
+     */
+    cancelOrder(zOrder: any): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    /**
+     * Cancel an active order
+     *
      * @param {string} orderId Okx order id
      */
     cancelOrderById(orderId: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
