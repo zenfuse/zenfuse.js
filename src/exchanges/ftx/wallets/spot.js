@@ -195,8 +195,6 @@ class FtxSpot extends FtxBase {
      * @param {string} zOrder Ftx active order to cancel
      */
     async cancelOrder(zOrder) {
-        this.validateOrderParams(zOrder);
-
         const response = await this.privateFetch(`api/orders/${zOrder.id}`, {
             method: 'DELETE',
         });

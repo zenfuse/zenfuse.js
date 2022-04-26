@@ -222,8 +222,6 @@ class BinanceSpot extends BinanceBase {
      * @param {Order} zOrder Order to cancel
      */
     async cancelOrder(zOrder) {
-        this.validateOrderParams(zOrder);
-
         this.cache.deleteCachedOrderById(zOrder.id);
 
         const response = await this.privateFetch('api/v3/order', {

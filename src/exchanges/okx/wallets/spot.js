@@ -223,8 +223,6 @@ class OkxSpot extends OkxBase {
      * @param {Order} zOrder Active Okx order to cancel
      */
     async cancelOrder(zOrder) {
-        this.validateOrderParams(zOrder);
-
         const response = await this.privateFetch('api/v5/trade/cancel-order', {
             method: 'POST',
             json: {
