@@ -205,7 +205,10 @@ class FtxSpot extends FtxBase {
         let deletedOrder = this.cache.getCachedOrderById(zOrder.id);
 
         if (!deletedOrder) {
-            throw ZenfuseRuntimeError('ZEFU_CACHE_UNSYNC');
+            throw ZenfuseRuntimeError(
+                'This order can not be found in cache',
+                'ZEFU_CACHE_UNSYNC',
+            );
         }
 
         deletedOrder.status = 'canceled';

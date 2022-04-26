@@ -4,6 +4,7 @@ class ZenfuseRuntimeError extends Error {
      */
     static details = {
         ZEFU_CACHE_UNSYNC: 'Zenfuse global cache unsynced',
+        ZEFU_ORDER_NOT_FOUND: 'Required order not found',
     };
 
     /**

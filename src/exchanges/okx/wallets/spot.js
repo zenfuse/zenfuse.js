@@ -236,7 +236,10 @@ class OkxSpot extends OkxBase {
         let orderToDelete = this.cache.getCachedOrderById(zOrder.id);
 
         if (!orderToDelete) {
-            throw ZenfuseRuntimeError('ZEFU_CACHE_UNSYNC');
+            throw ZenfuseRuntimeError(
+                'This order can not be found in cache',
+                'ZEFU_CACHE_UNSYNC',
+            );
         }
 
         orderToDelete.status = 'canceled';
@@ -271,8 +274,9 @@ class OkxSpot extends OkxBase {
             );
 
             if (!orderToDelete) {
-                throw new ZenfuseBaseError(
+                throw new ZenfuseRuntimeError(
                     `Order with ${orderId} id does not exists`,
+                    'ZEFU_ORDER_NOT_FOUND',
                 );
             }
 
@@ -336,8 +340,9 @@ class OkxSpot extends OkxBase {
             );
 
             if (!orderToFetch) {
-                throw new ZenfuseBaseError(
+                throw new ZenfuseRuntimeError(
                     `Order with ${orderId} id does not exists`,
+                    'ZEFU_ORDER_NOT_FOUND',
                 );
             }
 
