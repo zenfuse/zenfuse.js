@@ -506,7 +506,7 @@ module.exports = (env) => ({
                     ],
                     msg: 'Operation failed.',
                 }),
-        'UNKNOWN_EXEPTION code': () =>
+        'UNKNOWN_EXCEPTION code': () =>
             nock(HOSTNAME)
                 .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
                 .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)

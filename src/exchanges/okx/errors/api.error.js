@@ -36,7 +36,7 @@ class OkxApiException extends ExchangeBaseException {
         if (OkxApiException.codesMap.has(oErrCode)) {
             this.code = OkxApiException.codesMap.get(oErrCode);
         } else {
-            this.code = codes.UNKNOWN_EXEPTION;
+            this.code = codes.UNKNOWN_EXCEPTION;
         }
 
         this.response = body;

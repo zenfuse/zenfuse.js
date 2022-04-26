@@ -452,7 +452,7 @@ module.exports = (env) => ({
                     code: -2010,
                     msg: 'Account has insufficient balance for requested action.',
                 }),
-        'UNKNOWN_EXEPTION code': () =>
+        'UNKNOWN_EXCEPTION code': () =>
             nock(HOSTNAME)
                 .get('/api/v3/myTrades')
                 .query(() => true)

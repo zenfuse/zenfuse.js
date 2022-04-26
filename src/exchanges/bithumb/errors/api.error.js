@@ -1,10 +1,10 @@
 const { HTTPError } = require('got');
-const ExchangeBaseExeption = require('../../../base/errors/exchange.error');
+const ExchangeBaseException = require('../../../base/errors/exchange.error');
 const utils = require('../utils');
 
-const codes = ExchangeBaseExeption.errorCodes;
+const codes = ExchangeBaseException.errorCodes;
 
-class BithumbApiError extends ExchangeBaseExeption {
+class BithumbApiError extends ExchangeBaseException {
     static codesMap = new Map([
         ['9000', codes.INVALID_CREDENTIALS],
         ['9002', codes.INVALID_CREDENTIALS],
@@ -39,7 +39,7 @@ class BithumbApiError extends ExchangeBaseExeption {
         if (BithumbApiError.codesMap.has(bErrCode)) {
             this.code = BithumbApiError.codesMap.get(bErrCode);
         } else {
-            this.code = codes.UNKNOWN_EXEPTION;
+            this.code = codes.UNKNOWN_EXCEPTION;
         }
     }
 }

@@ -427,7 +427,7 @@ module.exports = (env) => ({
                     timestamp: 1650732394483,
                     startTime: null,
                 }),
-        'UNKNOWN_EXEPTION code': () =>
+        'UNKNOWN_EXCEPTION code': () =>
             nock(HOSTNAME)
                 .post('/openapi/v1/spot/openOrders', (b) => {
                     expect(b.apiKey).toBe(env.API_PUBLIC_KEY);

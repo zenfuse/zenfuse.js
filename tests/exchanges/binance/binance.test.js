@@ -4,7 +4,7 @@ const masterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
 const createEnv = require('../../helpers/createEnv');
-const BinanceApiExeption = require('../../../src/exchanges/binance/errors/api.error');
+const BinanceApiException = require('../../../src/exchanges/binance/errors/api.error');
 
 if (isEnd2EndTest) {
     checkProcessHasVariables(['BINANCE_PUBLIC_KEY', 'BINANCE_SECRET_KEY']);
@@ -45,7 +45,7 @@ describe('Error Handling', () => {
                         throw 'Not caught';
                     });
             } catch (e) {
-                expect(e).toBeInstanceOf(BinanceApiExeption);
+                expect(e).toBeInstanceOf(BinanceApiException);
                 expect(e.code).toBe(errorCodes.INVALID_CREDENTIALS);
                 expect(e.message).toBeDefined();
                 expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
@@ -78,7 +78,7 @@ describe('Error Handling', () => {
                         throw 'Not caught';
                     });
             } catch (e) {
-                expect(e).toBeInstanceOf(BinanceApiExeption);
+                expect(e).toBeInstanceOf(BinanceApiException);
                 expect(e.code).toBe(errorCodes.INSUFFICIENT_FUNDS);
                 expect(e.message).toBeDefined();
                 expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
@@ -86,8 +86,8 @@ describe('Error Handling', () => {
         });
     });
 
-    describe('UNKNOWN_EXEPTION code', () => {
-        it('should throw UNKNOWN_EXEPTION', async () => {
+    describe('UNKNOWN_EXCEPTION code', () => {
+        it('should throw UNKNOWN_EXCEPTION', async () => {
             try {
                 await new Binance.spot()
                     .auth({
@@ -101,8 +101,8 @@ describe('Error Handling', () => {
                         throw 'Not caught';
                     });
             } catch (e) {
-                expect(e).toBeInstanceOf(BinanceApiExeption);
-                expect(e.code).toBe(errorCodes.UNKNOWN_EXEPTION);
+                expect(e).toBeInstanceOf(BinanceApiException);
+                expect(e.code).toBe(errorCodes.UNKNOWN_EXCEPTION);
                 expect(e.message).toBeDefined();
                 expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
             }

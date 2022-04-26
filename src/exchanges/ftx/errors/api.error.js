@@ -20,7 +20,7 @@ class FtxApiException extends ExchangeBaseException {
         if (FtxApiException.codesMap.has(errMsg)) {
             this.code = FtxApiException.codesMap.get(errMsg);
         } else {
-            this.code = codes.UNKNOWN_EXEPTION;
+            this.code = codes.UNKNOWN_EXCEPTION;
         }
 
         this.response = err.response.body;

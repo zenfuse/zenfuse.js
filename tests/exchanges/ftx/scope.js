@@ -353,7 +353,7 @@ module.exports = (env) => ({
                 .post('/api/orders', () => true)
                 .query(() => true)
                 .reply(400, { success: false, error: 'Not enough balances' }),
-        'UNKNOWN_EXEPTION code': () =>
+        'UNKNOWN_EXCEPTION code': () =>
             nock(HOSTNAME)
                 .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
                 .matchHeader('FTX-TS', Boolean)

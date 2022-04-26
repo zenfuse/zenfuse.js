@@ -127,8 +127,8 @@ describe('Error Handling', () => {
         });
     });
 
-    describe('UNKNOWN_EXEPTION code', () => {
-        it('should throw UNKNOWN_EXEPTION', async () => {
+    describe('UNKNOWN_EXCEPTION code', () => {
+        it('should throw UNKNOWN_EXCEPTION', async () => {
             try {
                 await new Bithumb.spot()
                     .auth({
@@ -145,7 +145,7 @@ describe('Error Handling', () => {
                     });
             } catch (e) {
                 expect(e).toBeInstanceOf(BithumbApiError);
-                expect(e.code).toBe(errorCodes.UNKNOWN_EXEPTION);
+                expect(e.code).toBe(errorCodes.UNKNOWN_EXCEPTION);
                 expect(e.message).toBeDefined();
                 expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
             }
