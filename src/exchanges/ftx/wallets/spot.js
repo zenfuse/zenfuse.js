@@ -5,7 +5,6 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -202,22 +201,13 @@ class FtxSpot extends FtxBase {
             method: 'DELETE',
         });
 
-        let deletedOrder = this.cache.getCachedOrderById(zOrder.id);
-
-        if (!deletedOrder) {
-            throw ZenfuseRuntimeError(
-                'This order can not be found in cache',
-                'ZEFU_CACHE_UNSYNC',
-            );
-        }
-
-        deletedOrder.status = 'canceled';
+        zOrder.status = 'canceled';
 
         this.cache.deleteCachedOrderById(zOrder.id);
 
-        utils.linkOriginalPayload(deletedOrder, response);
+        utils.linkOriginalPayload(zOrder, response);
 
-        return deletedOrder;
+        return zOrder;
     }
 
     /**

@@ -234,7 +234,7 @@ class BinanceSpot extends BinanceBase {
             },
         });
 
-        let deletedOrder = utils.transfromBinanceOrder(response);
+        const deletedOrder = utils.transfromBinanceOrder(response);
 
         deletedOrder.status = 'canceled';
 

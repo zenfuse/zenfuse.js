@@ -233,22 +233,13 @@ class OkxSpot extends OkxBase {
             },
         });
 
-        let orderToDelete = this.cache.getCachedOrderById(zOrder.id);
-
-        if (!orderToDelete) {
-            throw ZenfuseRuntimeError(
-                'This order can not be found in cache',
-                'ZEFU_CACHE_UNSYNC',
-            );
-        }
-
-        orderToDelete.status = 'canceled';
+        zOrder.status = 'canceled';
 
         this.cache.deleteCachedOrderById(zOrder.id);
 
-        utils.linkOriginalPayload(orderToDelete, response);
+        utils.linkOriginalPayload(zOrder, response);
 
-        return orderToDelete;
+        return zOrder;
     }
 
     /**
