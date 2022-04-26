@@ -4,7 +4,12 @@
         "node": true,
         "jest/globals": true
     },
-    "extends": ["eslint:recommended", "plugin:jsdoc/recommended", "prettier"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:jsdoc/recommended",
+        "prettier",
+        "plugin:@cspell/recommended"
+    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2019
