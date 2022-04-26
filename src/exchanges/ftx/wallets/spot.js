@@ -5,6 +5,7 @@ const utils = require('../utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
+const ZenfuseBaseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -187,6 +188,33 @@ class FtxSpot extends FtxBase {
         utils.linkOriginalPayload(zCreatedOrder, fCreatedOrder);
 
         return zCreatedOrder;
+    }
+
+    /**
+     * Cancel an active order
+     *
+     * @param {string} zOrder Ftx active order to cancel
+     */
+    async cancelOrder(zOrder) {
+        this.validateOrderParams(zOrder);
+
+        const response = await this.privateFetch(`api/orders/${zOrder.id}`, {
+            method: 'DELETE',
+        });
+
+        let deletedOrder = this.cache.getCachedOrderById(zOrder.id);
+
+        if (!deletedOrder) {
+            throw ZenfuseBaseError('ZEFU_CACHE_UNSYNC');
+        }
+
+        deletedOrder.status = 'canceled';
+
+        this.cache.deleteCachedOrderById(zOrder.id);
+
+        utils.linkOriginalPayload(deletedOrder, response);
+
+        return deletedOrder;
     }
 
     /**
