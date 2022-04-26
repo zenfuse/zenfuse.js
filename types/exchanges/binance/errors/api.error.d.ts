@@ -1,8 +1,8 @@
-export = BinanceApiExeption;
+export = BinanceApiException;
 /**
  * @see https://binance-docs.github.io/apidocs/spot/en/#error-codes
  */
-declare class BinanceApiExeption extends ExchangeBaseExeption {
+declare class BinanceApiException extends ExchangeBaseException {
     static codesMap: Map<number, symbol>;
     /**
      * @param {import('got').HTTPError} err
@@ -12,4 +12,4 @@ declare class BinanceApiExeption extends ExchangeBaseExeption {
     response: unknown;
     httpError: import("got").HTTPError;
 }
-import ExchangeBaseExeption = require("../../../base/errors/exchange.error");
+import ExchangeBaseException = require("../../../base/errors/exchange.error");

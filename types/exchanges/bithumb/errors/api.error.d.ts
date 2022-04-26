@@ -1,5 +1,5 @@
 export = BithumbApiError;
-declare class BithumbApiError extends ExchangeBaseExeption {
+declare class BithumbApiError extends ExchangeBaseException {
     static codesMap: Map<string, symbol>;
     /**
      * @param {import('got').HTTPError | *} err
@@ -9,5 +9,5 @@ declare class BithumbApiError extends ExchangeBaseExeption {
     httpError: HTTPError;
     code: symbol;
 }
-import ExchangeBaseExeption = require("../../../base/errors/exchange.error");
+import ExchangeBaseException = require("../../../base/errors/exchange.error");
 import { HTTPError } from "got/dist/source/core";

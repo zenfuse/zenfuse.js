@@ -37,8 +37,8 @@ export declare const errorCodes: {
      * @enum
      */
     INVALID_ORDER: symbol;
-    UNKNOWN_EXEPTION: symbol;
-}
+    UNKNOWN_EXCEPTION: symbol;
+};
 export declare const config: {
     get(key: any): any;
     set(key: any, value: any): any;
