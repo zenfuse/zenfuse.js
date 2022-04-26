@@ -1,8 +1,8 @@
 export = ZenfuseValidationError;
-declare class ZenfuseValidationError extends ZenfuseBaseError {
+declare class ZenfuseValidationError extends UserError {
     constructor(name: any, zodError: any);
     name: any;
     zodError: any;
     message: any;
 }
-import ZenfuseBaseError = require("./base.error");
+import UserError = require("./user.error");

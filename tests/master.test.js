@@ -29,7 +29,7 @@ const MockedAgent = require('./mocks/agent');
  * @property {timeInterval} CANDLE_SUBSCRIPTION.interval
  */
 
-const NotAuthenticatedError = require('../src/base/errors/notAuthenticated.error.js');
+const UserError = require('../src/base/errors/user.error.js');
 const OrderSchema = require('../src/base/schemas/openOrder');
 const KlineSchema = require('../src/base/schemas/kline');
 
@@ -223,12 +223,15 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should run only with keys', () => {
-                expect(
+                try {
                     exchange.createOrder.bind(
                         new Exchange['spot'](),
                         env.NOT_EXECUTABLE_ORDER,
-                    ),
-                ).rejects.toThrowError(NotAuthenticatedError);
+                    );
+                } catch (e) {
+                    expect(e).toBeInstanceOf(UserError);
+                    expect(e.code).toBe('NOT_AUTHENTICATED');
+                }
             });
 
             describe('buy by market', () => {
@@ -323,9 +326,12 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should run only with keys', () => {
-                expect(
-                    exchange.fetchBalances.bind(new Exchange['spot']()),
-                ).rejects.toThrowError(NotAuthenticatedError);
+                try {
+                    exchange.fetchBalances.bind(new Exchange['spot']());
+                } catch (e) {
+                    expect(e).toBeInstanceOf(UserError);
+                    expect(e.code).toBe('NOT_AUTHENTICATED');
+                }
             });
 
             let result;
@@ -361,12 +367,15 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should run only with keys', () => {
-                expect(
+                try {
                     exchange.cancelOrderById.bind(
                         new Exchange['spot'](),
                         '7787',
-                    ),
-                ).rejects.toThrowError(NotAuthenticatedError);
+                    );
+                } catch (e) {
+                    expect(e).toBeInstanceOf(UserError);
+                    expect(e.code).toBe('NOT_AUTHENTICATED');
+                }
             });
 
             let result;
@@ -392,9 +401,15 @@ module.exports = function masterTest(Exchange, env) {
             let createdOrder;
 
             it('should run only with keys', () => {
-                expect(
-                    exchange.fetchOrderById.bind(new Exchange['spot'](), ''),
-                ).rejects.toThrowError(NotAuthenticatedError);
+                try {
+                    exchange.fetchOrderById.bind(
+                        new Exchange['spot'](),
+                        'superorderiddd',
+                    );
+                } catch (e) {
+                    expect(e).toBeInstanceOf(UserError);
+                    expect(e.code).toBe('NOT_AUTHENTICATED');
+                }
             });
 
             afterAll(() => {

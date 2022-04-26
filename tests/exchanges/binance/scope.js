@@ -435,6 +435,32 @@ module.exports = (env) => ({
                     fills: [],
                 }),
     },
+    'Error Handling': {
+        'INVALID_CREDENTIALS code': () =>
+            nock(HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', 'invalidPublicKey')
+                .get('/api/v3/openOrders')
+                .query(() => true)
+                .reply(401, { code: -2014, msg: 'API-key format invalid.' }),
+
+        'INSUFFICIENT_FUNDS code': () =>
+            nock(HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
+                .post('/api/v3/order', () => true)
+                .query(() => true)
+                .reply(400, {
+                    code: -2010,
+                    msg: 'Account has insufficient balance for requested action.',
+                }),
+        'UNKNOWN_EXCEPTION code': () =>
+            nock(HOSTNAME)
+                .get('/api/v3/myTrades')
+                .query(() => true)
+                .reply(400, {
+                    code: -1102,
+                    msg: "Mandatory parameter 'symbol' was not sent, was empty/null, or malformed.",
+                }),
+    },
 });
 
 const toBinanceStyle = (value) =>

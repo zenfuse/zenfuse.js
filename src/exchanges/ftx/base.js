@@ -2,9 +2,9 @@ const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
 
 const ExchangeBase = require('../../base/exchange');
-const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const FtxApiError = require('./errors/api.error');
 const FtxCache = require('./etc/cache');
+const UserError = require('../../base/errors/user.error');
 const { createHmacSignature } = require('./utils');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
@@ -139,7 +139,7 @@ class FtxBase extends ExchangeBase {
      */
     throwIfNotHasKeys() {
         if (!this.hasKeys) {
-            throw new NotAuathenticatedError();
+            throw new UserError(null, 'NOT_AUTHENTICATED');
         }
     }
 

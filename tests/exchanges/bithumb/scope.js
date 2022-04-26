@@ -393,6 +393,57 @@ module.exports = (env) => ({
                     params: [],
                 }),
     },
+    'Error Handling': {
+        'INVALID_CREDENTIALS code': () =>
+            nock(HOSTNAME)
+                .post('/openapi/v1/spot/assetList', (b) => {
+                    expect(b.apiKey).toBe('invalidPublicKey');
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    data: null,
+                    code: '9000',
+                    msg: 'missing parameter',
+                    timestamp: 1650732393939,
+                    startTime: null,
+                }),
+
+        'INSUFFICIENT_FUNDS code': () =>
+            nock(HOSTNAME)
+                .post('/openapi/v1/spot/placeOrder', (b) => {
+                    expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    data: null,
+                    code: '20003',
+                    msg: 'user asset not enough',
+                    timestamp: 1650732394483,
+                    startTime: null,
+                }),
+        'UNKNOWN_EXCEPTION code': () =>
+            nock(HOSTNAME)
+                .post('/openapi/v1/spot/openOrders', (b) => {
+                    expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    data: null,
+                    code: '20031',
+                    msg: 'No symbol',
+                    timestamp: 1650732394744,
+                    startTime: null,
+                }),
+    },
 });
 
 const toBithumbStyle = (value) => value.toString().replace('/', '-');

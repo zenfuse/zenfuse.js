@@ -2,9 +2,9 @@ const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
 
 const ExchangeBase = require('../../base/exchange');
-const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const BithumbApiError = require('./errors/api.error');
 const BithumbCache = require('./etc/cache');
+const ZenfuseUserError = require('../../base/errors/user.error');
 const { createHmacSignature } = require('./utils');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
@@ -104,8 +104,6 @@ class BithumbBase extends ExchangeBase {
 
         options.json = reqBody;
 
-        // console.log(options);
-
         this.msgNo += 1;
 
         return await this.fetcher(url, options)
@@ -155,7 +153,7 @@ class BithumbBase extends ExchangeBase {
      */
     throwIfNotHasKeys() {
         if (!this.hasKeys) {
-            throw new NotAuathenticatedError();
+            throw new ZenfuseUserError(null, 'NOT_AUTHENTICATED');
         }
     }
 

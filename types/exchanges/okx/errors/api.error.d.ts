@@ -1,10 +1,16 @@
-export = OkxApiError;
-declare class OkxApiError extends ZenfuseBaseError {
+export = OkxApiException;
+/**
+ * @see https://www.okx.com/docs-v5/en/#error-code
+ */
+declare class OkxApiException extends ExchangeBaseException {
+    static codesMap: Map<string, symbol>;
     /**
-     * @param {import('got').HTTPError} err
+     * @param {import('got').HTTPError | null} err
+     * @param {*} body
      */
-    constructor(err: import('got').HTTPError);
-    response: unknown;
+    constructor(err: import('got').HTTPError | null, body: any);
+    code: symbol;
+    response: any;
     httpError: import("got").HTTPError;
 }
-import ZenfuseBaseError = require("../../../base/errors/base.error");
+import ExchangeBaseException = require("../../../base/errors/exchange.error");

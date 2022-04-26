@@ -1,8 +1,8 @@
-const ZenfuseBaseError = require('./base.error');
+const UserError = require('./user.error');
 
-class ZenfuseValidationError extends ZenfuseBaseError {
+class ZenfuseValidationError extends UserError {
     constructor(name, zodError) {
-        super();
+        super('VALIDATION_FAILED');
         this.name = name;
         this.zodError = zodError;
 

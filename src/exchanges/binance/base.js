@@ -2,11 +2,11 @@ const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
 
 const ExchangeBase = require('../../base/exchange');
-const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const BinanceApiError = require('./errors/api.error');
 const BinanceCache = require('./etc/cache');
 const { createHmacSignature } = require('./utils');
-const ZenfuseRuntimeError = require('../../base/errors/runtime.error');
+const RuntimeError = require('../../base/errors/runtime.error');
+const UserError = require('../../base/errors/user.error');
 
 const keysSymbol = Symbol('keys');
 
@@ -142,7 +142,7 @@ class BinanceBase extends ExchangeBase {
      */
     throwIfNotHasKeys() {
         if (!this.hasKeys) {
-            throw new NotAuathenticatedError();
+            throw new UserError(null, 'NOT_AUTHENTICATED');
         }
     }
 
@@ -182,7 +182,7 @@ class BinanceBase extends ExchangeBase {
                     detail: `Zenfuse cannot find a symbol in the global cache. This is a warning because this symbol possible to guess.`,
                 });
             } else {
-                throw new ZenfuseRuntimeError(errorMsg, 'ZEFU_CACHE_UNSYNC');
+                throw new RuntimeError(errorMsg, 'ZEFU_CACHE_UNSYNC');
             }
         }
 
