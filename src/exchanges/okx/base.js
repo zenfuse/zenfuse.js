@@ -4,7 +4,7 @@ const mergeObjects = require('deepmerge');
 const ExchangeBase = require('../../base/exchange');
 const OkxApiError = require('./errors/api.error');
 const OkxCache = require('./etc/cache');
-const { createHmacSignature } = require('./utils');
+const { createHmacSignatureDefault } = require('../../base/utils/utils');
 const UserError = require('../../base/errors/user.error');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
@@ -88,9 +88,10 @@ class OkxBase extends ExchangeBase {
             body: options.json,
         };
 
-        const signature = createHmacSignature(
+        const signature = createHmacSignatureDefault(
             sigParams,
             this[keysSymbol].privateKey,
+            'base64',
         );
 
         options = mergeObjects(options, {

@@ -1,3 +1,5 @@
+const { createHmac } = require('crypto');
+
 const linkOriginalPayload = (object, originalPayload) => {
     Object.defineProperty(object, Symbol.for('zenfuse.originalPayload'), {
         value: originalPayload,
@@ -35,7 +37,20 @@ const timeIntervalToSeconds = (interval) => {
     return seconds;
 };
 
+const createHmacSignatureDefault = (
+    { ts, method, path, body = '' },
+    key,
+    encoding,
+) => {
+    if (body) body = JSON.stringify(body);
+
+    const signaturePayload = [ts, method, path, body].join('');
+
+    return createHmac('sha256', key).update(signaturePayload).digest(encoding);
+};
+
 module.exports = {
     linkOriginalPayload,
     timeIntervalToSeconds,
+    createHmacSignatureDefault,
 };
