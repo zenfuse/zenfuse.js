@@ -1,4 +1,4 @@
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 const OkxWebsocketBase = require('./websocketBase');
 
 class AccountDataStream extends OkxWebsocketBase {
@@ -32,7 +32,7 @@ class AccountDataStream extends OkxWebsocketBase {
             path: '/users/self/verify',
             body: '',
         };
-        const signature = utils.createHmacSignature(sigParams, privateKey);
+        const signature = utils.createHmacSignatureDefault(sigParams, privateKey, this.signatureEncoding);
 
         this.sendSocketMessage({
             op: 'login',
@@ -93,12 +93,45 @@ class AccountDataStream extends OkxWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transformOkxOrder(payload);
+        const order = this.transformOkxOrder(payload);
 
         utils.linkOriginalPayload(order, payload);
 
         this.emit('orderUpdate', order);
     }
+
+    transformOkxOrder(xOrder) {
+        /**
+         * @type {PlacedOrder}
+         */
+        const zOrder = {};
+
+        zOrder.id = xOrder.ordId;
+
+        zOrder.timestamp = parseFloat(xOrder.cTime);
+        zOrder.symbol = xOrder.instId.replace('-', '/');
+        zOrder.type = xOrder.ordType;
+        zOrder.side = xOrder.side;
+        zOrder.quantity = parseFloat(xOrder.sz);
+
+        if (xOrder.px) {
+            zOrder.price = parseFloat(xOrder.px);
+        }
+
+        switch (xOrder.state) {
+            case 'live':
+            case 'partially_filled':
+                zOrder.status = 'open';
+                break;
+            case 'filled':
+                zOrder.status = 'close';
+                break;
+            default:
+                zOrder.status = xOrder.state;
+        }
+
+        return zOrder;
+    };
 }
 
 module.exports = AccountDataStream;

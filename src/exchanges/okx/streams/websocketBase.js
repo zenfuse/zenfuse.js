@@ -21,6 +21,7 @@ class OkxWebsocketBase extends EventEmitter {
         super();
         this.base = baseInstance;
         this.setMaxListeners(Infinity);
+        this.signatureEncoding = 'base64';
     }
 
     /**

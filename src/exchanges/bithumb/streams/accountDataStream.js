@@ -1,6 +1,6 @@
 const { createHmac } = require('crypto');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 const BithumbWebsocketBase = require('./websocketBase');
 
 class AccountDataStream extends BithumbWebsocketBase {
@@ -33,7 +33,7 @@ class AccountDataStream extends BithumbWebsocketBase {
 
         const signature = createHmac('sha256', privateKey)
             .update(signString)
-            .digest('hex');
+            .digest(this.signatureEncoding);
 
         this.sendSocketMessage({
             cmd: 'authKey',
@@ -59,11 +59,39 @@ class AccountDataStream extends BithumbWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transformBithumbOrderWS(payload);
+        const order = this.transformBithumbOrderWS(payload);
 
         utils.linkOriginalPayload(order, payload);
 
         this.emit('orderUpdate', order);
+    }
+
+    transformBithumbOrderWS(bOrder) {
+        /**
+         * @type {PlacedOrder}
+         */
+        const zOrder = {};
+
+        zOrder.id = bOrder.data.oId;
+        zOrder.timestamp = bOrder.timestamp;
+        zOrder.symbol = bOrder.data.symbol.replace('-', '/');
+        zOrder.type = bOrder.data.type;
+        zOrder.side = bOrder.data.side;
+        zOrder.quantity = parseFloat(bOrder.data.quantity);
+        zOrder.price = parseFloat(bOrder.data.price);
+        if (bOrder.data.status === 'fullDealt') {
+            zOrder.status = 'close';
+        } else if (
+            bOrder.data.status === 'created' ||
+            bOrder.data.status === 'partDealt'
+        ) {
+            zOrder.status = 'open';
+        } else {
+            zOrder.status = 'canceled';
+        }
+        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+
+        return zOrder;
     }
 }
 

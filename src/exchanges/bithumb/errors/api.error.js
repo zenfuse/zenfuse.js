@@ -1,6 +1,6 @@
 const { HTTPError } = require('got');
 const ExchangeBaseException = require('../../../base/errors/exchange.error');
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 
 const codes = ExchangeBaseException.errorCodes;
 
