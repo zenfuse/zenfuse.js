@@ -5,7 +5,7 @@ const ExchangeBase = require('../../base/exchange');
 const FtxApiError = require('./errors/api.error');
 const FtxCache = require('./etc/cache');
 const UserError = require('../../base/errors/user.error');
-const { createHmacSignature } = require('./utils');
+const { createHmacSignatureDefault } = require('../../base/utils/utils');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
 
@@ -48,6 +48,7 @@ class FtxBase extends ExchangeBase {
         this[keysSymbol] = {};
 
         this.cache = new FtxCache(this);
+        this.signatureEncoding = 'hex';
     }
 
     /**
@@ -81,9 +82,10 @@ class FtxBase extends ExchangeBase {
             body: options.json,
         };
 
-        const signature = createHmacSignature(
+        const signature = createHmacSignatureDefault(
             sigParams,
             this[keysSymbol].privateKey,
+            this.signatureEncoding,
         );
 
         options = mergeObjects(options, {

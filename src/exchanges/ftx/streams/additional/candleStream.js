@@ -1,5 +1,5 @@
 const RuntimeError = require('../../../../base/errors/runtime.error');
-const utils = require('../../utils');
+const utils = require('../../../../base/utils/utils');
 const MarketDataStream = require('../marketDataStream');
 
 /**

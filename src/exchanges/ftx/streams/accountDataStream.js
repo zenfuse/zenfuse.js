@@ -1,6 +1,6 @@
 const { createHmac } = require('crypto');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 const FtxWebsocketBase = require('./websocketBase');
 
 class AccountDataStream extends FtxWebsocketBase {
@@ -30,7 +30,7 @@ class AccountDataStream extends FtxWebsocketBase {
         const timestamp = Date.now();
         const signature = createHmac('sha256', privateKey)
             .update(`${timestamp}websocket_login`)
-            .digest('hex');
+            .digest(this.signatureEncoding);
 
         this.sendSocketMessage({
             op: 'login',
@@ -59,11 +59,35 @@ class AccountDataStream extends FtxWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transfromFtxOrder(payload.data);
+        const order = this.transformFtxOrder(payload.data);
 
         utils.linkOriginalPayload(order, payload);
 
         this.emit('orderUpdate', order);
+    }
+
+    transformFtxOrder(fOrder) {
+        /**
+         * @type {PlacedOrder}
+         */
+        const zOrder = {};
+
+        zOrder.id = fOrder.id.toString();
+        zOrder.timestamp = Date.parse(fOrder.createdAt);
+        zOrder.symbol = fOrder.market;
+        zOrder.type = fOrder.type;
+        zOrder.side = fOrder.side;
+        zOrder.quantity = parseFloat(fOrder.size);
+        zOrder.price = fOrder.price ? parseFloat(fOrder.price) : undefined;
+        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+
+        if (fOrder.status === 'new') {
+            zOrder.status = 'open';
+        } else {
+            zOrder.status = fOrder.status;
+        }
+
+        return zOrder;
     }
 }
 
