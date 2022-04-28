@@ -1,5 +1,5 @@
 const debug = require('../../../base/etc/debug');
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 
 const FtxWebsocketBase = require('./websocketBase');
 const CandleStream = require('./additional/candleStream');
