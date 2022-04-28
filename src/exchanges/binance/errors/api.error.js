@@ -10,6 +10,7 @@ class BinanceApiException extends ExchangeBaseException {
     static codesMap = new Map([
         [-1022, codes.INVALID_CREDENTIALS],
         [-2014, codes.INVALID_CREDENTIALS],
+        [-2015, codes.INVALID_CREDENTIALS],
         [-2010, codes.INSUFFICIENT_FUNDS],
     ]);
 
