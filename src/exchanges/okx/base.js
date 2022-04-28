@@ -48,6 +48,7 @@ class OkxBase extends ExchangeBase {
         this[keysSymbol] = {};
 
         this.cache = new OkxCache(this);
+        this.signatureEncoding = 'base64';
     }
 
     /**
@@ -91,7 +92,7 @@ class OkxBase extends ExchangeBase {
         const signature = createHmacSignatureDefault(
             sigParams,
             this[keysSymbol].privateKey,
-            'base64',
+            this.signatureEncoding,
         );
 
         options = mergeObjects(options, {

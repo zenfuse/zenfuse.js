@@ -5,7 +5,7 @@ const ExchangeBase = require('../../base/exchange');
 const BithumbApiError = require('./errors/api.error');
 const BithumbCache = require('./etc/cache');
 const ZenfuseUserError = require('../../base/errors/user.error');
-const { createHmacSignature } = require('./utils');
+const { createHmacSignatureBithumb } = require('../../base/utils/utils');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
 
@@ -50,6 +50,7 @@ class BithumbBase extends ExchangeBase {
 
         this.cache = new BithumbCache(this);
         this.msgNo = 0;
+        this.signatureEncoding = 'hex';
     }
 
     /**
@@ -93,9 +94,10 @@ class BithumbBase extends ExchangeBase {
                 {},
             );
 
-        const signature = createHmacSignature(
+        const signature = createHmacSignatureBithumb(
             sigParams,
             this[keysSymbol].privateKey,
+            this.signatureEncoding,
         );
 
         const reqBody = mergeObjects(sigParams, {

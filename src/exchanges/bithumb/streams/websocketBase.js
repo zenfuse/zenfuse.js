@@ -21,6 +21,7 @@ class BithumbWebsocketBase extends EventEmitter {
         super();
         this.base = baseInstance;
         this.setMaxListeners(Infinity);
+        this.signatureEncoding = 'hex';
     }
 
     /**

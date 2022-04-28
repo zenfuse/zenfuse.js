@@ -1,7 +1,7 @@
 const OkxBase = require('../base');
 const mergeObjects = require('deepmerge');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
@@ -185,7 +185,7 @@ class OkxSpot extends OkxBase {
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const xOrder = utils.transformZenfuseOrder(zOrder);
+        const xOrder = this.transformZenfuseOrder(zOrder);
 
         if (zOrder.type === 'market' && zOrder.side === 'buy') {
             let orderTotal = null;
@@ -269,7 +269,7 @@ class OkxSpot extends OkxBase {
                 );
             }
 
-            orderToDelete = utils.transformOkxOrder(orderToDelete);
+            orderToDelete = this.transformOkxOrder(orderToDelete);
         }
 
         const response = await this.privateFetch('api/v5/trade/cancel-order', {
@@ -335,7 +335,7 @@ class OkxSpot extends OkxBase {
                 );
             }
 
-            const zOrder = utils.transformOkxOrder(orderToFetch);
+            const zOrder = this.transformOkxOrder(orderToFetch);
 
             this.cache.cacheOrder(zOrder);
 
@@ -351,7 +351,7 @@ class OkxSpot extends OkxBase {
             },
         });
 
-        const zOrder = utils.transformOkxOrder(fetchedOrder.data[0]);
+        const zOrder = this.transformOkxOrder(fetchedOrder.data[0]);
 
         utils.linkOriginalPayload(zOrder, fetchedOrder);
 
@@ -367,6 +367,96 @@ class OkxSpot extends OkxBase {
     getMarketDataStream() {
         return new MarketDataStream(this);
     }
+
+    /**
+     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+     */
+
+    /**
+     * Zenfuse -> OKX
+     *
+     * @param {OrderParams} zOrder Order from
+     * @returns {object} Order for okx api
+     */
+    transformZenfuseOrder(zOrder) {
+        const TRANSFORM_LIST = [
+            'id',
+            'side',
+            'type',
+            'price',
+            'quantity',
+            'symbol',
+        ];
+
+        const xOrder = {
+            instId: zOrder.symbol.replace('/', '-'),
+            ordId: zOrder.id ? zOrder.id.toString() : undefined,
+            ordType: zOrder.type,
+            side: zOrder.side,
+            sz: zOrder.quantity.toString(),
+            tdMode: 'cash',
+        };
+
+        if (zOrder.price) {
+            xOrder.px = zOrder.price.toString();
+        }
+
+        if (zOrder.type === 'market') {
+            xOrder.px = null;
+        }
+
+        // Allow user extra keys
+        for (const [key, value] of Object.entries(zOrder)) {
+            if (!TRANSFORM_LIST.includes(key)) {
+                xOrder[key] = value;
+            }
+        }
+
+        return xOrder;
+    };
+
+    /**
+     * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+
+    /**
+     * OKX -> Zenfuse
+     *
+     * @param {*} xOrder Order from OKX
+     * @returns {PlacedOrder} Zenfuse placed Order
+     */
+    transformOkxOrder(xOrder) {
+        /**
+         * @type {PlacedOrder}
+         */
+        const zOrder = {};
+
+        zOrder.id = xOrder.ordId;
+
+        zOrder.timestamp = parseFloat(xOrder.cTime);
+        zOrder.symbol = xOrder.instId.replace('-', '/');
+        zOrder.type = xOrder.ordType;
+        zOrder.side = xOrder.side;
+        zOrder.quantity = parseFloat(xOrder.sz);
+
+        if (xOrder.px) {
+            zOrder.price = parseFloat(xOrder.px);
+        }
+
+        switch (xOrder.state) {
+            case 'live':
+            case 'partially_filled':
+                zOrder.status = 'open';
+                break;
+            case 'filled':
+                zOrder.status = 'close';
+                break;
+            default:
+                zOrder.status = xOrder.state;
+        }
+
+        return zOrder;
+    };
 }
 
 module.exports = OkxSpot;

@@ -1,4 +1,4 @@
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 
 const OkxWebsocketBase = require('./websocketBase');
 const { timeIntervals } = require('../metadata');
