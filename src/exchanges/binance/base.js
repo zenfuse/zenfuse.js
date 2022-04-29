@@ -1,10 +1,10 @@
 const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
+const { createHmac } = require('crypto');
 
 const ExchangeBase = require('../../base/exchange');
 const BinanceApiError = require('./errors/api.error');
 const BinanceCache = require('./etc/cache');
-const { createHmacSignature } = require('./utils');
 const RuntimeError = require('../../base/errors/runtime.error');
 const UserError = require('../../base/errors/user.error');
 
@@ -51,6 +51,8 @@ class BinanceBase extends ExchangeBase {
         this[keysSymbol] = {};
 
         this.cache = new BinanceCache(this);
+
+        this.signatureEncoding = 'hex';
     }
 
     /**
@@ -86,10 +88,12 @@ class BinanceBase extends ExchangeBase {
 
         options.searchParams.timestamp = Date.now();
 
-        options.searchParams.signature = createHmacSignature(
-            options.searchParams,
+        options.searchParams.signature = createHmac(
+            'sha256',
             this[keysSymbol].privateKey,
-        );
+        )
+            .update(new URLSearchParams(options.searchParams).toString())
+            .digest(this.signatureEncoding);
 
         options = mergeObjects(options, {
             headers: {
@@ -190,6 +194,139 @@ class BinanceBase extends ExchangeBase {
         rawSymbol = this.cache.parsedSymbols.get(bSymbol);
 
         return rawSymbol.join('/');
+    }
+
+    /**
+     * @param {Array} symbols Array of symbols from `api/v3/exchangeInfo`
+     * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
+     */
+    extractTickersFromSymbols(symbols) {
+        const tickers = new Set();
+
+        symbols.forEach((market) => {
+            tickers.add(market.baseAsset);
+            tickers.add(market.quoteAsset);
+        });
+
+        return [...tickers];
+    }
+
+    /**
+     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+     */
+
+    /**
+     * Insert default values for specific order type
+     *
+     * **DEV** All values should be for zenfuse interface
+     *
+     * @param {OrderParams} order
+     * @param {object} defaults
+     * @param {OrderParams} defaults.limit
+     * @param {OrderParams} defaults.market
+     * @returns {OrderParams}
+     */
+    assignDefaultsInOrder(order, defaults) {
+        let newOrder;
+
+        if (order.type.toLowerCase() === 'limit') {
+            newOrder = mergeObjects(defaults.limit, order);
+        }
+
+        if (order.type.toLowerCase() === 'market') {
+            newOrder = mergeObjects(defaults.market, order);
+        }
+
+        return newOrder;
+    }
+
+    /**
+     * Zenfuse -> Binance
+     *
+     * **DEV:** This function does not assign defaults values
+     *
+     * @param {OrderParams} zOrder Zenfuse order
+     * @returns {object} Order for binance api
+     */
+    transformZenfuseOrder(zOrder) {
+        const TRANSFORM_LIST = [
+            'side',
+            'type',
+            'price',
+            'quantity',
+            'symbol',
+            'timeInForce',
+        ];
+        const bOrder = {};
+
+        bOrder.symbol = zOrder.symbol.replace('/', '').toUpperCase();
+
+        if (zOrder.type) {
+            bOrder.type = zOrder.type.toUpperCase();
+        }
+
+        if (zOrder.side) {
+            bOrder.side = zOrder.side.toUpperCase();
+        }
+
+        if (zOrder.price) {
+            bOrder.price = zOrder.price.toString();
+        }
+
+        if (zOrder.quantity) {
+            bOrder.quantity = zOrder.quantity.toString();
+        }
+
+        if (zOrder.timeInForce) {
+            bOrder.timeInForce = zOrder.timeInForce.toUpperCase();
+        }
+
+        // Allow user extra keys
+        for (const [key, value] of Object.entries(zOrder)) {
+            if (!TRANSFORM_LIST.includes(key)) {
+                bOrder[key] = value;
+            }
+        }
+
+        return bOrder;
+    }
+
+    /**
+     * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+
+    /**
+     * Binance -> Zenfuse
+     *
+     * @param {*} bOrder Order fromf
+     * @returns {PlacedOrder} Zenfuse Order
+     */
+    transformBinanceOrder(bOrder) {
+        /**
+         * @type {PlacedOrder}
+         */
+        const zOrder = {};
+
+        zOrder.id = bOrder.orderId.toString();
+        zOrder.timestamp = bOrder.transactTime || bOrder.time;
+        zOrder.type = bOrder.type.toLowerCase();
+        zOrder.side = bOrder.side.toLowerCase();
+        zOrder.price = parseFloat(bOrder.price);
+        zOrder.quantity = parseFloat(bOrder.origQty);
+
+        switch (bOrder.status) {
+            case 'NEW':
+            case 'PARTIALLY_FILLED':
+                zOrder.status = 'open';
+                break;
+            case 'FILLED':
+                zOrder.status = 'closed';
+                break;
+            default:
+                zOrder.status = 'canceled';
+        }
+
+        return zOrder;
     }
 }
 

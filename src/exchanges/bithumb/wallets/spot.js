@@ -149,10 +149,7 @@ class BithumbSpot extends BithumbBase {
             json: bOrder,
         });
 
-        const zCreatedOrder = this.transformBithumbOrder(
-            bCreatedOrder,
-            zOrder,
-        );
+        const zCreatedOrder = this.transformBithumbOrder(bCreatedOrder, zOrder);
 
         this.cache.cacheOrder(zCreatedOrder);
 
@@ -419,8 +416,12 @@ class BithumbSpot extends BithumbBase {
             zOrder.type = zInitialOrder.type;
             zOrder.side = zInitialOrder.side;
             zOrder.quantity = zInitialOrder.quantity;
-            zOrder.price = zInitialOrder.price ? zInitialOrder.price : undefined;
-            zOrder.status = zInitialOrder.status ? zInitialOrder.status : 'open';
+            zOrder.price = zInitialOrder.price
+                ? zInitialOrder.price
+                : undefined;
+            zOrder.status = zInitialOrder.status
+                ? zInitialOrder.status
+                : 'open';
         }
         // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
 

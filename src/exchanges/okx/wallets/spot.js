@@ -413,7 +413,7 @@ class OkxSpot extends OkxBase {
         }
 
         return xOrder;
-    };
+    }
 
     /**
      * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
@@ -456,7 +456,7 @@ class OkxSpot extends OkxBase {
         }
 
         return zOrder;
-    };
+    }
 }
 
 module.exports = OkxSpot;

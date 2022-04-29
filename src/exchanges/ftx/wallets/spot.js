@@ -37,7 +37,9 @@ class FtxSpot extends FtxBase {
 
         // TODO: Cache update here
 
-        const spotMarkets = markets.result.filter((market) => market.type === 'spot');
+        const spotMarkets = markets.result.filter(
+            (market) => market.type === 'spot',
+        );
 
         const tickers = spotMarkets
             .map((market) => {
@@ -59,7 +61,9 @@ class FtxSpot extends FtxBase {
 
         // TODO: Cache update here
 
-        const spotMarkets = response.result.filter((market) => market.type === 'spot');
+        const spotMarkets = response.result.filter(
+            (market) => market.type === 'spot',
+        );
 
         const markets = spotMarkets.map((m) => {
             return {
