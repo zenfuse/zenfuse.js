@@ -23,6 +23,32 @@ const env = createEnv({
         quantity: 20,
         price: 0.5,
     },
+    BUY_MARKET_ORDER: {
+        symbol: 'USDT/USD',
+        type: 'market',
+        side: 'buy',
+        quantity: 1,
+    },
+    SELL_MARKET_ORDER: {
+        symbol: 'USDT/USD',
+        type: 'market',
+        side: 'sell',
+        quantity: 1,
+    },
+    BUY_LIMIT_ORDER: {
+        symbol: 'USDT/USD',
+        type: 'limit',
+        side: 'buy',
+        quantity: 20,
+        price: 0.5,
+    },
+    SELL_LIMIT_ORDER: {
+        symbol: 'USDT/USD',
+        type: 'limit',
+        side: 'sell',
+        quantity: 1,
+        price: 1.5,
+    },
 });
 
 global.httpScope = createScope(env);

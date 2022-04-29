@@ -32,7 +32,11 @@ class AccountDataStream extends OkxWebsocketBase {
             path: '/users/self/verify',
             body: '',
         };
-        const signature = utils.createHmacSignatureDefault(sigParams, privateKey, this.signatureEncoding);
+        const signature = utils.createHmacSignatureDefault(
+            sigParams,
+            privateKey,
+            this.signatureEncoding,
+        );
 
         this.sendSocketMessage({
             op: 'login',
@@ -131,7 +135,7 @@ class AccountDataStream extends OkxWebsocketBase {
         }
 
         return zOrder;
-    };
+    }
 }
 
 module.exports = AccountDataStream;

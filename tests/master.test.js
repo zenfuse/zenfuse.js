@@ -545,11 +545,10 @@ module.exports = function masterTest(Exchange, env) {
             it('should emit "orderUpdate"', async () => {
                 await accountDataStream.open();
 
-                const eventPromice = new Promise((resolve) => {
+                const eventPromise = new Promise((resolve) => {
                     accountDataStream.once('orderUpdate', (order) => {
                         expect(order).toMatchSchema(OrderSchema);
-                        expect(order.id).toBe(createdOrder.id);
-                        resolve();
+                        resolve(order);
                     });
                 });
 
@@ -557,9 +556,10 @@ module.exports = function masterTest(Exchange, env) {
                     env.NOT_EXECUTABLE_ORDER,
                 );
 
-                return await eventPromice.then(() =>
-                    exchange.cancelOrderById(createdOrder.id),
-                );
+                return await eventPromise.then((order) => {
+                    expect(order.id).toBe(createdOrder.id);
+                    exchange.cancelOrder(order);
+                });
             });
         });
 
