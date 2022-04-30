@@ -65,34 +65,6 @@ class AccountDataStream extends BithumbWebsocketBase {
 
         this.emit('orderUpdate', order);
     }
-
-    transformBithumbOrderWS(bOrder) {
-        /**
-         * @type {PlacedOrder}
-         */
-        const zOrder = {};
-
-        zOrder.id = bOrder.data.oId;
-        zOrder.timestamp = bOrder.timestamp;
-        zOrder.symbol = bOrder.data.symbol.replace('-', '/');
-        zOrder.type = bOrder.data.type;
-        zOrder.side = bOrder.data.side;
-        zOrder.quantity = parseFloat(bOrder.data.quantity);
-        zOrder.price = parseFloat(bOrder.data.price);
-        if (bOrder.data.status === 'fullDealt') {
-            zOrder.status = 'close';
-        } else if (
-            bOrder.data.status === 'created' ||
-            bOrder.data.status === 'partDealt'
-        ) {
-            zOrder.status = 'open';
-        } else {
-            zOrder.status = 'canceled';
-        }
-        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
-
-        return zOrder;
-    }
 }
 
 module.exports = AccountDataStream;

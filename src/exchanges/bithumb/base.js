@@ -5,7 +5,7 @@ const ExchangeBase = require('../../base/exchange');
 const BithumbApiError = require('./errors/api.error');
 const BithumbCache = require('./etc/cache');
 const ZenfuseUserError = require('../../base/errors/user.error');
-const { createHmacSignatureBithumb } = require('../../base/utils/utils');
+const { createHmac } = require('crypto');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
 
@@ -94,7 +94,7 @@ class BithumbBase extends ExchangeBase {
                 {},
             );
 
-        const signature = createHmacSignatureBithumb(
+        const signature = this.createHmacSignatureBithumb(
             sigParams,
             this[keysSymbol].privateKey,
             this.signatureEncoding,
@@ -177,6 +177,124 @@ class BithumbBase extends ExchangeBase {
         }
 
         return response;
+    }
+
+    createHmacSignatureBithumb(sigParams, privateKey, encoding) {
+        const charsToDel = ['{', '}', '"'];
+    
+        let signaturePayload = JSON.stringify(sigParams)
+            .slice(1, -1)
+            .split(',')
+            .join('&')
+            .split(':')
+            .join('=');
+    
+        charsToDel.forEach((item) => {
+            signaturePayload = signaturePayload.split(item).join('');
+        });
+    
+        return createHmac('sha256', privateKey)
+            .update(signaturePayload)
+            .digest(encoding);
+    }
+
+    /**
+     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+     */
+
+    /**
+     * Zenfuse -> Bithumb
+     *
+     * @param {OrderParams} zOrder
+     * @returns {object} Order for bithumb api
+     */
+     transformZenfuseOrder(zOrder) {
+        const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
+
+        const bOrder = {
+            symbol: zOrder.symbol.replace('/', '-'),
+            type: zOrder.type,
+            side: zOrder.side,
+            quantity: zOrder.quantity.toString(),
+            timestamp: Date.now().toString(),
+        };
+
+        if (zOrder.price) {
+            bOrder.price = zOrder.price.toString();
+        }
+
+        if (zOrder.type === 'market') {
+            bOrder.price = '-1';
+        }
+
+        // Allow user extra keys
+        for (const [key, value] of Object.entries(zOrder)) {
+            if (!TRANSFORM_LIST.includes(key)) {
+                bOrder[key] = value;
+            }
+        }
+
+        return bOrder;
+    }
+
+    /**
+     * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+
+    /**
+     * Bithumb -> Zenfuse
+     *
+     * @param {*} bOrder Order from Bithumb REST
+     * @param {object} zInitialOrder
+     * @returns {PlacedOrder} Zenfuse Order
+     */
+    transformBithumbOrder(bOrder, zInitialOrder = {}) {
+        /**
+         * @type {PlacedOrder}
+         */
+        const zOrder = {};
+
+        // TODO: Refactor this
+
+        zOrder.id = bOrder.data.orderId;
+        if (Object.entries(zInitialOrder).length === 0) {
+            //if order is not cached
+            if (bOrder.data.status === 'success') {
+                zOrder.status = 'close';
+            } else if (
+                bOrder.data.status === 'send' ||
+                bOrder.data.status === 'pending'
+            ) {
+                zOrder.status = 'open';
+            } else {
+                zOrder.status = 'canceled';
+            }
+            zOrder.symbol = bOrder.data.symbol.replace('-', '/');
+            zOrder.timestamp = bOrder.timestamp;
+            zOrder.type = bOrder.data.type;
+            zOrder.side = bOrder.data.side;
+            zOrder.price = bOrder.data.price
+                ? parseFloat(bOrder.data.price)
+                : undefined;
+            zOrder.quantity = parseFloat(bOrder.data.quantity);
+        } else {
+            zOrder.symbol = zInitialOrder.symbol;
+            zOrder.timestamp = zInitialOrder.timestamp
+                ? zInitialOrder.timestamp
+                : Date.now();
+            zOrder.type = zInitialOrder.type;
+            zOrder.side = zInitialOrder.side;
+            zOrder.quantity = zInitialOrder.quantity;
+            zOrder.price = zInitialOrder.price
+                ? zInitialOrder.price
+                : undefined;
+            zOrder.status = zInitialOrder.status
+                ? zInitialOrder.status
+                : 'open';
+        }
+        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+
+        return zOrder;
     }
 }
 
