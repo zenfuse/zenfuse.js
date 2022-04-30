@@ -103,39 +103,6 @@ class AccountDataStream extends OkxWebsocketBase {
 
         this.emit('orderUpdate', order);
     }
-
-    transformOkxOrder(xOrder) {
-        /**
-         * @type {PlacedOrder}
-         */
-        const zOrder = {};
-
-        zOrder.id = xOrder.ordId;
-
-        zOrder.timestamp = parseFloat(xOrder.cTime);
-        zOrder.symbol = xOrder.instId.replace('-', '/');
-        zOrder.type = xOrder.ordType;
-        zOrder.side = xOrder.side;
-        zOrder.quantity = parseFloat(xOrder.sz);
-
-        if (xOrder.px) {
-            zOrder.price = parseFloat(xOrder.px);
-        }
-
-        switch (xOrder.state) {
-            case 'live':
-            case 'partially_filled':
-                zOrder.status = 'open';
-                break;
-            case 'filled':
-                zOrder.status = 'close';
-                break;
-            default:
-                zOrder.status = xOrder.state;
-        }
-
-        return zOrder;
-    }
 }
 
 module.exports = AccountDataStream;

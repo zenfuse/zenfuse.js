@@ -49,28 +49,8 @@ const createHmacSignatureDefault = (
     return createHmac('sha256', key).update(signaturePayload).digest(encoding);
 };
 
-const createHmacSignatureBithumb = (sigParams, privateKey, encoding) => {
-    const charsToDel = ['{', '}', '"'];
-
-    let signaturePayload = JSON.stringify(sigParams)
-        .slice(1, -1)
-        .split(',')
-        .join('&')
-        .split(':')
-        .join('=');
-
-    charsToDel.forEach((item) => {
-        signaturePayload = signaturePayload.split(item).join('');
-    });
-
-    return createHmac('sha256', privateKey)
-        .update(signaturePayload)
-        .digest(encoding);
-};
-
 module.exports = {
     linkOriginalPayload,
     timeIntervalToSeconds,
     createHmacSignatureDefault,
-    createHmacSignatureBithumb,
 };
