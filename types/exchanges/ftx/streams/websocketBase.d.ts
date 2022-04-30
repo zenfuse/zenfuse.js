@@ -14,6 +14,7 @@ declare class FtxWebsocketBase extends EventEmitter {
      */
     socket: import('ws').WebSocket;
     base: import("../wallets/spot");
+    signatureEncoding: string;
     /**
      * Opens websocket connection
      *
@@ -32,5 +33,6 @@ declare class FtxWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg: object): void;
+    transformFtxOrder(fOrder: any): PlacedOrder;
 }
 import { EventEmitter } from "events";

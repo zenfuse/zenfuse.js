@@ -13,6 +13,7 @@ declare class OkxBase extends ExchangeBase {
      * @type {OkxCache}
      */
     cache: OkxCache;
+    signatureEncoding: string;
     /**
      * Make http request based on constructor settings
      *
@@ -65,6 +66,26 @@ declare class OkxBase extends ExchangeBase {
      */
     private handleFetcherError;
     handleUnexpectedResponse(body: any): any;
+    /**
+     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+     */
+    /**
+     * Zenfuse -> OKX
+     *
+     * @param {OrderParams} zOrder Order from
+     * @returns {object} Order for okx api
+     */
+    transformZenfuseOrder(zOrder: any): object;
+    /**
+     * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+    /**
+     * OKX -> Zenfuse
+     *
+     * @param {*} xOrder Order from OKX
+     * @returns {PlacedOrder} Zenfuse placed Order
+     */
+    transformOkxOrder(xOrder: any): any;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");

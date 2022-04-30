@@ -14,6 +14,7 @@ declare class OkxWebsocketBase extends EventEmitter {
      */
     socket: import('ws').WebSocket;
     base: import("../wallets/spot");
+    signatureEncoding: string;
     /**
      * Opens websocket connection
      *
@@ -33,5 +34,6 @@ declare class OkxWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg: object): void;
+    transformOkxOrder(xOrder: any): PlacedOrder;
 }
 import { EventEmitter } from "events";

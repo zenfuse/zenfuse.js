@@ -167,7 +167,7 @@ class FtxBase extends ExchangeBase {
      * @param {OrderParams} zOrder Order from
      * @returns {object} Order for ftx api
      */
-     transformZenfuseOrder(zOrder) {
+    transformZenfuseOrder(zOrder) {
         const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
 
         const fOrder = {

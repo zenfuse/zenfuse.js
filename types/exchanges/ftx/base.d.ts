@@ -13,6 +13,7 @@ declare class FtxBase extends ExchangeBase {
      * @type {FtxCache}
      */
     cache: FtxCache;
+    signatureEncoding: string;
     /**
      * Make http request based on constructor settings
      *
@@ -62,6 +63,26 @@ declare class FtxBase extends ExchangeBase {
      * @private
      */
     private handleFetcherError;
+    /**
+     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+     */
+    /**
+     * Zenfuse -> FTX
+     *
+     * @param {OrderParams} zOrder Order from
+     * @returns {object} Order for ftx api
+     */
+    transformZenfuseOrder(zOrder: any): object;
+    /**
+     * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+    /**
+     * FTX -> Zenfuse
+     *
+     * @param {*} fOrder Order from FTX
+     * @returns {PlacedOrder} Zenfuse Order
+     */
+    transformFtxOrder(fOrder: any): any;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");

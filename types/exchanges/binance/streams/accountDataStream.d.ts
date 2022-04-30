@@ -43,16 +43,6 @@ declare class AccountDataStream extends ExchangeWebsocketBase {
     checkSocketIsConneted(): void;
     serverMessageHandler(msgString: any): void;
     emitOrderUpdateEvent(payload: any): void;
-    /**
-     * Transforms websocket order from binance
-     * Binance -> Zenfuse
-     *
-     * @param {object} wsOrder
-     * @typedef {import('../../..').Order} Order
-     * @private
-     * @returns {Order} Zenfuse Order
-     */
-    private transfromWebsocketOrder;
     [listenKeySymbol]: any;
     [validUntilSymbol]: any;
     [intervalSymbol]: NodeJS.Timer;

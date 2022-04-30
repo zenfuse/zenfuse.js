@@ -30,9 +30,9 @@ declare const ZenfuseKline: z.ZodObject<{
     open?: number;
     close?: number;
     timestamp?: number;
-    volume?: number;
     isClosed?: boolean;
     closeAt?: number;
+    volume?: number;
 }, {
     symbol?: string;
     interval?: "1m" | "3m" | "5m" | "15m" | "30m" | "1h" | "2h" | "4h" | "6h" | "8h" | "12h" | "1d" | "3d" | "1w" | "1M";
@@ -41,9 +41,9 @@ declare const ZenfuseKline: z.ZodObject<{
     open?: number;
     close?: number;
     timestamp?: number;
-    volume?: number;
     isClosed?: boolean;
     closeAt?: number;
+    volume?: number;
 }>;
 declare namespace ZenfuseKline {
     export { ZenfuseKline };

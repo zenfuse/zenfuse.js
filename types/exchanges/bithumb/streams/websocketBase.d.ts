@@ -14,6 +14,7 @@ declare class BithumbWebsocketBase extends EventEmitter {
      */
     socket: import('ws').WebSocket;
     base: import("../base");
+    signatureEncoding: string;
     /**
      * Opens websocket connection
      *
@@ -32,5 +33,6 @@ declare class BithumbWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg: object): void;
+    transformBithumbOrderWS(bOrder: any): PlacedOrder;
 }
 import { EventEmitter } from "events";

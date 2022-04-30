@@ -71,7 +71,7 @@ declare class OkxSpot extends OkxBase {
      *
      * @param {Order} zOrder Active Okx order to cancel
      */
-    cancelOrder(zOrder: any): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    cancelOrder(zOrder: any): Promise<any>;
     /**
      * Cancel an active order
      *
@@ -83,7 +83,7 @@ declare class OkxSpot extends OkxBase {
      *
      * @param {string} orderId
      */
-    fetchOrderById(orderId: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    fetchOrderById(orderId: string): Promise<any>;
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }
