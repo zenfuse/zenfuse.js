@@ -28,7 +28,7 @@ declare class BinanceSpot extends BinanceBase {
     /**
      * @returns {structualizedMarket} Array of ticker pairs on this exchange
      */
-    fetchMarkets(): import("../utils/functions/agregation").structualizedMarket;
+    fetchMarkets(): any;
     /**
      * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
      * @param {object} params
@@ -67,13 +67,13 @@ declare class BinanceSpot extends BinanceBase {
      *
      * @param {Order} zOrder Order to create
      */
-    createOrder(zOrder: any): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    createOrder(zOrder: any): Promise<any>;
     /**
      * Cancel an active order
      *
      * @param {Order} zOrder Order to cancel
      */
-    cancelOrder(zOrder: any): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    cancelOrder(zOrder: any): Promise<any>;
     /**
      * Cancel an active order
      *
@@ -83,7 +83,7 @@ declare class BinanceSpot extends BinanceBase {
      *
      * @param {string} orderId Binance order id
      */
-    cancelOrderById(orderId: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    cancelOrderById(orderId: string): Promise<any>;
     fetchOpenOrders(): Promise<any>;
     fetchBalances(): Promise<any>;
     /**
@@ -91,7 +91,7 @@ declare class BinanceSpot extends BinanceBase {
      *
      * @param {string} orderId
      */
-    fetchOrderById(orderId: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    fetchOrderById(orderId: string): Promise<any>;
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }

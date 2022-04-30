@@ -188,7 +188,7 @@ class OkxBase extends ExchangeBase {
      * @param {OrderParams} zOrder Order from
      * @returns {object} Order for okx api
      */
-     transformZenfuseOrder(zOrder) {
+    transformZenfuseOrder(zOrder) {
         const TRANSFORM_LIST = [
             'id',
             'side',

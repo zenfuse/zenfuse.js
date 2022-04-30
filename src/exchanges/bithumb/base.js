@@ -181,18 +181,18 @@ class BithumbBase extends ExchangeBase {
 
     createHmacSignatureBithumb(sigParams, privateKey, encoding) {
         const charsToDel = ['{', '}', '"'];
-    
+
         let signaturePayload = JSON.stringify(sigParams)
             .slice(1, -1)
             .split(',')
             .join('&')
             .split(':')
             .join('=');
-    
+
         charsToDel.forEach((item) => {
             signaturePayload = signaturePayload.split(item).join('');
         });
-    
+
         return createHmac('sha256', privateKey)
             .update(signaturePayload)
             .digest(encoding);
@@ -208,7 +208,7 @@ class BithumbBase extends ExchangeBase {
      * @param {OrderParams} zOrder
      * @returns {object} Order for bithumb api
      */
-     transformZenfuseOrder(zOrder) {
+    transformZenfuseOrder(zOrder) {
         const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
 
         const bOrder = {
