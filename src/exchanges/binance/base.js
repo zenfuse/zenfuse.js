@@ -191,6 +191,8 @@ class BinanceBase extends ExchangeBase {
             }
         }
 
+        rawSymbol = this.cache.parsedSymbols.get(bSymbol);
+
         return rawSymbol.join('/');
     }
 
