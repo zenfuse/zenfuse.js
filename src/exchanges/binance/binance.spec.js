@@ -1,9 +1,11 @@
 const nock = require('nock');
+const path = require('path');
 const { Binance } = require('zenfuse');
 
 const HOSTNAME = 'https://api.binance.com/';
-const exchangeInfoFilePath =
-    '/workspace/zenfuse.js/tests/exchanges/binance/mocks/static/exchangeInfo.json';
+const exchangeInfoFilePath = path.resolve(
+    'tests/exchanges/binance/mocks/static/exchangeInfo.json',
+);
 
 let exchange = new Binance['spot']();
 let stream = exchange.getAccountDataStream();
