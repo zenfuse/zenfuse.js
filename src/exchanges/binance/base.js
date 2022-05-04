@@ -169,14 +169,14 @@ class BinanceBase extends ExchangeBase {
      * @returns {string} Normal symbol with separator
      */
     parseBinanceSymbol(bSymbol) {
-        const isSymbolCached = this.cache.parsedSymbols.get(bSymbol);
+        const isSymbolCached = this.cache.parsedSymbols?.get(bSymbol);
 
         let rawSymbol = '';
 
         if (!isSymbolCached) {
             const errorMsg = `Unnable to parse binance ${bSymbol} symbol`;
 
-            // 6 length symbol can devided by 2 pieces
+            // 6 length symbol can divided by 2 pieces
             if (bSymbol.length === 6) {
                 const base = bSymbol.slice(0, 3);
                 const quote = bSymbol.slice(3);
@@ -190,8 +190,6 @@ class BinanceBase extends ExchangeBase {
                 throw new RuntimeError(errorMsg, 'ZEFU_CACHE_UNSYNC');
             }
         }
-
-        rawSymbol = this.cache.parsedSymbols.get(bSymbol);
 
         return rawSymbol.join('/');
     }

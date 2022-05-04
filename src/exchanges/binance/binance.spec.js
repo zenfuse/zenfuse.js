@@ -212,7 +212,7 @@ describe('transformCandlestick()', () => {
 
         const result = stream.transformCandlestick(kline.k);
 
-        expect(result).toStrictEqual(expectedResult); //KlineSchema is not used in this test because symbol parsing happens in emitCandle function
+        expect(result).toStrictEqual(expectedResult);
         expect(result).toMatchSchema(KlineSchema);
     });
 });
