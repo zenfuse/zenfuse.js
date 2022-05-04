@@ -185,10 +185,13 @@ class BinanceBase extends ExchangeBase {
                     code: 'ZEFU_CACHE_UNSYNC',
                     detail: `Zenfuse cannot find a symbol in the global cache. This is a warning because this symbol possible to guess.`,
                 });
+                return rawSymbol.join('/');
             } else {
                 throw new RuntimeError(errorMsg, 'ZEFU_CACHE_UNSYNC');
             }
         }
+
+        rawSymbol = this.cache.parsedSymbols.get(bSymbol);
 
         return rawSymbol.join('/');
     }
