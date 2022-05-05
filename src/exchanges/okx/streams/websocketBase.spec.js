@@ -1,38 +1,9 @@
-const OkxBase = require('./base');
-
-describe('transformZenfuseOrder()', () => {
-    it('should transform limit order', () => {
-        const order = {
-            id: 1,
-            symbol: 'BTC/USDT',
-            side: 'buy',
-            type: 'limit',
-            price: 69.6969,
-            quantity: 0.02323,
-            extra: 'whenbinance',
-        };
-
-        const expectation = {
-            ordId: '1',
-            instId: 'BTC-USDT',
-            tdMode: 'cash',
-            side: 'buy',
-            ordType: 'limit',
-            px: '69.6969',
-            sz: '0.02323',
-            extra: 'whenbinance',
-        };
-
-        expect(OkxBase.prototype.transformZenfuseOrder(order)).toStrictEqual(
-            expectation,
-        );
-    });
-});
+const OkxWsBase = require('./websocketBase');
 
 describe('transformOkxOrder()', () => {
-    const OrderSchema = require('../../base/schemas/openOrder');
+    const OrderSchema = require('../../../base/schemas/openOrder');
 
-    it('should transform REST format order', () => {
+    it('should transform WS format order', () => {
         const okxCreatedOrder = {
             instType: 'SPOT',
             instId: 'BTC-USDT',
@@ -82,7 +53,7 @@ describe('transformOkxOrder()', () => {
             status: 'open',
         };
 
-        const result = OkxBase.prototype.transformOkxOrder(okxCreatedOrder);
+        const result = OkxWsBase.prototype.transformOkxOrder(okxCreatedOrder);
 
         expect(result).toMatchSchema(OrderSchema);
         expect(result).toStrictEqual(expectation);

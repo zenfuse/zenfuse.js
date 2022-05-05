@@ -1,6 +1,4 @@
-const { FTX } = require('zenfuse');
-
-let exchange = new FTX['spot']();
+const FtxBase = require('./base');
 
 describe('transfromZenfuseOrder()', () => {
     it('should transform limit order', () => {
@@ -22,7 +20,7 @@ describe('transfromZenfuseOrder()', () => {
             extra: 'whenbinance',
         };
 
-        expect(exchange.transformZenfuseOrder(order)).toStrictEqual(
+        expect(FtxBase.prototype.transformZenfuseOrder(order)).toStrictEqual(
             expectation,
         );
     });
@@ -49,7 +47,7 @@ describe('transformFtxOrder()', () => {
             clientId: null,
         };
 
-        const result = exchange.transformFtxOrder(ftxCreatedOrder);
+        const result = FtxBase.prototype.transformFtxOrder(ftxCreatedOrder);
 
         expect(result).toMatchSchema(OrderSchema);
     });

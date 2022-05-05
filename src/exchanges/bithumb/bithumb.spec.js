@@ -1,7 +1,4 @@
-const { Bithumb } = require('zenfuse');
-
-let exchange = new Bithumb['spot']();
-let stream = exchange.getAccountDataStream();
+const BithumbBase = require('./base');
 
 describe('createHmacSignatureBithumb()', () => {
     it('should return valid signature', () => {
@@ -13,7 +10,7 @@ describe('createHmacSignatureBithumb()', () => {
 
         const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
         const encoding = 'hex';
-        const madeSign = exchange.createHmacSignatureBithumb(
+        const madeSign = BithumbBase.prototype.createHmacSignatureBithumb(
             params,
             key,
             encoding,
@@ -49,9 +46,9 @@ describe('transformZenfuseOrder()', () => {
             quantity: '0.02323',
         };
 
-        expect(exchange.transformZenfuseOrder(order)).toStrictEqual(
-            expectation,
-        );
+        expect(
+            BithumbBase.prototype.transformZenfuseOrder(order),
+        ).toStrictEqual(expectation);
     });
 });
 
@@ -80,7 +77,7 @@ describe('transformBithumbOrder()', () => {
             params: [],
         };
 
-        const result = exchange.transformBithumbOrder(
+        const result = BithumbBase.prototype.transformBithumbOrder(
             receivedBithumbOrder,
             zenfuseCreatedOrder,
         );
@@ -109,35 +106,8 @@ describe('transformBithumbOrder()', () => {
             params: [],
         };
 
-        const result = exchange.transformBithumbOrder(receivedBithumbOrder);
-
-        expect(result).toMatchSchema(OrderSchema);
-    });
-
-    it('should transform WS format order', () => {
-        const receivedBithumbOrder = {
-            code: '00007',
-            data: {
-                cancelQuantity: '10060.7',
-                dealPrice: '0',
-                dealQuantity: '0',
-                dealVolume: '0',
-                fee: '0',
-                feeType: '',
-                oId: '69663509668139008',
-                price: '100.607',
-                quantity: '100',
-                side: 'buy',
-                status: 'canceled',
-                symbol: 'BTC-USDT',
-                time: 1560758352705,
-                type: 'limit',
-            },
-            topic: 'ORDER',
-            timestamp: 1560758352743,
-        };
-
-        const result = stream.transformBithumbOrderWS(receivedBithumbOrder);
+        const result =
+            BithumbBase.prototype.transformBithumbOrder(receivedBithumbOrder);
 
         expect(result).toMatchSchema(OrderSchema);
     });
