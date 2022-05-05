@@ -59,7 +59,9 @@ class FtxBase extends ExchangeBase {
      * @returns {object};
      */
     async publicFetch(url, options = {}) {
-        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        return await this.fetcher(url, options)
+            .then(this.handleUnexpectedResponse)
+            .catch(this.handleFetcherError);
         // TODO: FTX Response checker
     }
 
@@ -227,6 +229,15 @@ class FtxBase extends ExchangeBase {
         }
 
         return zOrder;
+     * @param {object} response
+     * @private
+     */
+    handleUnexpectedResponse(response) {
+        if (response.success === false) {
+            throw new FtxApiError(response);
+        }
+
+        return response;
     }
 }
 
