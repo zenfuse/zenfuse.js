@@ -5,6 +5,7 @@ const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
 const createEnv = require('../../helpers/createEnv');
 const FtxApiException = require('../../../src/exchanges/ftx/errors/api.error');
+// const { describe } = require('../../../src/base/schemas/orderParams');
 
 if (isEnd2EndTest) {
     checkProcessHasVariables(['FTX_PUBLIC_KEY', 'FTX_SECRET_KEY']);
@@ -113,6 +114,48 @@ describe('Error Handling', () => {
 
     describe('UNKNOWN_EXCEPTION code', () => {
         it('should throw UNKNOWN_EXCEPTION', async () => {
+            try {
+                await new FTX.spot()
+                    .auth({
+                        publicKey: env.API_PUBLIC_KEY,
+                        privateKey: env.API_PRIVATE_KEY,
+                    })
+                    .privateFetch('api/orders/invalid_order_id/modify', {
+                        method: 'POST',
+                    })
+                    .then(() => {
+                        throw 'Not caught';
+                    });
+            } catch (e) {
+                expect(e).toBeInstanceOf(FtxApiException);
+                expect(e.code).toBe(errorCodes.UNKNOWN_EXCEPTION);
+                expect(e.message).toBeDefined();
+                expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
+            }
+        });
+    });
+
+    describe('response handling', () => {
+        it('should handle public response status', async () => {
+            try {
+                await new FTX.spot()
+                    .auth({
+                        publicKey: env.API_PUBLIC_KEY,
+                        privateKey: env.API_PRIVATE_KEY,
+                    })
+                    .publicFetch('api/markets/BTC')
+                    .then(() => {
+                        throw 'Not caught';
+                    });
+            } catch (e) {
+                expect(e).toBeInstanceOf(FtxApiException);
+                expect(e.code).toBe(errorCodes.UNKNOWN_EXCEPTION);
+                expect(e.message).toBeDefined();
+                expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
+            }
+        });
+
+        it('should handle private response status', async () => {
             try {
                 await new FTX.spot()
                     .auth({

@@ -62,7 +62,6 @@ class FtxBase extends ExchangeBase {
         return await this.fetcher(url, options)
             .then(this.handleUnexpectedResponse)
             .catch(this.handleFetcherError);
-        // TODO: FTX Response checker
     }
 
     /**
@@ -98,7 +97,9 @@ class FtxBase extends ExchangeBase {
             },
         });
 
-        return await this.fetcher(url, options).catch(this.handleFetcherError);
+        return await this.fetcher(url, options)
+            .then(this.handleUnexpectedResponse)
+            .catch(this.handleFetcherError);
     }
 
     /**
