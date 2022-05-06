@@ -34,14 +34,14 @@ class MarketDataStream extends BithumbWebsocketBase {
     }
 
     async subscribeTo(event) {
-        return await this.editSubscribition(event, 'subscribe');
+        return await this.editSubscription(event, 'subscribe');
     }
 
     /**
      * @param {string|WebsocketEvent} event
      */
     async unsubscribeFrom(event) {
-        return await this.editSubscribition(event, 'unsubscribe');
+        return await this.editSubscription(event, 'unsubscribe');
     }
 
     /**
@@ -53,7 +53,7 @@ class MarketDataStream extends BithumbWebsocketBase {
      * @param {string|WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
-    async editSubscribition(arg, command) {
+    async editSubscription(arg, command) {
         const isJustSymbol = typeof arg === 'string';
 
         /**
@@ -119,7 +119,7 @@ class MarketDataStream extends BithumbWebsocketBase {
     }
 
     // TODO: Save all subscribition
-    async unsubscribeFromAllbySymbol() {
+    async unsubscribeFromAllBySymbol() {
         throw 'Not implemented';
     }
 

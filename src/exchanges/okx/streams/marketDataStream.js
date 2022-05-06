@@ -33,14 +33,14 @@ class MarketDataStream extends OkxWebsocketBase {
      * @param {WebsocketEvent} event
      */
     async subscribeTo(event) {
-        return await this.editSubscribition(event, 'subscribe');
+        return await this.editSubscription(event, 'subscribe');
     }
 
     /**
      * @param {WebsocketEvent} event
      */
     async unsubscribeFrom(event) {
-        return await this.editSubscribition(event, 'unsubscribe');
+        return await this.editSubscription(event, 'unsubscribe');
     }
 
     /**
@@ -48,7 +48,7 @@ class MarketDataStream extends OkxWebsocketBase {
      * @param {WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
-    async editSubscribition(arg, command) {
+    async editSubscription(arg, command) {
         const isJustSymbol = typeof arg === 'string';
 
         /**

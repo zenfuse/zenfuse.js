@@ -41,7 +41,7 @@ describe('ExchangeBase', () => {
                 },
                 {
                     symbol: 'ZEFU/USDC',
-                    type: 'stoploss',
+                    type: 'stop-loss',
                     side: 'buy',
                     quantity: 1337,
                 },

@@ -70,7 +70,7 @@ class FtxWebsocketBase extends EventEmitter {
         throw err; // TODO: Websocket connection error
     }
 
-    checkSocketIsConneted() {
+    checkSocketIsConnected() {
         if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
@@ -87,7 +87,7 @@ class FtxWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg) {
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const msgString = JSON.stringify(msg);
 

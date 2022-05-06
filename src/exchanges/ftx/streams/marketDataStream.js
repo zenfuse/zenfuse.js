@@ -45,14 +45,14 @@ class MarketDataStream extends FtxWebsocketBase {
      * @param {WebsocketEvent} event
      */
     async subscribeTo(event) {
-        return await this.editSubscribition(event, 'subscribe');
+        return await this.editSubscription(event, 'subscribe');
     }
 
     /**
      * @param {WebsocketEvent} event
      */
     async unsubscribeFrom(event) {
-        return await this.editSubscribition(event, 'unsubscribe');
+        return await this.editSubscription(event, 'unsubscribe');
     }
 
     /**
@@ -60,7 +60,7 @@ class MarketDataStream extends FtxWebsocketBase {
      * @param {WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
-    async editSubscribition(arg, command) {
+    async editSubscription(arg, command) {
         const isJustSymbol = typeof arg === 'string';
 
         /**
@@ -127,7 +127,7 @@ class MarketDataStream extends FtxWebsocketBase {
     }
 
     // TODO: Sav8sde all subscribition
-    async unsubscribeFromAllbySymbol() {
+    async unsubscribeFromAllBySymbol() {
         throw 'Not implemented';
     }
 
@@ -183,7 +183,7 @@ class MarketDataStream extends FtxWebsocketBase {
     async sendSocketUnsubscribe(...eventNames) {
         if (eventNames.lenght === 0) return; // nothing to do
 
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const id = this.createPayloadId();
 
@@ -196,7 +196,7 @@ class MarketDataStream extends FtxWebsocketBase {
         return await this.sendSocketMessage(payload);
     }
 
-    checkSocketIsConneted() {
+    checkSocketIsConnected() {
         if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }

@@ -5,7 +5,7 @@ class BaseGlobalCache {
     static VALID_TIME = 21_000_000; // 6 hours
 
     /**
-     * Created cache namespace, should be the same in diferent instances
+     * Created cache namespace, should be the same in different instances
      *
      * @type {Map<any, any>}
      */
@@ -51,9 +51,9 @@ class BaseGlobalCache {
          * @type {ProxyHandler}
          */
         const deleteHandler = {
-            apply: (terget, globalCache, argumentsList) => {
+            apply: (target, globalCache, argumentsList) => {
                 globalCache.lastUpdateTimestamp = 0;
-                return terget(...argumentsList);
+                return target(...argumentsList);
             },
         };
 

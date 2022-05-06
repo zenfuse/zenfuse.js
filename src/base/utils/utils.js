@@ -31,7 +31,7 @@ const timeIntervalToSeconds = (interval) => {
     const seconds = INTERVAL_TABLE[interval];
 
     if (!seconds) {
-        throw new TypeError(`Uknown interval "${interval}"`);
+        throw new TypeError(`Unknown interval "${interval}"`);
     }
 
     return seconds;
