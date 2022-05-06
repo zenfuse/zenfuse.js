@@ -22,7 +22,7 @@ declare class BithumbSpot extends BithumbBase {
      */
     fetchTickers(): string[];
     /**
-     * @returns {string[]} Array of ticker pairs on FTX
+     * @returns {string[]} Array of ticker pairs on Bithumb
      */
     fetchMarkets(): string[];
     /**
@@ -55,7 +55,7 @@ declare class BithumbSpot extends BithumbBase {
      *
      * @param {Order} zOrder Active order to cancel
      */
-    cancelOrder(zOrder: any): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    cancelOrder(zOrder: any): Promise<any>;
     /**
      * Cancel an active order
      *
@@ -70,7 +70,7 @@ declare class BithumbSpot extends BithumbBase {
      * @param {string} orderId
      * @param {string} symbol
      */
-    fetchOrderById(orderId: string, symbol?: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    fetchOrderById(orderId: string, symbol?: string): Promise<any>;
     /**
      * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
      */

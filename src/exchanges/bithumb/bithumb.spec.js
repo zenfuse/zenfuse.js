@@ -1,8 +1,6 @@
-const utils = require('.');
+const BithumbBase = require('./base');
 
-describe('createHmacSignature()', () => {
-    const { createHmacSignature } = utils;
-
+describe('createHmacSignatureBithumb()', () => {
     it('should return valid signature', () => {
         const params = {
             apiKey: '484bd71d59d5ed29ff3c27a6d0c6754c',
@@ -11,7 +9,12 @@ describe('createHmacSignature()', () => {
         };
 
         const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
-        const madeSign = createHmacSignature(params, key);
+        const encoding = 'hex';
+        const madeSign = BithumbBase.prototype.createHmacSignatureBithumb(
+            params,
+            key,
+            encoding,
+        );
         const signature =
             '9c5bd5874218fb8ed252b8c14e411600b6be3f53d56c266224131c545dfca0e4';
 
@@ -20,8 +23,6 @@ describe('createHmacSignature()', () => {
 });
 
 describe('transformZenfuseOrder()', () => {
-    const { transformZenfuseOrder } = utils;
-
     it('should transform limit order', () => {
         const order = {
             id: '123',
@@ -45,14 +46,14 @@ describe('transformZenfuseOrder()', () => {
             quantity: '0.02323',
         };
 
-        expect(transformZenfuseOrder(order)).toStrictEqual(expectation);
+        expect(
+            BithumbBase.prototype.transformZenfuseOrder(order),
+        ).toStrictEqual(expectation);
     });
 });
 
 describe('transformBithumbOrder()', () => {
-    const { transformBithumbOrder } = utils;
-
-    const OrderSchema = require('../../../base/schemas/openOrder');
+    const OrderSchema = require('../../base/schemas/openOrder');
 
     it('should transform created order', () => {
         const zenfuseCreatedOrder = {
@@ -76,7 +77,7 @@ describe('transformBithumbOrder()', () => {
             params: [],
         };
 
-        const result = transformBithumbOrder(
+        const result = BithumbBase.prototype.transformBithumbOrder(
             receivedBithumbOrder,
             zenfuseCreatedOrder,
         );
@@ -105,7 +106,8 @@ describe('transformBithumbOrder()', () => {
             params: [],
         };
 
-        const result = transformBithumbOrder(receivedBithumbOrder);
+        const result =
+            BithumbBase.prototype.transformBithumbOrder(receivedBithumbOrder);
 
         expect(result).toMatchSchema(OrderSchema);
     });

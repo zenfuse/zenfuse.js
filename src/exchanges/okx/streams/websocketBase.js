@@ -21,6 +21,7 @@ class OkxWebsocketBase extends EventEmitter {
         super();
         this.base = baseInstance;
         this.setMaxListeners(Infinity);
+        this.signatureEncoding = 'base64';
     }
 
     /**
@@ -92,6 +93,39 @@ class OkxWebsocketBase extends EventEmitter {
         const msgString = JSON.stringify(msg);
 
         this.socket.send(msgString);
+    }
+
+    transformOkxOrder(xOrder) {
+        /**
+         * @type {PlacedOrder}
+         */
+        const zOrder = {};
+
+        zOrder.id = xOrder.ordId;
+
+        zOrder.timestamp = parseFloat(xOrder.cTime);
+        zOrder.symbol = xOrder.instId.replace('-', '/');
+        zOrder.type = xOrder.ordType;
+        zOrder.side = xOrder.side;
+        zOrder.quantity = parseFloat(xOrder.sz);
+
+        if (xOrder.px) {
+            zOrder.price = parseFloat(xOrder.px);
+        }
+
+        switch (xOrder.state) {
+            case 'live':
+            case 'partially_filled':
+                zOrder.status = 'open';
+                break;
+            case 'filled':
+                zOrder.status = 'close';
+                break;
+            default:
+                zOrder.status = xOrder.state;
+        }
+
+        return zOrder;
     }
 }
 

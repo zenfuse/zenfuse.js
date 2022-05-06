@@ -1,4 +1,4 @@
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 const OkxWebsocketBase = require('./websocketBase');
 
 class AccountDataStream extends OkxWebsocketBase {
@@ -32,7 +32,11 @@ class AccountDataStream extends OkxWebsocketBase {
             path: '/users/self/verify',
             body: '',
         };
-        const signature = utils.createHmacSignature(sigParams, privateKey);
+        const signature = utils.createHmacSignatureDefault(
+            sigParams,
+            privateKey,
+            this.signatureEncoding,
+        );
 
         this.sendSocketMessage({
             op: 'login',
@@ -93,7 +97,7 @@ class AccountDataStream extends OkxWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transformOkxOrder(payload);
+        const order = this.transformOkxOrder(payload);
 
         utils.linkOriginalPayload(order, payload);
 

@@ -65,13 +65,13 @@ declare class FtxSpot extends FtxBase {
      *
      * @param {Order} zOrder Order to create
      */
-    createOrder(zOrder: any): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    createOrder(zOrder: any): Promise<any>;
     /**
      * Cancel an active order
      *
      * @param {string} zOrder Ftx active order to cancel
      */
-    cancelOrder(zOrder: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    cancelOrder(zOrder: string): Promise<string>;
     /**
      * Cancel an active order
      *
@@ -84,7 +84,7 @@ declare class FtxSpot extends FtxBase {
      *
      * @param {string} orderId
      */
-    fetchOrderById(orderId: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    fetchOrderById(orderId: string): Promise<any>;
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }

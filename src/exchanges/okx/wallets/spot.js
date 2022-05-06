@@ -1,7 +1,7 @@
 const OkxBase = require('../base');
 const mergeObjects = require('deepmerge');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
@@ -185,7 +185,7 @@ class OkxSpot extends OkxBase {
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const xOrder = utils.transformZenfuseOrder(zOrder);
+        const xOrder = this.transformZenfuseOrder(zOrder);
 
         if (zOrder.type === 'market' && zOrder.side === 'buy') {
             let orderTotal = null;
@@ -269,7 +269,7 @@ class OkxSpot extends OkxBase {
                 );
             }
 
-            orderToDelete = utils.transformOkxOrder(orderToDelete);
+            orderToDelete = this.transformOkxOrder(orderToDelete);
         }
 
         const response = await this.privateFetch('api/v5/trade/cancel-order', {
@@ -335,7 +335,7 @@ class OkxSpot extends OkxBase {
                 );
             }
 
-            const zOrder = utils.transformOkxOrder(orderToFetch);
+            const zOrder = this.transformOkxOrder(orderToFetch);
 
             this.cache.cacheOrder(zOrder);
 
@@ -351,7 +351,7 @@ class OkxSpot extends OkxBase {
             },
         });
 
-        const zOrder = utils.transformOkxOrder(fetchedOrder.data[0]);
+        const zOrder = this.transformOkxOrder(fetchedOrder.data[0]);
 
         utils.linkOriginalPayload(zOrder, fetchedOrder);
 

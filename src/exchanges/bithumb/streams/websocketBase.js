@@ -21,6 +21,7 @@ class BithumbWebsocketBase extends EventEmitter {
         super();
         this.base = baseInstance;
         this.setMaxListeners(Infinity);
+        this.signatureEncoding = 'hex';
     }
 
     /**
@@ -90,6 +91,34 @@ class BithumbWebsocketBase extends EventEmitter {
         const msgString = JSON.stringify(msg);
 
         this.socket.send(msgString);
+    }
+
+    transformBithumbOrderWS(bOrder) {
+        /**
+         * @type {PlacedOrder}
+         */
+        const zOrder = {};
+
+        zOrder.id = bOrder.data.oId;
+        zOrder.timestamp = bOrder.timestamp;
+        zOrder.symbol = bOrder.data.symbol.replace('-', '/');
+        zOrder.type = bOrder.data.type;
+        zOrder.side = bOrder.data.side;
+        zOrder.quantity = parseFloat(bOrder.data.quantity);
+        zOrder.price = parseFloat(bOrder.data.price);
+        if (bOrder.data.status === 'fullDealt') {
+            zOrder.status = 'close';
+        } else if (
+            bOrder.data.status === 'created' ||
+            bOrder.data.status === 'partDealt'
+        ) {
+            zOrder.status = 'open';
+        } else {
+            zOrder.status = 'canceled';
+        }
+        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+
+        return zOrder;
     }
 }
 

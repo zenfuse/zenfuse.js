@@ -1,6 +1,6 @@
 const { createHmac } = require('crypto');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 const BithumbWebsocketBase = require('./websocketBase');
 
 class AccountDataStream extends BithumbWebsocketBase {
@@ -33,7 +33,7 @@ class AccountDataStream extends BithumbWebsocketBase {
 
         const signature = createHmac('sha256', privateKey)
             .update(signString)
-            .digest('hex');
+            .digest(this.signatureEncoding);
 
         this.sendSocketMessage({
             cmd: 'authKey',
@@ -59,7 +59,7 @@ class AccountDataStream extends BithumbWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transformBithumbOrderWS(payload);
+        const order = this.transformBithumbOrderWS(payload);
 
         utils.linkOriginalPayload(order, payload);
 

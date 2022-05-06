@@ -12,6 +12,7 @@ declare class BithumbBase extends ExchangeBase {
      */
     cache: BithumbCache;
     msgNo: number;
+    signatureEncoding: string;
     /**
      * Make http request based on constructor settings
      *
@@ -62,6 +63,28 @@ declare class BithumbBase extends ExchangeBase {
      */
     private handleFetcherError;
     handleUnexpectedResponse(response: any): any;
+    createHmacSignatureBithumb(sigParams: any, privateKey: any, encoding: any): string;
+    /**
+     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+     */
+    /**
+     * Zenfuse -> Bithumb
+     *
+     * @param {OrderParams} zOrder
+     * @returns {object} Order for bithumb api
+     */
+    transformZenfuseOrder(zOrder: any): object;
+    /**
+     * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+    /**
+     * Bithumb -> Zenfuse
+     *
+     * @param {*} bOrder Order from Bithumb REST
+     * @param {object} zInitialOrder
+     * @returns {PlacedOrder} Zenfuse Order
+     */
+    transformBithumbOrder(bOrder: any, zInitialOrder?: object): any;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");

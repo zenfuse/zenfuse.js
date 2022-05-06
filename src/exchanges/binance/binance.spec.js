@@ -1,33 +1,6 @@
-const utils = require('.');
-
-describe('createHmacSignature()', () => {
-    const { createHmacSignature } = utils;
-
-    it('should return valid signature', () => {
-        const data = { foo: 'bar' };
-
-        expect(createHmacSignature(data, 'testkey')).toBe(
-            'e037a467e455d7847d50df4a6fa3b1c2ebfa4234b19cb7b2a220f1ffbfe9fdb8',
-        );
-    });
-});
-
-describe('transformMarketString()', () => {
-    const { transformMarketString } = utils;
-
-    it('should delete slash', () => {
-        const result = transformMarketString('ETH/BUSD');
-        expect(result).toBe('ETHBUSD');
-    });
-    it('should upper case things', () => {
-        const result = transformMarketString('ethbusd');
-        expect(result).toBe('ETHBUSD');
-    });
-});
+const BinanceBase = require('./base');
 
 describe('transfromZenfuseOrder()', () => {
-    const { transfromZenfuseOrder } = utils;
-
     it('should upper case symbols and transform amount', () => {
         const order = {
             symbol: 'BTC/ETH',
@@ -43,7 +16,9 @@ describe('transfromZenfuseOrder()', () => {
             quantity: '0.000001',
         };
 
-        expect(transfromZenfuseOrder(order)).toEqual(expectation);
+        expect(BinanceBase.prototype.transformZenfuseOrder(order)).toEqual(
+            expectation,
+        );
     });
 
     it('should add default timeInForce for limit order', () => {
@@ -61,7 +36,9 @@ describe('transfromZenfuseOrder()', () => {
             quantity: '0.001',
         };
 
-        expect(transfromZenfuseOrder(order)).toEqual(expectation);
+        expect(BinanceBase.prototype.transformZenfuseOrder(order)).toEqual(
+            expectation,
+        );
     });
 
     it('should pass custom timeInForce for limit order', () => {
@@ -81,14 +58,14 @@ describe('transfromZenfuseOrder()', () => {
             extra: 'whenbinance',
         };
 
-        expect(transfromZenfuseOrder(order)).toEqual(expectation);
+        expect(BinanceBase.prototype.transformZenfuseOrder(order)).toEqual(
+            expectation,
+        );
     });
 });
 
 describe('transformBinanceOrder()', () => {
-    const { transfromBinanceOrder } = utils;
-
-    const OrderSchema = require('../../../base/schemas/openOrder').omit({
+    const OrderSchema = require('../../base/schemas/openOrder').omit({
         symbol: true,
     });
 
@@ -125,15 +102,13 @@ describe('transformBinanceOrder()', () => {
             ],
         };
 
-        const result = transfromBinanceOrder(binanceCreatedOrder);
-
-        expect(result).toMatchSchema(OrderSchema);
+        expect(
+            BinanceBase.prototype.transformBinanceOrder(binanceCreatedOrder),
+        ).toMatchSchema(OrderSchema);
     });
 });
 
 describe('assignDefaultsInOrder()', () => {
-    const { assignDefaultsInOrder } = utils;
-
     const DEFAULTS = {
         limit: {
             timeInForce: 'GTC',
@@ -157,7 +132,10 @@ describe('assignDefaultsInOrder()', () => {
             timeInForce: 'GTC',
         };
 
-        const output = assignDefaultsInOrder(order, DEFAULTS);
+        const output = BinanceBase.prototype.assignDefaultsInOrder(
+            order,
+            DEFAULTS,
+        );
 
         expect(output).toMatchObject(expectation);
         expect(output.timeInForce).toBe(expectation.timeInForce);
@@ -178,7 +156,10 @@ describe('assignDefaultsInOrder()', () => {
             quantity: '0.001',
         };
 
-        const output = assignDefaultsInOrder(order, DEFAULTS);
+        const output = BinanceBase.prototype.assignDefaultsInOrder(
+            order,
+            DEFAULTS,
+        );
 
         expect(output).toMatchObject(expectation);
         expect(output.timeInForce).toBeUndefined();

@@ -1,6 +1,6 @@
 const mergeObjects = require('deepmerge');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 const BinanceBase = require('../base');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
@@ -42,9 +42,11 @@ class BinanceSpot extends BinanceBase {
 
         this.cache.updateCache(exchangeInfo);
 
-        const spotMarkets = utils.extractSpotMarkets(exchangeInfo.symbols);
+        const spotMarkets = exchangeInfo.symbols.filter((market) =>
+            market.permissions.includes('SPOT'),
+        );
 
-        const tickers = utils.extractTickersFromSymbols(spotMarkets);
+        const tickers = this.extractTickersFromSymbols(spotMarkets);
 
         utils.linkOriginalPayload(tickers, exchangeInfo);
 
@@ -63,9 +65,17 @@ class BinanceSpot extends BinanceBase {
 
         this.cache.updateCache(exchangeInfo);
 
-        const spotMarkets = utils.extractSpotMarkets(exchangeInfo.symbols);
+        const spotMarkets = exchangeInfo.symbols.filter((market) =>
+            market.permissions.includes('SPOT'),
+        );
 
-        const markets = utils.structualizeMarkets(spotMarkets);
+        const markets = spotMarkets.map((market) => {
+            return {
+                symbol: `${market.baseAsset}/${market.quoteAsset}`,
+                baseTicker: market.baseAsset,
+                quoteTicker: market.quoteAsset,
+            };
+        });
 
         utils.linkOriginalPayload(markets, exchangeInfo);
 
@@ -134,7 +144,7 @@ class BinanceSpot extends BinanceBase {
         const params = {};
 
         if (market) {
-            params.symbol = utils.transformMarketString(market);
+            params.symbol = market.replace('/', '').toUpperCase();
         }
 
         const response = await this.publicFetch('api/v3/ticker/price', {
@@ -192,28 +202,28 @@ class BinanceSpot extends BinanceBase {
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const assignedOrder = utils.assignDefaultsInOrder(
+        const assignedOrder = this.assignDefaultsInOrder(
             zOrder,
             this.options.defaults,
         );
 
         // TODO: Assign defaults in transformation
-        const bOrder = utils.transfromZenfuseOrder(assignedOrder);
+        const bOrder = this.transformZenfuseOrder(assignedOrder);
 
         const bCreatedOrder = await this.privateFetch('api/v3/order', {
             method: 'POST',
             searchParams: bOrder,
         });
 
-        const zCreadedOrder = utils.transfromBinanceOrder(bCreatedOrder);
+        const zCreatedOrder = this.transformBinanceOrder(bCreatedOrder);
 
-        zCreadedOrder.symbol = this.parseBinanceSymbol(bCreatedOrder.symbol);
+        zCreatedOrder.symbol = this.parseBinanceSymbol(bCreatedOrder.symbol);
 
-        this.cache.cacheOrder(zCreadedOrder);
+        this.cache.cacheOrder(zCreatedOrder);
 
-        utils.linkOriginalPayload(zCreadedOrder, bCreatedOrder);
+        utils.linkOriginalPayload(zCreatedOrder, bCreatedOrder);
 
-        return zCreadedOrder;
+        return zCreatedOrder;
     }
 
     /**
@@ -232,7 +242,7 @@ class BinanceSpot extends BinanceBase {
             },
         });
 
-        const deletedOrder = utils.transfromBinanceOrder(response);
+        const deletedOrder = this.transformBinanceOrder(response);
 
         deletedOrder.status = 'canceled';
 
@@ -283,7 +293,7 @@ class BinanceSpot extends BinanceBase {
             },
         });
 
-        const deletedOrder = utils.transfromBinanceOrder(response);
+        const deletedOrder = this.transformBinanceOrder(response);
 
         utils.linkOriginalPayload(deletedOrder, response);
 
@@ -347,7 +357,7 @@ class BinanceSpot extends BinanceBase {
             },
         });
 
-        const zOrder = utils.transfromBinanceOrder(response);
+        const zOrder = this.transformBinanceOrder(response);
 
         zOrder.symbol = this.parseBinanceSymbol(response.symbol);
 

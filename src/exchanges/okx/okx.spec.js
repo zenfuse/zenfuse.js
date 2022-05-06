@@ -1,51 +1,6 @@
-const utils = require('.');
-
-describe('createHmacSignature()', () => {
-    const { createHmacSignature } = utils;
-
-    it('should return valid signature', () => {
-        const params = {
-            ts: 1588591511721,
-            method: 'GET',
-            path: '/api/v5/market/tickers',
-        };
-
-        const key = '0b3695c7-94d8-4d9e-8d40-e442a94dd90f';
-        const signature = 'MdQTOHiC6aAfDCjy+9ZV4/dqY4tZDpPn5cJrYk7VUxM=';
-        const trueSign = createHmacSignature(params, key);
-
-        expect(trueSign).toBe(signature);
-    });
-
-    it('should return valid signature with body', () => {
-        const params = {
-            method: 'POST',
-            body: {
-                market: 'BTC-PERP',
-                side: 'buy',
-                price: 8500,
-                size: 1,
-                type: 'limit',
-                reduceOnly: false,
-                ioc: false,
-                postOnly: false,
-                clientId: null,
-            },
-            path: '/api/orders',
-            ts: 1588591856950,
-        };
-
-        const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
-        const signature = 'KDLYU+VdtxX1mqrdlmzcUZE5Z9qL9oeq2EV6WsYJMT4=';
-        const trueSign = createHmacSignature(params, key);
-
-        expect(trueSign).toBe(signature);
-    });
-});
+const OkxBase = require('./base');
 
 describe('transformZenfuseOrder()', () => {
-    const { transformZenfuseOrder } = utils;
-
     it('should transform limit order', () => {
         const order = {
             id: 1,
@@ -68,16 +23,16 @@ describe('transformZenfuseOrder()', () => {
             extra: 'whenbinance',
         };
 
-        expect(transformZenfuseOrder(order)).toStrictEqual(expectation);
+        expect(OkxBase.prototype.transformZenfuseOrder(order)).toStrictEqual(
+            expectation,
+        );
     });
 });
 
 describe('transformOkxOrder()', () => {
-    const { transformOkxOrder } = utils;
+    const OrderSchema = require('../../base/schemas/openOrder');
 
-    const OrderSchema = require('../../../base/schemas/openOrder');
-
-    it('should transform order', () => {
+    it('should transform REST format order', () => {
         const okxCreatedOrder = {
             instType: 'SPOT',
             instId: 'BTC-USDT',
@@ -127,7 +82,7 @@ describe('transformOkxOrder()', () => {
             status: 'open',
         };
 
-        const result = transformOkxOrder(okxCreatedOrder);
+        const result = OkxBase.prototype.transformOkxOrder(okxCreatedOrder);
 
         expect(result).toMatchSchema(OrderSchema);
         expect(result).toStrictEqual(expectation);

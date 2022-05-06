@@ -1,11 +1,10 @@
 const BithumbBase = require('../base');
 const mergeObjects = require('deepmerge');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const { transformZenfuseOrder } = require('../utils');
 const { timeIntervals } = require('../metadata');
 
 /**
@@ -43,7 +42,7 @@ class BithumbSpot extends BithumbBase {
         });
         // TODO: Cache update here
 
-        const tickers = utils.extractSpotTickers(markets.data);
+        const tickers = markets.data.map((ticker) => ticker.s);
 
         utils.linkOriginalPayload(tickers, markets);
 
@@ -51,7 +50,7 @@ class BithumbSpot extends BithumbBase {
     }
 
     /**
-     * @returns {string[]} Array of ticker pairs on FTX
+     * @returns {string[]} Array of ticker pairs on Bithumb
      */
     async fetchMarkets() {
         const response = await this.publicFetch('spot/ticker', {
@@ -133,7 +132,7 @@ class BithumbSpot extends BithumbBase {
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const bOrder = transformZenfuseOrder(zOrder);
+        const bOrder = this.transformZenfuseOrder(zOrder);
 
         if (zOrder.type === 'market' && zOrder.side === 'buy') {
             let orderTotal = null;
@@ -150,10 +149,7 @@ class BithumbSpot extends BithumbBase {
             json: bOrder,
         });
 
-        const zCreatedOrder = utils.transformBithumbOrder(
-            bCreatedOrder,
-            zOrder,
-        );
+        const zCreatedOrder = this.transformBithumbOrder(bCreatedOrder, zOrder);
 
         this.cache.cacheOrder(zCreatedOrder);
 
@@ -267,7 +263,7 @@ class BithumbSpot extends BithumbBase {
             },
         });
 
-        const zOrder = utils.transformBithumbOrder(responce, orderToFetch);
+        const zOrder = this.transformBithumbOrder(responce, orderToFetch);
 
         return zOrder;
     }

@@ -13,6 +13,7 @@ declare class BinanceBase extends ExchangeBase {
      * @type {BinanceCache}
      */
     cache: BinanceCache;
+    signatureEncoding: string;
     /**
      * Make http request based on constructor settings
      *
@@ -69,6 +70,48 @@ declare class BinanceBase extends ExchangeBase {
      * @returns {string} Normal symbol with separator
      */
     parseBinanceSymbol(bSymbol: string): string;
+    /**
+     * @param {Array} symbols Array of symbols from `api/v3/exchangeInfo`
+     * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
+     */
+    extractTickersFromSymbols(symbols: any[]): string[];
+    /**
+     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+     */
+    /**
+     * Insert default values for specific order type
+     *
+     * **DEV** All values should be for zenfuse interface
+     *
+     * @param {OrderParams} order
+     * @param {object} defaults
+     * @param {OrderParams} defaults.limit
+     * @param {OrderParams} defaults.market
+     * @returns {OrderParams}
+     */
+    assignDefaultsInOrder(order: any, defaults: {
+        limit: any;
+        market: any;
+    }): any;
+    /**
+     * Zenfuse -> Binance
+     *
+     * **DEV:** This function does not assign defaults values
+     *
+     * @param {OrderParams} zOrder Zenfuse order
+     * @returns {object} Order for binance api
+     */
+    transformZenfuseOrder(zOrder: any): object;
+    /**
+     * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+    /**
+     * Binance -> Zenfuse
+     *
+     * @param {*} bOrder Order fromf
+     * @returns {PlacedOrder} Zenfuse Order
+     */
+    transformBinanceOrder(bOrder: any): any;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");

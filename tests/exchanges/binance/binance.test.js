@@ -20,8 +20,34 @@ const env = createEnv({
         symbol: 'USDC/USDT',
         type: 'limit',
         side: 'buy',
-        quantity: 20,
-        price: 0.8,
+        quantity: 15,
+        price: 0.9,
+    },
+    BUY_MARKET_ORDER: {
+        symbol: 'BTC/USDT',
+        type: 'market',
+        side: 'buy',
+        quantity: 0.0003,
+    },
+    SELL_MARKET_ORDER: {
+        symbol: 'BTC/USDT',
+        type: 'market',
+        side: 'sell',
+        quantity: 0.0003,
+    },
+    BUY_LIMIT_ORDER: {
+        symbol: 'BTC/USDT',
+        type: 'limit',
+        side: 'buy',
+        quantity: 0.0004,
+        price: 35000,
+    },
+    SELL_LIMIT_ORDER: {
+        symbol: 'BTC/USDT',
+        type: 'limit',
+        side: 'sell',
+        quantity: 0.0003,
+        price: 55000,
     },
 });
 

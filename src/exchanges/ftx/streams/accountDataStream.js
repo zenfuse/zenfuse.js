@@ -1,6 +1,6 @@
 const { createHmac } = require('crypto');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 const FtxWebsocketBase = require('./websocketBase');
 
 class AccountDataStream extends FtxWebsocketBase {
@@ -30,7 +30,7 @@ class AccountDataStream extends FtxWebsocketBase {
         const timestamp = Date.now();
         const signature = createHmac('sha256', privateKey)
             .update(`${timestamp}websocket_login`)
-            .digest('hex');
+            .digest(this.signatureEncoding);
 
         this.sendSocketMessage({
             op: 'login',
@@ -59,7 +59,7 @@ class AccountDataStream extends FtxWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = utils.transfromFtxOrder(payload.data);
+        const order = this.transformFtxOrder(payload.data);
 
         utils.linkOriginalPayload(order, payload);
 

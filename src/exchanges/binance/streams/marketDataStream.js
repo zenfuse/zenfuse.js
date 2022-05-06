@@ -1,5 +1,4 @@
 const debug = require('../../../base/etc/debug');
-const utils = require('../utils');
 const RuntimeError = require('../../../base/errors/runtime.error');
 
 const BinanceWebsocketBase = require('./websocketBase');
@@ -88,9 +87,7 @@ class MarketDataStream extends BinanceWebsocketBase {
         }
 
         if (event.channel === 'price') {
-            const symbol = utils
-                .transformMarketString(event.symbol)
-                .toLowerCase();
+            const symbol = event.symbol.replace('/', '').toLowerCase();
 
             if (command === 'subscribe') {
                 await this.sendSocketSubscribe(`${symbol}@kline_1m`);
@@ -104,9 +101,7 @@ class MarketDataStream extends BinanceWebsocketBase {
         }
 
         if (event.channel === 'candle') {
-            const symbol = utils
-                .transformMarketString(event.symbol)
-                .toLowerCase();
+            const symbol = event.symbol.replace('/', '').toLowerCase();
 
             if (command === 'subscribe') {
                 await this.sendSocketSubscribe(
@@ -127,9 +122,7 @@ class MarketDataStream extends BinanceWebsocketBase {
     }
 
     async unsubscribeFromAllbySymbol(symbol) {
-        const symbolToDelete = utils
-            .transformMarketString(symbol)
-            .toLowerCase();
+        const symbolToDelete = symbol.replace('/', '').toLowerCase();
 
         const requestPayload = {
             method: 'LIST_SUBSCRIPTIONS',
@@ -192,7 +185,7 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @param {*} payload
      */
     emitNewPrice(payload) {
-        const kline = utils.transfornCandlestick(payload.k);
+        const kline = this.transformCandlestick(payload.k);
         const parsedSymbol = this.base.parseBinanceSymbol(kline.symbol);
 
         debug.log('Emit "price" Event');
@@ -211,7 +204,7 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @param {*} payload
      */
     emitCandle(payload) {
-        const kline = utils.transfornCandlestick(payload.k);
+        const kline = this.transformCandlestick(payload.k);
 
         kline.symbol = this.base.parseBinanceSymbol(kline.symbol);
 

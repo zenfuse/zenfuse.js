@@ -1,7 +1,7 @@
 const FtxBase = require('../base');
 const mergeObjects = require('deepmerge');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
@@ -37,9 +37,16 @@ class FtxSpot extends FtxBase {
 
         // TODO: Cache update here
 
-        const spotMarkets = utils.extractSpotMarkets(markets.result);
+        const spotMarkets = markets.result.filter(
+            (market) => market.type === 'spot',
+        );
 
-        const tickers = utils.extractTickersFromMarkets(spotMarkets);
+        const tickers = spotMarkets
+            .map((market) => {
+                return [market.baseCurrency, market.quoteCurrency];
+            })
+            .flat()
+            .filter(Boolean);
 
         utils.linkOriginalPayload(tickers, markets);
 
@@ -54,7 +61,9 @@ class FtxSpot extends FtxBase {
 
         // TODO: Cache update here
 
-        const spotMarkets = utils.extractSpotMarkets(response.result);
+        const spotMarkets = response.result.filter(
+            (market) => market.type === 'spot',
+        );
 
         const markets = spotMarkets.map((m) => {
             return {
@@ -173,14 +182,14 @@ class FtxSpot extends FtxBase {
     async createOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const fOrder = utils.transfromZenfuseOrder(zOrder);
+        const fOrder = this.transformZenfuseOrder(zOrder);
 
         const fCreatedOrder = await this.privateFetch('api/orders', {
             method: 'POST',
             json: fOrder,
         });
 
-        const zCreatedOrder = utils.transfromFtxOrder(fCreatedOrder.result);
+        const zCreatedOrder = this.transformFtxOrder(fCreatedOrder.result);
 
         this.cache.cacheOrder(zCreatedOrder);
 
@@ -261,7 +270,7 @@ class FtxSpot extends FtxBase {
     async fetchOrderById(orderId) {
         const responce = await this.privateFetch(`api/orders/${orderId}`);
 
-        const zOrder = utils.transfromFtxOrder(responce.result);
+        const zOrder = this.transformFtxOrder(responce.result);
 
         return zOrder;
     }

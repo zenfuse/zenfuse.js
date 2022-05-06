@@ -134,34 +134,8 @@ class AccountDataStream extends ExchangeWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = this.transfromWebsocketOrder(payload);
+        const order = this.transformWebsocketOrder(payload);
         this.emit('orderUpdate', order);
-    }
-
-    /**
-     * Transforms websocket order from binance
-     * Binance -> Zenfuse
-     *
-     * @param {object} wsOrder
-     * @typedef {import('../../..').Order} Order
-     * @private
-     * @returns {Order} Zenfuse Order
-     */
-    transfromWebsocketOrder(wsOrder) {
-        const parsedSymbol = this.base.parseBinanceSymbol(wsOrder.s);
-
-        // TODO: Add type for wsOrder
-
-        return {
-            id: wsOrder.i.toString(),
-            timestamp: wsOrder.E,
-            status: wsOrder.X.toLowerCase(),
-            symbol: parsedSymbol,
-            type: wsOrder.o.toLowerCase(),
-            side: wsOrder.S.toLowerCase(),
-            price: parseFloat(wsOrder.p),
-            quantity: parseFloat(wsOrder.q),
-        };
     }
 }
 
