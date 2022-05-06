@@ -44,11 +44,10 @@ class ExchangeWebsocketBase extends EventEmitter {
     transformWebsocketOrder(wsOrder) {
         const parsedSymbol = this.base.parseBinanceSymbol(wsOrder.s);
 
-        // TODO: Add type for wsOrder
-
         return {
             id: wsOrder.i.toString(),
             timestamp: wsOrder.E,
+            // TODO: Refactor this
             status:
                 wsOrder.X === 'NEW' || wsOrder.X === 'PARTIALLY_FILLED'
                     ? 'open'
