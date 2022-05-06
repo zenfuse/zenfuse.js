@@ -1,6 +1,6 @@
-const ParentEnvironment = require('jest-environment-node');
+const { TestEnvironment } = require('jest-environment-node');
 
-class ZenfuseJestEnvironment extends ParentEnvironment {
+class ZenfuseJestEnvironment extends TestEnvironment {
     /**
      * List scopes with should run
      *
