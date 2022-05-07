@@ -16,7 +16,7 @@ class MarketDataStream extends OkxWebsocketBase {
      * @returns {this}
      */
     async open() {
-        if (this.isSocketConneted) return this;
+        if (this.isSocketConnected) return this;
 
         await super.open('ws/v5/public');
 
@@ -57,7 +57,7 @@ class MarketDataStream extends OkxWebsocketBase {
         let event = {};
 
         if (isJustSymbol) {
-            throw 'Not implemented'; // TODO: Full symbol subscribition
+            throw 'Not implemented'; // TODO: Full symbol subscription
         } else {
             event = arg;
         }
@@ -88,7 +88,7 @@ class MarketDataStream extends OkxWebsocketBase {
             return;
         }
 
-        throw new Error('Uknown channel name ' + event.channel);
+        throw new Error('Unknown channel name ' + event.channel);
     }
 
     /**

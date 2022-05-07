@@ -5,6 +5,7 @@
         "zenfuse",
         "zefu",
         "bithumb",
+        "deepmerge",
         "bitglobal",
         "binance",
         "APIKEY",
@@ -18,9 +19,12 @@
         "ETHBUSD",
         "BTCETH",
         "ETHBTC",
+        "FUNBNB",
+        "ELON",
         "BTCUSDT",
         "BNBUSDT",
         "PERP",
-        "whenbinance"
+        "whenbinance",
+        "stablecoins"
     ]
 }

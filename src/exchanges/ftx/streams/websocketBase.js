@@ -94,6 +94,10 @@ class FtxWebsocketBase extends EventEmitter {
         this.socket.send(msgString);
     }
 
+    /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+
     transformFtxOrder(fOrder) {
         /**
          * @type {PlacedOrder}
@@ -107,7 +111,7 @@ class FtxWebsocketBase extends EventEmitter {
         zOrder.side = fOrder.side;
         zOrder.quantity = parseFloat(fOrder.size);
         zOrder.price = fOrder.price ? parseFloat(fOrder.price) : undefined;
-        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+        // zOrder.trades = bOrder.fills; // TODO: Fill commission counter
 
         if (fOrder.status === 'new') {
             zOrder.status = 'open';

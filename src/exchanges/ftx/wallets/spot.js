@@ -268,9 +268,9 @@ class FtxSpot extends FtxBase {
      * @param {string} orderId
      */
     async fetchOrderById(orderId) {
-        const responce = await this.privateFetch(`api/orders/${orderId}`);
+        const response = await this.privateFetch(`api/orders/${orderId}`);
 
-        const zOrder = this.transformFtxOrder(responce.result);
+        const zOrder = this.transformFtxOrder(response.result);
 
         return zOrder;
     }

@@ -3,7 +3,7 @@ const utils = require('../../../../base/utils/utils');
 const MarketDataStream = require('../marketDataStream');
 
 /**
- * Creates candlestick stream for FTX, wich based only on trades.
+ * Creates candlestick stream for FTX, witch based only on trades.
  *
  * **NOTE:** Only one stream should be registered on instance
  *
@@ -17,7 +17,7 @@ class BithumbCandleStream {
      */
     event = null;
 
-    previusCandle = null;
+    previousCandle = null;
     currentCandle = {};
 
     /**
@@ -44,7 +44,7 @@ class BithumbCandleStream {
     /**
      * Trades for last candlestick
      */
-    previusTrades = [];
+    previousTrades = [];
 
     /**
      * @returns {boolean}
@@ -83,9 +83,10 @@ class BithumbCandleStream {
         this.intervalInMs =
             utils.timeIntervalToSeconds(this.event.interval) * 1000;
 
-        this.previusCandle = await this.fetchLastCandle();
+        this.previousCandle = await this.fetchLastCandle();
 
-        const candleOpenTime = this.previusCandle.timestamp + this.intervalInMs;
+        const candleOpenTime =
+            this.previousCandle.timestamp + this.intervalInMs;
 
         this.currentCandle.closeAt = candleOpenTime + this.intervalInMs;
         this.currentCandle.timestamp = candleOpenTime;
@@ -99,7 +100,7 @@ class BithumbCandleStream {
     }
 
     /**
-     * Unregisters stream on websocket
+     * Unregister stream on websocket
      *
      * @public
      */
@@ -114,7 +115,7 @@ class BithumbCandleStream {
         });
 
         this.event = null;
-        this.previusClosedCandle = null;
+        this.previousClosedCandle = null;
     }
 
     /**
@@ -196,8 +197,8 @@ class BithumbCandleStream {
         }
 
         if (!isCurrentCandle) {
-            if (this.previusTrades.length === 0) {
-                this.previusTrades.push(trade);
+            if (this.previousTrades.length === 0) {
+                this.previousTrades.push(trade);
             }
             this.emitNewCandleStatus({ isClosed: true });
             this.onCloseCandle();
@@ -207,11 +208,11 @@ class BithumbCandleStream {
     }
 
     onCloseCandle() {
-        this.previusTrades = this.trades;
+        this.previousTrades = this.trades;
         this.trades = [];
-        this.previusCandle = this.currentCandle;
+        this.previousCandle = this.currentCandle;
         this.currentCandle = {};
-        this.currentCandle.timestamp = this.previusCandle.closeAt;
+        this.currentCandle.timestamp = this.previousCandle.closeAt;
         this.currentCandle.closeAt =
             this.currentCandle.timestamp + this.intervalInMs;
     }
@@ -219,7 +220,7 @@ class BithumbCandleStream {
     emitNewCandleStatus(additional) {
         if (this.trades.length === 0) {
             // Using last trade
-            this.trades = this.previusTrades[this.previusTrades.length - 1];
+            this.trades = this.previousTrades[this.previousTrades.length - 1];
         }
 
         const open = parseFloat(this.trades[0].p);

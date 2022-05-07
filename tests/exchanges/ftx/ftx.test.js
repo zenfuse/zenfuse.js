@@ -62,7 +62,7 @@ describe('Error Handling', () => {
                 await new FTX.spot()
                     .auth({
                         publicKey: 'invalidPublicKey',
-                        privateKey: 'invalidSectetKey',
+                        privateKey: 'invalidSecretKey',
                     })
                     .privateFetch('api/orders', {
                         searchParams: {

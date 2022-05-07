@@ -11,7 +11,7 @@ module.exports = {
     Binance,
     FTX,
     Bithumb,
-    Bitglobal: Bithumb, // TODO: Rename all githumb classes
+    Bitglobal: Bithumb, // TODO: Rename all bithumb classes
     OKX,
 
     errorCodes: ExchangeBaseException.errorCodes,

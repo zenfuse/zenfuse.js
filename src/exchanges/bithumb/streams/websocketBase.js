@@ -93,6 +93,10 @@ class BithumbWebsocketBase extends EventEmitter {
         this.socket.send(msgString);
     }
 
+    /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+
     transformBithumbOrderWS(bOrder) {
         /**
          * @type {PlacedOrder}
@@ -116,7 +120,7 @@ class BithumbWebsocketBase extends EventEmitter {
         } else {
             zOrder.status = 'canceled';
         }
-        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+        // zOrder.trades = bOrder.fills; // TODO: Fill commission counter
 
         return zOrder;
     }

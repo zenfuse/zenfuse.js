@@ -73,7 +73,7 @@ describe('Error Handling', () => {
                 await new Bithumb.spot()
                     .auth({
                         publicKey: 'invalidPublicKey',
-                        privateKey: 'invalidSectetKey',
+                        privateKey: 'invalidSecretKey',
                     })
                     .privateFetch('spot/assetList', {
                         method: 'POST',

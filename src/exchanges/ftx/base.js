@@ -16,7 +16,7 @@ const keysSymbol = Symbol.for('zenfuse.keyVault');
  */
 class FtxBase extends ExchangeBase {
     /**
-     * Http client options specialy for FTX
+     * Http client options specially for FTX
      *
      * @type {import('../../base/exchange').BaseOptions}
      */
@@ -100,7 +100,7 @@ class FtxBase extends ExchangeBase {
     }
 
     /**
-     * Connect to authentificated API
+     * Connect to authenticated API
      *
      * @param {object} keys
      * @param {string} keys.publicKey
@@ -115,7 +115,7 @@ class FtxBase extends ExchangeBase {
     }
 
     /**
-     * Is instanse has keys to authenticate on not
+     * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */
@@ -218,7 +218,7 @@ class FtxBase extends ExchangeBase {
         zOrder.side = fOrder.side;
         zOrder.quantity = parseFloat(fOrder.size);
         zOrder.price = fOrder.price ? parseFloat(fOrder.price) : undefined;
-        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+        // zOrder.trades = bOrder.fills; // TODO: Fill commission counter
 
         if (fOrder.status === 'new') {
             zOrder.status = 'open';

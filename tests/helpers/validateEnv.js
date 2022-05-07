@@ -1,7 +1,7 @@
 /**
  * Checks is instance has required environment variables.
  *
- * @param {string[]} requiredVars List of varibles
+ * @param {string[]} requiredVars List of variables
  */
 const checkProcessHasVariables = (requiredVars) => {
     const errors = [];

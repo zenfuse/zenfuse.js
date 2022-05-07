@@ -255,7 +255,7 @@ class BithumbSpot extends BithumbBase {
             symbol = orderToFetch.symbol.replace('/', '-');
         }
 
-        const responce = await this.privateFetch('spot/singleOrder', {
+        const response = await this.privateFetch('spot/singleOrder', {
             method: 'POST',
             json: {
                 orderId: orderId,
@@ -263,7 +263,7 @@ class BithumbSpot extends BithumbBase {
             },
         });
 
-        const zOrder = this.transformBithumbOrder(responce, orderToFetch);
+        const zOrder = this.transformBithumbOrder(response, orderToFetch);
 
         return zOrder;
     }
@@ -285,14 +285,14 @@ class BithumbSpot extends BithumbBase {
      * @returns {Kline[]}
      */
     async fetchCandleHistory(params) {
-        // NOTE: `start` and `end` should be in secconds
+        // NOTE: `start` and `end` should be in seconds
         let start = 0;
         let end = 0;
 
         // TODO: Timeline defaults for 1m and 1M
         if (!params.startTime || !params.endTime) {
             end = new Date().setMinutes(0, 0, 0) / 1000;
-            start = end - 60 * 60; // Last hour didnt work
+            start = end - 60 * 60; // Last hour didn't work
         } else {
             start = Math.floor(params.startTime / 1000);
             end = Math.floor(params.endTime / 1000);

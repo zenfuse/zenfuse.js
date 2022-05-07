@@ -61,22 +61,22 @@ const DEFAULTS = {
  * @returns {MasterTestEnvironment}
  */
 module.exports = (extra) => {
-    const merdged = mergeObjects(DEFAULTS, extra);
+    const merged = mergeObjects(DEFAULTS, extra);
 
     // For deepmerge undefined is a legit default value
     // Overwrite it if keys doesn't exist in the environment
 
-    if (merdged.API_PRIVATE_KEY === undefined) {
-        merdged.API_PRIVATE_KEY = 'DUMMY_PRIVATE_KEY';
+    if (merged.API_PRIVATE_KEY === undefined) {
+        merged.API_PRIVATE_KEY = 'DUMMY_PRIVATE_KEY';
     }
 
-    if (merdged.API_PUBLIC_KEY === undefined) {
-        merdged.API_PUBLIC_KEY = 'DUMMY_PUBLIC_KEY';
+    if (merged.API_PUBLIC_KEY === undefined) {
+        merged.API_PUBLIC_KEY = 'DUMMY_PUBLIC_KEY';
     }
 
-    if (merdged.API_ADD_KEY === undefined) {
-        merdged.API_ADD_KEY = 'DUMMY_ADD_KEY';
+    if (merged.API_ADD_KEY === undefined) {
+        merged.API_ADD_KEY = 'DUMMY_ADD_KEY';
     }
 
-    return merdged;
+    return merged;
 };

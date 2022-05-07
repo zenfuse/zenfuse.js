@@ -62,7 +62,7 @@ class MarketDataStream extends BithumbWebsocketBase {
         let event = {};
 
         if (isJustSymbol) {
-            throw 'Not implemented'; // TODO: Full symbol subscribition
+            throw 'Not implemented'; // TODO: Full symbol subscription
         } else {
             event = arg;
         }
@@ -84,16 +84,16 @@ class MarketDataStream extends BithumbWebsocketBase {
             return;
         }
 
-        throw new Error('Uknown channel name ' + event.channel);
+        throw new Error('Unknown channel name ' + event.channel);
     }
 
     /**
      * @private
-     * @param {WebsocketEvent} event Candle stream event subscribtion
+     * @param {WebsocketEvent} event Candle stream event subscription
      */
     async setupCandleStream(event) {
         if (this.candleStreams.has(event)) {
-            return; // Alredy registered
+            return; // Already registered
         }
 
         const candleStream = new CandleStream(this);
@@ -104,7 +104,7 @@ class MarketDataStream extends BithumbWebsocketBase {
     }
 
     /**
-     * @param {WebsocketEvent} event Candle stream event subscribtion
+     * @param {WebsocketEvent} event Candle stream event subscription
      */
     async unsetupCandleStream(event) {
         const candleStream = this.candleStreams.get(event);
@@ -118,7 +118,7 @@ class MarketDataStream extends BithumbWebsocketBase {
         this.candleStreams.delete(event);
     }
 
-    // TODO: Save all subscribition
+    // TODO: Save all subscription
     async unsubscribeFromAllBySymbol() {
         throw 'Not implemented';
     }
@@ -172,7 +172,7 @@ class MarketDataStream extends BithumbWebsocketBase {
      * @returns {Promise<object>} Server response
      */
     async sendSocketUnsubscribe(...eventNames) {
-        if (eventNames.lenght === 0) return; // nothing to do
+        if (eventNames.length === 0) return; // nothing to do
 
         this.checkSocketIsConnected();
 
