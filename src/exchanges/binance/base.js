@@ -17,7 +17,7 @@ const keysSymbol = Symbol('keys');
  */
 class BinanceBase extends ExchangeBase {
     /**
-     * Http client options specialy for Binance
+     * Http client options specially for Binance
      *
      * @type {import('../../base/exchange').BaseOptions}
      */
@@ -105,7 +105,7 @@ class BinanceBase extends ExchangeBase {
     }
 
     /**
-     * Connect to authentificated API
+     * Connect to authenticated API
      *
      * @param {object} keys
      * @param {string} keys.publicKey
@@ -120,7 +120,7 @@ class BinanceBase extends ExchangeBase {
     }
 
     /**
-     * Is instanse has keys to authenticate on not
+     * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */
@@ -174,7 +174,7 @@ class BinanceBase extends ExchangeBase {
         let rawSymbol = '';
 
         if (!isSymbolCached) {
-            const errorMsg = `Unnable to parse binance ${bSymbol} symbol`;
+            const errorMsg = `Unable to parse binance ${bSymbol} symbol`;
 
             // 6 length symbol can divided by 2 pieces
             if (bSymbol.length === 6) {
@@ -298,7 +298,7 @@ class BinanceBase extends ExchangeBase {
     /**
      * Binance -> Zenfuse
      *
-     * @param {*} bOrder Order fromf
+     * @param {*} bOrder Order from binance
      * @returns {PlacedOrder} Zenfuse Order
      */
     transformBinanceOrder(bOrder) {

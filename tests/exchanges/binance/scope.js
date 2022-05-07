@@ -1,3 +1,4 @@
+/* eslint-disable @cspell/spellchecker */
 const nock = require('nock');
 
 const HOSTNAME = 'https://api.binance.com/';

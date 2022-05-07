@@ -62,14 +62,14 @@ class MarketDataStream extends BinanceWebsocketBase {
     }
 
     async subscribeTo(event) {
-        return await this.editSubscribition(event, 'subscribe');
+        return await this.editSubscription(event, 'subscribe');
     }
 
     /**
      * @param {string|WebsocketEvent} event
      */
     async unsubscribeFrom(event) {
-        return await this.editSubscribition(event, 'unsubscribe');
+        return await this.editSubscription(event, 'unsubscribe');
     }
 
     /**
@@ -81,9 +81,9 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @param {WebsocketEvent} event
      * @param {'subscribe'|'unsubscribe'} command
      */
-    async editSubscribition(event, command) {
+    async editSubscription(event, command) {
         if (!['subscribe', 'unsubscribe'].includes(command)) {
-            throw new TypeError('Uknown command ' + command);
+            throw new TypeError('Unknown command ' + command);
         }
 
         if (event.channel === 'price') {
@@ -118,10 +118,10 @@ class MarketDataStream extends BinanceWebsocketBase {
             }
         }
 
-        throw new TypeError(`Uknown channel name ${event.channel}`);
+        throw new TypeError(`Unknown channel name ${event.channel}`);
     }
 
-    async unsubscribeFromAllbySymbol(symbol) {
+    async unsubscribeFromAllBySymbol(symbol) {
         const symbolToDelete = symbol.replace('/', '').toLowerCase();
 
         const requestPayload = {
@@ -157,7 +157,7 @@ class MarketDataStream extends BinanceWebsocketBase {
             // this message is response for specific request
             if (!this.messageQueue.has(payload.id)) {
                 throw new RuntimeError(
-                    'Binance MarketDataStream mesage queue unsynced',
+                    'Binance MarketDataStream message queue out of sync',
                 );
             }
 
@@ -217,10 +217,10 @@ class MarketDataStream extends BinanceWebsocketBase {
     /**
      * @private
      * @param  {...string} eventNames
-     * @returns {Promise<object>} Server responce
+     * @returns {Promise<object>} Server response
      */
     async sendSocketSubscribe(...eventNames) {
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const payload = {
             method: 'SUBSCRIBE',
@@ -234,12 +234,12 @@ class MarketDataStream extends BinanceWebsocketBase {
     /**
      * @private
      * @param  {string[]} eventNames
-     * @returns {Promise<object>} Server responce
+     * @returns {Promise<object>} Server response
      */
     async sendSocketUnsubscribe(...eventNames) {
-        if (eventNames.lenght === 0) return; // nothing to do
+        if (eventNames.length === 0) return; // nothing to do
 
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const id = this.createPayloadId();
 
@@ -257,8 +257,7 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @returns {Promise<object>}
      */
     sendSocketMessage(msg) {
-        // TODO: Rename this shit
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const msgString = JSON.stringify(msg);
 
@@ -287,7 +286,7 @@ class MarketDataStream extends BinanceWebsocketBase {
         return this.socket.readyState === 1;
     }
 
-    checkSocketIsConneted() {
+    checkSocketIsConnected() {
         if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }

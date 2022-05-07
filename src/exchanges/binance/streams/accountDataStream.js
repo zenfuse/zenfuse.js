@@ -115,7 +115,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
         this._validUntil = Date.now() + 3_600_000; // 60min
     }
 
-    checkSocketIsConneted() {
+    checkSocketIsConnected() {
         if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }

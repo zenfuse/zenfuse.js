@@ -54,11 +54,7 @@ class BinanceSpot extends BinanceBase {
     }
 
     /**
-     * @typedef {import('../utils/functions/agregation').structualizedMarket} structualizedMarket
-     */
-
-    /**
-     * @returns {structualizedMarket} Array of ticker pairs on this exchange
+     * @returns {string[]} Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
         const exchangeInfo = await this.publicFetch('api/v3/exchangeInfo');
@@ -94,7 +90,7 @@ class BinanceSpot extends BinanceBase {
     async fetchCandleHistory(params) {
         this.validateCandleHistoryParams(params);
 
-        // NOTE: Binance can return only 1000 candels once. If user interval is to big, it will be unfilled
+        // NOTE: Binance can return only 1000 candles once. If user interval is to big, it will be unfilled
         // TODO: Additional responses to fill required interval
         const response = await this.publicFetch('api/v3/klines', {
             searchParams: {

@@ -16,7 +16,7 @@ const keysSymbol = Symbol.for('zenfuse.keyVault');
  */
 class OkxBase extends ExchangeBase {
     /**
-     * Http client options specialy for Okx
+     * Http client options specially for Okx
      *
      * @type {import('../../base/exchange').BaseOptions}
      */
@@ -110,7 +110,7 @@ class OkxBase extends ExchangeBase {
     }
 
     /**
-     * Connect to authentificated API
+     * Connect to authenticated API
      *
      * @param {object} keys
      * @param {string} keys.publicKey
@@ -127,7 +127,7 @@ class OkxBase extends ExchangeBase {
     }
 
     /**
-     * Is instanse has keys to authenticate on not
+     * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */

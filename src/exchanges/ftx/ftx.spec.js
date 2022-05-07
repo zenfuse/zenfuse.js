@@ -1,6 +1,6 @@
 const FtxBase = require('./base');
 
-describe('transfromZenfuseOrder()', () => {
+describe('transformZenfuseOrder()', () => {
     it('should transform limit order', () => {
         const order = {
             symbol: 'BTC/ETH',

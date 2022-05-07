@@ -1,6 +1,6 @@
 const BinanceBase = require('./base');
 
-describe('transfromZenfuseOrder()', () => {
+describe('transformZenfuseOrder()', () => {
     it('should upper case symbols and transform amount', () => {
         const order = {
             symbol: 'BTC/ETH',
@@ -79,7 +79,7 @@ describe('transformBinanceOrder()', () => {
             price: '0.00000000',
             origQty: '1.00000000',
             executedQty: '1.00000000',
-            cummulativeQuoteQty: '1.00000000',
+            cumulativeQuoteQty: '1.00000000',
             status: 'FILLED',
             timeInForce: 'GTC',
             type: 'MARKET',

@@ -70,7 +70,7 @@ class FtxWebsocketBase extends EventEmitter {
         throw err; // TODO: Websocket connection error
     }
 
-    checkSocketIsConneted() {
+    checkSocketIsConnected() {
         if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }
@@ -87,12 +87,16 @@ class FtxWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg) {
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const msgString = JSON.stringify(msg);
 
         this.socket.send(msgString);
     }
+
+    /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
 
     transformFtxOrder(fOrder) {
         /**
@@ -107,7 +111,7 @@ class FtxWebsocketBase extends EventEmitter {
         zOrder.side = fOrder.side;
         zOrder.quantity = parseFloat(fOrder.size);
         zOrder.price = fOrder.price ? parseFloat(fOrder.price) : undefined;
-        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+        // zOrder.trades = bOrder.fills; // TODO: Fill commission counter
 
         if (fOrder.status === 'new') {
             zOrder.status = 'open';

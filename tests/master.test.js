@@ -19,7 +19,7 @@ const MockedAgent = require('./mocks/agent');
  * @property {Order} SELL_MARKET_ORDER
  * @property {Order} BUY_LIMIT_ORDER
  * @property {Order} SELL_LIMIT_ORDER
- * @property {Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usualy a pair of stablecoins for a half price.
+ * @property {Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usually a pair of stablecoins for a half price.
  * @property {object} PRICE_SUBSCRIPTION
  * @property {string} PRICE_SUBSCRIPTION.channel
  * @property {string} PRICE_SUBSCRIPTION.symbol
@@ -140,7 +140,7 @@ module.exports = function masterTest(Exchange, env) {
                 expect(result).toMatchSchema(schema);
             });
 
-            it('should have valid originalRespone', () => {
+            it('should have valid originalPayload', () => {
                 expect(result).toBeDefined();
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
@@ -183,7 +183,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
             });
 
-            it('should have valid originalRespone', () => {
+            it('should have valid originalPayload', () => {
                 expect(result).toBeDefined();
                 expect(
                     result[Symbol.for('zenfuse.originalPayload')],
@@ -439,7 +439,7 @@ module.exports = function masterTest(Exchange, env) {
                 try {
                     exchange.fetchOrderById.bind(
                         new Exchange['spot'](),
-                        'superorderiddd',
+                        'super-order-id',
                     );
                 } catch (e) {
                     expect(e).toBeInstanceOf(UserError);
@@ -498,7 +498,7 @@ module.exports = function masterTest(Exchange, env) {
     describe('Spot Wallet Private Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
-            // console.warn('Websoket test skipped');
+            // console.warn('Websocket test skipped');
             return;
         }
 
@@ -582,7 +582,7 @@ module.exports = function masterTest(Exchange, env) {
     describe('Spot Wallet Public Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
-            // console.warn('Websoket test skipped');
+            // console.warn('Websocket test skipped');
             return;
         }
 
@@ -663,7 +663,7 @@ module.exports = function masterTest(Exchange, env) {
                 expect(marketDataStream.isSocketConnected).toBe(true);
             });
 
-            it('should unsubsctibed from specific event', async () => {
+            it('should unsubscribed from specific event', async () => {
                 expect(marketDataStream.isSocketConnected).toBe(true);
 
                 await marketDataStream.subscribeTo(env.PRICE_SUBSCRIPTION);
@@ -701,7 +701,7 @@ module.exports = function masterTest(Exchange, env) {
     describe('Global Configurations', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
-            // console.warn('Websoket test skipped');
+            // console.warn('Websocket test skipped');
             return;
         }
         describe("'httpsAgent' option", () => {
@@ -715,7 +715,7 @@ module.exports = function masterTest(Exchange, env) {
                 expect(customAgent.createConnection).toHaveBeenCalled();
             });
 
-            it('should use custom agent on websockets', async () => {
+            it('should use custom agent on websocket', async () => {
                 const customAgent = new MockedAgent();
 
                 zenfuse.config.set('httpsAgent', customAgent);

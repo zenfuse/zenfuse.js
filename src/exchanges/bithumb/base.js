@@ -114,7 +114,7 @@ class BithumbBase extends ExchangeBase {
     }
 
     /**
-     * Connect to authentificated API
+     * Connect to authenticated API
      *
      * @param {object} keys
      * @param {string} keys.publicKey
@@ -129,7 +129,7 @@ class BithumbBase extends ExchangeBase {
     }
 
     /**
-     * Is instanse has keys to authenticate on not
+     * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */
@@ -292,7 +292,7 @@ class BithumbBase extends ExchangeBase {
                 ? zInitialOrder.status
                 : 'open';
         }
-        // zOrder.trades = bOrder.fills; // TODO: Fill commision counter
+        // zOrder.trades = bOrder.fills; // TODO: Fill commission counter
 
         return zOrder;
     }

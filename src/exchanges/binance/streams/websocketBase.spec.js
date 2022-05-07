@@ -1,3 +1,4 @@
+/* eslint-disable @cspell/spellchecker */
 const BinanceWsBase = require('./websocketBase');
 
 const mockedContext = {

@@ -45,14 +45,14 @@ class MarketDataStream extends FtxWebsocketBase {
      * @param {WebsocketEvent} event
      */
     async subscribeTo(event) {
-        return await this.editSubscribition(event, 'subscribe');
+        return await this.editSubscription(event, 'subscribe');
     }
 
     /**
      * @param {WebsocketEvent} event
      */
     async unsubscribeFrom(event) {
-        return await this.editSubscribition(event, 'unsubscribe');
+        return await this.editSubscription(event, 'unsubscribe');
     }
 
     /**
@@ -60,7 +60,7 @@ class MarketDataStream extends FtxWebsocketBase {
      * @param {WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
-    async editSubscribition(arg, command) {
+    async editSubscription(arg, command) {
         const isJustSymbol = typeof arg === 'string';
 
         /**
@@ -69,7 +69,7 @@ class MarketDataStream extends FtxWebsocketBase {
         let event = {};
 
         if (isJustSymbol) {
-            throw 'Not implemented'; // TODO: Full symbol subscribition
+            throw 'Not implemented'; // TODO: Full symbol subscription
         } else {
             event = arg;
         }
@@ -92,16 +92,16 @@ class MarketDataStream extends FtxWebsocketBase {
             return;
         }
 
-        throw new Error('Uknown channel name ' + event.channel);
+        throw new Error('Unknown channel name ' + event.channel);
     }
 
     /**
      * @private
-     * @param {WebsocketEvent} event Candle stream event subscribtion
+     * @param {WebsocketEvent} event Candle stream event subscription
      */
     async setupCandleStream(event) {
         if (this.candleStreams.has(event)) {
-            return; // Alredy registered
+            return; // Already registered
         }
 
         const candleStream = new CandleStream(this);
@@ -112,7 +112,7 @@ class MarketDataStream extends FtxWebsocketBase {
     }
 
     /**
-     * @param {WebsocketEvent} event Candle stream event subscribtion
+     * @param {WebsocketEvent} event Candle stream event subscription
      */
     async unsetupCandleStream(event) {
         const candleStream = this.candleStreams.get(event);
@@ -126,8 +126,8 @@ class MarketDataStream extends FtxWebsocketBase {
         this.candleStreams.delete(event);
     }
 
-    // TODO: Sav8sde all subscribition
-    async unsubscribeFromAllbySymbol() {
+    // TODO: Sav8sde all subscription
+    async unsubscribeFromAllBySymbol() {
         throw 'Not implemented';
     }
 
@@ -178,12 +178,12 @@ class MarketDataStream extends FtxWebsocketBase {
     /**
      * @private
      * @param  {string[]} eventNames
-     * @returns {Promise<object>} Server responce
+     * @returns {Promise<object>} Server response
      */
     async sendSocketUnsubscribe(...eventNames) {
-        if (eventNames.lenght === 0) return; // nothing to do
+        if (eventNames.length === 0) return; // nothing to do
 
-        this.checkSocketIsConneted();
+        this.checkSocketIsConnected();
 
         const id = this.createPayloadId();
 
@@ -196,7 +196,7 @@ class MarketDataStream extends FtxWebsocketBase {
         return await this.sendSocketMessage(payload);
     }
 
-    checkSocketIsConneted() {
+    checkSocketIsConnected() {
         if (!this.isSocketConnected) {
             throw new Error('Socket not connected'); // TODO: Specific error
         }

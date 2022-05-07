@@ -33,9 +33,9 @@ describe('BaseGlobalCache class', () => {
 
         expect(instance.globalCache.lastUpdateTimestamp).toBe(0);
 
-        instance.globalCache.set('jest', 'somevalue');
+        instance.globalCache.set('jest', 'some value');
 
-        expect(instance.globalCache.get('jest')).toBe('somevalue');
+        expect(instance.globalCache.get('jest')).toBe('some value');
 
         expect(instance.globalCache.lastUpdateTimestamp).toBe(time);
     });

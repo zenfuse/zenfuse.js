@@ -95,6 +95,10 @@ class OkxWebsocketBase extends EventEmitter {
         this.socket.send(msgString);
     }
 
+    /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+
     transformOkxOrder(xOrder) {
         /**
          * @type {PlacedOrder}

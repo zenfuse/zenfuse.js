@@ -3,7 +3,7 @@ const utils = require('../../../../base/utils/utils');
 const MarketDataStream = require('../marketDataStream');
 
 /**
- * Creates candlestick stream for FTX, wich based only on trades.
+ * Creates candlestick stream for FTX, which based only on trades.
  *
  * **NOTE:** Only one stream should be registered on instance
  *
@@ -17,7 +17,7 @@ class FtxCandleStream {
      */
     event = null;
 
-    previusCandle = null;
+    previousCandle = null;
     currentCandle = {};
 
     /**
@@ -71,12 +71,13 @@ class FtxCandleStream {
 
         this.event = event;
 
-        this.previusCandle = await this.fetchLastCandle();
+        this.previousCandle = await this.fetchLastCandle();
 
         this.intervalInMs =
             utils.timeIntervalToSeconds(this.event.interval) * 1000;
 
-        const candleOpenTime = this.previusCandle.timestamp + this.intervalInMs;
+        const candleOpenTime =
+            this.previousCandle.timestamp + this.intervalInMs;
 
         this.currentCandle.closeAt = candleOpenTime + this.intervalInMs;
         this.currentCandle.timestamp = candleOpenTime;
@@ -91,7 +92,7 @@ class FtxCandleStream {
     }
 
     /**
-     * Unregisters stream on websocket
+     * Unregister stream on websocket
      *
      * @public
      */
@@ -107,7 +108,7 @@ class FtxCandleStream {
         });
 
         this.event = null;
-        this.previusClosedCandle = null;
+        this.previousClosedCandle = null;
     }
 
     /**
@@ -133,6 +134,8 @@ class FtxCandleStream {
             .then((res) => res.result);
     }
 
+    /* eslint-disable @cspell/spellchecker */
+
     async fetchLastCandle() {
         return await this.parentStream.base
             .fetchCandleHistory({
@@ -151,6 +154,8 @@ class FtxCandleStream {
                 return candles.pop();
             });
     }
+
+    /* eslint-enable @cspell/spellchecker */
 
     serverPayloadHandler(payload) {
         const isRelevantTrade =
@@ -192,9 +197,9 @@ class FtxCandleStream {
     }
 
     onCloseCandle() {
-        this.previusCandle = this.currentCandle;
+        this.previousCandle = this.currentCandle;
         this.currentCandle = {};
-        this.currentCandle.timestamp = this.previusCandle.closeAt;
+        this.currentCandle.timestamp = this.previousCandle.closeAt;
         this.currentCandle.closeAt =
             this.currentCandle.timestamp + this.intervalInMs;
     }

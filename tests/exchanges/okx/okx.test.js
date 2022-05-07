@@ -81,7 +81,7 @@ describe('Error Handling', () => {
                 await new OKX.spot()
                     .auth({
                         publicKey: 'invalidPublicKey',
-                        privateKey: 'invalidSectetKey',
+                        privateKey: 'invalidSecretKey',
                         addKey: 'invalidAddKey',
                     })
                     .privateFetch('api/v5/trade/orders-pending')

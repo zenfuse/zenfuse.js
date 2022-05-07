@@ -96,20 +96,20 @@ class BinanceCache extends BaseGlobalCache {
     /**
      * Updating global cache using raw binance data
      *
-     * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint
+     * @param {*} exchangeInfo Data from `api/v3/exchangeInfo` endpoint
      */
-    updateCache(exchageInfo) {
+    updateCache(exchangeInfo) {
         let tickers = new Set();
         let symbols = new Set();
 
         // Fill tickers
-        exchageInfo.symbols.forEach((s) => {
+        exchangeInfo.symbols.forEach((s) => {
             tickers.add(s.baseAsset);
             tickers.add(s.quoteAsset);
         });
 
         // Fill symbols
-        exchageInfo.symbols.forEach((s) => {
+        exchangeInfo.symbols.forEach((s) => {
             symbols.add(s.symbol);
         });
 

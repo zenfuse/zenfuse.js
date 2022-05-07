@@ -88,7 +88,7 @@ class ZenfuseJestEnvironment extends TestEnvironment {
         if (jestState.hasFocusedTests) {
             for (const [block, scope] of entries) {
                 if (block.mode === 'only') {
-                    // TODO: Add every childred of only block
+                    // TODO: Add every children of only block
 
                     this.scopesToOpen.set(block.name, scope);
                 }
