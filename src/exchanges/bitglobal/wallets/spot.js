@@ -298,7 +298,6 @@ class BitglobalSpot extends BitglobalBase {
         });
 
         const zOrder = this.transformBitglobalOrder(response, orderToFetch);
-
         return zOrder;
     }
 
