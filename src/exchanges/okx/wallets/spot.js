@@ -287,6 +287,25 @@ class OkxSpot extends OkxBase {
         return orderToDelete;
     }
 
+    async fetchOpenOrders() {
+        const response = await this.privateFetch(
+            'api/v5/trade/orders-pending',
+            {
+                searchParams: {
+                    instType: 'SPOT',
+                },
+            },
+        );
+
+        const openOrders = response.data.map((order) => {
+            return this.transformOkxOrder(order);
+        });
+
+        utils.linkOriginalPayload(openOrders, response);
+
+        return openOrders;
+    }
+
     async fetchBalances() {
         const response = await this.privateFetch('api/v5/account/balance', {
             method: 'GET',

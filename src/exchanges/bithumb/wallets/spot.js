@@ -149,7 +149,10 @@ class BithumbSpot extends BithumbBase {
             json: bOrder,
         });
 
-        const zCreatedOrder = this.transformBithumbOrder(bCreatedOrder, zOrder);
+        const zCreatedOrder = this.transformBithumbOrder(
+            bCreatedOrder.data,
+            zOrder,
+        );
 
         this.cache.cacheOrder(zCreatedOrder);
 
@@ -213,9 +216,24 @@ class BithumbSpot extends BithumbBase {
         return orderToDelete;
     }
 
-    // TODO: Test for this
+    /**
+     * Fetch all user's open orders
+     */
     async fetchOpenOrders() {
-        throw 'Not implemented';
+        const response = await this.privateFetch('spot/openOrders', {
+            method: 'POST',
+            json: {
+                symbol: 'ALL',
+            },
+        });
+
+        const openOrders = response.data.list.map((order) => {
+            return this.transformBithumbOrder(order);
+        });
+
+        utils.linkOriginalPayload(openOrders, response);
+
+        return openOrders;
     }
 
     // TODO: add coinType if necessary
@@ -224,7 +242,6 @@ class BithumbSpot extends BithumbBase {
             method: 'POST',
             json: {
                 assetType: 'spot',
-                // coinType: 'BTC',
             },
         });
 
@@ -263,7 +280,7 @@ class BithumbSpot extends BithumbBase {
             },
         });
 
-        const zOrder = this.transformBithumbOrder(response, orderToFetch);
+        const zOrder = this.transformBithumbOrder(response.data, orderToFetch);
 
         return zOrder;
     }

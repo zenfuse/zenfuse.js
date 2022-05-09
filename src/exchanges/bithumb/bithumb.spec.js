@@ -78,7 +78,7 @@ describe('transformBithumbOrder()', () => {
         };
 
         const result = BithumbBase.prototype.transformBithumbOrder(
-            receivedBithumbOrder,
+            receivedBithumbOrder.data,
             zenfuseCreatedOrder,
         );
 
@@ -106,8 +106,9 @@ describe('transformBithumbOrder()', () => {
             params: [],
         };
 
-        const result =
-            BithumbBase.prototype.transformBithumbOrder(receivedBithumbOrder);
+        const result = BithumbBase.prototype.transformBithumbOrder(
+            receivedBithumbOrder.data,
+        );
 
         expect(result).toMatchSchema(OrderSchema);
     });

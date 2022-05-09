@@ -227,6 +227,98 @@ module.exports = (env) => ({
                         params: [],
                     }),
         },
+        'fetchOpenOrders()': () =>
+            nock(HOSTNAME)
+                .matchHeader('Content-Type', 'application/json')
+                // Order creation
+                .post('/openapi/v1/spot/placeOrder', (b) => {
+                    expect(b).toMatchObject({
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        type: env.NOT_EXECUTABLE_ORDER.type,
+                        side: env.NOT_EXECUTABLE_ORDER.side,
+                        quantity: toBithumbStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
+                        price: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.price),
+                    });
+
+                    expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
+                    return true;
+                })
+                .reply(201, {
+                    data: {
+                        orderId: '23132134242',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                    },
+                    code: '0',
+                    msg: 'success',
+                    timestamp: 1551346473238,
+                    params: [],
+                })
+                // Order status fetch
+                .post('/openapi/v1/spot/openOrders', (b) => {
+                    expect(b).toMatchObject({
+                        symbol: 'ALL',
+                    });
+
+                    expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    data: {
+                        num: '1',
+                        list: [
+                            {
+                                orderId: '23132134242',
+                                symbol: toBithumbStyle(
+                                    env.NOT_EXECUTABLE_ORDER.symbol,
+                                ),
+                                price: toBithumbStyle(
+                                    env.NOT_EXECUTABLE_ORDER.price,
+                                ),
+                                tradedNum: '0.01',
+                                quantity: toBithumbStyle(
+                                    env.NOT_EXECUTABLE_ORDER.quantity,
+                                ),
+                                avgPrice: '0',
+                                status: 'pending',
+                                type: env.NOT_EXECUTABLE_ORDER.type,
+                                side: env.NOT_EXECUTABLE_ORDER.side,
+                                createTime: Date.now().toString(),
+                                tradeTotal: '0.5',
+                            },
+                        ],
+                    },
+                    code: '0',
+                    msg: 'success',
+                    timestamp: Date.now(),
+                    params: [],
+                })
+                // Order deletion
+                .post(`/openapi/v1/spot/cancelOrder`, (b) => {
+                    expect(b).toMatchObject({
+                        orderId: '23132134242',
+                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                    });
+
+                    expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
+                    expect(b.msgNo).toBeDefined();
+                    expect(b.timestamp).toBeDefined();
+                    expect(b.signature).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    code: '0',
+                    msg: 'success',
+                    timestamp: Date.now(),
+                    params: [],
+                }),
         'fetchBalances()': () =>
             nock(HOSTNAME)
                 .matchHeader('Content-Type', 'application/json')

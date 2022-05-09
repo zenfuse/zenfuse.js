@@ -256,27 +256,25 @@ class BithumbBase extends ExchangeBase {
 
         // TODO: Refactor this
 
-        zOrder.id = bOrder.data.orderId;
+        zOrder.id = bOrder.orderId;
         if (Object.entries(zInitialOrder).length === 0) {
             //if order is not cached
-            if (bOrder.data.status === 'success') {
+            if (bOrder.status === 'success') {
                 zOrder.status = 'close';
             } else if (
-                bOrder.data.status === 'send' ||
-                bOrder.data.status === 'pending'
+                bOrder.status === 'send' ||
+                bOrder.status === 'pending'
             ) {
                 zOrder.status = 'open';
             } else {
                 zOrder.status = 'canceled';
             }
-            zOrder.symbol = bOrder.data.symbol.replace('-', '/');
-            zOrder.timestamp = bOrder.timestamp;
-            zOrder.type = bOrder.data.type;
-            zOrder.side = bOrder.data.side;
-            zOrder.price = bOrder.data.price
-                ? parseFloat(bOrder.data.price)
-                : undefined;
-            zOrder.quantity = parseFloat(bOrder.data.quantity);
+            zOrder.symbol = bOrder.symbol.replace('-', '/');
+            zOrder.timestamp = parseFloat(bOrder.createTime);
+            zOrder.type = bOrder.type;
+            zOrder.side = bOrder.side;
+            zOrder.price = bOrder.price ? parseFloat(bOrder.price) : undefined;
+            zOrder.quantity = parseFloat(bOrder.quantity);
         } else {
             zOrder.symbol = zInitialOrder.symbol;
             zOrder.timestamp = zInitialOrder.timestamp
