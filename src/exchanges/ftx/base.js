@@ -161,6 +161,18 @@ class FtxBase extends ExchangeBase {
     }
 
     /**
+     * @param {object} response
+     * @private
+     */
+    handleUnexpectedResponse(response) {
+        if (response.success === false) {
+            throw new FtxApiError(response);
+        }
+
+        return response;
+    }
+
+    /**
      * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
      */
 
@@ -230,15 +242,6 @@ class FtxBase extends ExchangeBase {
         }
 
         return zOrder;
-     * @param {object} response
-     * @private
-     */
-    handleUnexpectedResponse(response) {
-        if (response.success === false) {
-            throw new FtxApiError(response);
-        }
-
-        return response;
     }
 }
 
