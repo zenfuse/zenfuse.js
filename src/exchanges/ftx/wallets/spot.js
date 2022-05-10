@@ -240,9 +240,16 @@ class FtxSpot extends FtxBase {
         return deletedOrder;
     }
 
-    // TODO: Test for this
     async fetchOpenOrders() {
-        throw 'Not implemented';
+        const response = await this.privateFetch('api/orders');
+
+        const openOrders = response.result.map((order) => {
+            return this.transformFtxOrder(order);
+        });
+
+        utils.linkOriginalPayload(openOrders, response);
+
+        return openOrders;
     }
 
     async fetchBalances() {

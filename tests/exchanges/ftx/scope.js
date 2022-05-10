@@ -211,6 +211,70 @@ module.exports = (env) => ({
                         },
                     }),
         },
+        'fetchOpenOrders()': () =>
+            nock(HOSTNAME)
+                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('FTX-TS', Boolean)
+                .matchHeader('FTX-SIGN', Boolean)
+                // Order creation
+                .post('/api/orders', {
+                    market: env.NOT_EXECUTABLE_ORDER.symbol,
+                    type: env.NOT_EXECUTABLE_ORDER.type,
+                    side: env.NOT_EXECUTABLE_ORDER.side,
+                    size: env.NOT_EXECUTABLE_ORDER.quantity,
+                    price: env.NOT_EXECUTABLE_ORDER.price,
+                })
+                .reply(200, {
+                    success: true,
+                    result: {
+                        id: 112590877631,
+                        clientId: null,
+                        market: env.NOT_EXECUTABLE_ORDER.symbol,
+                        type: env.NOT_EXECUTABLE_ORDER.type,
+                        side: env.NOT_EXECUTABLE_ORDER.side,
+                        price: env.NOT_EXECUTABLE_ORDER.price,
+                        size: env.NOT_EXECUTABLE_ORDER.quantity,
+                        status: 'new',
+                        filledSize: 0,
+                        remainingSize: env.NOT_EXECUTABLE_ORDER.quantity,
+                        reduceOnly: false,
+                        liquidation: null,
+                        avgFillPrice: null,
+                        postOnly: false,
+                        ioc: false,
+                        createdAt: '2022-04-10T21:10:29.520Z',
+                        future: null,
+                    },
+                })
+                // Order status fetch
+                .get('/api/orders')
+                .reply(200, {
+                    success: true,
+                    result: [
+                        {
+                            id: 112590877631,
+                            clientId: null,
+                            market: env.NOT_EXECUTABLE_ORDER.symbol,
+                            type: env.NOT_EXECUTABLE_ORDER.type,
+                            side: env.NOT_EXECUTABLE_ORDER.side,
+                            price: env.NOT_EXECUTABLE_ORDER.price,
+                            size: env.NOT_EXECUTABLE_ORDER.quantity,
+                            status: 'new',
+                            filledSize: 0,
+                            remainingSize: env.NOT_EXECUTABLE_ORDER.quantity,
+                            reduceOnly: false,
+                            liquidation: null,
+                            avgFillPrice: null,
+                            postOnly: false,
+                            ioc: false,
+                            createdAt: '2022-04-10T21:10:29.520Z',
+                            future: null,
+                        },
+                    ],
+                })
+                // Order deletion
+                .delete(`/api/orders/112590877631`)
+                .reply(200),
         'fetchBalances()': () =>
             nock(HOSTNAME)
                 .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)

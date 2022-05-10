@@ -300,10 +300,15 @@ class BinanceSpot extends BinanceBase {
         const response = await this.privateFetch('api/v3/openOrders');
 
         // TODO: order status object
+        const openOrders = response.map((order) => {
+            let zOrder = this.transformBinanceOrder(order);
+            zOrder.symbol = this.parseBinanceSymbol(order.symbol);
+            return zOrder;
+        });
 
-        utils.linkOriginalPayload(response, response);
+        utils.linkOriginalPayload(openOrders, response);
 
-        return response;
+        return openOrders;
     }
 
     async fetchBalances() {
