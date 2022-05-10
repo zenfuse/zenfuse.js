@@ -5,7 +5,7 @@ const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
 const createEnv = require('../../helpers/createEnv');
 const FtxApiException = require('../../../src/exchanges/ftx/errors/api.error');
-// const { describe } = require('../../../src/base/schemas/orderParams');
+const { describe } = require('../../../src/base/schemas/orderParams');
 
 if (isEnd2EndTest) {
     checkProcessHasVariables(['FTX_PUBLIC_KEY', 'FTX_SECRET_KEY']);
@@ -135,7 +135,7 @@ describe('Error Handling', () => {
         });
     });
 
-    describe('response handling', () => {
+    describe('public response handling', () => {
         it('should handle public response status', async () => {
             try {
                 await new FTX.spot()
@@ -154,7 +154,9 @@ describe('Error Handling', () => {
                 expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
             }
         });
+    });
 
+    describe('private response handling', () => {
         it('should handle private response status', async () => {
             try {
                 await new FTX.spot()

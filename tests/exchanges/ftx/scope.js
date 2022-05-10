@@ -403,5 +403,27 @@ module.exports = (env) => ({
                     error: '404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.',
                     success: false,
                 }),
+        'public response handling': () =>
+            nock(HOSTNAME)
+                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('FTX-TS', Boolean)
+                .matchHeader('FTX-SIGN', Boolean)
+                .post('/api/markets/BTC')
+                .query(() => true)
+                .reply(404, {
+                    success: false,
+                    error: 'No such market: BTC ',
+                }),
+        'private response handling': () =>
+            nock(HOSTNAME)
+                .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('FTX-TS', Boolean)
+                .matchHeader('FTX-SIGN', Boolean)
+                .post('/api/orders/invalid_order_id/modify')
+                .query(() => true)
+                .reply(404, {
+                    error: '404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.',
+                    success: false,
+                }),
     },
 });
