@@ -1,12 +1,13 @@
 const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
+const { createHmac } = require('crypto');
 
 const utils = require('./utils');
 const ExchangeBase = require('../../base/exchange');
-const NotAuathenticatedError = require('../../base/errors/notAuthenticated.error');
 const HuobiApiError = require('./errors/api.error');
 const HuobiCache = require('./etc/cache');
 const ZenfuseRuntimeError = require('../../base/errors/runtime.error');
+const UserError = require('../../base/errors/user.error');
 
 const keysSymbol = Symbol('keys');
 
@@ -150,7 +151,7 @@ class HuobiBase extends ExchangeBase {
      */
     throwIfNotHasKeys() {
         if (!this.hasKeys) {
-            throw new NotAuathenticatedError();
+            throw new UserError(null, 'NOT_AUTHENTICATED');
         }
     }
 
@@ -177,6 +178,14 @@ class HuobiBase extends ExchangeBase {
         }
 
         return res;
+    }
+
+    createHmacSignatureHuobi(method, url, queryString, privateKey) {
+        const preSignedText = `${method}\napi.huobi.pro\n/${url}\n${queryString.toString()}`;
+
+        return createHmac('sha256', privateKey)
+            .update(preSignedText)
+            .digest('base64');
     }
 
     /**
@@ -210,6 +219,99 @@ class HuobiBase extends ExchangeBase {
         rawSymbol = this.cache.parsedSymbols.get(hSymbol);
 
         return rawSymbol.join('/');
+    }
+
+    /**
+     * Validation function for {@link HuobiSpot.cancelOrder}
+     *
+     * @param {object} order order object to cancel
+     * @param {string | number} order.id Id is required
+     */
+    validateOrderForCanceling(order) {
+        if (order.id === undefined) {
+            throw new Error('order id is required for canceling');
+        }
+
+        const orderIdType = typeof order.id;
+
+        if (orderIdType !== 'string' && orderIdType !== 'number') {
+            throw new TypeError(
+                `Order id for canceling should be string or number, recieved ${orderIdType}`,
+            );
+        }
+    }
+
+    /**
+     * Zenfuse -> Huobi
+     *
+     * **DEV:** Doesnt include required account id
+     *
+     * @param {Order} zOrder Zenfuse order
+     * @returns {object} Order for binance api
+     */
+    transformZenfuseOrder(zOrder) {
+        const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
+        const hOrder = {};
+
+        hOrder.symbol = zOrder.symbol.replace('/', '').toLowerCase();
+        hOrder.amount = zOrder.quantity.toString().toLowerCase();
+
+        if (zOrder.price) {
+            hOrder.price = zOrder.price.toString().toLowerCase();
+        }
+
+        hOrder.source = 'spot-api';
+        hOrder.type = `${zOrder.side}-${zOrder.type}`.toLowerCase();
+
+        // Allow user extra keys
+        for (const [key, value] of Object.entries(zOrder)) {
+            if (!TRANSFORM_LIST.includes(key)) {
+                hOrder[key] = value;
+            }
+        }
+
+        return hOrder;
+    }
+
+    /**
+     * Binance -> Zenfuse
+     *
+     * @param {*} hOrder Order fromf
+     * @returns {Order} Zenfuse Order
+     */
+    transformHuobiOrder(hOrder) {
+        /**
+         * @type {Order}
+         */
+        const zOrder = {};
+
+        zOrder.id = hOrder.id.toString();
+        zOrder.timestamp = hOrder['created-at'];
+
+        switch (hOrder.state) {
+            case 'created':
+            case 'submitted':
+            case 'partial-filled':
+                zOrder.status = 'open';
+                break;
+            case 'filled':
+                zOrder.status = 'close';
+                break;
+            default:
+                zOrder.status = 'canceled';
+                break;
+        }
+
+        zOrder.symbol = hOrder.symbol;
+
+        const [side, type] = hOrder.type.split('-');
+
+        zOrder.side = side;
+        zOrder.type = type;
+        zOrder.price = parseFloat(hOrder.price);
+        zOrder.quantity = parseFloat(hOrder.amount);
+
+        return zOrder;
     }
 }
 
