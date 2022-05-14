@@ -1,8 +1,6 @@
-const utils = require('.');
+const HuobiBase = require('./base');
 
-describe('transfromZenfuseOrder()', () => {
-    const { transfromZenfuseOrder } = utils;
-
+describe('transformZenfuseOrder()', () => {
     it('should lower case symbols and transform quantity', () => {
         const order = {
             symbol: 'BTC/ETH',
@@ -18,7 +16,9 @@ describe('transfromZenfuseOrder()', () => {
             type: 'sell-market',
         };
 
-        expect(transfromZenfuseOrder(order)).toEqual(expectation);
+        expect(HuobiBase.prototype.transformZenfuseOrder(order)).toEqual(
+            expectation,
+        );
     });
 
     it('should add default timeInForce for limit order', () => {
@@ -38,7 +38,9 @@ describe('transfromZenfuseOrder()', () => {
             type: 'buy-limit',
         };
 
-        expect(transfromZenfuseOrder(order)).toEqual(expectation);
+        expect(HuobiBase.prototype.transformZenfuseOrder(order)).toEqual(
+            expectation,
+        );
     });
 
     it('should pass custom timeInForce for limit order', () => {
@@ -58,13 +60,13 @@ describe('transfromZenfuseOrder()', () => {
             extra: 'whenhuobi',
         };
 
-        expect(transfromZenfuseOrder(order)).toEqual(expectation);
+        expect(HuobiBase.prototype.transformZenfuseOrder(order)).toEqual(
+            expectation,
+        );
     });
 });
 
-describe('createHmacSignature()', () => {
-    const { createHmacSignature } = utils;
-
+describe('createHmacSignatureHuobi()', () => {
     it('should return valid signature', () => {
         const args = {
             method: 'GET',
@@ -79,7 +81,7 @@ describe('createHmacSignature()', () => {
         };
 
         expect(
-            createHmacSignature(
+            HuobiBase.prototype.createHmacSignatureHuobi(
                 args.method,
                 args.url,
                 args.queryString,

@@ -227,7 +227,7 @@ class HuobiSpot extends HuobiBase {
         this.validateOrderParams(zOrder);
         await this.fetchAccountIdIfRequired();
 
-        const hOrder = utils.transfromZenfuseOrder(zOrder);
+        const hOrder = utils.transformZenfuseOrder(zOrder);
 
         hOrder['account-id'] = this.accountId;
 
@@ -391,7 +391,7 @@ class HuobiSpot extends HuobiBase {
     async fetchOrderById(orderId) {
         const response = await this.privateFetch(`v1/order/orders/${orderId}`);
 
-        const zOrder = utils.transfromHuobiOrder(response.data);
+        const zOrder = utils.transformHuobiOrder(response.data);
 
         zOrder.symbol = this.parseHuobiSymbol(response.data.symbol);
 

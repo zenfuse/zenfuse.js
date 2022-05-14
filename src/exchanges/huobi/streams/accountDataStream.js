@@ -134,7 +134,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = this.transfromWebsocketOrder(payload);
+        const order = this.transformWebsocketOrder(payload);
         this.emit('orderUpdate', order);
     }
 
@@ -147,9 +147,10 @@ class AccountDataStream extends ExchangeWebsocketBase {
      * @private
      * @returns {Order} Zenfuse Order
      */
-    transfromWebsocketOrder(wsOrder) {
-        const parsedSymbol = this.base.parseHuobiSymbol(wsOrder.s);
+    transformWebsocketOrder(wsOrder) {
+        const parsedSymbol = this.base.parseHuobiSymbol(wsOrder.data.symbol);
 
+        //TODO: Update cached order with received order info
         // TODO: Add type for wsOrder
 
         return {
