@@ -59,8 +59,8 @@ class AccountDataStream extends HuobiWebsocketBase {
         });
 
         this.sendSocketMessage({
-            action: "sub",
-            ch: "orders#*"
+            action: 'sub',
+            ch: 'orders#*',
         });
 
         return this;
@@ -71,7 +71,7 @@ class AccountDataStream extends HuobiWebsocketBase {
      * @returns {this}
      */
     close() {
-        if (this.isSocketConneted) {
+        if (this.isSocketConnected) {
             this.socket.close();
         }
         return this;
@@ -80,12 +80,10 @@ class AccountDataStream extends HuobiWebsocketBase {
     serverMessageHandler(msgString) {
         const payload = JSON.parse(msgString);
 
-        console.log(payload);
-
         const eventName = payload.action;
 
         if (eventName === 'ping') {
-            this.sendPond(payload.data.ts);
+            this.sendPong(payload.data.ts);
         }
         if (eventName === 'push' && payload.ch.includes('orders')) {
             this.emitOrderUpdateEvent(payload.data);
@@ -95,11 +93,15 @@ class AccountDataStream extends HuobiWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = this.transformWebsocketOrder(payload);
-        this.emit('orderUpdate', order);
+        const isOrderNotValid =
+            payload.eventType === 'trade' && payload.aggressor === true;
+        if (!isOrderNotValid) {
+            const order = this.transformWebsocketOrder(payload);
+            this.emit('orderUpdate', order);
+        }
     }
 
-    sendPond(timestamp) {
+    sendPong(timestamp) {
         const pong = {
             action: 'pong',
             data: {

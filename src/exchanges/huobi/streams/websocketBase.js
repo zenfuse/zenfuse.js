@@ -34,7 +34,7 @@ class HuobiWebsocketBase extends EventEmitter {
      * @param {object} msg
      * @returns {void}
      */
-     sendSocketMessage(msg) {
+    sendSocketMessage(msg) {
         this.checkSocketIsConnected();
 
         const msgString = JSON.stringify(msg);
@@ -82,7 +82,7 @@ class HuobiWebsocketBase extends EventEmitter {
 
         //TODO: Update cached order with received order info
         // TODO: Add type for wsOrder
-        switch(wsOrder.eventType) {
+        switch (wsOrder.eventType) {
             case 'creation':
                 return {
                     id: wsOrder.clientOrderId,
@@ -95,7 +95,9 @@ class HuobiWebsocketBase extends EventEmitter {
                     quantity: parseFloat(wsOrder.orderSize),
                 };
             case 'deletion':
-                const cachedOrder = this.base.cache.getCachedOrderById(wsOrder.clientOrderId);
+                const cachedOrder = this.base.cache.getCachedOrderById(
+                    wsOrder.clientOrderId,
+                );
                 if (!cachedOrder) {
                     throw new ZenfuseRuntimeError(
                         `Order with ${orderId} id does not exists`,
@@ -113,18 +115,15 @@ class HuobiWebsocketBase extends EventEmitter {
                     quantity: cachedOrder.quantity,
                 };
             case 'trade':
-                if (wsOrder.aggressor) {
-                    return;
-                }
                 return {
                     id: wsOrder.clientOrderId,
-                    timestamp: wsOrder.lastActTime,
+                    timestamp: wsOrder.tradeTime,
                     status: 'closed',
                     symbol: parsedSymbol,
-                    type: cachedOrder.type,
-                    side: cachedOrder.side,
-                    price: cachedOrder.price,
-                    quantity: cachedOrder.quantity,
+                    type: wsOrder.type.split('-')[1],
+                    side: wsOrder.type.split('-')[0],
+                    price: wsOrder.tradePrice,
+                    quantity: wsOrder.tradeVolume,
                 };
             default:
                 return;
