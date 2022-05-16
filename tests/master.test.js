@@ -393,6 +393,61 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
+        describe('fetchOpenOrders()', () => {
+            let result;
+            let createdOrder;
+
+            it('should run only with keys', () => {
+                try {
+                    exchange.fetchOpenOrders.bind(
+                        new Exchange['spot'](),
+                        'super-order-id',
+                    );
+                } catch (e) {
+                    expect(e).toBeInstanceOf(UserError);
+                    expect(e.code).toBe('NOT_AUTHENTICATED');
+                }
+            });
+
+            afterAll(() => {
+                if (createdOrder) {
+                    exchange.cancelOrderById(createdOrder.id);
+                }
+            });
+
+            it('should be defined', () => {
+                expect(exchange.fetchOpenOrders).toBeDefined();
+            });
+
+            it('should fetch without errors', async () => {
+                createdOrder = await exchange.createOrder(
+                    env.NOT_EXECUTABLE_ORDER,
+                );
+
+                result = await exchange.fetchOpenOrders();
+            });
+
+            it('should return exact order', () => {
+                expect(createdOrder).toBeDefined();
+                expect(result).toBeDefined();
+
+                expect(result[0].symbol).toBe(createdOrder.symbol);
+                expect(result[0].type).toBe(createdOrder.type);
+                expect(result[0].side).toBe(createdOrder.side);
+                expect(result[0].quantity).toBe(createdOrder.quantity);
+                expect(result[0].price).toBe(createdOrder.price);
+                expect(result[0].timestamp).toBeCloseTo(
+                    createdOrder.timestamp,
+                    -100,
+                );
+            });
+
+            it('should return valid schema', () => {
+                expect(result[0]).toMatchSchema(OrderSchema);
+                expect(createdOrder).toMatchSchema(OrderSchema);
+            });
+        });
+
         describe('fetchBalances()', () => {
             it('should be defined', () => {
                 expect(exchange.fetchBalances).toBeDefined();
