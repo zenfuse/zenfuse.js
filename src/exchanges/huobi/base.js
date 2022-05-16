@@ -2,14 +2,14 @@ const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
 const { createHmac } = require('crypto');
 
-const utils = require('./utils');
+const utils = require('../../base/utils/utils');
 const ExchangeBase = require('../../base/exchange');
 const HuobiApiError = require('./errors/api.error');
 const HuobiCache = require('./etc/cache');
 const ZenfuseRuntimeError = require('../../base/errors/runtime.error');
 const UserError = require('../../base/errors/user.error');
 
-const keysSymbol = Symbol('keys');
+const keysSymbol = Symbol.for('zenfuse.keyVault');
 
 /**
  * Huobi base class for method which included in any wallet type
@@ -93,7 +93,7 @@ class HuobiBase extends ExchangeBase {
 
         const method = options.method || this.fetcher.defaults.options.method;
 
-        const signature = utils.createHmacSignature(
+        const signature = this.createHmacSignatureHuobi(
             method,
             url,
             queryString,

@@ -1,6 +1,6 @@
 const mergeObjects = require('deepmerge');
 
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 const HuobiBase = require('../base');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
@@ -35,6 +35,7 @@ class HuobiSpot extends HuobiBase {
     constructor(options = {}) {
         const fullOptions = mergeObjects(HuobiSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
+        this.orderCount = 1;
     }
 
     /**
@@ -227,9 +228,13 @@ class HuobiSpot extends HuobiBase {
         this.validateOrderParams(zOrder);
         await this.fetchAccountIdIfRequired();
 
-        const hOrder = utils.transformZenfuseOrder(zOrder);
+        const hOrder = this.transformZenfuseOrder(zOrder);
 
         hOrder['account-id'] = this.accountId;
+
+        hOrder['client-order-id'] = `ZENFUSE_HUOBI_ORDER_${this.orderCount}`;
+
+        this.orderCount += 1;
 
         // NOTE: Different api for buy market order. See https://t.ly/RCzx
         // Need to convert quantity to total
@@ -255,7 +260,8 @@ class HuobiSpot extends HuobiBase {
         });
 
         zOrder.timestamp = Date.now();
-        zOrder.id = response.data.toString();
+        // zOrder.id = response.data.toString();
+        zOrder.id = hOrder['client-order-id'];
         zOrder.status = 'open';
 
         this.cache.cacheOrder(zOrder);
@@ -391,7 +397,7 @@ class HuobiSpot extends HuobiBase {
     async fetchOrderById(orderId) {
         const response = await this.privateFetch(`v1/order/orders/${orderId}`);
 
-        const zOrder = utils.transformHuobiOrder(response.data);
+        const zOrder = this.transformHuobiOrder(response.data);
 
         zOrder.symbol = this.parseHuobiSymbol(response.data.symbol);
 

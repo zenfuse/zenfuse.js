@@ -16,11 +16,11 @@ const env = createEnv({
     API_PUBLIC_KEY: process.env.HUOBI_PUBLIC_KEY,
     API_PRIVATE_KEY: process.env.HUOBI_SECRET_KEY,
     NOT_EXECUTABLE_ORDER: {
-        symbol: 'USDC/USDT',
+        symbol: 'BTC/USDT',
         type: 'limit',
         side: 'buy',
-        quantity: 10,
-        price: 0.5,
+        quantity: 0.0005,
+        price: 20000,
     },
 });
 

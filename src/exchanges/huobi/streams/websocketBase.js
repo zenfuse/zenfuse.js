@@ -1,6 +1,7 @@
 const { EventEmitter } = require('events');
 const { WebSocket } = require('ws');
 const { gunzip } = require('zlib');
+const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 class HuobiWebsocketBase extends EventEmitter {
     /**
@@ -29,8 +30,32 @@ class HuobiWebsocketBase extends EventEmitter {
         });
     }
 
+    /**
+     * @param {object} msg
+     * @returns {void}
+     */
+     sendSocketMessage(msg) {
+        this.checkSocketIsConnected();
+
+        const msgString = JSON.stringify(msg);
+
+        this.socket.send(msgString);
+    }
+
+    checkSocketIsConnected() {
+        if (!this.isSocketConnected) {
+            throw new Error('Socket not connected'); // TODO: Specific error
+        }
+    }
+
     handleConnectionError(err) {
         throw err; // TODO: Websocket connection error
+    }
+
+    get isSocketConnected() {
+        if (!this.socket) return false;
+
+        return this.socket.readyState === WebSocket.OPEN;
     }
 
     unzip(buffer) {
@@ -41,6 +66,69 @@ class HuobiWebsocketBase extends EventEmitter {
                 resolve(dezipped.toString());
             });
         });
+    }
+
+    /**
+     * Transforms websocket order from huobi
+     * Huobi -> Zenfuse
+     *
+     * @param {object} wsOrder
+     * @typedef {import('../../..').Order} Order
+     * @private
+     * @returns {Order} Zenfuse Order
+     */
+    transformWebsocketOrder(wsOrder) {
+        const parsedSymbol = this.base.parseHuobiSymbol(wsOrder.symbol);
+
+        //TODO: Update cached order with received order info
+        // TODO: Add type for wsOrder
+        switch(wsOrder.eventType) {
+            case 'creation':
+                return {
+                    id: wsOrder.clientOrderId,
+                    timestamp: wsOrder.orderCreateTime,
+                    status: 'open',
+                    symbol: parsedSymbol,
+                    type: wsOrder.type.split('-')[1],
+                    side: wsOrder.type.split('-')[0],
+                    price: parseFloat(wsOrder.orderPrice),
+                    quantity: parseFloat(wsOrder.orderSize),
+                };
+            case 'deletion':
+                const cachedOrder = this.base.cache.getCachedOrderById(wsOrder.clientOrderId);
+                if (!cachedOrder) {
+                    throw new ZenfuseRuntimeError(
+                        `Order with ${orderId} id does not exists`,
+                        'ZEFU_ORDER_NOT_FOUND',
+                    );
+                }
+                return {
+                    id: wsOrder.clientOrderId,
+                    timestamp: wsOrder.lastActTime,
+                    status: 'canceled',
+                    symbol: parsedSymbol,
+                    type: cachedOrder.type,
+                    side: cachedOrder.side,
+                    price: cachedOrder.price,
+                    quantity: cachedOrder.quantity,
+                };
+            case 'trade':
+                if (wsOrder.aggressor) {
+                    return;
+                }
+                return {
+                    id: wsOrder.clientOrderId,
+                    timestamp: wsOrder.lastActTime,
+                    status: 'closed',
+                    symbol: parsedSymbol,
+                    type: cachedOrder.type,
+                    side: cachedOrder.side,
+                    price: cachedOrder.price,
+                    quantity: cachedOrder.quantity,
+                };
+            default:
+                return;
+        }
     }
 }
 
