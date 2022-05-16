@@ -278,9 +278,12 @@ class HuobiSpot extends HuobiBase {
      */
     async cancelOrder(zOrder) {
         const response = await this.privateFetch(
-            `v1/order/orders/${zOrder.id}/submitcancel`,
+            `v1/order/orders/submitCancelClientOrder`,
             {
                 method: 'POST',
+                json: {
+                    'client-order-id': zOrder.id,
+                },
             },
         );
 
@@ -324,9 +327,12 @@ class HuobiSpot extends HuobiBase {
         }
 
         const response = await this.privateFetch(
-            `v1/order/orders/${orderId}/submitcancel`,
+            `v1/order/orders/submitCancelClientOrder`,
             {
                 method: 'POST',
+                json: {
+                    'client-order-id': orderId,
+                },
             },
         );
 
@@ -348,9 +354,15 @@ class HuobiSpot extends HuobiBase {
             },
         });
 
-        utils.linkOriginalPayload(response, response);
+        const openOrders = response.data.map((order) => {
+            const zOrder = this.transformHuobiOrder(order);
+            zOrder.symbol = this.parseHuobiSymbol(order.symbol);
+            return zOrder;
+        });
 
-        return response;
+        utils.linkOriginalPayload(openOrders, response);
+
+        return openOrders;
     }
 
     async fetchBalances() {
