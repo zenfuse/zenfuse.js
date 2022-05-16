@@ -1,11 +1,8 @@
-const WebSocket = require('ws');
-const ExchangeWebsocketBase = require('./websocketBase');
+const utils = require('../../../base/utils/utils');
+const HuobiWebsocketBase = require('./websocketBase');
+const { createHmac } = require('crypto');
 
-const listenKeySymbol = Symbol('listenKey');
-const validUntilSymbol = Symbol('validUntil');
-const intervalSymbol = Symbol('interval');
-
-class AccountDataStream extends ExchangeWebsocketBase {
+class AccountDataStream extends HuobiWebsocketBase {
     /**
      * Time interval when zenfuse should revalidate listen key
      */
@@ -21,9 +18,6 @@ class AccountDataStream extends ExchangeWebsocketBase {
      */
     constructor(baseInstance) {
         super(baseInstance);
-
-        this[listenKeySymbol] = null;
-        this[validUntilSymbol] = null;
     }
 
     /**
@@ -31,15 +25,43 @@ class AccountDataStream extends ExchangeWebsocketBase {
      * @returns {this}
      */
     async open() {
-        const listenKey = await this.fetchListenKey();
-
-        this[listenKeySymbol] = listenKey;
-
-        this.socket = await this.getSocketConnection(`/ws/${listenKey}`);
-
-        this.createRevalidateInterval();
+        this.socket = await this.getSocketConnection('/ws/v2');
 
         this.socket.on('message', this.serverMessageHandler.bind(this));
+
+        const keysSymbol = Symbol.for('zenfuse.keyVault');
+        const { publicKey, privateKey } = this.base[keysSymbol];
+        const timestamp = new Date().toISOString().replace(/.\d+Z$/g, '');
+        const queryString = new URLSearchParams({
+            accessKey: publicKey,
+            signatureMethod: 'HmacSHA256',
+            signatureVersion: 2.1,
+            timestamp: timestamp,
+        });
+        const preSignedText = `GET\napi.huobi.pro\n/ws/v2\n${queryString.toString()}`;
+        const signature = createHmac('sha256', privateKey)
+            .update(preSignedText)
+            .digest('base64');
+
+        const authMsg = {
+            authType: 'api',
+            accessKey: publicKey,
+            signatureMethod: 'HmacSHA256',
+            signatureVersion: 2.1,
+            timestamp: timestamp,
+            signature: signature,
+        };
+
+        this.sendSocketMessage({
+            action: 'req',
+            ch: 'auth',
+            params: authMsg,
+        });
+
+        this.sendSocketMessage({
+            action: "sub",
+            ch: "orders#*"
+        });
 
         return this;
     }
@@ -52,82 +74,21 @@ class AccountDataStream extends ExchangeWebsocketBase {
         if (this.isSocketConneted) {
             this.socket.close();
         }
-
-        this.stopInterval();
         return this;
-    }
-
-    get isSocketConneted() {
-        if (!this.socket) return false;
-
-        return this.socket.readyState === WebSocket.OPEN;
-    }
-
-    /**
-     * @private
-     */
-    async fetchListenKey() {
-        const { listenKey } = await this.base.publicFetch(
-            'api/v3/userDataStream',
-            {
-                method: 'POST',
-            },
-        );
-
-        return listenKey;
-    }
-
-    /**
-     * @private
-     */
-    createRevalidateInterval() {
-        this[intervalSymbol] = setInterval(
-            this.extendListenKey.bind(this),
-            AccountDataStream.REVALIDATE_INTERVAL,
-        );
-    }
-
-    /**
-     * @private
-     */
-    stopInterval() {
-        clearInterval(this[intervalSymbol]);
-    }
-
-    /**
-     * @private
-     */
-    async extendListenKey() {
-        await this.base.publicFetch('/api/v3/userDataStream', {
-            method: 'PUT',
-            searchParams: {
-                listenKey: this[listenKeySymbol],
-            },
-        });
-
-        this.extendValidityTime();
-    }
-
-    /**
-     * @private
-     */
-    extendValidityTime() {
-        this._validUntil = Date.now() + 3_600_000; // 60min
-    }
-
-    checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
-            throw new Error('Socket not connected'); // TODO: Specific error
-        }
     }
 
     serverMessageHandler(msgString) {
         const payload = JSON.parse(msgString);
 
-        const eventName = payload.e;
+        console.log(payload);
 
-        if (eventName === 'executionReport') {
-            this.emitOrderUpdateEvent(payload);
+        const eventName = payload.action;
+
+        if (eventName === 'ping') {
+            this.sendPond(payload.data.ts);
+        }
+        if (eventName === 'push' && payload.ch.includes('orders')) {
+            this.emitOrderUpdateEvent(payload.data);
         }
 
         this.emit('payload', payload);
@@ -138,31 +99,14 @@ class AccountDataStream extends ExchangeWebsocketBase {
         this.emit('orderUpdate', order);
     }
 
-    /**
-     * Transforms websocket order from huobi
-     * Huobi -> Zenfuse
-     *
-     * @param {object} wsOrder
-     * @typedef {import('../../..').Order} Order
-     * @private
-     * @returns {Order} Zenfuse Order
-     */
-    transformWebsocketOrder(wsOrder) {
-        const parsedSymbol = this.base.parseHuobiSymbol(wsOrder.data.symbol);
-
-        //TODO: Update cached order with received order info
-        // TODO: Add type for wsOrder
-
-        return {
-            id: wsOrder.i.toString(),
-            timestamp: wsOrder.E,
-            status: wsOrder.X.toLowerCase(),
-            symbol: parsedSymbol,
-            type: wsOrder.o.toLowerCase(),
-            side: wsOrder.S.toLowerCase(),
-            price: parseFloat(wsOrder.p),
-            quantity: parseFloat(wsOrder.q),
+    sendPond(timestamp) {
+        const pong = {
+            action: 'pong',
+            data: {
+                ts: timestamp,
+            },
         };
+        this.socket.send(JSON.stringify(pong));
     }
 }
 

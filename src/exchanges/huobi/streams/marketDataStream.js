@@ -1,5 +1,5 @@
 const debug = require('../../../base/etc/debug');
-const utils = require('../utils');
+const utils = require('../../../base/utils/utils');
 const RuntimeError = require('../../../base/errors/runtime.error');
 
 const HuobiWebsocketBase = require('./websocketBase');
@@ -287,12 +287,6 @@ class MarketDataStream extends HuobiWebsocketBase {
         if (!this.socket) return false;
 
         return this.socket.readyState === 1;
-    }
-
-    checkSocketIsConneted() {
-        if (!this.isSocketConneted) {
-            throw new Error('Socket not connected'); // TODO: Specific error
-        }
     }
 
     /**

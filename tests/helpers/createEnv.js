@@ -29,7 +29,7 @@ const DEFAULTS = {
         type: 'limit',
         side: 'buy',
         quantity: 0.0004,
-        price: 35000,
+        price: 20000,
     },
     SELL_LIMIT_ORDER: {
         symbol: 'BTC/USDT',
