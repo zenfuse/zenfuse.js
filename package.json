@@ -35,7 +35,7 @@
     "homepage": "https://zenfuse.js",
     "types": "./types",
     "devDependencies": {
-        "@cspell/eslint-plugin": "^5.19.7",
+        "@cspell/eslint-plugin": "^6.0.0",
         "@types/ws": "^8.5.2",
         "@typescript-eslint/eslint-plugin": "^5.14.0",
         "@typescript-eslint/parser": "^5.14.0",
