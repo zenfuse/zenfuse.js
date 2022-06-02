@@ -31,7 +31,7 @@ declare class OkxBase extends ExchangeBase {
      */
     privateFetch(url: string, options?: import('http').RequestOptions): any;
     /**
-     * Connect to authentificated API
+     * Connect to authenticated API
      *
      * @param {object} keys
      * @param {string} keys.publicKey
@@ -45,7 +45,7 @@ declare class OkxBase extends ExchangeBase {
         addKey: string;
     }): this;
     /**
-     * Is instanse has keys to authenticate on not
+     * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */

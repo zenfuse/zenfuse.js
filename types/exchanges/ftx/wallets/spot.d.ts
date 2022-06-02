@@ -78,7 +78,7 @@ declare class FtxSpot extends FtxBase {
      * @param {string} orderId Ftx order id
      */
     cancelOrderById(orderId: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
-    fetchOpenOrders(): Promise<void>;
+    fetchOpenOrders(): Promise<any>;
     fetchBalances(): Promise<any>;
     /**
      *

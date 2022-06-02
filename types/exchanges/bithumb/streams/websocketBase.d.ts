@@ -33,6 +33,9 @@ declare class BithumbWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg: object): void;
-    transformBithumbOrderWS(bOrder: any): PlacedOrder;
+    /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+    transformBithumbOrderWS(bOrder: any): import("../../../base/schemas/openOrder").PlacedOrder;
 }
 import { EventEmitter } from "events";

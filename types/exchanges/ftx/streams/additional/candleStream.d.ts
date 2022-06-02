@@ -1,6 +1,6 @@
 export = FtxCandleStream;
 /**
- * Creates candlestick stream for FTX, wich based only on trades.
+ * Creates candlestick stream for FTX, which based only on trades.
  *
  * **NOTE:** Only one stream should be registered on instance
  *
@@ -17,7 +17,7 @@ declare class FtxCandleStream {
      * @type {import('../marketDataStream').WebsocketEvent | null}
      */
     event: import('../marketDataStream').WebsocketEvent | null;
-    previusCandle: any;
+    previousCandle: any;
     currentCandle: {};
     /**
      * @type {number} Interval id
@@ -59,12 +59,12 @@ declare class FtxCandleStream {
     public register(event: import('../marketDataStream.js').WebsocketEvent): Promise<void>;
     intervalInMs: number;
     /**
-     * Unregisters stream on websocket
+     * Unregister stream on websocket
      *
      * @public
      */
     public unregister(): Promise<void>;
-    previusClosedCandle: any;
+    previousClosedCandle: any;
     /**
      * @param {number} fromTime UNIX Time
      * @returns {Promise<TradeDto[]>}

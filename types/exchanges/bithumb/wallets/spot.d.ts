@@ -63,7 +63,10 @@ declare class BithumbSpot extends BithumbBase {
      * @param {string} symbol
      */
     cancelOrderById(orderId: string, symbol?: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
-    fetchOpenOrders(): Promise<void>;
+    /**
+     * Fetch all user's open orders
+     */
+    fetchOpenOrders(): Promise<any>;
     fetchBalances(): Promise<any>;
     /**
      *

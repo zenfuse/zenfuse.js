@@ -23,12 +23,9 @@ declare class BinanceSpot extends BinanceBase {
      */
     fetchTickers(): string[];
     /**
-     * @typedef {import('../utils/functions/agregation').structualizedMarket} structualizedMarket
+     * @returns {string[]} Array of ticker pairs on this exchange
      */
-    /**
-     * @returns {structualizedMarket} Array of ticker pairs on this exchange
-     */
-    fetchMarkets(): any;
+    fetchMarkets(): string[];
     /**
      * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
      * @param {object} params
