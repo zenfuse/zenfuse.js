@@ -100,7 +100,7 @@ class OkxBase extends ExchangeBase {
                 'OK-ACCESS-KEY': this[keysSymbol].publicKey,
                 'OK-ACCESS-TIMESTAMP': timestamp,
                 'OK-ACCESS-SIGN': signature,
-                'OK-ACCESS-PASSPHRASE': this[keysSymbol].addKey,
+                'OK-ACCESS-PASSPHRASE': this[keysSymbol].additionalKey,
             },
         });
 
@@ -115,14 +115,14 @@ class OkxBase extends ExchangeBase {
      * @param {object} keys
      * @param {string} keys.publicKey
      * @param {string} keys.privateKey Same as secret key
-     * @param {string} keys.addKey OKX passphrase
+     * @param {string} keys.additionalKey OKX passphrase
      * @returns {this}
      */
-    auth({ publicKey, privateKey, addKey }) {
+    auth({ publicKey, privateKey, additionalKey }) {
         this[keysSymbol] = {};
         this[keysSymbol].publicKey = publicKey;
         this[keysSymbol].privateKey = privateKey;
-        this[keysSymbol].addKey = addKey;
+        this[keysSymbol].additionalKey = additionalKey;
         return this;
     }
 
@@ -136,7 +136,7 @@ class OkxBase extends ExchangeBase {
             !!this[keysSymbol] &&
             !!this[keysSymbol].publicKey &&
             !!this[keysSymbol].privateKey &&
-            !!this[keysSymbol].addKey
+            !!this[keysSymbol].additionalKey
         );
     }
 

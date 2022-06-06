@@ -19,7 +19,7 @@ if (isEnd2EndTest) {
 const env = {
     API_PUBLIC_KEY: process.env.OKX_PUBLIC_KEY || 'DUMMY_PUBLIC_KEY',
     API_PRIVATE_KEY: process.env.OKX_SECRET_KEY || 'DUMMY_SECRET_KEY',
-    API_ADD_KEY: process.env.OKX_PASSPHRASE || 'DUMMY_ADD_KEY',
+    API_ADDITIONAL_KEY: process.env.OKX_PASSPHRASE || 'DUMMY_ADD_KEY',
     NOT_EXECUTABLE_ORDER: {
         symbol: 'BTC/USDT',
         type: 'limit',
@@ -82,7 +82,7 @@ describe('Error Handling', () => {
                     .auth({
                         publicKey: 'invalidPublicKey',
                         privateKey: 'invalidSecretKey',
-                        addKey: 'invalidAddKey',
+                        additionalKey: 'invalidAdditionalKey',
                     })
                     .privateFetch('api/v5/trade/orders-pending')
                     .then((body) => {
@@ -106,7 +106,7 @@ describe('Error Handling', () => {
                     .auth({
                         publicKey: env.API_PUBLIC_KEY,
                         privateKey: env.API_PRIVATE_KEY,
-                        addKey: env.API_ADD_KEY,
+                        additionalKey: env.API_ADDITIONAL_KEY,
                     })
                     .privateFetch('api/v5/trade/order', {
                         method: 'POST',
@@ -141,7 +141,7 @@ describe('Error Handling', () => {
                     .auth({
                         publicKey: env.API_PUBLIC_KEY,
                         privateKey: env.API_PRIVATE_KEY,
-                        addKey: env.API_ADD_KEY,
+                        additionalKey: env.API_ADDITIONAL_KEY,
                     })
                     .privateFetch('api/v5/account/set-leverage', {
                         method: 'POST',

@@ -74,8 +74,8 @@ module.exports = (extra) => {
         merged.API_PUBLIC_KEY = 'DUMMY_PUBLIC_KEY';
     }
 
-    if (merged.API_ADD_KEY === undefined) {
-        merged.API_ADD_KEY = 'DUMMY_ADD_KEY';
+    if (merged.API_ADDITIONAL_KEY === undefined) {
+        merged.API_ADDITIONAL_KEY = 'DUMMY_ADD_KEY';
     }
 
     return merged;
