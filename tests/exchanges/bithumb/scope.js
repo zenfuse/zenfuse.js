@@ -79,7 +79,7 @@ module.exports = (env) => ({
                 .replyWithFile(200, klineFilePath, {
                     'Content-Type': 'application/json',
                 }),
-        'createOrder()': {
+        'postOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME)
                     .matchHeader('Content-Type', 'application/json')

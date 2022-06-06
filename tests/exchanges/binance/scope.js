@@ -59,7 +59,7 @@ module.exports = (env) => ({
                 .replyWithFile(200, historyFilePath, {
                     'Content-Type': 'application/json',
                 }),
-        'createOrder()': {
+        'postOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME)
                     .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)

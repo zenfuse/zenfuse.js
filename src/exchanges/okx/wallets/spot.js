@@ -182,7 +182,7 @@ class OkxSpot extends OkxBase {
      *
      * @param {Order} zOrder Order to create
      */
-    async createOrder(zOrder) {
+    async postOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
         const xOrder = this.transformZenfuseOrder(zOrder);

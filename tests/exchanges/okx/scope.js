@@ -85,7 +85,7 @@ module.exports = (env) => ({
                 .replyWithFile(200, historyFilePath, {
                     'Content-Type': 'application/json',
                 }),
-        'createOrder()': {
+        'postOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME)
                     .get('/api/v5/market/ticker')

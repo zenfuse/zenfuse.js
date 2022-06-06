@@ -25,7 +25,7 @@
     -   [Authentication](#authentication)
     -   [.auth](#auth)
     -   [.hasKeys](#haskeys)
-    -   [.createOrder](#createorder)
+    -   [.postOrder](#postOrder)
     -   [.cancelOrderById](#cancelorderbyid)
     -   [.fetchBalances](#fetchbalances)
 -   [Real-time events](#real-time-events)
@@ -211,9 +211,9 @@ ftx.auth({
 ftx.hasKeys; // true
 ```
 
-### `.createOrder`
+### `.postOrder`
 
-`createOrder(order: ZenfuseOrder)`
+`postOrder(order: ZenfuseOrder)`
 
 Creates order on exchange
 
@@ -221,7 +221,7 @@ Creates order on exchange
 ftx.hasKeys; // true
 
 // Buying 0.0004 ETH by market price
-await ftx.createOrder({
+await ftx.postOrder({
     symbol: 'ETH/USDT',
     type: 'market',
     side: 'buy',
@@ -229,7 +229,7 @@ await ftx.createOrder({
 });
 
 // And selling same amount by limit order
-await ftx.createOrder({
+await ftx.postOrder({
     symbol: 'ETH/USDT',
     type: 'limit',
     side: 'sell',
@@ -263,7 +263,7 @@ This method resolves created order from exchange, this is `ZenfuseOrder` with so
 | `quantity` | `number`            | `1.337`     | Quantity of base ticker in order                 |
 | `price`    | `number`            | `0.0069`    | The price for limit order                        |
 
-**NOTE:** Any other parameters passed to createOrder will be appended to request
+**NOTE:** Any other parameters passed to postOrder will be appended to request
 
 ### `.cancelOrderById`
 
@@ -273,7 +273,7 @@ Cancels order using order id.
 
 ```js
 // Recieve created order
-const order = await binance.createOrder({
+const order = await binance.postOrder({
     symbol: 'DOGE/USDT',
     type: 'limit',
     side: 'buy',
@@ -612,7 +612,7 @@ const binance = new Binance['spot']().auth({
 });
 
 binance
-    .createOrder({
+    .postOrder({
         symbol: 'DOT/BUSD',
         quantity: 20,
         type: 'limit',
