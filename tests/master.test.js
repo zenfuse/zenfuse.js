@@ -204,7 +204,7 @@ module.exports = function masterTest(Exchange, env) {
                 const keys = {
                     publicKey: env.API_PUBLIC_KEY,
                     privateKey: env.API_PRIVATE_KEY,
-                    addKey: env.API_ADD_KEY,
+                    additionalKey: env.API_ADDITIONAL_KEY,
                 };
 
                 expect(exchange.hasKeys).toBe(false);
@@ -571,7 +571,9 @@ module.exports = function masterTest(Exchange, env) {
             exchange = new Exchange['spot']().auth({
                 publicKey: env.API_PUBLIC_KEY,
                 privateKey: env.API_PRIVATE_KEY,
-                addKey: env.API_ADD_KEY ? env.API_ADD_KEY : undefined,
+                additionalKey: env.API_ADDITIONAL_KEY
+                    ? env.API_ADDITIONAL_KEY
+                    : undefined,
             });
 
             accountDataStream = exchange.getAccountDataStream();
