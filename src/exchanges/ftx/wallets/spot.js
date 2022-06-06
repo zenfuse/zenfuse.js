@@ -179,7 +179,7 @@ class FtxSpot extends FtxBase {
      *
      * @param {Order} zOrder Order to create
      */
-    async createOrder(zOrder) {
+    async postOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
         const fOrder = this.transformZenfuseOrder(zOrder);

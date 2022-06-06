@@ -129,7 +129,7 @@ class BithumbSpot extends BithumbBase {
      * @param {Order} zOrder Order to create
      * @returns {Order} zCreatedOrder
      */
-    async createOrder(zOrder) {
+    async postOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
         const bOrder = this.transformZenfuseOrder(zOrder);
