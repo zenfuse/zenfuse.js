@@ -1,3 +1,5 @@
+const { deprecate } = require('util');
+
 const BithumbBase = require('../base');
 const mergeObjects = require('deepmerge');
 
@@ -29,6 +31,13 @@ class BithumbSpot extends BithumbBase {
     constructor(options = {}) {
         const fullOptions = mergeObjects(BithumbSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
+
+        // TODO: Remove after v1
+        this.createOrder = deprecate(
+            this.postOrder.bind(this),
+            'createOrder() is deprecated. Use postOrder() instead.',
+            'ZENFUSE_DEP001',
+        );
     }
 
     /**

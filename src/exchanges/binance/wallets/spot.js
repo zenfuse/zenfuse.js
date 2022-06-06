@@ -1,3 +1,4 @@
+const { deprecate } = require('util');
 const mergeObjects = require('deepmerge');
 
 const utils = require('../../../base/utils/utils');
@@ -32,6 +33,13 @@ class BinanceSpot extends BinanceBase {
     constructor(options = {}) {
         const fullOptions = mergeObjects(BinanceSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
+
+        // TODO: Remove after v1
+        this.createOrder = deprecate(
+            this.postOrder.bind(this),
+            'createOrder() is deprecated. Use postOrder() instead.',
+            'ZENFUSE_DEP001',
+        );
     }
 
     /**
