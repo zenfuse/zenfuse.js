@@ -29,7 +29,10 @@ class BitglobalSpot extends BitglobalBase {
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
-        const fullOptions = mergeObjects(BitglobalSpot.DEFAULT_OPTIONS, options);
+        const fullOptions = mergeObjects(
+            BitglobalSpot.DEFAULT_OPTIONS,
+            options,
+        );
         super(fullOptions);
 
         // TODO: Remove after v1
@@ -158,7 +161,10 @@ class BitglobalSpot extends BitglobalBase {
             json: bOrder,
         });
 
-        const zCreatedOrder = this.transformBitglobalOrder(bCreatedOrder, zOrder);
+        const zCreatedOrder = this.transformBitglobalOrder(
+            bCreatedOrder,
+            zOrder,
+        );
 
         this.cache.cacheOrder(zCreatedOrder);
 
