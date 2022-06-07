@@ -1,9 +1,9 @@
-const BithumbWsBase = require('./websocketBase');
+const BitglobalWsBase = require('./websocketBase');
 
 it('should transform WS format order', () => {
     const OrderSchema = require('../../../base/schemas/openOrder');
 
-    const receivedBithumbOrder = {
+    const receivedBitglobalOrder = {
         code: '00007',
         data: {
             cancelQuantity: '10060.7',
@@ -26,7 +26,7 @@ it('should transform WS format order', () => {
     };
 
     const result =
-        BithumbWsBase.prototype.transformBithumbOrderWS(receivedBithumbOrder);
+        BitglobalWsBase.prototype.transformBitglobalOrderWS(receivedBitglobalOrder);
 
     expect(result).toMatchSchema(OrderSchema);
 });

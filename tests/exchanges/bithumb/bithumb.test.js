@@ -1,10 +1,10 @@
-const { Bithumb, errorCodes } = require('zenfuse');
+const { Bitglobal, errorCodes } = require('zenfuse');
 
 const masterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
 const createEnv = require('../../helpers/createEnv');
-const BithumbApiError = require('../../../src/exchanges/bithumb/errors/api.error');
+const BitglobalApiError = require('../../../src/exchanges/bithumb/errors/api.error');
 
 if (isEnd2EndTest) {
     checkProcessHasVariables(['BITHUMB_PUBLIC_KEY', 'BITHUMB_SECRET_KEY']);
@@ -64,13 +64,13 @@ const env = createEnv({
 
 global.httpScope = createScope(env);
 
-masterTest(Bithumb, env);
+masterTest(Bitglobal, env);
 
 describe('Error Handling', () => {
     describe('INVALID_CREDENTIALS code', () => {
         it('should throw INVALID_CREDENTIALS', async () => {
             try {
-                await new Bithumb.spot()
+                await new Bitglobal.spot()
                     .auth({
                         publicKey: 'invalidPublicKey',
                         privateKey: 'invalidSecretKey',
@@ -87,7 +87,7 @@ describe('Error Handling', () => {
                         throw 'Not caught';
                     });
             } catch (e) {
-                expect(e).toBeInstanceOf(BithumbApiError);
+                expect(e).toBeInstanceOf(BitglobalApiError);
                 expect(e.code).toBe(errorCodes.INVALID_CREDENTIALS);
                 expect(e.message).toBeDefined();
                 expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
@@ -98,7 +98,7 @@ describe('Error Handling', () => {
     describe('INSUFFICIENT_FUNDS code', () => {
         it('should throw INSUFFICIENT_FUNDS', async () => {
             try {
-                await new Bithumb.spot()
+                await new Bitglobal.spot()
                     .auth({
                         publicKey: env.API_PUBLIC_KEY,
                         privateKey: env.API_PRIVATE_KEY,
@@ -119,7 +119,7 @@ describe('Error Handling', () => {
                         throw 'Not caught';
                     });
             } catch (e) {
-                expect(e).toBeInstanceOf(BithumbApiError);
+                expect(e).toBeInstanceOf(BitglobalApiError);
                 expect(e.code).toBe(errorCodes.INSUFFICIENT_FUNDS);
                 expect(e.message).toBeDefined();
                 expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
@@ -130,7 +130,7 @@ describe('Error Handling', () => {
     describe('UNKNOWN_EXCEPTION code', () => {
         it('should throw UNKNOWN_EXCEPTION', async () => {
             try {
-                await new Bithumb.spot()
+                await new Bitglobal.spot()
                     .auth({
                         publicKey: env.API_PUBLIC_KEY,
                         privateKey: env.API_PRIVATE_KEY,
@@ -144,7 +144,7 @@ describe('Error Handling', () => {
                         throw 'Not caught';
                     });
             } catch (e) {
-                expect(e).toBeInstanceOf(BithumbApiError);
+                expect(e).toBeInstanceOf(BitglobalApiError);
                 expect(e.code).toBe(errorCodes.UNKNOWN_EXCEPTION);
                 expect(e.message).toBeDefined();
                 expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();

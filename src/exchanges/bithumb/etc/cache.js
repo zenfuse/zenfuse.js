@@ -1,14 +1,14 @@
 const BaseGlobalCache = require('../../../base/etc/cache');
 
-class BithumbCache extends BaseGlobalCache {
+class BitglobalCache extends BaseGlobalCache {
     /**
-     * @typedef {import('../base')} BithumbBase
-     * @type {BithumbBase}
+     * @typedef {import('../base')} BitglobalBase
+     * @type {BitglobalBase}
      */
     base;
 
     /**
-     * @param {BithumbBase} baseInstance
+     * @param {BitglobalBase} baseInstance
      */
     constructor(baseInstance) {
         super('bithumb');
@@ -49,4 +49,4 @@ class BithumbCache extends BaseGlobalCache {
     }
 }
 
-module.exports = BithumbCache;
+module.exports = BitglobalCache;

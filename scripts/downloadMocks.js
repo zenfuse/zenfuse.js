@@ -56,7 +56,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
-            task('Bithumb', ({ task }) => {
+            task('Bitglobal', ({ task }) => {
                 const mocksPath =
                     __dirname + '/../tests/exchanges/bithumb/mocks/static/';
 

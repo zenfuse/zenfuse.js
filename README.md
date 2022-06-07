@@ -89,12 +89,12 @@ Any class of spot wallet has the same interface.
 New instance has own options and namespace for one account.
 
 ```js
-const { Binance, FTX, Bithumb } = require('zenfuse');
+const { Binance, FTX, Bitglobal } = require('zenfuse');
 // Imported exchanges classes of wallets, currently only spot markets.
 
 const binance = new Binance['spot']();
 const ftx = new FTX['spot']();
-const bithumb = new Bithumb['spot']();
+const bithumb = new Bitglobal['spot']();
 ```
 
 ### Public fetching
