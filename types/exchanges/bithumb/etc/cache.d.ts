@@ -1,12 +1,12 @@
-export = BithumbCache;
-declare class BithumbCache extends BaseGlobalCache {
+export = BitglobalCache;
+declare class BitglobalCache extends BaseGlobalCache {
     /**
-     * @param {BithumbBase} baseInstance
+     * @param {BitglobalBase} baseInstance
      */
     constructor(baseInstance: import("../base"));
     /**
-     * @typedef {import('../base')} BithumbBase
-     * @type {BithumbBase}
+     * @typedef {import('../base')} BitglobalBase
+     * @type {BitglobalBase}
      */
     base: import("../base");
     localCache: {

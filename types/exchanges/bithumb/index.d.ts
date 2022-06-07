@@ -1,9 +1,9 @@
-export = BithumbWallets;
+export = BitglobalWallets;
 /**
  * }
  */
-type BithumbWallets = BithumbSpot;
-declare namespace BithumbWallets {
-    export { BithumbSpot as spot };
+type BitglobalWallets = BitglobalSpot;
+declare namespace BitglobalWallets {
+    export { BitglobalSpot as spot };
 }
-import BithumbSpot = require("./wallets/spot");
+import BitglobalSpot = require("./wallets/spot");

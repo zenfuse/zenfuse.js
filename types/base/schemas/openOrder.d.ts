@@ -41,7 +41,7 @@ declare const ZenfusePlacedOrder: z.ZodObject<{
 declare namespace ZenfusePlacedOrder {
     export { PlacedOrder };
 }
-import { z } from "zod";
+import { z } from "zod/lib";
 type PlacedOrder = {
     id: string;
     timestamp: number;

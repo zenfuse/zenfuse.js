@@ -48,7 +48,7 @@ declare const ZenfuseKline: z.ZodObject<{
 declare namespace ZenfuseKline {
     export { ZenfuseKline };
 }
-import { z } from "zod";
+import { z } from "zod/lib";
 type ZenfuseKline = {
     open: number;
     hight: number;
