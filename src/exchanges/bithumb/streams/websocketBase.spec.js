@@ -25,8 +25,9 @@ it('should transform WS format order', () => {
         timestamp: 1560758352743,
     };
 
-    const result =
-        BitglobalWsBase.prototype.transformBitglobalOrderWS(receivedBitglobalOrder);
+    const result = BitglobalWsBase.prototype.transformBitglobalOrderWS(
+        receivedBitglobalOrder,
+    );
 
     expect(result).toMatchSchema(OrderSchema);
 });

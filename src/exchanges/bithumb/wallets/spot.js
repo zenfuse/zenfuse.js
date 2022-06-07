@@ -29,7 +29,10 @@ class BitglobalSpot extends BitglobalBase {
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
-        const fullOptions = mergeObjects(BitglobalSpot.DEFAULT_OPTIONS, options);
+        const fullOptions = mergeObjects(
+            BitglobalSpot.DEFAULT_OPTIONS,
+            options,
+        );
         super(fullOptions);
 
         // TODO: Remove after v1
