@@ -1,5 +1,5 @@
-export = BithumbWebsocketBase;
-declare class BithumbWebsocketBase extends EventEmitter {
+export = BitglobalWebsocketBase;
+declare class BitglobalWebsocketBase extends EventEmitter {
     static PING_INTERVAL: number;
     /**
      * @param {import('../base')} baseInstance
@@ -36,6 +36,6 @@ declare class BithumbWebsocketBase extends EventEmitter {
     /**
      * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
      */
-    transformBithumbOrderWS(bOrder: any): import("../../../base/schemas/openOrder").PlacedOrder;
+    transformBitglobalOrderWS(bOrder: any): import("../../../base/schemas/openOrder").PlacedOrder;
 }
 import { EventEmitter } from "events";

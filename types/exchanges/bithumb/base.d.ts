@@ -1,16 +1,16 @@
-export = BithumbBase;
+export = BitglobalBase;
 /**
- * Bithumb base class for method which included in any wallet type
+ * Bitglobal base class for method which included in any wallet type
  */
-declare class BithumbBase extends ExchangeBase {
+declare class BitglobalBase extends ExchangeBase {
     /**
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options: import('../../base/exchange').BaseOptions);
     /**
-     * @type {BithumbCache}
+     * @type {BitglobalCache}
      */
-    cache: BithumbCache;
+    cache: BitglobalCache;
     msgNo: number;
     signatureEncoding: string;
     /**
@@ -63,12 +63,12 @@ declare class BithumbBase extends ExchangeBase {
      */
     private handleFetcherError;
     handleUnexpectedResponse(response: any): any;
-    createHmacSignatureBithumb(sigParams: any, privateKey: any, encoding: any): string;
+    createHmacSignatureBitglobal(sigParams: any, privateKey: any, encoding: any): string;
     /**
      * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
      */
     /**
-     * Zenfuse -> Bithumb
+     * Zenfuse -> Bitglobal
      *
      * @param {OrderParams} zOrder
      * @returns {object} Order for bithumb api
@@ -78,15 +78,15 @@ declare class BithumbBase extends ExchangeBase {
      * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
      */
     /**
-     * Bithumb -> Zenfuse
+     * Bitglobal -> Zenfuse
      *
-     * @param {*} bOrder Order from Bithumb REST
+     * @param {*} bOrder Order from Bitglobal REST
      * @param {object} zInitialOrder
      * @returns {PlacedOrder} Zenfuse Order
      */
-    transformBithumbOrder(bOrder: any, zInitialOrder?: object): any;
+    transformBitglobalOrder(bOrder: any, zInitialOrder?: object): any;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");
-import BithumbCache = require("./etc/cache");
+import BitglobalCache = require("./etc/cache");
 declare const keysSymbol: unique symbol;

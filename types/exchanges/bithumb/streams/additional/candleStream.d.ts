@@ -1,4 +1,4 @@
-export = BithumbCandleStream;
+export = BitglobalCandleStream;
 /**
  * Creates candlestick stream for FTX, witch based only on trades.
  *
@@ -6,7 +6,7 @@ export = BithumbCandleStream;
  *
  * **DEV:** This class exists only for exchanges which does not supports kline streams natively
  */
-declare class BithumbCandleStream {
+declare class BitglobalCandleStream {
     /**
      * @param {MarketDataStream} parentStream
      */

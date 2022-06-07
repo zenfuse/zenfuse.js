@@ -1,5 +1,5 @@
 export = AccountDataStream;
-declare class AccountDataStream extends BithumbWebsocketBase {
+declare class AccountDataStream extends BitglobalWebsocketBase {
     /**
      *
      * @returns {this}
@@ -8,4 +8,4 @@ declare class AccountDataStream extends BithumbWebsocketBase {
     serverMessageHandler(msgString: any): void;
     emitOrderUpdateEvent(payload: any): void;
 }
-import BithumbWebsocketBase = require("./websocketBase");
+import BitglobalWebsocketBase = require("./websocketBase");

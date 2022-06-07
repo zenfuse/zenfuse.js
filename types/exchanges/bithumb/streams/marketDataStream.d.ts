@@ -1,5 +1,5 @@
 export = MarketDataStream;
-declare class MarketDataStream extends BithumbWebsocketBase {
+declare class MarketDataStream extends BitglobalWebsocketBase {
     /**
      * @type {Map<WebsocketEvent, CandleStream>}
      */
@@ -71,5 +71,5 @@ declare class MarketDataStream extends BithumbWebsocketBase {
      */
     private sendSocketUnsubscribe;
 }
-import BithumbWebsocketBase = require("./websocketBase");
+import BitglobalWebsocketBase = require("./websocketBase");
 import CandleStream = require("./additional/candleStream");

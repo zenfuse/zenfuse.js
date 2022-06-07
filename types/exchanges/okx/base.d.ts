@@ -36,13 +36,13 @@ declare class OkxBase extends ExchangeBase {
      * @param {object} keys
      * @param {string} keys.publicKey
      * @param {string} keys.privateKey Same as secret key
-     * @param {string} keys.addKey OKX passphrase
+     * @param {string} keys.additionalKey OKX passphrase
      * @returns {this}
      */
-    auth({ publicKey, privateKey, addKey }: {
+    auth({ publicKey, privateKey, additionalKey }: {
         publicKey: string;
         privateKey: string;
-        addKey: string;
+        additionalKey: string;
     }): this;
     /**
      * Is instance has keys to authenticate on not

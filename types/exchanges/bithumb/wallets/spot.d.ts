@@ -1,12 +1,12 @@
-export = BithumbSpot;
+export = BitglobalSpot;
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
  */
 /**
- * Bithumb class for spot wallet API
+ * Bitglobal class for spot wallet API
  *
  */
-declare class BithumbSpot extends BithumbBase {
+declare class BitglobalSpot extends BitglobalBase {
     static DEFAULT_OPTIONS: {
         defaults: {
             limit: {};
@@ -17,12 +17,13 @@ declare class BithumbSpot extends BithumbBase {
      * @param {BaseOptions} options
      */
     constructor(options?: BaseOptions);
+    createOrder: any;
     /**
      * @returns {string[]} Array of tickers on this exchange
      */
     fetchTickers(): string[];
     /**
-     * @returns {string[]} Array of ticker pairs on Bithumb
+     * @returns {string[]} Array of ticker pairs on Bitglobal
      */
     fetchMarkets(): string[];
     /**
@@ -44,12 +45,12 @@ declare class BithumbSpot extends BithumbBase {
      * @typedef {import('../utils/functions/transformation').Order} Order
      */
     /**
-     * Create new spot order on Bithumb
+     * Create new spot order on Bitglobal
      *
      * @param {Order} zOrder Order to create
      * @returns {Order} zCreatedOrder
      */
-    createOrder(zOrder: any): any;
+    postOrder(zOrder: any): any;
     /**
      * Cancel an active order
      *
@@ -59,7 +60,7 @@ declare class BithumbSpot extends BithumbBase {
     /**
      * Cancel an active order
      *
-     * @param {string} orderId Bithumb order id
+     * @param {string} orderId Bitglobal order id
      * @param {string} symbol
      */
     cancelOrderById(orderId: string, symbol?: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
@@ -98,10 +99,10 @@ declare class BithumbSpot extends BithumbBase {
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
 }
-declare namespace BithumbSpot {
+declare namespace BitglobalSpot {
     export { BaseOptions };
 }
-import BithumbBase = require("../base");
+import BitglobalBase = require("../base");
 import { timeIntervals } from "../metadata";
 import AccountDataStream = require("../streams/accountDataStream");
 import MarketDataStream = require("../streams/marketDataStream");

@@ -1,5 +1,5 @@
-export = BithumbApiError;
-declare class BithumbApiError extends ExchangeBaseException {
+export = BitglobalApiError;
+declare class BitglobalApiError extends ExchangeBaseException {
     static codesMap: Map<string, symbol>;
     /**
      * @param {import('got').HTTPError | *} err
