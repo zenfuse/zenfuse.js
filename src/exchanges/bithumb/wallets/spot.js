@@ -1,6 +1,6 @@
 const { deprecate } = require('util');
 
-const BithumbBase = require('../base');
+const BitglobalBase = require('../base');
 const mergeObjects = require('deepmerge');
 
 const utils = require('../../../base/utils/utils');
@@ -14,10 +14,10 @@ const { timeIntervals } = require('../metadata');
  */
 
 /**
- * Bithumb class for spot wallet API
+ * Bitglobal class for spot wallet API
  *
  */
-class BithumbSpot extends BithumbBase {
+class BitglobalSpot extends BitglobalBase {
     static DEFAULT_OPTIONS = {
         defaults: {
             limit: {},
@@ -29,7 +29,7 @@ class BithumbSpot extends BithumbBase {
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
-        const fullOptions = mergeObjects(BithumbSpot.DEFAULT_OPTIONS, options);
+        const fullOptions = mergeObjects(BitglobalSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
 
         // TODO: Remove after v1
@@ -59,7 +59,7 @@ class BithumbSpot extends BithumbBase {
     }
 
     /**
-     * @returns {string[]} Array of ticker pairs on Bithumb
+     * @returns {string[]} Array of ticker pairs on Bitglobal
      */
     async fetchMarkets() {
         const response = await this.publicFetch('spot/ticker', {
@@ -133,7 +133,7 @@ class BithumbSpot extends BithumbBase {
      */
 
     /**
-     * Create new spot order on Bithumb
+     * Create new spot order on Bitglobal
      *
      * @param {Order} zOrder Order to create
      * @returns {Order} zCreatedOrder
@@ -158,7 +158,7 @@ class BithumbSpot extends BithumbBase {
             json: bOrder,
         });
 
-        const zCreatedOrder = this.transformBithumbOrder(bCreatedOrder, zOrder);
+        const zCreatedOrder = this.transformBitglobalOrder(bCreatedOrder, zOrder);
 
         this.cache.cacheOrder(zCreatedOrder);
 
@@ -193,7 +193,7 @@ class BithumbSpot extends BithumbBase {
     /**
      * Cancel an active order
      *
-     * @param {string} orderId Bithumb order id
+     * @param {string} orderId Bitglobal order id
      * @param {string} symbol
      */
     async cancelOrderById(orderId, symbol = '') {
@@ -272,7 +272,7 @@ class BithumbSpot extends BithumbBase {
             },
         });
 
-        const zOrder = this.transformBithumbOrder(response, orderToFetch);
+        const zOrder = this.transformBitglobalOrder(response, orderToFetch);
 
         return zOrder;
     }
@@ -347,4 +347,4 @@ class BithumbSpot extends BithumbBase {
     }
 }
 
-module.exports = BithumbSpot;
+module.exports = BitglobalSpot;

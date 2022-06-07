@@ -1,10 +1,10 @@
 const debug = require('../../../base/etc/debug');
 const utils = require('../../../base/utils/utils');
 
-const BithumbWebsocketBase = require('./websocketBase');
+const BitglobalWebsocketBase = require('./websocketBase');
 const CandleStream = require('./additional/candleStream');
 
-class MarketDataStream extends BithumbWebsocketBase {
+class MarketDataStream extends BitglobalWebsocketBase {
     /**
      * @type {Map<WebsocketEvent, CandleStream>}
      */

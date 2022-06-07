@@ -1,6 +1,6 @@
-const BithumbBase = require('./base');
+const BitglobalBase = require('./base');
 
-describe('createHmacSignatureBithumb()', () => {
+describe('createHmacSignatureBitglobal()', () => {
     it('should return valid signature', () => {
         const params = {
             apiKey: '484bd71d59d5ed29ff3c27a6d0c6754c',
@@ -10,7 +10,7 @@ describe('createHmacSignatureBithumb()', () => {
 
         const key = 'T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2';
         const encoding = 'hex';
-        const madeSign = BithumbBase.prototype.createHmacSignatureBithumb(
+        const madeSign = BitglobalBase.prototype.createHmacSignatureBitglobal(
             params,
             key,
             encoding,
@@ -47,12 +47,12 @@ describe('transformZenfuseOrder()', () => {
         };
 
         expect(
-            BithumbBase.prototype.transformZenfuseOrder(order),
+            BitglobalBase.prototype.transformZenfuseOrder(order),
         ).toStrictEqual(expectation);
     });
 });
 
-describe('transformBithumbOrder()', () => {
+describe('transformBitglobalOrder()', () => {
     const OrderSchema = require('../../base/schemas/openOrder');
 
     it('should transform created order', () => {
@@ -66,7 +66,7 @@ describe('transformBithumbOrder()', () => {
             price: 69.6969,
             quantity: 0.02323,
         };
-        const receivedBithumbOrder = {
+        const receivedBitglobalOrder = {
             data: {
                 orderId: '23132134242',
                 symbol: 'BTC-ETH',
@@ -77,8 +77,8 @@ describe('transformBithumbOrder()', () => {
             params: [],
         };
 
-        const result = BithumbBase.prototype.transformBithumbOrder(
-            receivedBithumbOrder,
+        const result = BitglobalBase.prototype.transformBitglobalOrder(
+            receivedBitglobalOrder,
             zenfuseCreatedOrder,
         );
 
@@ -86,7 +86,7 @@ describe('transformBithumbOrder()', () => {
     });
 
     it('should transform fetched order', () => {
-        const receivedBithumbOrder = {
+        const receivedBitglobalOrder = {
             data: {
                 orderId: '12300993210',
                 symbol: 'BTC-USDT',
@@ -106,8 +106,9 @@ describe('transformBithumbOrder()', () => {
             params: [],
         };
 
-        const result =
-            BithumbBase.prototype.transformBithumbOrder(receivedBithumbOrder);
+        const result = BitglobalBase.prototype.transformBitglobalOrder(
+            receivedBitglobalOrder,
+        );
 
         expect(result).toMatchSchema(OrderSchema);
     });
