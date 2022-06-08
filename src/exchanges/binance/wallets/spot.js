@@ -221,7 +221,9 @@ class BinanceSpot extends BinanceBase {
 
         const zCreatedOrder = this.transformBinanceOrder(bCreatedOrder);
 
-        zCreatedOrder.symbol = this.parseBinanceSymbol(bCreatedOrder.symbol);
+        zCreatedOrder.symbol = await this.parseBinanceSymbol(
+            bCreatedOrder.symbol,
+        );
 
         this.cache.cacheOrder(zCreatedOrder);
 
@@ -260,7 +262,6 @@ class BinanceSpot extends BinanceBase {
      *
      * **NOTE:** Binance required order symbol for canceling.
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
-     *      TODO: Make possible to pass symbol from user
      *
      * @param {string} orderId Binance order id
      */
@@ -353,7 +354,10 @@ class BinanceSpot extends BinanceBase {
 
             if (!cachedOrder) {
                 // TODO: Make base error better
-                throw new BaseError(`Order with ${orderId} id does not exists`);
+                throw new RuntimeError(
+                    `Order with ${orderId} id does not exists`,
+                    'ZEFU_ORDER_NOT_FOUND',
+                );
             }
 
             // throw 'TODO: Fix cache'; // TODO:!!!
@@ -368,7 +372,7 @@ class BinanceSpot extends BinanceBase {
 
         const zOrder = this.transformBinanceOrder(response);
 
-        zOrder.symbol = this.parseBinanceSymbol(response.symbol);
+        zOrder.symbol = await this.parseBinanceSymbol(response.symbol);
 
         this.cache.cacheOrder(zOrder);
 
