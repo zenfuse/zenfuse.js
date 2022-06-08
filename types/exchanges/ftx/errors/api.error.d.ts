@@ -1,11 +1,11 @@
 export = FtxApiException;
 declare class FtxApiException extends ExchangeBaseException {
-    static codesMap: Map<string, symbol>;
+    static codesMap: Map<string, string>;
     /**
      * @param {import('got').HTTPError} err
      */
     constructor(err: import('got').HTTPError);
-    code: symbol;
+    code: string;
     response: unknown;
     httpError: import("got").HTTPError;
 }
