@@ -1,6 +1,8 @@
 const BaseGlobalCache = require('../../../base/etc/cache');
 
 class BinanceCache extends BaseGlobalCache {
+    static ORDERS_CACHE_LENGTH = 10_000;
+
     /**
      * @typedef {import('../base')} BinanceBase
      * @type {BinanceBase}
@@ -73,6 +75,7 @@ class BinanceCache extends BaseGlobalCache {
      */
     cacheOrder(order) {
         this.localCache.openOrders.set(order.id, order);
+        this.careCachedOrders();
     }
 
     /**
@@ -91,6 +94,22 @@ class BinanceCache extends BaseGlobalCache {
      */
     deleteCachedOrderById(orderId) {
         return this.localCache.openOrders.delete(orderId);
+    }
+
+    /**
+     * This method prevents heap out of memory on long-term process if he has many orders to post.
+     *
+     * @private
+     */
+    careCachedOrders() {
+        const isShouldCut =
+            this.localCache.openOrders.length >
+            BinanceCache.ORDERS_CACHE_LENGTH;
+
+        if (isShouldCut) {
+            const lastOrderId = [...this.localCache.openOrders.keys()].pop();
+            this.localCache.openOrders.delete(lastOrderId);
+        }
     }
 
     /**
