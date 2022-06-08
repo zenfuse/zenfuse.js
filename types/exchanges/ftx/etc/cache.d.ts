@@ -18,7 +18,7 @@ declare class FtxCache extends BaseGlobalCache {
     /**
      * Cache order in local cache
      *
-     * **DEV:** In some cases FTX doesnt return order from REST interface. Zenfuse return cached order.
+     * **DEV:** In some cases FTX doesn't return order from REST interface. Zenfuse return cached order.
      *
      * @param {PlacedOrder} order
      */

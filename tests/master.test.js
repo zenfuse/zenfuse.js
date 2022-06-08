@@ -204,7 +204,7 @@ module.exports = function masterTest(Exchange, env) {
                 const keys = {
                     publicKey: env.API_PUBLIC_KEY,
                     privateKey: env.API_PRIVATE_KEY,
-                    addKey: env.API_ADD_KEY,
+                    additionalKey: env.API_ADDITIONAL_KEY,
                 };
 
                 expect(exchange.hasKeys).toBe(false);
@@ -217,14 +217,14 @@ module.exports = function masterTest(Exchange, env) {
 
         // NOTE: Now exchange is authenticated instance
 
-        describe('createOrder()', () => {
+        describe('postOrder()', () => {
             it('should be defined', () => {
-                expect(exchange.createOrder).toBeDefined();
+                expect(exchange.postOrder).toBeDefined();
             });
 
             it('should run only with keys', () => {
                 try {
-                    exchange.createOrder.bind(
+                    exchange.postOrder.bind(
                         new Exchange['spot'](),
                         env.NOT_EXECUTABLE_ORDER,
                     );
@@ -238,7 +238,7 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(env.BUY_MARKET_ORDER);
+                    result = await exchange.postOrder(env.BUY_MARKET_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
@@ -260,7 +260,7 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(env.SELL_MARKET_ORDER);
+                    result = await exchange.postOrder(env.SELL_MARKET_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
@@ -281,7 +281,7 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(env.BUY_LIMIT_ORDER);
+                    result = await exchange.postOrder(env.BUY_LIMIT_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
@@ -302,7 +302,7 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(env.SELL_LIMIT_ORDER);
+                    result = await exchange.postOrder(env.SELL_LIMIT_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
@@ -381,7 +381,7 @@ module.exports = function masterTest(Exchange, env) {
             let result;
 
             it('should cancel order without errors', async () => {
-                const createdOrder = await exchange.createOrder(
+                const createdOrder = await exchange.postOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
 
@@ -416,7 +416,7 @@ module.exports = function masterTest(Exchange, env) {
             let result;
 
             it('should cancel order without errors', async () => {
-                const createdOrder = await exchange.createOrder(
+                const createdOrder = await exchange.postOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
 
@@ -458,7 +458,7 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should fetch without errors', async () => {
-                createdOrder = await exchange.createOrder(
+                createdOrder = await exchange.postOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
 
@@ -516,7 +516,9 @@ module.exports = function masterTest(Exchange, env) {
             exchange = new Exchange['spot']().auth({
                 publicKey: env.API_PUBLIC_KEY,
                 privateKey: env.API_PRIVATE_KEY,
-                addKey: env.API_ADD_KEY ? env.API_ADD_KEY : undefined,
+                additionalKey: env.API_ADDITIONAL_KEY
+                    ? env.API_ADDITIONAL_KEY
+                    : undefined,
             });
 
             accountDataStream = exchange.getAccountDataStream();
@@ -552,7 +554,7 @@ module.exports = function masterTest(Exchange, env) {
                     });
                 });
 
-                const createdOrder = await exchange.createOrder(
+                const createdOrder = await exchange.postOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
 

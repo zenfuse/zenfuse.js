@@ -1,12 +1,12 @@
-export = BithumbCandleStream;
+export = BitglobalCandleStream;
 /**
- * Creates candlestick stream for FTX, wich based only on trades.
+ * Creates candlestick stream for FTX, witch based only on trades.
  *
  * **NOTE:** Only one stream should be registered on instance
  *
  * **DEV:** This class exists only for exchanges which does not supports kline streams natively
  */
-declare class BithumbCandleStream {
+declare class BitglobalCandleStream {
     /**
      * @param {MarketDataStream} parentStream
      */
@@ -17,7 +17,7 @@ declare class BithumbCandleStream {
      * @type {import('../marketDataStream').WebsocketEvent | null}
      */
     event: import('../marketDataStream').WebsocketEvent | null;
-    previusCandle: any;
+    previousCandle: any;
     currentCandle: {};
     /**
      * @type {number} Interval id
@@ -58,7 +58,7 @@ declare class BithumbCandleStream {
     /**
      * Trades for last candlestick
      */
-    previusTrades: any[];
+    previousTrades: any[];
     /**
      * @returns {boolean}
      */
@@ -73,12 +73,12 @@ declare class BithumbCandleStream {
     public register(event: any): Promise<void>;
     intervalInMs: number;
     /**
-     * Unregisters stream on websocket
+     * Unregister stream on websocket
      *
      * @public
      */
     public unregister(): Promise<void>;
-    previusClosedCandle: any;
+    previousClosedCandle: any;
     /**
      * @param {number} fromTime UNIX Time
      * @returns {Promise<TradeDto[]>}

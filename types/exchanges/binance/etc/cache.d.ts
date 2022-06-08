@@ -59,8 +59,8 @@ declare class BinanceCache extends BaseGlobalCache {
     /**
      * Updating global cache using raw binance data
      *
-     * @param {*} exchageInfo Data from `api/v3/exchangeInfo` endpoint
+     * @param {*} exchangeInfo Data from `api/v3/exchangeInfo` endpoint
      */
-    updateCache(exchageInfo: any): void;
+    updateCache(exchangeInfo: any): void;
 }
 import BaseGlobalCache = require("../../../base/etc/cache");

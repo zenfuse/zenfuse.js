@@ -1,5 +1,5 @@
 export = MarketDataStream;
-declare class MarketDataStream extends BithumbWebsocketBase {
+declare class MarketDataStream extends BitglobalWebsocketBase {
     /**
      * @type {Map<WebsocketEvent, CandleStream>}
      */
@@ -36,14 +36,14 @@ declare class MarketDataStream extends BithumbWebsocketBase {
      * @param {string|WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
-    private editSubscribition;
+    private editSubscription;
     /**
      * @private
-     * @param {WebsocketEvent} event Candle stream event subscribtion
+     * @param {WebsocketEvent} event Candle stream event subscription
      */
     private setupCandleStream;
     /**
-     * @param {WebsocketEvent} event Candle stream event subscribtion
+     * @param {WebsocketEvent} event Candle stream event subscription
      */
     unsetupCandleStream(event: {
         channel: string;
@@ -53,7 +53,7 @@ declare class MarketDataStream extends BithumbWebsocketBase {
          */
         interval?: string;
     }): Promise<void>;
-    unsubscribeFromAllbySymbol(): Promise<void>;
+    unsubscribeFromAllBySymbol(): Promise<void>;
     /**
      * @private
      * @param {import('ws').MessageEvent} msgEvent
@@ -71,5 +71,5 @@ declare class MarketDataStream extends BithumbWebsocketBase {
      */
     private sendSocketUnsubscribe;
 }
-import BithumbWebsocketBase = require("./websocketBase");
+import BitglobalWebsocketBase = require("./websocketBase");
 import CandleStream = require("./additional/candleStream");
