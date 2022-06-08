@@ -32,13 +32,10 @@ import FTX = require("./exchanges/ftx");
 import Bitglobal = require("./exchanges/bithumb");
 import OKX = require("./exchanges/okx");
 export declare const errorCodes: {
-    INVALID_CREDENTIALS: symbol;
-    INSUFFICIENT_FUNDS: symbol;
-    /**
-     * @enum
-     */
-    INVALID_ORDER: symbol;
-    UNKNOWN_EXCEPTION: symbol;
+    INVALID_CREDENTIALS: string;
+    INSUFFICIENT_FUNDS: string;
+    INVALID_ORDER: string;
+    UNKNOWN_EXCEPTION: string;
 };
 export declare const config: {
     get(key: any): any;
