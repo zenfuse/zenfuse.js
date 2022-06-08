@@ -165,10 +165,14 @@ class BinanceBase extends ExchangeBase {
     /**
      * Parses Binance symbol using cache
      *
-     * @param {string} bSymbol Binance symbol without separator
-     * @returns {string} Normal symbol with separator
+     * @private
+     * @param {string} bSymbol Cursed Binance symbol without separator
+     * @returns {Promise<string>} Normal symbol with separator
      */
-    parseBinanceSymbol(bSymbol) {
+    async parseBinanceSymbol(bSymbol) {
+        // Cannot parse if cache didn't exits
+        await this.cache.globalCache.updatingPromise;
+
         const isSymbolCached = this.cache.parsedSymbols?.get(bSymbol);
 
         let rawSymbol = '';
