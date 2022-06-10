@@ -1,17 +1,15 @@
 const ExchangeBaseException = require('../../../base/errors/exchange.error');
 const utils = require('../../../base/utils/utils');
 
-const codes = ExchangeBaseException.errorCodes;
-
 /**
  * @see https://www.okx.com/docs-v5/en/#error-code
  */
 class OkxApiException extends ExchangeBaseException {
     static codesMap = new Map([
-        ['50111', codes.INVALID_CREDENTIALS],
-        ['50113', codes.INVALID_CREDENTIALS],
-        ['58350', codes.INSUFFICIENT_FUNDS],
-        ['51008', codes.INSUFFICIENT_FUNDS],
+        ['50111', 'INVALID_CREDENTIALS'],
+        ['50113', 'INVALID_CREDENTIALS'],
+        ['58350', 'INSUFFICIENT_FUNDS'],
+        ['51008', 'INSUFFICIENT_FUNDS'],
     ]);
 
     /**
@@ -36,7 +34,7 @@ class OkxApiException extends ExchangeBaseException {
         if (OkxApiException.codesMap.has(oErrCode)) {
             this.code = OkxApiException.codesMap.get(oErrCode);
         } else {
-            this.code = codes.UNKNOWN_EXCEPTION;
+            this.code = 'UNKNOWN_EXCEPTION';
         }
 
         this.response = body;

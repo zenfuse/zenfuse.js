@@ -1,6 +1,6 @@
 const Binance = require('./exchanges/binance');
 const FTX = require('./exchanges/ftx');
-const Bithumb = require('./exchanges/bithumb');
+const Bitglobal = require('./exchanges/bithumb');
 const OKX = require('./exchanges/okx');
 const ExchangeBaseException = require('./base/errors/exchange.error');
 
@@ -10,8 +10,7 @@ const ExchangeBaseException = require('./base/errors/exchange.error');
 module.exports = {
     Binance,
     FTX,
-    Bithumb,
-    Bitglobal: Bithumb, // TODO: Rename all bithumb classes
+    Bitglobal,
     OKX,
 
     errorCodes: ExchangeBaseException.errorCodes,

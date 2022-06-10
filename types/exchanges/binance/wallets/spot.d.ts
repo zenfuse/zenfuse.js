@@ -18,17 +18,15 @@ declare class BinanceSpot extends BinanceBase {
      * @param {BaseOptions} options
      */
     constructor(options?: BaseOptions);
+    createOrder: any;
     /**
      * @returns {string[]} Array of tickers on this exchange
      */
     fetchTickers(): string[];
     /**
-     * @typedef {import('../utils/functions/agregation').structualizedMarket} structualizedMarket
+     * @returns {string[]} Array of ticker pairs on this exchange
      */
-    /**
-     * @returns {structualizedMarket} Array of ticker pairs on this exchange
-     */
-    fetchMarkets(): any;
+    fetchMarkets(): string[];
     /**
      * @typedef {import('../../../base/schemas/kline.js').ZenfuseKline} Kline
      * @param {object} params
@@ -67,7 +65,7 @@ declare class BinanceSpot extends BinanceBase {
      *
      * @param {Order} zOrder Order to create
      */
-    createOrder(zOrder: any): Promise<any>;
+    postOrder(zOrder: any): Promise<any>;
     /**
      * Cancel an active order
      *

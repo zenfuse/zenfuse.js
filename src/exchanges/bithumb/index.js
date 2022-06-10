@@ -1,11 +1,11 @@
-const BithumbSpot = require('./wallets/spot');
+const BitglobalSpot = require('./wallets/spot');
 
 // prettier-ignore
 /**
- * @enum BithumbSpot}
+ * @enum BitglobalSpot}
  */
-const BithumbWallets = {
-    'spot': BithumbSpot,
+const BitglobalWallets = {
+    'spot': BitglobalSpot,
 };
 
-module.exports = BithumbWallets;
+module.exports = BitglobalWallets;

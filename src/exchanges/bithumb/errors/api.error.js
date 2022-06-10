@@ -2,15 +2,13 @@ const { HTTPError } = require('got');
 const ExchangeBaseException = require('../../../base/errors/exchange.error');
 const utils = require('../../../base/utils/utils');
 
-const codes = ExchangeBaseException.errorCodes;
-
-class BithumbApiError extends ExchangeBaseException {
+class BitglobalApiError extends ExchangeBaseException {
     static codesMap = new Map([
-        ['9000', codes.INVALID_CREDENTIALS],
-        ['9002', codes.INVALID_CREDENTIALS],
-        ['9005', codes.INVALID_CREDENTIALS],
-        ['9005', codes.INVALID_CREDENTIALS],
-        ['20003', codes.INSUFFICIENT_FUNDS],
+        ['9000', 'INVALID_CREDENTIALS'],
+        ['9002', 'INVALID_CREDENTIALS'],
+        ['9005', 'INVALID_CREDENTIALS'],
+        ['9005', 'INVALID_CREDENTIALS'],
+        ['20003', 'INSUFFICIENT_FUNDS'],
     ]);
 
     /**
@@ -36,12 +34,12 @@ class BithumbApiError extends ExchangeBaseException {
             utils.linkOriginalPayload(this, err);
         }
 
-        if (BithumbApiError.codesMap.has(bErrCode)) {
-            this.code = BithumbApiError.codesMap.get(bErrCode);
+        if (BitglobalApiError.codesMap.has(bErrCode)) {
+            this.code = BitglobalApiError.codesMap.get(bErrCode);
         } else {
-            this.code = codes.UNKNOWN_EXCEPTION;
+            this.code = 'UNKNOWN_EXCEPTION';
         }
     }
 }
 
-module.exports = BithumbApiError;
+module.exports = BitglobalApiError;

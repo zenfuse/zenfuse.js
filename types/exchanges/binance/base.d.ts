@@ -31,7 +31,7 @@ declare class BinanceBase extends ExchangeBase {
      */
     privateFetch(url: URL, options?: import('http').RequestOptions): object;
     /**
-     * Connect to authentificated API
+     * Connect to authenticated API
      *
      * @param {object} keys
      * @param {string} keys.publicKey
@@ -43,7 +43,7 @@ declare class BinanceBase extends ExchangeBase {
         privateKey: string;
     }): this;
     /**
-     * Is instanse has keys to authenticate on not
+     * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */
@@ -108,7 +108,7 @@ declare class BinanceBase extends ExchangeBase {
     /**
      * Binance -> Zenfuse
      *
-     * @param {*} bOrder Order fromf
+     * @param {*} bOrder Order from binance
      * @returns {PlacedOrder} Zenfuse Order
      */
     transformBinanceOrder(bOrder: any): any;

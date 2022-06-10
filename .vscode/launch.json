@@ -16,7 +16,7 @@
             }
         },
         {
-            "name": "Bithumb E2E Tests",
+            "name": "Bitglobal E2E Tests",
             "request": "launch",
             "runtimeArgs": ["run-script", "test:e2e", "bithumb"],
             "runtimeExecutable": "npm",
@@ -71,7 +71,7 @@
             }
         },
         {
-            "name": "Bithumb Integration Tests",
+            "name": "Bitglobal Integration Tests",
             "request": "launch",
             "runtimeArgs": ["run-script", "test:integration", "bithumb"],
             "runtimeExecutable": "npm",

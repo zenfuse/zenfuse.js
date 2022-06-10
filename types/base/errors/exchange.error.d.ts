@@ -1,10 +1,10 @@
 export = ExchangeBaseException;
 declare class ExchangeBaseException extends ZenfuseBaseError {
     static errorCodes: {
-        INVALID_CREDENTIALS: symbol;
-        INSUFFICIENT_FUNDS: symbol;
-        INVALID_ORDER: symbol;
-        UNKNOWN_EXCEPTION: symbol;
+        INVALID_CREDENTIALS: string;
+        INSUFFICIENT_FUNDS: string;
+        INVALID_ORDER: string;
+        UNKNOWN_EXCEPTION: string;
     };
 }
 import ZenfuseBaseError = require("./base.error");

@@ -24,7 +24,7 @@ declare class MarketDataStream extends OkxWebsocketBase {
      * @param {WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
-    private editSubscribition;
+    private editSubscription;
     /**
      * @private
      * @param {import('ws').MessageEvent} msgEvent

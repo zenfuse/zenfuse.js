@@ -24,7 +24,7 @@ class AccountDataStream extends OkxWebsocketBase {
         this.socket.on('message', this.serverMessageHandler.bind(this));
 
         const keysSymbol = Symbol.for('zenfuse.keyVault');
-        const { publicKey, privateKey, addKey } = this.base[keysSymbol];
+        const { publicKey, privateKey, additionalKey } = this.base[keysSymbol];
         const timestamp = Date.now() / 1000;
         const sigParams = {
             ts: timestamp,
@@ -43,7 +43,7 @@ class AccountDataStream extends OkxWebsocketBase {
             args: [
                 {
                     apiKey: publicKey,
-                    passphrase: addKey,
+                    passphrase: additionalKey,
                     timestamp: timestamp,
                     sign: signature,
                 },

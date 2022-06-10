@@ -1,9 +1,9 @@
 /**
- * Zenfuse -> Bithumb intervals
+ * Zenfuse -> Bitglobal intervals
  */
 export type timeIntervals = import('../..').timeInterval;
 /**
- * Zenfuse -> Bithumb intervals
+ * Zenfuse -> Bitglobal intervals
  *
  * @enum {import('../..').timeInterval}
  */
