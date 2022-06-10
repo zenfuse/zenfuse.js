@@ -4,13 +4,16 @@
     "description": "Crypto exchanges connector library",
     "main": "src/index.js",
     "scripts": {
-        "test": "just test unit && just test integration",
-        "test:e2e": "just test e2e",
-        "test:integration": "just test integration",
-        "test:unit": "just test unit",
-        "format": "just format",
-        "lint": "just lint",
-        "download-mocks": "just download-mocks"
+        "test": "npm run test:unit --silent && npm run test:integration --silent",
+        "test:e2e": "TEST_MODE=e2e npm run jest --silent",
+        "test:integration": "TEST_MODE=integration npm run jest --silent",
+        "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
+        "jest": "node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand",
+        "format": "eslint --fix .; prettier --write .",
+        "lint": "eslint .",
+        "download-mocks": "node ./scripts/downloadMocks.js",
+        "remove-artifacts": "git clean -xf",
+        "build:types": "tsc"
     },
     "repository": {
         "type": "git",
