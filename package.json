@@ -46,6 +46,7 @@
         "eslint-plugin-jsdoc": "^39.2.8",
         "eslint-plugin-prettier": "^4.0.0",
         "jest": "^28.1.0",
+        "mri": "^1.2.0",
         "nock": "^13.2.4",
         "prettier": "^2.4.1",
         "tasuku": "^2.0.0",
