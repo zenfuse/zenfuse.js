@@ -107,7 +107,7 @@ class BinanceCache extends BaseGlobalCache {
             BinanceCache.ORDERS_CACHE_LENGTH;
 
         if (isShouldCut) {
-            const lastOrderId = [...this.localCache.openOrders.keys()].pop();
+            const lastOrderId = [...this.localCache.openOrders.keys()].shift();
             this.localCache.openOrders.delete(lastOrderId);
         }
     }
