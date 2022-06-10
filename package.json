@@ -12,6 +12,7 @@
         "format": "eslint --fix .; prettier --write .",
         "lint": "eslint .",
         "download-mocks": "node ./scripts/downloadMocks.js",
+        "remove-artifacts": "git clean -xf",
         "build:types": "tsc"
     },
     "repository": {
