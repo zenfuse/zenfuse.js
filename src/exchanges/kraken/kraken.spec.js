@@ -1,4 +1,29 @@
-const OkxBase = require('./base');
+const KrakenBase = require('./base');
+
+describe('createHmacSignatureKraken()', () => {
+    it('should return valid signature', () => {
+        const url = '0/private/AddOrder';
+
+        const key = 'JBEAtwFsXNH0TVho4HRT0PvFrZvDqYYHk2ilDYIzbZzpw+nquF2Pw8TlS9NpOXU9yyNFhF5mDzTYnafGRkcSgw==';
+        const body = {
+            nonce: Date.now().toString(),
+            pair: 'BTCUSDT',
+            type: 'buy',
+            ordertype: 'limit',
+            price: '20000',
+            volume: '1'
+        };
+        const madeSign = KrakenBase.prototype.createHmacSignatureKraken(
+            url,
+            body,
+            key,
+        );
+        const signature =
+            '9c5bd5874218fb8ed252b8c14e411600b6be3f53d56c266224131c545dfca0e4';
+
+        expect(madeSign).toBe(signature);
+    });
+});
 
 describe('transformZenfuseOrder()', () => {
     it('should transform limit order', () => {
@@ -13,76 +38,70 @@ describe('transformZenfuseOrder()', () => {
         };
 
         const expectation = {
-            ordId: '1',
-            instId: 'BTC-USDT',
-            tdMode: 'cash',
-            side: 'buy',
-            ordType: 'limit',
-            px: '69.6969',
-            sz: '0.02323',
+            txid: '1',
+            pair: 'BTCUSDT',
+            type: 'buy',
+            ordertype: 'limit',
+            price: '69.6969',
+            volume: '0.02323',
             extra: 'whenbinance',
         };
 
-        expect(OkxBase.prototype.transformZenfuseOrder(order)).toStrictEqual(
+        expect(KrakenBase.prototype.transformZenfuseOrder(order)).toStrictEqual(
             expectation,
         );
     });
 });
 
-describe('transformOkxOrder()', () => {
+describe('transformKrakenOrder()', () => {
     const OrderSchema = require('../../base/schemas/openOrder');
 
     it('should transform REST format order', () => {
-        const okxCreatedOrder = {
-            instType: 'SPOT',
-            instId: 'BTC-USDT',
-            ccy: '',
-            ordId: '312269865356374016',
-            clOrdId: 'b1',
-            tag: '',
-            px: '999',
-            sz: '3',
-            pnl: '5',
-            ordType: 'limit',
-            side: 'buy',
-            posSide: 'long',
-            tdMode: 'isolated',
-            accFillSz: '0',
-            fillPx: '0',
-            tradeId: '0',
-            fillSz: '0',
-            fillTime: '0',
-            state: 'live',
-            avgPx: '0',
-            lever: '20',
-            tpTriggerPx: '',
-            tpTriggerPxType: 'last',
-            tpOrdPx: '',
-            slTriggerPx: '',
-            slTriggerPxType: 'last',
-            slOrdPx: '',
-            feeCcy: '',
-            fee: '',
-            rebateCcy: '',
-            rebate: '',
-            tgtCcy: '',
-            category: '',
-            uTime: '1649288117964',
-            cTime: '1649288117964',
+        const KrakenCreatedOrder = {
+            refid: null,
+            userref: 0,
+            status: "closed",
+            reason: null,
+            opentm: 1616665496.7808,
+            closetm: 1616665499.1922,
+            starttm: 0,
+            expiretm: 0,
+            descr: {
+                pair: "XBTUSD",
+                type: "buy",
+                ordertype: "limit",
+                price: "37500.0",
+                price2: "0",
+                leverage: "none",
+                order: "buy 1.25000000 XBTUSD @ limit 37500.0",
+                close: ""
+            },
+            vol: "1.25000000",
+            vol_exec: "1.25000000",
+            cost: "37526.2",
+            fee: "37.5",
+            price: "30021.0",
+            stopprice: "0.00000",
+            limitprice: "0.00000",
+            misc: "",
+            oflags: "fciq",
+            trigger: "index",
+            trades: [
+            "TZX2WP-XSEOP-FP7WYR"
+            ],
         };
 
         const expectation = {
-            id: '312269865356374016',
-            timestamp: 1649288117964,
-            symbol: 'BTC/USDT',
+            timestamp: 1616665496.7808,
+            symbol: 'XBT/USDT',
             type: 'limit',
             side: 'buy',
-            quantity: 3,
-            price: 999,
+            quantity: 1.25000000,
+            price: 37500.0,
             status: 'open',
         };
 
-        const result = OkxBase.prototype.transformOkxOrder(okxCreatedOrder);
+        const result = KrakenBase.prototype.transformKrakenOrder(KrakenCreatedOrder);
 
         expect(result).toMatchSchema(OrderSchema);
         expect(result).toStrictEqual(expectation);

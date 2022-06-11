@@ -1,4 +1,4 @@
-const OkxBase = require('../base');
+const KrakenBase = require('../base');
 const mergeObjects = require('deepmerge');
 
 const utils = require('../../../base/utils/utils');
@@ -6,15 +6,16 @@ const utils = require('../../../base/utils/utils');
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
 const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
+const { timeIntervals } = require('../metadata');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
  */
 
 /**
- * OKX class for spot wallet API
+ * Kraken class for spot wallet API
  */
-class OkxSpot extends OkxBase {
+class KrakenSpot extends KrakenBase {
     static DEFAULT_OPTIONS = {
         defaults: {
             limit: {},
@@ -26,7 +27,7 @@ class OkxSpot extends OkxBase {
      * @param {BaseOptions} options
      */
     constructor(options = {}) {
-        const fullOptions = mergeObjects(OkxSpot.DEFAULT_OPTIONS, options);
+        const fullOptions = mergeObjects(KrakenSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
     }
 
@@ -34,13 +35,9 @@ class OkxSpot extends OkxBase {
      * @returns {string[]} Array of tickers on this exchange
      */
     async fetchTickers() {
-        const markets = await this.publicFetch('api/v5/market/tickers', {
-            searchParams: {
-                instType: 'SPOT',
-            },
-        });
+        const markets = await this.publicFetch('0/public/AssetPairs');
 
-        const tickers = markets.data.map((ticker) => ticker.instId);
+        const tickers = Object.entries(markets.result).map(([, ticker]) => ticker.wsname);
 
         utils.linkOriginalPayload(tickers, markets);
 
@@ -48,19 +45,16 @@ class OkxSpot extends OkxBase {
     }
 
     /**
-     * @returns {string[]} Array of ticker pairs on OKX
+     * @returns {string[]} Array of ticker pairs on Kraken
      */
     async fetchMarkets() {
-        const response = await this.publicFetch('api/v5/market/tickers', {
-            searchParams: {
-                instType: 'SPOT',
-            },
-        });
+        const response = await this.publicFetch('0/public/AssetPairs');
 
-        const markets = response.data.map((m) => {
-            const [baseTicker, quoteTicker] = m.instId.split('-');
+        const markets = Object.entries(response.result).map(([, m]) => {
+            const baseTicker = m.base;
+            const quoteTicker = m.quote;
             return {
-                symbol: m.instId,
+                symbol: m.wsname,
                 baseTicker,
                 quoteTicker,
             };
@@ -85,17 +79,19 @@ class OkxSpot extends OkxBase {
      */
     async fetchPrice(market = '') {
         if (market) {
-            const symbol = market.replace('/', '-');
+            const symbol = market.replace('/', '');
 
-            const response = await this.publicFetch('api/v5/market/ticker', {
+            const response = await this.publicFetch('0/public/Ticker', {
                 searchParams: {
-                    instId: symbol,
+                    pair: symbol,
                 },
             });
 
+            const krakenSymbol = Object.entries(response.result)[0];
+
             const price = {
                 symbol: market,
-                price: parseFloat(response.data[0].last),
+                price: parseFloat(response.result[krakenSymbol].c[0]),
             };
 
             utils.linkOriginalPayload(price, response);
@@ -103,16 +99,18 @@ class OkxSpot extends OkxBase {
             return price;
         }
 
-        const response = await this.publicFetch('api/v5/market/tickers', {
-            searchParams: {
-                instType: 'SPOT',
-            },
-        });
+        const prices = this.cache.tickers.map((ticker) => {
+            const response = await this.publicFetch('0/public/Ticker', {
+                searchParams: {
+                    pair: ticker,
+                },
+            });
 
-        const prices = response.data.map((m) => {
+            const krakenSymbol = Object.entries(response.result)[0];
+    
             return {
-                symbol: m.instId.replace('-', '/'),
-                price: parseFloat(m.last) || 0,
+                symbol: ticker,
+                price: parseFloat(response.result[krakenSymbol].c[0]),
             };
         });
 
@@ -131,41 +129,41 @@ class OkxSpot extends OkxBase {
      * @param {string} params.symbol
      * @param {timeIntervals} params.interval
      * @param {number} [params.startTime]
-     * @param {number} [params.endTime]
      * @returns {Promise<Kline[]>}
      */
     async fetchCandleHistory(params) {
         this.validateCandleHistoryParams(params);
 
         const response = await this.publicFetch(
-            'api/v5/market/history-candles',
+            '0/public/OHLC',
             {
                 searchParams: {
-                    instId: params.symbol.replace('/', '-'),
-                    bar: params.interval,
-                    before: params.startTime,
-                    after: params.endTime,
+                    pair: params.symbol.replace('/', ''),
+                    interval: timeIntervals[params.interval],
+                    since: params.startTime,
                 },
             },
         );
 
-        const result = response.data.map((oCandle) => {
-            oCandle = oCandle.map(Number);
+        const result = Object.entries(response.result).map(([, candles]) => {
+            return candles.map((kCandle) => {
+                kCandle = kCandle.map(Number);
 
-            const zCandle = {
-                timestamp: new Date(oCandle[0]).getTime(),
-                open: oCandle[1],
-                high: oCandle[2],
-                low: oCandle[3],
-                close: oCandle[4],
-                volume: oCandle[5],
-                interval: params.interval,
-                symbol: params.symbol,
-            };
+                const zCandle = {
+                    timestamp: kCandle[0],
+                    open: kCandle[1],
+                    high: kCandle[2],
+                    low: kCandle[3],
+                    close: kCandle[4],
+                    volume: kCandle[6],
+                    interval: params.interval,
+                    symbol: params.symbol,
+                };
 
-            utils.linkOriginalPayload(zCandle, oCandle);
+                utils.linkOriginalPayload(zCandle, kCandle);
 
-            return zCandle;
+                return zCandle;
+            });
         });
 
         utils.linkOriginalPayload(result, response);
@@ -178,35 +176,43 @@ class OkxSpot extends OkxBase {
      */
 
     /**
-     * Create new spot order on OKX
+     * Create new spot order on Kraken
      *
      * @param {Order} zOrder Order to create
      */
-    async createOrder(zOrder) {
+    async postOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
         const xOrder = this.transformZenfuseOrder(zOrder);
 
-        if (zOrder.type === 'market' && zOrder.side === 'buy') {
-            let orderTotal = null;
+        // if (zOrder.type === 'market' && zOrder.side === 'buy') {
+        //     let orderTotal = null;
 
-            const { price } = await this.fetchPrice(zOrder.symbol);
+        //     const { price } = await this.fetchPrice(zOrder.symbol);
 
-            orderTotal = price * zOrder.quantity;
+        //     orderTotal = price * zOrder.quantity;
 
-            xOrder.sz = orderTotal.toString();
-        }
+        //     xOrder.price = orderTotal.toString();
+        // }
 
-        const response = await this.privateFetch('api/v5/trade/order', {
+        const response = await this.privateFetch('0/private/AddOrder', {
             method: 'POST',
             json: xOrder,
         });
 
-        const xCreatedOrder = response.data[0];
+        const orderString = response.result.split(' ');
+        const xCreatedOrder = {
+            side: orderString[0],
+            volume: orderString[1],
+            pair: orderString[2],
+            ordertype: orderString[4],
+            price: orderString[5],
+            txid: response.result.txid,
+        };
 
         const zCreatedOrder = Object.assign({}, zOrder);
 
-        zCreatedOrder.id = xCreatedOrder.ordId;
+        zCreatedOrder.id = xCreatedOrder.txid;
         zCreatedOrder.status = 'open';
         zCreatedOrder.timestamp = Date.now();
 
@@ -220,14 +226,13 @@ class OkxSpot extends OkxBase {
     /**
      * Cancel an active order
      *
-     * @param {Order} zOrder Active Okx order to cancel
+     * @param {Order} zOrder Active Kraken order to cancel
      */
     async cancelOrder(zOrder) {
-        const response = await this.privateFetch('api/v5/trade/cancel-order', {
+        const response = await this.privateFetch('0/private/CancelOrder', {
             method: 'POST',
             json: {
-                instId: zOrder.symbol.replace('/', '-'),
-                ordId: zOrder.id,
+                txid: zOrder.id,
             },
         });
 
@@ -243,42 +248,17 @@ class OkxSpot extends OkxBase {
     /**
      * Cancel an active order
      *
-     * @param {string} orderId Okx order id
+     * @param {string} orderId Kraken order id
      */
     async cancelOrderById(orderId) {
-        let orderToDelete = this.cache.getCachedOrderById(orderId);
-
-        if (!orderToDelete) {
-            const pendingOrders = await this.privateFetch(
-                'api/v5/trade/orders-pending',
-                {
-                    searchParams: {
-                        instType: 'SPOT',
-                    },
-                },
-            );
-
-            orderToDelete = pendingOrders.data.find(
-                (order) => order.ordId === orderId,
-            );
-
-            if (!orderToDelete) {
-                throw new ZenfuseRuntimeError(
-                    `Order with ${orderId} id does not exists`,
-                    'ZEFU_ORDER_NOT_FOUND',
-                );
-            }
-
-            orderToDelete = this.transformOkxOrder(orderToDelete);
-        }
-
-        const response = await this.privateFetch('api/v5/trade/cancel-order', {
+        const response = await this.privateFetch('0/private/CancelOrder', {
             method: 'POST',
             json: {
-                instId: orderToDelete.symbol.replace('/', '-'),
-                ordId: orderId,
+                txid: orderId,
             },
         });
+
+        const orderToDelete = this.cache.getCachedOrderById(orderId);
 
         this.cache.deleteCachedOrderById(orderId);
 
@@ -288,17 +268,17 @@ class OkxSpot extends OkxBase {
     }
 
     async fetchBalances() {
-        const response = await this.privateFetch('api/v5/account/balance', {
-            method: 'GET',
+        const response = await this.privateFetch('0/private/Balance', {
+            method: 'POST',
         });
 
-        const balances = response.data[0].details
-            .filter((b) => b.cashBal > 0)
-            .map((b) => {
+        const balances = Object.entries(response.result)
+            .filter(([, b]) => parseFloat(b) > 0)
+            .map(([ticker, b]) => {
                 return {
-                    ticker: b.ccy,
-                    free: parseFloat(b.cashBal),
-                    used: parseFloat(b.frozenBal),
+                    ticker: ticker,
+                    free: parseFloat(b),
+                    used: undefined,
                 };
             });
 
@@ -312,46 +292,14 @@ class OkxSpot extends OkxBase {
      * @param {string} orderId
      */
     async fetchOrderById(orderId) {
-        let orderToFetch = this.cache.getCachedOrderById(orderId);
-
-        if (!orderToFetch) {
-            const pendingOrders = await this.privateFetch(
-                'api/v5/trade/orders-pending',
-                {
-                    searchParams: {
-                        instType: 'SPOT',
-                    },
-                },
-            );
-
-            orderToFetch = pendingOrders.data.find(
-                (order) => order.ordId === orderId,
-            );
-
-            if (!orderToFetch) {
-                throw new ZenfuseRuntimeError(
-                    `Order with ${orderId} id does not exists`,
-                    'ZEFU_ORDER_NOT_FOUND',
-                );
-            }
-
-            const zOrder = this.transformOkxOrder(orderToFetch);
-
-            this.cache.cacheOrder(zOrder);
-
-            utils.linkOriginalPayload(zOrder, orderToFetch);
-
-            return zOrder;
-        }
-
-        const fetchedOrder = await this.privateFetch('api/v5/trade/order', {
-            searchParams: {
-                ordId: orderId,
-                instId: orderToFetch.symbol.replace('/', '-'),
+        const fetchedOrder = await this.privateFetch('0/private/QueryOrders', {
+            method: 'POST',
+            json: {
+                txid: orderId,
             },
         });
 
-        const zOrder = this.transformOkxOrder(fetchedOrder.data[0]);
+        const zOrder = this.transformKrakenOrder(fetchedOrder.result[orderId]);
 
         utils.linkOriginalPayload(zOrder, fetchedOrder);
 
@@ -369,4 +317,4 @@ class OkxSpot extends OkxBase {
     }
 }
 
-module.exports = OkxSpot;
+module.exports = KrakenSpot;

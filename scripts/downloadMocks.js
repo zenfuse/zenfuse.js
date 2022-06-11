@@ -133,6 +133,28 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
+            task('Kraken', ({ task }) => {
+                if (!shouldRun('kraken')) {
+                    setStatus('skipped');
+                    return;
+                }
+                const mocksPath =
+                    __dirname + '/../tests/exchanges/kraken/mocks/static/';
+
+                const downloadList = [
+                    {
+                        filename: 'assetPairs.json',
+                        endpoint: 'https://api.kraken.com/0/public/AssetPairs',
+                    },
+                    {
+                        filename: 'history.json',
+                        endpoint:
+                            'https://api.kraken.com/0/public/OHLC/pair=BTCUSDT',
+                    },
+                ];
+
+                run(mocksPath, downloadList, task);
+            }),
         ],
         {
             concurrency: Infinity,

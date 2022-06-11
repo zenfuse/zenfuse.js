@@ -1,5 +1,6 @@
 const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
+const qs = require('qs');
 
 const ExchangeBase = require('../../base/exchange');
 const KrakenApiException = require('./errors/api.error');
@@ -165,7 +166,7 @@ class KrakenBase extends ExchangeBase {
     createHmacSignatureKraken(url, body, privateKey) {
         const nonce = Date.now().toString();
 
-        body = JSON.stringify(body);
+        body = qs.stringify(body);
 
         const secretBuf = Buffer.from(privateKey, this.signatureEncoding);
 
@@ -234,14 +235,14 @@ class KrakenBase extends ExchangeBase {
 
         const kOrder = {
             pair: zOrder.symbol.replace('/', ''),
-            txId: zOrder.id ? zOrder.id : undefined,
+            txId: zOrder.id ? zOrder.id.toString() : undefined,
             ordertype: zOrder.type,
             type: zOrder.side,
-            volume: zOrder.quantity,
+            volume: zOrder.quantity.toString(),
         };
 
         if (zOrder.price) {
-            kOrder.price = zOrder.price;
+            kOrder.price = zOrder.price.toString();
         }
 
         if (zOrder.type === 'market') {
@@ -275,7 +276,7 @@ class KrakenBase extends ExchangeBase {
         const zOrder = {};
 
         zOrder.timestamp = parseFloat(kOrder.opentm);
-        zOrder.symbol = this.parseKrakenSymbol(kOrder.descr.pair);
+        zOrder.symbol = kOrder.descr.pair.includes('/') ? kOrder.descr.pair : this.parseKrakenSymbol(kOrder.descr.pair);
         zOrder.type = kOrder.descr.ordertype;
         zOrder.side = kOrder.descr.type;
         zOrder.quantity = parseFloat(kOrder.vol);

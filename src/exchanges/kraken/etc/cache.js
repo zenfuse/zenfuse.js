@@ -31,6 +31,26 @@ class KrakenCache extends BaseGlobalCache {
     }
 
     /**
+     * Array of all binance tickers
+     *
+     * @type {string[]}
+     */
+     get tickers() {
+        this.updateSelfIfRequired();
+        return this.globalCache.get('tickers');
+    }
+
+    /**
+     * Array of all binance ticker pairs
+     *
+     * @type {string[]}
+     */
+    get symbols() {
+        this.updateSelfIfRequired();
+        return this.globalCache.get('symbols');
+    }
+
+    /**
      * Base Tickers and all their quote pairs
      *
      * @returns {Object<string, string[]>}
