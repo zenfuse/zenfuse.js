@@ -11,12 +11,16 @@ const { timeIntervals } = require('../metadata');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
+ * @typedef {import('../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
  */
 
 /**
  * Binance class for spot wallet API
  */
 class BinanceSpot extends BinanceBase {
+    /**
+     * List of default options
+     */
     static DEFAULT_OPTIONS = {
         defaults: {
             limit: {
@@ -201,24 +205,17 @@ class BinanceSpot extends BinanceBase {
     }
 
     /**
-     * @typedef {import('../utils/functions/transformation').Order} Order
-     */
-
-    /**
-     * Create new spot order on Binance
+     * Post new spot order on Binance
      *
-     * @param {Order} zOrder Order to create
+     * @param {OrderParams} zOrder Order to create
      */
     async postOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const assignedOrder = this.assignDefaultsInOrder(
-            zOrder,
-            this.options.defaults,
-        );
-
-        // TODO: Assign defaults in transformation
-        const bOrder = this.transformZenfuseOrder(assignedOrder);
+        const bOrder = utils.pipe(
+            this.transformZenfuseOrder,
+            this.assignDefaultsInOrder,
+        )(zOrder);
 
         const bCreatedOrder = await this.privateFetch('api/v3/order', {
             method: 'POST',
@@ -241,7 +238,7 @@ class BinanceSpot extends BinanceBase {
     /**
      * Cancel an active order
      *
-     * @param {Order} zOrder Order to cancel
+     * @param {OrderParams} zOrder Order to cancel
      */
     async cancelOrder(zOrder) {
         this.cache.deleteCachedOrderById(zOrder.id);
@@ -361,7 +358,7 @@ class BinanceSpot extends BinanceBase {
                 );
             }
 
-            // throw 'TODO: Fix cache'; // TODO:!!!
+            throw 'TODO: Fix this cache error'; // TODO:!!!
         }
 
         const response = await this.privateFetch('api/v3/order', {
@@ -388,6 +385,35 @@ class BinanceSpot extends BinanceBase {
 
     getMarketDataStream() {
         return new MarketDataStream(this);
+    }
+
+    /**
+     * Insert default values for specific order type
+     *
+     * **DEV** All values should be for zenfuse interface
+     *
+     * @private
+     * @param {OrderParams} order
+     * @returns {OrderParams}
+     */
+    assignDefaultsInOrder(order) {
+        let newOrder;
+
+        if (order.type.toLowerCase() === 'limit') {
+            newOrder = mergeObjects(
+                BinanceSpot.DEFAULT_OPTIONS.defaults.limit,
+                order,
+            );
+        }
+
+        if (order.type.toLowerCase() === 'market') {
+            newOrder = mergeObjects(
+                BinanceSpot.DEFAULT_OPTIONS.defaults.market,
+                order,
+            );
+        }
+
+        return newOrder;
     }
 }
 
