@@ -8,7 +8,6 @@ const MarketDataStream = require('../streams/marketDataStream');
 const RuntimeError = require('../../../base/errors/runtime.error');
 
 const { timeIntervals } = require('../metadata');
-const BaseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
@@ -54,7 +53,14 @@ class BinanceSpot extends BinanceBase {
             market.permissions.includes('SPOT'),
         );
 
-        const tickers = this.extractTickersFromSymbols(spotMarkets);
+        const stringSet = new Set();
+
+        spotMarkets.forEach((market) => {
+            stringSet.add(market.baseAsset);
+            stringSet.add(market.quoteAsset);
+        });
+
+        const tickers = [...stringSet];
 
         utils.linkOriginalPayload(tickers, exchangeInfo);
 

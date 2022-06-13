@@ -201,21 +201,6 @@ class BinanceBase extends ExchangeBase {
     }
 
     /**
-     * @param {Array} symbols Array of symbols from `api/v3/exchangeInfo`
-     * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
-     */
-    extractTickersFromSymbols(symbols) {
-        const tickers = new Set();
-
-        symbols.forEach((market) => {
-            tickers.add(market.baseAsset);
-            tickers.add(market.quoteAsset);
-        });
-
-        return [...tickers];
-    }
-
-    /**
      * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
      */
 
@@ -224,6 +209,7 @@ class BinanceBase extends ExchangeBase {
      *
      * **DEV** All values should be for zenfuse interface
      *
+     * @private
      * @param {OrderParams} order
      * @param {object} defaults
      * @param {OrderParams} defaults.limit
@@ -249,7 +235,7 @@ class BinanceBase extends ExchangeBase {
      *
      * **DEV:** This function does not assign defaults values
      *
-     * @param {OrderParams} zOrder Zenfuse order
+     * @param {OrderParams} zOrder Zenfuse order parameters
      * @returns {object} Order for binance api
      */
     transformZenfuseOrder(zOrder) {
