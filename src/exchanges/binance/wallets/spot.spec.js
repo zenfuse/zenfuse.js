@@ -1,4 +1,4 @@
-const BinanceBase = require('./base');
+const BinanceSpot = require('./spot');
 
 describe('transformZenfuseOrder()', () => {
     it('should upper case symbols and transform amount', () => {
@@ -16,7 +16,7 @@ describe('transformZenfuseOrder()', () => {
             quantity: '0.000001',
         };
 
-        expect(BinanceBase.prototype.transformZenfuseOrder(order)).toEqual(
+        expect(BinanceSpot.prototype.transformZenfuseOrder(order)).toEqual(
             expectation,
         );
     });
@@ -36,7 +36,7 @@ describe('transformZenfuseOrder()', () => {
             quantity: '0.001',
         };
 
-        expect(BinanceBase.prototype.transformZenfuseOrder(order)).toEqual(
+        expect(BinanceSpot.prototype.transformZenfuseOrder(order)).toEqual(
             expectation,
         );
     });
@@ -58,7 +58,7 @@ describe('transformZenfuseOrder()', () => {
             extra: 'whenbinance',
         };
 
-        expect(BinanceBase.prototype.transformZenfuseOrder(order)).toEqual(
+        expect(BinanceSpot.prototype.transformZenfuseOrder(order)).toEqual(
             expectation,
         );
     });
@@ -103,7 +103,7 @@ describe('transformBinanceOrder()', () => {
         };
 
         expect(
-            BinanceBase.prototype.transformBinanceOrder(binanceCreatedOrder),
+            BinanceSpot.prototype.transformBinanceOrder(binanceCreatedOrder),
         ).toMatchSchema(OrderSchema);
     });
 });
@@ -132,7 +132,7 @@ describe('assignDefaultsInOrder()', () => {
             timeInForce: 'GTC',
         };
 
-        const output = BinanceBase.prototype.assignDefaultsInOrder(
+        const output = BinanceSpot.prototype.assignDefaultsInOrder(
             order,
             DEFAULTS,
         );
@@ -156,7 +156,7 @@ describe('assignDefaultsInOrder()', () => {
             quantity: '0.001',
         };
 
-        const output = BinanceBase.prototype.assignDefaultsInOrder(
+        const output = BinanceSpot.prototype.assignDefaultsInOrder(
             order,
             DEFAULTS,
         );

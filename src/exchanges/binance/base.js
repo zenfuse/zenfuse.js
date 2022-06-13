@@ -205,32 +205,6 @@ class BinanceBase extends ExchangeBase {
      */
 
     /**
-     * Insert default values for specific order type
-     *
-     * **DEV** All values should be for zenfuse interface
-     *
-     * @private
-     * @param {OrderParams} order
-     * @param {object} defaults
-     * @param {OrderParams} defaults.limit
-     * @param {OrderParams} defaults.market
-     * @returns {OrderParams}
-     */
-    assignDefaultsInOrder(order, defaults) {
-        let newOrder;
-
-        if (order.type.toLowerCase() === 'limit') {
-            newOrder = mergeObjects(defaults.limit, order);
-        }
-
-        if (order.type.toLowerCase() === 'market') {
-            newOrder = mergeObjects(defaults.market, order);
-        }
-
-        return newOrder;
-    }
-
-    /**
      * Zenfuse -> Binance
      *
      * **DEV:** This function does not assign defaults values
