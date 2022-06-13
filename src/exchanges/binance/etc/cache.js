@@ -33,26 +33,6 @@ class BinanceCache extends BaseGlobalCache {
     }
 
     /**
-     * Array of all binance tickers
-     *
-     * @type {string[]}
-     */
-    get tickers() {
-        this.updateSelfIfRequired();
-        return this.globalCache.get('tickers');
-    }
-
-    /**
-     * Array of all binance ticker pairs
-     *
-     * @type {string[]}
-     */
-    get symbols() {
-        this.updateSelfIfRequired();
-        return this.globalCache.get('symbols');
-    }
-
-    /**
      * Base Tickers and all their quote pairs
      *
      * @returns {Object<string, string[]>}
@@ -118,6 +98,16 @@ class BinanceCache extends BaseGlobalCache {
      * @param {*} exchangeInfo Data from `api/v3/exchangeInfo` endpoint
      */
     updateCache(exchangeInfo) {
+        this.updateParsedSymbols(exchangeInfo);
+        this.updatePrecision(exchangeInfo);
+    }
+
+    /**
+     * Updating global cache using raw binance data
+     *
+     * @param {*} exchangeInfo Data from `api/v3/exchangeInfo` endpoint
+     */
+    updateParsedSymbols(exchangeInfo) {
         let tickers = new Set();
         let symbols = new Set();
 
@@ -137,6 +127,7 @@ class BinanceCache extends BaseGlobalCache {
 
         const parsedSymbols = new Map();
 
+        // TODO: Simplify this. Can work without parsing
         // Create optimized tickers
         for (const baseTicker of tickers) {
             const allQuoteTickers = symbols
@@ -159,8 +150,49 @@ class BinanceCache extends BaseGlobalCache {
         }
 
         this.globalCache.set('parsedSymbols', parsedSymbols);
-        this.globalCache.set('tickers', tickers);
-        this.globalCache.set('symbols', symbols);
+    }
+
+    /**
+     * Update precision info for every market
+     *
+     * **DEV:** "precision" in zenfuse.js is a count of numbers after decimal point
+     *
+     * @param {*} exchangeInfo Data from `api/v3/exchangeInfo` endpoint
+     */
+    updatePrecision(exchangeInfo) {
+        const precisionInfo = new Map();
+
+        // '0.00001000' -> 5
+        // '1.00000000' -> 0
+        const getPrecision = (string) => {
+            if (string.startsWith('1')) return 0;
+
+            const arr = string.split('.')[1].split('');
+
+            for (let i = 1; i <= arr.length; i++) {
+                if (arr[i - 1] === '1') return i;
+            }
+        };
+
+        for (const marketData of exchangeInfo.symbols) {
+            const bPriceFilter = marketData.filters.find(
+                ({ filterType }) => filterType === 'PRICE_FILTER',
+            );
+
+            const bQuantityFilter = marketData.filters.find(
+                ({ filterType }) => filterType === 'LOT_SIZE',
+            );
+
+            const baseTicker = marketData.baseAsset;
+            const quoteTicker = marketData.quoteAsset;
+
+            precisionInfo.set([baseTicker, quoteTicker].join('/'), {
+                pricePrecision: getPrecision(bPriceFilter.tickSize),
+                quantityPrecision: getPrecision(bQuantityFilter.stepSize),
+            });
+        }
+
+        this.globalCache.set('marketsPrecisionInfo', precisionInfo);
     }
 }
 
