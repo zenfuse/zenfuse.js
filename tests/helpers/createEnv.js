@@ -54,6 +54,20 @@ const DEFAULTS = {
         symbol: 'BTC/USDT',
         interval: '1m',
     },
+    PRECISION_REQUIRED_ORDER: {
+        symbol: 'DOGE/USDT',
+        side: 'buy',
+        type: 'limit',
+        quantity: 400.30303003,
+        price: 0.04688849384834938,
+    },
+    PRECISION_IMPOSSIBLE_ORDER: {
+        symbol: 'DOGE/USDT',
+        side: 'buy',
+        type: 'limit',
+        quantity: 0.1,
+        price: 0.000000000000001,
+    },
 };
 
 /**
