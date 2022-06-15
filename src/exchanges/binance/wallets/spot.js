@@ -12,6 +12,7 @@ const { timeIntervals } = require('../metadata');
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
  * @typedef {import('../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+ * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PostedOrder
  */
 
 /**
@@ -216,24 +217,25 @@ class BinanceSpot extends BinanceBase {
         this.validateOrderParams(zOrder);
 
         const bOrder = utils.pipe(
+            this.preciseOrderValues.bind(this),
             this.transformZenfuseOrder,
             this.assignDefaultsInOrder,
         )(zOrder);
 
-        const bCreatedOrder = await this.privateFetch('api/v3/order', {
+        const bPostedOrder = await this.privateFetch('api/v3/order', {
             method: 'POST',
             searchParams: bOrder,
         });
 
-        const zCreatedOrder = this.transformBinanceOrder(bCreatedOrder);
+        const zCreatedOrder = this.transformBinanceOrder(bPostedOrder);
 
         zCreatedOrder.symbol = await this.parseBinanceSymbol(
-            bCreatedOrder.symbol,
+            bPostedOrder.symbol,
         );
 
         this.cache.cacheOrder(zCreatedOrder);
 
-        utils.linkOriginalPayload(zCreatedOrder, bCreatedOrder);
+        utils.linkOriginalPayload(zCreatedOrder, bPostedOrder);
 
         return zCreatedOrder;
     }
@@ -359,7 +361,6 @@ class BinanceSpot extends BinanceBase {
             cachedOrder = openOrders.find((o) => o.orderId === orderId);
 
             if (!cachedOrder) {
-                // TODO: Make base error better
                 throw new RuntimeError(
                     `Order with ${orderId} id does not exists`,
                     'ZEFU_ORDER_NOT_FOUND',

@@ -165,7 +165,7 @@ class BinanceBase extends ExchangeBase {
     /**
      * Parses Binance symbol using cache
      *
-     * @private
+     * @protected
      * @param {string} bSymbol Cursed Binance symbol without separator
      * @returns {string} Normal symbol with separator
      */
@@ -198,7 +198,7 @@ class BinanceBase extends ExchangeBase {
     }
 
     /**
-     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+     * @typedef {import('../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
      */
 
     /**
@@ -260,7 +260,7 @@ class BinanceBase extends ExchangeBase {
      * Binance -> Zenfuse
      *
      * @param {*} bOrder Order from binance
-     * @returns {PlacedOrder} Zenfuse Order
+     * @returns {PlacedOrder} Posted Zenfuse Order
      */
     transformBinanceOrder(bOrder) {
         /**
@@ -288,6 +288,24 @@ class BinanceBase extends ExchangeBase {
         }
 
         return zOrder;
+    }
+
+    /**
+     * Order modifier for price and quantity. Provide decimal precision context for basic method.
+     *
+     * @protected
+     * @param {OrderParams} zOrder
+     * @returns {OrderParams}
+     */
+    preciseOrderValues(zOrder) {
+        const { quantityPrecision, pricePrecision } = this.cache.globalCache
+            .get('marketsPrecisionInfo')
+            .get(zOrder.symbol);
+
+        return super.preciseOrderValues(zOrder, {
+            price: pricePrecision,
+            quantity: quantityPrecision,
+        });
     }
 }
 
