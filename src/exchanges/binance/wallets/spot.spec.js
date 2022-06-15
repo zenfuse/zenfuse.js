@@ -65,7 +65,7 @@ describe('transformZenfuseOrder()', () => {
 });
 
 describe('transformBinanceOrder()', () => {
-    const OrderSchema = require('../../base/schemas/openOrder').omit({
+    const OrderSchema = require('../../../base/schemas/openOrder').omit({
         symbol: true,
     });
 
@@ -163,5 +163,46 @@ describe('assignDefaultsInOrder()', () => {
 
         expect(output).toMatchObject(expectation);
         expect(output.timeInForce).toBeUndefined();
+    });
+});
+
+describe('preciseOrderValues()', () => {
+    it('should precise using basic method with cache data', () => {
+        const orderToPrecise = {
+            symbol: 'ZEFU/USD',
+            type: 'limit',
+            side: 'buy',
+            price: 400.74040404,
+            quantity: 0.000034343433443434444,
+        };
+
+        const expectation = {
+            symbol: 'ZEFU/USD',
+            type: 'limit',
+            side: 'buy',
+            price: 400,
+            quantity: 0.0000343,
+        };
+
+        const context = {
+            preciseOrderValues: jest.fn().mockReturnValue(expectation),
+            cache: {
+                globalCache: {
+                    get: () => ({
+                        get: () => ({
+                            pricePrecision: 0,
+                            quantityPrecision: 7,
+                        }),
+                    }),
+                },
+            },
+        };
+
+        expect(
+            BinanceSpot.prototype.preciseOrderValues.call(
+                context,
+                orderToPrecise,
+            ),
+        ).toStrictEqual(expectation);
     });
 });
