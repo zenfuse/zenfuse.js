@@ -5,7 +5,6 @@ const utils = require('../../../base/utils/utils');
 
 const AccountDataStream = require('../streams/accountDataStream');
 const MarketDataStream = require('../streams/marketDataStream');
-const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 const { timeIntervals } = require('../metadata');
 
 /**
@@ -99,21 +98,21 @@ class KrakenSpot extends KrakenBase {
             return price;
         }
 
-        const prices = this.cache.tickers.map((ticker) => {
+        const prices = this.cache.symbols.forEach((symbol) => {
             const response = await this.publicFetch('0/public/Ticker', {
                 searchParams: {
-                    pair: ticker,
+                    pair: symbol,
                 },
             });
 
             const krakenSymbol = Object.entries(response.result)[0];
     
             return {
-                symbol: ticker,
+                symbol: this.parseKrakenSymbol(symbol),
                 price: parseFloat(response.result[krakenSymbol].c[0]),
             };
         });
-
+        //TODO: decide what to link as original payload
         utils.linkOriginalPayload(prices, response);
 
         return prices;

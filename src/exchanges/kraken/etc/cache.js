@@ -35,7 +35,7 @@ class KrakenCache extends BaseGlobalCache {
      *
      * @type {string[]}
      */
-     get tickers() {
+    get tickers() {
         this.updateSelfIfRequired();
         return this.globalCache.get('tickers');
     }

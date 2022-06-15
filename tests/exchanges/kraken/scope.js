@@ -1,13 +1,13 @@
 /* eslint-disable @cspell/spellchecker */
 const nock = require('nock');
 
-const HOSTNAME = 'https://okx.com';
+const HOSTNAME = 'https://api.kraken.com';
 
-const spotFilePath = __dirname + '/mocks/static/spot.json';
+const assetPairsFilePath = __dirname + '/mocks/static/assetPairs.json';
 const historyFilePath = __dirname + '/mocks/static/history.json';
 
 /**
- * HTTP mocking scope for OKX master test
+ * HTTP mocking scope for Kraken master test
  * Should be as
  *
  * @param {import('../../master.test').MasterTestEnvironment} env
@@ -18,537 +18,423 @@ module.exports = (env) => ({
     'Spot Wallet HTTP interface': {
         'ping()': () =>
             nock(HOSTNAME)
-                .get('/api/v5/public/time')
+                .get('/0/public/Time')
                 .reply(200, {
-                    code: '0',
-                    data: [
-                        {
-                            ts: Date.now(),
-                        },
-                    ],
-                    msg: '',
+                    error: [],
+                    result: {
+                        unixtime: Date().now(),
+                        rfc1123: Date().now().toUTCString(),
+                    },
                 }),
         'fetchMarkets()': () =>
             nock(HOSTNAME)
-                .get('/api/v5/market/tickers')
-                .query({ instType: 'SPOT' })
-                .replyWithFile(200, spotFilePath, {
+                .get('/0/public/AssetPairs')
+                .replyWithFile(200, assetPairsFilePath, {
                     'Content-Type': 'application/json',
                 }),
         'fetchTickers()': () =>
             nock(HOSTNAME)
-                .get('/api/v5/market/tickers')
-                .query({ instType: 'SPOT' })
-                .replyWithFile(200, spotFilePath, {
+                .get('/0/public/AssetPairs')
+                .replyWithFile(200, assetPairsFilePath, {
                     'Content-Type': 'application/json',
                 }),
+        //TODO: find a solution for all tickers request
         'fetchPrice()': () =>
             nock(HOSTNAME)
-                .get('/api/v5/market/tickers')
-                .query({ instType: 'SPOT' })
+                .get('/0/public/Ticker')
                 .replyWithFile(200, spotFilePath, {
                     'Content-Type': 'application/json',
                 })
-                .get('/api/v5/market/ticker')
-                .query({ instId: 'BTC-USDT' })
+                .get('/0/public/Ticker')
+                .query({ pair: 'BTCUSDT' })
                 .reply(200, {
-                    code: '0',
-                    msg: '',
-                    data: [
-                        {
-                            instType: 'SPOT',
-                            instId: 'BTC-USDT',
-                            last: '39466.5',
-                            lastSz: '0.02413831',
-                            askPx: '39466.5',
-                            askSz: '0.33213231',
-                            bidPx: '39466.4',
-                            bidSz: '0.13488312',
-                            open24h: '42105',
-                            high24h: '42410',
-                            low24h: '39190',
-                            volCcy24h: '549944177.76344598',
-                            vol24h: '13468.43820924',
-                            ts: '1649721511728',
-                            sodUtc0: '42149.3',
-                            sodUtc8: '40580.1',
+                    error: [],
+                    result: {
+                        XBTUSDT: {
+                            a: ['21222.90000', '1', '1.000'],
+                            b: ['21212.10000', '1', '1.000'],
+                            c: ['21224.70000', '0.00668053'],
+                            v: ['105.73443212', '549.64660532'],
+                            p: ['21182.98219', '22105.03870'],
+                            t: [1144, 5054],
+                            l: ['20756.00000', '20756.00000'],
+                            h: ['22278.00000', '23049.10000'],
+                            o: '22136.30000',
                         },
-                    ],
+                    },
                 }),
         'fetchCandleHistory()': () =>
             nock(HOSTNAME)
-                .get('/api/v5/market/history-candles')
+                .get('/0/public/OHLC')
                 .query({
-                    instId: 'BTC-USDT',
-                    bar: '1m',
+                    pair: 'BTCUSDT',
+                    interval: '1m',
                 })
                 .replyWithFile(200, historyFilePath, {
                     'Content-Type': 'application/json',
                 }),
-        'createOrder()': {
+        'postOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME)
-                    .get('/api/v5/market/ticker')
-                    .query({
-                        instId: toOkxStyle(env.BUY_MARKET_ORDER.symbol),
-                    })
-                    .reply(200, {
-                        code: '0',
-                        msg: '',
-                        data: [
-                            {
-                                instType: 'SPOT',
-                                instId: 'BTC-USDT',
-                                last: '39466.5',
-                                lastSz: '0.02413831',
-                                askPx: '39466.5',
-                                askSz: '0.33213231',
-                                bidPx: '39466.4',
-                                bidSz: '0.13488312',
-                                open24h: '42105',
-                                high24h: '42410',
-                                low24h: '39190',
-                                volCcy24h: '549944177.76344598',
-                                vol24h: '13468.43820924',
-                                ts: '1649721511728',
-                                sodUtc0: '42149.3',
-                                sodUtc8: '40580.1',
-                            },
-                        ],
-                    })
-                    .post('/api/v5/trade/order', (b) => {
+                    .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('API-SIGN', Boolean)
+                    .post('/0/private/AddOrder', (b) => {
                         expect(b).toMatchObject({
-                            instId: toOkxStyle(env.BUY_MARKET_ORDER.symbol),
-                            tdMode: 'cash',
-                            side: 'buy',
-                            ordType: 'market',
-                            px: null,
+                            pair: toKrakenStyle(env.BUY_MARKET_ORDER.symbol),
+                            type: 'buy',
+                            ordertype: 'market',
+                            price: null,
+                            volume: toKrakenStyle(
+                                env.BUY_MARKET_ORDER.quantity,
+                            ),
                         });
 
                         expect(b.sz).toBeDefined();
                         return true;
                     })
                     .reply(201, {
-                        code: '0',
-                        msg: '',
-                        data: [
-                            {
-                                clOrdId: '',
-                                ordId: '312269865356374016',
-                                tag: '',
-                                sCode: '0',
-                                sMsg: '',
+                        error: [],
+                        result: {
+                            descr: {
+                                order: `${env.BUY_MARKET_ORDER.side} ${env.BUY_MARKET_ORDER.quantity} XBTUSDT @ ${env.BUY_MARKET_ORDER.type}`,
                             },
-                        ],
+                            txid: ['OUF4EM-FRGI2-MQMWZD'],
+                        },
                     }),
             'sell by market': () =>
                 nock(HOSTNAME)
-                    .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                    .matchHeader('OK-ACCESS-SIGN', Boolean)
-                    .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
-                    .post('/api/v5/trade/order', (b) => {
+                    .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('API-SIGN', Boolean)
+                    .post('/0/private/AddOrder', (b) => {
                         expect(b).toMatchObject({
-                            instId: toOkxStyle(env.SELL_MARKET_ORDER.symbol),
-                            tdMode: 'cash',
-                            side: 'sell',
-                            ordType: 'market',
-                            px: null,
-                            sz: toOkxStyle(env.SELL_MARKET_ORDER.quantity),
+                            pair: toKrakenStyle(env.SELL_MARKET_ORDER.symbol),
+                            type: 'sell',
+                            ordertype: 'market',
+                            price: null,
+                            volume: toKrakenStyle(
+                                env.SELL_MARKET_ORDER.quantity,
+                            ),
                         });
 
                         return true;
                     })
                     .reply(201, {
-                        code: '0',
-                        msg: '',
-                        data: [
-                            {
-                                clOrdId: '',
-                                ordId: '312269865356374016',
-                                tag: '',
-                                sCode: '0',
-                                sMsg: '',
+                        error: [],
+                        result: {
+                            descr: {
+                                order: `${env.SELL_MARKET_ORDER.side} ${env.SELL_MARKET_ORDER.quantity} XBTUSDT @ ${env.SELL_MARKET_ORDER.type}`,
                             },
-                        ],
+                            txid: ['OUF4EM-FRGI2-MQMWZD'],
+                        },
                     }),
             'buy by limit': () =>
                 nock(HOSTNAME)
-                    .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                    .matchHeader('OK-ACCESS-SIGN', Boolean)
-                    .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
-                    .post('/api/v5/trade/order', (b) => {
+                    .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('API-SIGN', Boolean)
+                    .post('/0/private/AddOrder', (b) => {
                         expect(b).toMatchObject({
-                            instId: toOkxStyle(env.BUY_LIMIT_ORDER.symbol),
-                            tdMode: 'cash',
-                            side: 'buy',
-                            ordType: 'limit',
-                            px: toOkxStyle(env.BUY_LIMIT_ORDER.price),
-                            sz: toOkxStyle(env.BUY_LIMIT_ORDER.quantity),
+                            pair: toKrakenStyle(env.BUY_LIMIT_ORDER.symbol),
+                            type: 'buy',
+                            ordertype: 'limit',
+                            price: toKrakenStyle(env.BUY_LIMIT_ORDER.price),
+                            volume: toKrakenStyle(env.BUY_LIMIT_ORDER.quantity),
                         });
 
                         return true;
                     })
                     .reply(201, {
-                        code: '0',
-                        msg: '',
-                        data: [
-                            {
-                                clOrdId: '',
-                                ordId: '312269865356374016',
-                                tag: '',
-                                sCode: '0',
-                                sMsg: '',
+                        error: [],
+                        result: {
+                            descr: {
+                                order: `${env.BUY_LIMIT_ORDER.side} ${env.BUY_LIMIT_ORDER.quantity} XBTUSDT @ ${env.BUY_LIMIT_ORDER.type} ${env.BUY_LIMIT_ORDER.price}`,
                             },
-                        ],
+                            txid: ['OUF4EM-FRGI2-MQMWZD'],
+                        },
                     }),
             'sell by limit': () =>
                 nock(HOSTNAME)
-                    .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                    .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                    .matchHeader('OK-ACCESS-SIGN', Boolean)
-                    .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
-                    .post('/api/v5/trade/order', (b) => {
+                    .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('API-SIGN', Boolean)
+                    .post('/0/private/AddOrder', (b) => {
                         expect(b).toMatchObject({
-                            instId: toOkxStyle(env.SELL_LIMIT_ORDER.symbol),
-                            tdMode: 'cash',
-                            side: 'sell',
-                            ordType: 'limit',
-                            px: toOkxStyle(env.SELL_LIMIT_ORDER.price),
-                            sz: toOkxStyle(env.SELL_LIMIT_ORDER.quantity),
+                            pair: toKrakenStyle(env.BUY_LIMIT_ORDER.symbol),
+                            type: 'sell',
+                            ordertype: 'limit',
+                            price: toKrakenStyle(env.BUY_LIMIT_ORDER.price),
+                            volume: toKrakenStyle(env.BUY_LIMIT_ORDER.quantity),
                         });
 
                         return true;
                     })
                     .reply(201, {
-                        code: '0',
-                        msg: '',
-                        data: [
-                            {
-                                clOrdId: '',
-                                ordId: '312269865356374016',
-                                tag: '',
-                                sCode: '0',
-                                sMsg: '',
+                        error: [],
+                        result: {
+                            descr: {
+                                order: `${env.SELL_LIMIT_ORDER.side} ${env.SELL_LIMIT_ORDER.quantity} XBTUSDT @ ${env.SELL_LIMIT_ORDER.type} ${env.SELL_LIMIT_ORDER.price}`,
                             },
-                        ],
+                            txid: ['OUF4EM-FRGI2-MQMWZD'],
+                        },
                     }),
         },
         'fetchBalances()': () =>
             nock(HOSTNAME)
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
-                .get('/api/v5/account/balance')
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
+                .get('/0/private/Balance')
                 .reply(200, {
-                    code: '0',
-                    data: [
-                        {
-                            adjEq: '10679688.0460531643092577',
-                            details: [
-                                {
-                                    availBal: '',
-                                    availEq: '9930359.9998',
-                                    cashBal: '9930359.9998',
-                                    ccy: 'USDT',
-                                    crossLiab: '0',
-                                    disEq: '9439737.0772999514',
-                                    eq: '9930359.9998',
-                                    eqUsd: '9933041.196999946',
-                                    frozenBal: '0',
-                                    interest: '0',
-                                    isoEq: '0',
-                                    isoLiab: '0',
-                                    isoUpl: '0',
-                                    liab: '0',
-                                    maxLoan: '10000',
-                                    mgnRatio: '',
-                                    notionalLever: '',
-                                    ordFrozen: '0',
-                                    twap: '0',
-                                    uTime: '1620722938250',
-                                    upl: '0',
-                                    uplLiab: '0',
-                                    stgyEq: '0',
-                                },
-                                {
-                                    availBal: '',
-                                    availEq: '33.6799714158199414',
-                                    cashBal: '33.2009985',
-                                    ccy: 'BTC',
-                                    crossLiab: '0',
-                                    disEq: '1239950.9687532129092577',
-                                    eq: '33.771820625136023',
-                                    eqUsd: '1239950.9687532129092577',
-                                    frozenBal: '0.0918492093160816',
-                                    interest: '0',
-                                    isoEq: '0',
-                                    isoLiab: '0',
-                                    isoUpl: '0',
-                                    liab: '0',
-                                    maxLoan: '1453.92289531493594',
-                                    mgnRatio: '',
-                                    notionalLever: '',
-                                    ordFrozen: '0',
-                                    twap: '0',
-                                    uTime: '1620722938250',
-                                    upl: '0.570822125136023',
-                                    uplLiab: '0',
-                                    stgyEq: '0',
-                                },
-                            ],
-                            imr: '3372.2942371050594217',
-                            isoEq: '0',
-                            mgnRatio: '70375.35408747017',
-                            mmr: '134.8917694842024',
-                            notionalUsd: '33722.9423710505978888',
-                            ordFroz: '0',
-                            totalEq: '11172992.1657531589092577',
-                            uTime: '1623392334718',
-                        },
-                    ],
-                    msg: '',
+                    error: [],
+                    result: {
+                        ZUSD: '171288.6158',
+                        ZEUR: '504861.8946',
+                        ZGBP: '459567.9171',
+                        ZAUD: '500000.0000',
+                        ZCAD: '500000.0000',
+                        CHF: '500000.0000',
+                        XXBT: '1011.1908877900',
+                        XXRP: '100000.00000000',
+                        XLTC: '2000.0000000000',
+                        XETH: '818.5500000000',
+                        XETC: '1000.0000000000',
+                        XREP: '1000.0000000000',
+                        XXMR: '1000.0000000000',
+                        USDT: '500000.00000000',
+                        DASH: '1000.0000000000',
+                        GNO: '1000.0000000000',
+                        EOS: '1000.0000000000',
+                        BCH: '1016.6005000000',
+                        ADA: '100000.00000000',
+                        QTUM: '1000.0000000000',
+                        XTZ: '100000.00000000',
+                        ATOM: '100000.00000000',
+                        SC: '9999.9999999999',
+                        LSK: '1000.0000000000',
+                        WAVES: '1000.0000000000',
+                        ICX: '1000.0000000000',
+                        BAT: '1000.0000000000',
+                        OMG: '1000.0000000000',
+                        LINK: '1000.0000000000',
+                        DAI: '9999.9999999999',
+                        PAXG: '1000.0000000000',
+                        ALGO: '100000.00000000',
+                        USDC: '100000.00000000',
+                        TRX: '100000.00000000',
+                        DOT: '2.5000000000',
+                        OXT: '1000.0000000000',
+                        'ETH2.S': '198.3970800000',
+                        ETH2: '2.5885574330',
+                        'USD.M': '1213029.2780',
+                    },
                 }),
         'cancelOrder()': () =>
             nock(HOSTNAME)
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
                 // Order creation
-                .post('/api/v5/trade/order', (b) => {
+                .post('/0/private/AddOrder', (b) => {
                     expect(b).toMatchObject({
-                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
-                        tdMode: 'cash',
-                        side: toOkxStyle(env.NOT_EXECUTABLE_ORDER.side),
-                        ordType: toOkxStyle(env.NOT_EXECUTABLE_ORDER.type),
-                        px: toOkxStyle(env.NOT_EXECUTABLE_ORDER.price),
-                        sz: toOkxStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                        pair: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        type: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.side),
+                        ordertype: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.type),
+                        price: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        volume: toKrakenStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
                     });
 
                     return true;
                 })
                 .reply(201, {
-                    code: '0',
-                    msg: '',
-                    data: [
-                        {
-                            clOrdId: '',
-                            ordId: '312269865356374016',
-                            tag: '',
-                            sCode: '0',
-                            sMsg: '',
+                    error: [],
+                    result: {
+                        descr: {
+                            order: `${env.NOT_EXECUTABLE_ORDER.side} ${env.NOT_EXECUTABLE_ORDER.quantity} XBTUSDT @ ${env.NOT_EXECUTABLE_ORDER.type} ${env.NOT_EXECUTABLE_ORDER.price}`,
                         },
-                    ],
+                        txid: ['OUF4EM-FRGI2-MQMWZD'],
+                    },
                 })
                 // Order deletion
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
-                .post('/api/v5/trade/cancel-order', (b) => {
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
+                .post('/0/private/CancelOrder', (b) => {
                     expect(b).toMatchObject({
-                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
-                        ordId: '312269865356374016',
+                        txid: 'OUF4EM-FRGI2-MQMWZD',
                     });
 
                     return true;
                 })
                 .reply(200, {
-                    code: '0',
-                    msg: '',
-                    data: [
-                        {
-                            clOrdId: '',
-                            ordId: '312269865356374016',
-                            sCode: '0',
-                            sMsg: '',
-                        },
-                    ],
+                    error: [],
+                    result: {
+                        count: 1,
+                    },
                 }),
         'cancelOrderById()': () =>
             nock(HOSTNAME)
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
                 // Order creation
-                .post('/api/v5/trade/order', (b) => {
+                .post('/0/private/AddOrder', (b) => {
                     expect(b).toMatchObject({
-                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
-                        tdMode: 'cash',
-                        side: toOkxStyle(env.NOT_EXECUTABLE_ORDER.side),
-                        ordType: toOkxStyle(env.NOT_EXECUTABLE_ORDER.type),
-                        px: toOkxStyle(env.NOT_EXECUTABLE_ORDER.price),
-                        sz: toOkxStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                        pair: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        type: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.side),
+                        ordertype: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.type),
+                        price: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        volume: toKrakenStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
                     });
 
                     return true;
                 })
                 .reply(201, {
-                    code: '0',
-                    msg: '',
-                    data: [
-                        {
-                            clOrdId: '',
-                            ordId: '312269865356374016',
-                            tag: '',
-                            sCode: '0',
-                            sMsg: '',
+                    error: [],
+                    result: {
+                        descr: {
+                            order: `${env.NOT_EXECUTABLE_ORDER.side} ${env.NOT_EXECUTABLE_ORDER.quantity} XBTUSDT @ ${env.NOT_EXECUTABLE_ORDER.type} ${env.NOT_EXECUTABLE_ORDER.price}`,
                         },
-                    ],
+                        txid: ['OUF4EM-FRGI2-MQMWZD'],
+                    },
                 })
                 // Order deletion
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
-                .post('/api/v5/trade/cancel-order', (b) => {
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
+                .post('/0/private/CancelOrder', (b) => {
                     expect(b).toMatchObject({
-                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
-                        ordId: '312269865356374016',
+                        txid: 'OUF4EM-FRGI2-MQMWZD',
                     });
 
                     return true;
                 })
                 .reply(200, {
-                    code: '0',
-                    msg: '',
-                    data: [
-                        {
-                            clOrdId: '',
-                            ordId: '312269865356374016',
-                            sCode: '0',
-                            sMsg: '',
-                        },
-                    ],
+                    error: [],
+                    result: {
+                        count: 1,
+                    },
                 }),
         'fetchOrderById()': () =>
             nock(HOSTNAME)
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
                 // Order creation
-                .post('/api/v5/trade/order', (b) => {
+                .post('/0/private/AddOrder', (b) => {
                     expect(b).toMatchObject({
-                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
-                        tdMode: 'cash',
-                        side: toOkxStyle(env.NOT_EXECUTABLE_ORDER.side),
-                        ordType: toOkxStyle(env.NOT_EXECUTABLE_ORDER.type),
-                        px: toOkxStyle(env.NOT_EXECUTABLE_ORDER.price),
-                        sz: toOkxStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                        pair: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        type: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.side),
+                        ordertype: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.type),
+                        price: toKrakenStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        volume: toKrakenStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
                     });
 
                     return true;
                 })
                 .reply(201, {
-                    code: '0',
-                    msg: '',
-                    data: [
-                        {
-                            clOrdId: '',
-                            ordId: '312269865356374016',
-                            tag: '',
-                            sCode: '0',
-                            sMsg: '',
+                    error: [],
+                    result: {
+                        descr: {
+                            order: `${env.NOT_EXECUTABLE_ORDER.side} ${env.NOT_EXECUTABLE_ORDER.quantity} XBTUSDT @ ${env.NOT_EXECUTABLE_ORDER.type} ${env.NOT_EXECUTABLE_ORDER.price}`,
                         },
-                    ],
+                        txid: ['OUF4EM-FRGI2-MQMWZD'],
+                    },
                 })
                 // Order status fetch
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
-                .get('/api/v5/trade/order')
-                .query({ instId: 'BTC-USDT', ordId: '312269865356374016' })
-                .reply(200, {
-                    code: '0',
-                    msg: '',
-                    data: [
-                        {
-                            instType: 'SPOT',
-                            instId: 'BTC-USDT',
-                            ccy: '',
-                            ordId: '312269865356374016',
-                            clOrdId: '',
-                            tag: '',
-                            px: env.NOT_EXECUTABLE_ORDER.price,
-                            sz: env.NOT_EXECUTABLE_ORDER.quantity,
-                            pnl: '5',
-                            ordType: 'limit',
-                            side: 'buy',
-                            posSide: 'long',
-                            tdMode: 'isolated',
-                            accFillSz: '0',
-                            fillPx: '0',
-                            tradeId: '0',
-                            fillSz: '0',
-                            fillTime: '0',
-                            state: 'live',
-                            avgPx: '0',
-                            lever: '20',
-                            tpTriggerPx: '',
-                            tpTriggerPxType: 'last',
-                            tpOrdPx: '',
-                            slTriggerPx: '',
-                            slTriggerPxType: 'last',
-                            slOrdPx: '',
-                            feeCcy: '',
-                            fee: '',
-                            rebateCcy: '',
-                            rebate: '',
-                            tgtCcy: '',
-                            category: '',
-                            uTime: Date.now(),
-                            cTime: Date.now(),
-                        },
-                    ],
-                })
-                // Order deletion
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
-                .post('/api/v5/trade/cancel-order', (b) => {
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
+                .post('/0/private/QueryOrders', (b) => {
                     expect(b).toMatchObject({
-                        instId: toOkxStyle(env.NOT_EXECUTABLE_ORDER.symbol),
-                        ordId: '312269865356374016',
+                        txid: 'OUF4EM-FRGI2-MQMWZD',
                     });
 
                     return true;
                 })
                 .reply(200, {
-                    code: '0',
-                    msg: '',
-                    data: [
-                        {
-                            clOrdId: '',
-                            ordId: '312269865356374016',
-                            sCode: '0',
-                            sMsg: '',
+                    error: [],
+                    result: {
+                        'OUF4EM-FRGI2-MQMWZD': {
+                            refid: null,
+                            userref: 0,
+                            status: 'open',
+                            reason: null,
+                            opentm: 1616665496.7808,
+                            closetm: 1616665499.1922,
+                            starttm: 0,
+                            expiretm: 0,
+                            descr: {
+                                pair: toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.symbol,
+                                ),
+                                type: toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.side,
+                                ),
+                                ordertype: toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.type,
+                                ),
+                                price: toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.price,
+                                ),
+                                volume: toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.quantity,
+                                ),
+                                leverage: 'none',
+                                order: `${toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.side,
+                                )} ${toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.quantity,
+                                )} ${toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.symbol,
+                                )} @ ${toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.type,
+                                )} ${toKrakenStyle(
+                                    env.NOT_EXECUTABLE_ORDER.price,
+                                )}`,
+                                close: '',
+                            },
+                            vol: toKrakenStyle(
+                                env.NOT_EXECUTABLE_ORDER.quantity,
+                            ),
+                            vol_exec: '0',
+                            cost: '37526.2',
+                            fee: '37.5',
+                            price: '30021.0',
+                            stopprice: '0.00000',
+                            limitprice: '0.00000',
+                            misc: '',
+                            oflags: 'fciq',
+                            trigger: 'index',
+                            trades: ['TZX2WP-XSEOP-FP7WYR'],
                         },
-                    ],
+                    },
+                })
+                // Order deletion
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
+                .post('/0/private/CancelOrder', (b) => {
+                    expect(b).toMatchObject({
+                        txid: 'OUF4EM-FRGI2-MQMWZD',
+                    });
+
+                    return true;
+                })
+                .reply(200, {
+                    error: [],
+                    result: {
+                        count: 1,
+                    },
                 }),
     },
     'Error Handling': {
         'INVALID_CREDENTIALS code': () =>
             nock(HOSTNAME)
-                .matchHeader('OK-ACCESS-KEY', 'invalidPublicKey')
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .matchHeader('API-KEY', 'invalidPublicKey')
+                .matchHeader('API-SIGN', Boolean)
                 .get('/api/v5/trade/orders-pending')
                 .reply(401, { msg: 'Invalid OK-ACCESS-KEY', code: '50111' }),
 
         'INSUFFICIENT_FUNDS code': () =>
             nock(HOSTNAME)
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
                 .post('/api/v5/trade/order', () => true)
                 .query(() => true)
                 .reply(400, {
@@ -566,10 +452,8 @@ module.exports = (env) => ({
                 }),
         'UNKNOWN_EXCEPTION code': () =>
             nock(HOSTNAME)
-                .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
-                .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
-                .matchHeader('OK-ACCESS-SIGN', Boolean)
-                .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                .matchHeader('API-KEY', env.API_PUBLIC_KEY)
+                .matchHeader('API-SIGN', Boolean)
                 .post('/api/v5/account/set-leverage')
                 .query(() => true)
                 .reply(400, {
@@ -580,4 +464,4 @@ module.exports = (env) => ({
     },
 });
 
-const toOkxStyle = (value) => value.toString().replace('/', '-');
+const toKrakenStyle = (value) => value.toString().replace('/', '');

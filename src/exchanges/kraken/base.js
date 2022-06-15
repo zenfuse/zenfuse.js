@@ -1,6 +1,5 @@
 const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
-const qs = require('qs');
 
 const ExchangeBase = require('../../base/exchange');
 const KrakenApiException = require('./errors/api.error');
@@ -79,9 +78,12 @@ class KrakenBase extends ExchangeBase {
     async privateFetch(url, options = {}) {
         this.throwIfNotHasKeys();
 
+        options.json.nonce = Date.now().toString();
+
         const signature = this.createHmacSignatureKraken(
             url,
             options.json,
+            options.json.nonce,
             this[keysSymbol].privateKey,
         );
 
@@ -163,20 +165,19 @@ class KrakenBase extends ExchangeBase {
         return body;
     }
 
-    createHmacSignatureKraken(url, body, privateKey) {
-        const nonce = Date.now().toString();
-
-        body = qs.stringify(body);
+    createHmacSignatureKraken(url, body, nonce, privateKey) {
+        body = new URLSearchParams(body).toString();
 
         const secretBuf = Buffer.from(privateKey, this.signatureEncoding);
-
-        const hmac = new createHmac('sha512', secretBuf);
 
         const hash = new createHash('sha256')
             .update(nonce + body)
             .digest('binary');
 
-        return hmac.update(url + hash, 'binary').digest(this.signatureEncoding);
+        return createHmac('sha512', secretBuf)
+            .update(url + hash, 'binary')
+            .digest(this.signatureEncoding)
+            .toString('base64');
     }
 
     /**
@@ -235,7 +236,7 @@ class KrakenBase extends ExchangeBase {
 
         const kOrder = {
             pair: zOrder.symbol.replace('/', ''),
-            txId: zOrder.id ? zOrder.id.toString() : undefined,
+            txid: zOrder.id ? zOrder.id.toString() : undefined,
             ordertype: zOrder.type,
             type: zOrder.side,
             volume: zOrder.quantity.toString(),
@@ -276,7 +277,9 @@ class KrakenBase extends ExchangeBase {
         const zOrder = {};
 
         zOrder.timestamp = parseFloat(kOrder.opentm);
-        zOrder.symbol = kOrder.descr.pair.includes('/') ? kOrder.descr.pair : this.parseKrakenSymbol(kOrder.descr.pair);
+        zOrder.symbol = kOrder.descr.pair.includes('/')
+            ? kOrder.descr.pair
+            : this.parseKrakenSymbol(kOrder.descr.pair);
         zOrder.type = kOrder.descr.ordertype;
         zOrder.side = kOrder.descr.type;
         zOrder.quantity = parseFloat(kOrder.vol);
