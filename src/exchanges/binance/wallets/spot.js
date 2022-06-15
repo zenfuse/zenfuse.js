@@ -207,9 +207,12 @@ class BinanceSpot extends BinanceBase {
     /**
      * Post new spot order on Binance
      *
-     * @param {OrderParams} zOrder Order to create
+     * @param {OrderParams} zOrder Order parameters
+     * @returns {Promise<PostedOrder>}
      */
     async postOrder(zOrder) {
+        await this.cache.globalCache.updatingPromise;
+
         this.validateOrderParams(zOrder);
 
         const bOrder = utils.pipe(
