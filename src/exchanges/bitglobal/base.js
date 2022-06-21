@@ -21,7 +21,7 @@ class BitglobalBase extends ExchangeBase {
     static DEFAULT_OPTIONS = {
         httpClientOptions: {
             responseType: 'json',
-            prefixUrl: 'https://global-openapi.bitglobal.pro/openapi/v1',
+            prefixUrl: 'https://global-openapi.bithumb.pro/openapi/v1',
             headers: {
                 'Content-Type': 'application/json',
             },
