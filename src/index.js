@@ -1,6 +1,6 @@
 const Binance = require('./exchanges/binance');
 const FTX = require('./exchanges/ftx');
-const Bitglobal = require('./exchanges/bithumb');
+const Bitglobal = require('./exchanges/bitglobal');
 const OKX = require('./exchanges/okx');
 const ExchangeBaseException = require('./base/errors/exchange.error');
 

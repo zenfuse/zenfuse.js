@@ -49,11 +49,44 @@ const env = createEnv({
         quantity: 0.0003,
         price: 55000,
     },
+    PRECISION_REQUIRED_ORDER: {
+        symbol: 'DOGE/USDT',
+        side: 'buy',
+        type: 'limit',
+        quantity: 400.30303003,
+        price: 0.04688849384834938,
+    },
+    PRECISION_IMPOSSIBLE_ORDER: {
+        symbol: 'DOGE/USDT',
+        side: 'buy',
+        type: 'limit',
+        quantity: 0.1,
+        price: 0.000000000000001,
+    },
 });
 
 global.httpScope = createScope(env);
 
 masterTest(Binance, env);
+
+describe('Order precision', () => {
+    it('should throw error on order values witch impossible to precise', async () => {
+        await new Binance.spot()
+            .auth({
+                publicKey: env.API_PUBLIC_KEY,
+                privateKey: env.API_PRIVATE_KEY,
+            })
+            .postOrder(env.PRECISION_IMPOSSIBLE_ORDER)
+            .then((order) => {
+                // eslint-disable-next-line no-console
+                console.error('ORDER POSTED', order);
+                throw 'Not caught';
+            })
+            .catch((err) => {
+                expect(err.code).toBe('PRECISION_IMPOSSIBLE');
+            });
+    });
+});
 
 describe('Error Handling', () => {
     describe('INVALID_CREDENTIALS code', () => {

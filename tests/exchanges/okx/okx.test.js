@@ -3,6 +3,7 @@ const { OKX, errorCodes } = require('zenfuse');
 const masterTest = require('../../master.test');
 const createScope = require('./scope');
 const checkProcessHasVariables = require('../../helpers/validateEnv');
+const createEnv = require('../../helpers/createEnv');
 const OkxApiException = require('../../../src/exchanges/okx/errors/api.error');
 
 if (isEnd2EndTest) {
@@ -16,10 +17,10 @@ if (isEnd2EndTest) {
 /**
  * @type {import('../../master.test').MasterTestEnvironment}
  */
-const env = {
-    API_PUBLIC_KEY: process.env.OKX_PUBLIC_KEY || 'DUMMY_PUBLIC_KEY',
-    API_PRIVATE_KEY: process.env.OKX_SECRET_KEY || 'DUMMY_SECRET_KEY',
-    API_ADDITIONAL_KEY: process.env.OKX_PASSPHRASE || 'DUMMY_ADD_KEY',
+const env = createEnv({
+    API_PUBLIC_KEY: process.env.OKX_PUBLIC_KEY,
+    API_PRIVATE_KEY: process.env.OKX_SECRET_KEY,
+    API_ADDITIONAL_KEY: process.env.OKX_PASSPHRASE,
     NOT_EXECUTABLE_ORDER: {
         symbol: 'BTC/USDT',
         type: 'limit',
@@ -68,7 +69,21 @@ const env = {
         symbol: 'BTC/USDT',
         interval: '1m',
     },
-};
+    PRECISION_REQUIRED_ORDER: {
+        symbol: 'DOGE/USDT',
+        side: 'buy',
+        type: 'limit',
+        quantity: 400.30303003,
+        price: 0.04688849384834938,
+    },
+    PRECISION_IMPOSSIBLE_ORDER: {
+        symbol: 'DOGE/USDT',
+        side: 'buy',
+        type: 'limit',
+        quantity: 0.1,
+        price: 0.000000000000001,
+    },
+});
 
 global.httpScope = createScope(env);
 

@@ -18,7 +18,7 @@ class AccountDataStream extends FtxWebsocketBase {
 
     /**
      *
-     * @returns {this}
+     * @returns {Promise<this>}
      */
     async open() {
         await super.open();

@@ -1,11 +1,16 @@
 export = BinanceSpot;
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
+ * @typedef {import('../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+ * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PostedOrder
  */
 /**
  * Binance class for spot wallet API
  */
 declare class BinanceSpot extends BinanceBase {
+    /**
+     * List of default options
+     */
     static DEFAULT_OPTIONS: {
         defaults: {
             limit: {
@@ -58,26 +63,23 @@ declare class BinanceSpot extends BinanceBase {
         price: number;
     };
     /**
-     * @typedef {import('../utils/functions/transformation').Order} Order
-     */
-    /**
-     * Create new spot order on Binance
+     * Post new spot order on Binance
      *
-     * @param {Order} zOrder Order to create
+     * @param {OrderParams} zOrder Order parameters
+     * @returns {Promise<PostedOrder>}
      */
-    postOrder(zOrder: any): Promise<any>;
+    postOrder(zOrder: OrderParams): Promise<PostedOrder>;
     /**
      * Cancel an active order
      *
-     * @param {Order} zOrder Order to cancel
+     * @param {OrderParams} zOrder Order to cancel
      */
-    cancelOrder(zOrder: any): Promise<any>;
+    cancelOrder(zOrder: OrderParams): Promise<any>;
     /**
      * Cancel an active order
      *
      * **NOTE:** Binance required order symbol for canceling.
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
-     *      TODO: Make possible to pass symbol from user
      *
      * @param {string} orderId Binance order id
      */
@@ -92,12 +94,24 @@ declare class BinanceSpot extends BinanceBase {
     fetchOrderById(orderId: string): Promise<any>;
     getAccountDataStream(): AccountDataStream;
     getMarketDataStream(): MarketDataStream;
+    /**
+     * Insert default values for specific order type
+     *
+     * **DEV** All values should be for zenfuse interface
+     *
+     * @private
+     * @param {OrderParams} order
+     * @returns {OrderParams}
+     */
+    private assignDefaultsInOrder;
 }
 declare namespace BinanceSpot {
-    export { BaseOptions };
+    export { BaseOptions, OrderParams, PostedOrder };
 }
 import BinanceBase = require("../base");
 import { timeIntervals } from "../metadata";
+type OrderParams = import('../../../base/schemas/orderParams').ZenfuseOrderParams;
+type PostedOrder = import('../../../base/schemas/openOrder').PlacedOrder;
 import AccountDataStream = require("../streams/accountDataStream");
 import MarketDataStream = require("../streams/marketDataStream");
 type BaseOptions = import('../../../base/exchange').BaseOptions;

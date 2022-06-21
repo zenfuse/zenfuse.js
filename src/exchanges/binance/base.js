@@ -165,7 +165,8 @@ class BinanceBase extends ExchangeBase {
     /**
      * Parses Binance symbol using cache
      *
-     * @param {string} bSymbol Binance symbol without separator
+     * @protected
+     * @param {string} bSymbol Cursed Binance symbol without separator
      * @returns {string} Normal symbol with separator
      */
     parseBinanceSymbol(bSymbol) {
@@ -197,55 +198,15 @@ class BinanceBase extends ExchangeBase {
     }
 
     /**
-     * @param {Array} symbols Array of symbols from `api/v3/exchangeInfo`
-     * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
+     * @typedef {import('../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
      */
-    extractTickersFromSymbols(symbols) {
-        const tickers = new Set();
-
-        symbols.forEach((market) => {
-            tickers.add(market.baseAsset);
-            tickers.add(market.quoteAsset);
-        });
-
-        return [...tickers];
-    }
-
-    /**
-     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
-     */
-
-    /**
-     * Insert default values for specific order type
-     *
-     * **DEV** All values should be for zenfuse interface
-     *
-     * @param {OrderParams} order
-     * @param {object} defaults
-     * @param {OrderParams} defaults.limit
-     * @param {OrderParams} defaults.market
-     * @returns {OrderParams}
-     */
-    assignDefaultsInOrder(order, defaults) {
-        let newOrder;
-
-        if (order.type.toLowerCase() === 'limit') {
-            newOrder = mergeObjects(defaults.limit, order);
-        }
-
-        if (order.type.toLowerCase() === 'market') {
-            newOrder = mergeObjects(defaults.market, order);
-        }
-
-        return newOrder;
-    }
 
     /**
      * Zenfuse -> Binance
      *
      * **DEV:** This function does not assign defaults values
      *
-     * @param {OrderParams} zOrder Zenfuse order
+     * @param {OrderParams} zOrder Zenfuse order parameters
      * @returns {object} Order for binance api
      */
     transformZenfuseOrder(zOrder) {
@@ -299,7 +260,7 @@ class BinanceBase extends ExchangeBase {
      * Binance -> Zenfuse
      *
      * @param {*} bOrder Order from binance
-     * @returns {PlacedOrder} Zenfuse Order
+     * @returns {PlacedOrder} Posted Zenfuse Order
      */
     transformBinanceOrder(bOrder) {
         /**
@@ -327,6 +288,24 @@ class BinanceBase extends ExchangeBase {
         }
 
         return zOrder;
+    }
+
+    /**
+     * Order modifier for price and quantity. Provide decimal precision context for basic method.
+     *
+     * @protected
+     * @param {OrderParams} zOrder
+     * @returns {OrderParams}
+     */
+    preciseOrderValues(zOrder) {
+        const { quantityPrecision, pricePrecision } = this.cache.globalCache
+            .get('marketsPrecisionInfo')
+            .get(zOrder.symbol);
+
+        return super.preciseOrderValues(zOrder, {
+            price: pricePrecision,
+            quantity: quantityPrecision,
+        });
     }
 }
 

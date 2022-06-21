@@ -5,5 +5,5 @@
         (   ^_\^    Definitely, you don't know what you are doing.
          |   _ |    So please specify exchange name next time
          )\___/
-     .--'`:._]
+     .--'`:._]      npm run test:e2e <exchange>
 jgs /  \      '-.

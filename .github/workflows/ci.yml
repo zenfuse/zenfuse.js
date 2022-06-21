@@ -19,6 +19,7 @@ jobs:
             - run: npm run lint
 
     mocks:
+        needs: lint
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
@@ -31,7 +32,7 @@ jobs:
               uses: actions/cache@v3.0.4
               with:
                   path: tests/exchanges/*/mocks/static/*
-                  key: heavy-mocks-${{ hashFiles('tests/exchanges/*/mocks/static/*') }}
+                  key: static-mocks-${{ github.event.repository.updated_at }}-${{ hashFiles('tests/exchanges/*/mocks/static/*') }}
 
             - run: npm run download-mocks -- --force
 
@@ -53,9 +54,9 @@ jobs:
               uses: actions/cache@v3.0.4
               with:
                   path: tests/exchanges/*/mocks/static/*
-                  key: heavy-mocks-${{ hashFiles('tests/exchanges/*/mocks/static/*') }}
+                  key: static-mocks-${{ github.event.repository.updated_at }}-${{ hashFiles('tests/exchanges/*/mocks/static/*') }}
                   restore-keys: |
-                      heavy-mocks-
+                      static-mocks-${{ github.event.repository.updated_at }}
 
             - run: npm ci
             - run: npm test

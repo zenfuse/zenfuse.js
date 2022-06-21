@@ -27,7 +27,7 @@ class BitglobalBase extends ExchangeBase {
             },
         },
         wsClientOptions: {
-            prefixUrl: 'wss://global-api.bithumb.pro',
+            prefixUrl: 'wss://global-api.bitglobal.pro',
         },
     };
 
@@ -142,7 +142,7 @@ class BitglobalBase extends ExchangeBase {
     }
 
     /**
-     * Ping bithumb servers
+     * Ping bitglobal servers
      *
      * @public
      */
@@ -206,7 +206,7 @@ class BitglobalBase extends ExchangeBase {
      * Zenfuse -> Bitglobal
      *
      * @param {OrderParams} zOrder
-     * @returns {object} Order for bithumb api
+     * @returns {object} Order for bitglobal api
      */
     transformZenfuseOrder(zOrder) {
         const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
@@ -295,6 +295,33 @@ class BitglobalBase extends ExchangeBase {
         // zOrder.trades = bOrder.fills; // TODO: Fill commission counter
 
         return zOrder;
+    }
+
+    /**
+     * Order modifier for price and quantity. Provide decimal precision context for basic method.
+     *
+     * @protected
+     * @param {OrderParams} zOrder
+     * @returns {OrderParams}
+     */
+    preciseOrderValues(zOrder) {
+        const marketPrecisionInfo = this.cache.globalCache.get(
+            'marketsPrecisionInfo',
+        );
+
+        if (!marketPrecisionInfo.has(zOrder.symbol)) {
+            // TODO: Make some
+            return zOrder;
+        }
+
+        const { quantityPrecision, pricePrecision } = marketPrecisionInfo.get(
+            zOrder.symbol,
+        );
+
+        return super.preciseOrderValues(zOrder, {
+            price: pricePrecision,
+            quantity: quantityPrecision,
+        });
     }
 }
 

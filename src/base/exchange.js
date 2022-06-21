@@ -4,7 +4,8 @@ const z = require('zod');
 
 const Configurator = require('./conf/configurator');
 const pkg = require('../../package.json');
-const ZenfuseValidationError = require('./errors/validation.error');
+const ValidationError = require('./errors/validation.error');
+const UserError = require('./errors/user.error');
 const OrderParamsSchema = require('./schemas/orderParams');
 const KlineSchema = require('./schemas/kline');
 
@@ -78,8 +79,10 @@ class ExchangeBase {
 
         if (result.success) return;
 
-        throw new ZenfuseValidationError('InvalidOrder', result.error);
+        throw new ValidationError('InvalidOrder', result.error);
     }
+
+    // TODO: safeValidateOrderParams()
 
     validateCandleHistoryParams(params) {
         const paramsSchema = z.object({
@@ -92,11 +95,70 @@ class ExchangeBase {
         const validation = paramsSchema.safeParse(params);
 
         if (!validation.success) {
-            throw new ZenfuseValidationError('InvalidParams', validation.error);
+            throw new ValidationError('InvalidParams', validation.error);
         }
     }
 
-    // TODO: safeValidateOrderParams()
+    /**
+     * @typedef {import('./schemas/orderParams').ZenfuseOrderParams} ZenfuseOrderParams
+     */
+
+    /**
+     * Preciser for basic order values. Exists for provide same precisions for any exchanges without context.
+     *
+     * @protected
+     * @param {ZenfuseOrderParams} zOrder
+     * @param {object} limits Decimal precisions
+     * @param {number} limits.price
+     * @param {number} limits.quantity
+     * @returns {ZenfuseOrderParams} Order parameters with precised price and quantity
+     */
+    preciseOrderValues(zOrder, limits) {
+        /**
+         * @see http://www.jacklmoore.com/notes/rounding-in-javascript/
+         * @param {number} value
+         * @param {number} limit
+         * @returns {number} Precised number
+         */
+        const precise = (value, limit) => {
+            return Number(Math.floor(value + 'e' + limit) + 'e-' + limit);
+        };
+
+        const precised = {
+            quantity: precise(zOrder.quantity, limits.quantity),
+        };
+
+        const isLimitOrder = zOrder.type === 'limit';
+
+        if (isLimitOrder) {
+            precised.price = precise(zOrder.price, limits.price);
+        }
+
+        const isPriceInvalid =
+            (precised.price === 0 || isNaN(precised.price)) && isLimitOrder;
+
+        const isQuantityInvalid =
+            precised.quantity === 0 || isNaN(precised.quantity);
+
+        if (isPriceInvalid || isQuantityInvalid) {
+            const err = new UserError(null, 'PRECISION_IMPOSSIBLE');
+
+            // Catch all cases just for fun
+            if (isPriceInvalid && isQuantityInvalid) {
+                err.message = `Impossible to precise ${zOrder.price} price and ${zOrder.quantity} quantity. For ${zOrder.symbol}, the decimal precision for quantity is ${limits.quantity} decimal digits and the decimal precision for price is ${limits.price} decimal digits`;
+            }
+            if (!isPriceInvalid && isQuantityInvalid) {
+                err.message = `Impossible to precise ${zOrder.quantity} quantity. For ${zOrder.symbol}, decimal precision of the quantity is ${limits.quantity} digits`;
+            }
+            if (isPriceInvalid && !isQuantityInvalid) {
+                err.message = `Impossible to precise ${zOrder.price} price. For ${zOrder.symbol}, decimal precision of the price is ${limits.price} digits`;
+            }
+
+            throw err;
+        }
+
+        return Object.assign(zOrder, precised);
+    }
 }
 
 module.exports = ExchangeBase;

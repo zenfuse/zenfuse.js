@@ -10,6 +10,8 @@ class ZenfuseUserError extends ZenfuseBaseError {
         NOT_AUTHENTICATED:
             'Instance does not have keys for authentication. Use auth() first for private API usage',
         VALIDATION_FAILED: 'Object validation did not pass',
+        PRECISION_IMPOSSIBLE:
+            'Order values impossible to precise as exchange required. Your order values is invalid for posting.',
     };
 
     /**

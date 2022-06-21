@@ -5,6 +5,7 @@ const HOSTNAME = 'https://global-openapi.bithumb.pro';
 
 const spotFilePath = __dirname + '/mocks/static/spot.json';
 const klineFilePath = __dirname + '/mocks/static/kline.json';
+const spotConfigFilePath = __dirname + '/mocks/static/spotConfig.json';
 
 /**
  * HTTP mocking scope for FTX master test
@@ -15,7 +16,12 @@ const klineFilePath = __dirname + '/mocks/static/kline.json';
  */
 // eslint-disable-next-line no-unused-vars
 module.exports = (env) => ({
-    init: null,
+    root: () =>
+        nock(HOSTNAME)
+            .get('/openapi/v1/spot/config')
+            .replyWithFile(200, spotConfigFilePath, {
+                'Content-Type': 'application/json',
+            }),
     'Spot Wallet HTTP interface': {
         'ping()': () =>
             nock(HOSTNAME)
@@ -233,6 +239,40 @@ module.exports = (env) => ({
                             orderId: '23132134242',
                             symbol: toBitglobalStyle(
                                 env.SELL_LIMIT_ORDER.symbol,
+                            ),
+                        },
+                        code: '0',
+                        msg: 'success',
+                        timestamp: 1551346473238,
+                        params: [],
+                    }),
+            'values precision': () =>
+                nock(HOSTNAME)
+                    .matchHeader('Content-Type', 'application/json')
+                    .post('/openapi/v1/spot/placeOrder', (b) => {
+                        expect(b).toMatchObject({
+                            symbol: toBitglobalStyle(
+                                env.PRECISION_REQUIRED_ORDER.symbol,
+                            ),
+                            type: toBitglobalStyle(
+                                env.PRECISION_REQUIRED_ORDER.type,
+                            ),
+                            side: toBitglobalStyle(
+                                env.PRECISION_REQUIRED_ORDER.side,
+                            ),
+                        });
+
+                        expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
+                        expect(b.msgNo).toBeDefined();
+                        expect(b.timestamp).toBeDefined();
+                        expect(b.signature).toBeDefined();
+                        return true;
+                    })
+                    .reply(201, {
+                        data: {
+                            orderId: '23132134242',
+                            symbol: toBitglobalStyle(
+                                env.PRECISION_REQUIRED_ORDER.symbol,
                             ),
                         },
                         code: '0',

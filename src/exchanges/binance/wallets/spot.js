@@ -8,16 +8,20 @@ const MarketDataStream = require('../streams/marketDataStream');
 const RuntimeError = require('../../../base/errors/runtime.error');
 
 const { timeIntervals } = require('../metadata');
-const BaseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions
+ * @typedef {import('../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+ * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PostedOrder
  */
 
 /**
  * Binance class for spot wallet API
  */
 class BinanceSpot extends BinanceBase {
+    /**
+     * List of default options
+     */
     static DEFAULT_OPTIONS = {
         defaults: {
             limit: {
@@ -54,7 +58,14 @@ class BinanceSpot extends BinanceBase {
             market.permissions.includes('SPOT'),
         );
 
-        const tickers = this.extractTickersFromSymbols(spotMarkets);
+        const stringSet = new Set();
+
+        spotMarkets.forEach((market) => {
+            stringSet.add(market.baseAsset);
+            stringSet.add(market.quoteAsset);
+        });
+
+        const tickers = [...stringSet];
 
         utils.linkOriginalPayload(tickers, exchangeInfo);
 
@@ -195,37 +206,36 @@ class BinanceSpot extends BinanceBase {
     }
 
     /**
-     * @typedef {import('../utils/functions/transformation').Order} Order
-     */
-
-    /**
-     * Create new spot order on Binance
+     * Post new spot order on Binance
      *
-     * @param {Order} zOrder Order to create
+     * @param {OrderParams} zOrder Order parameters
+     * @returns {Promise<PostedOrder>}
      */
     async postOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const assignedOrder = this.assignDefaultsInOrder(
-            zOrder,
-            this.options.defaults,
-        );
+        await this.cache.globalCache.updatingPromise;
 
-        // TODO: Assign defaults in transformation
-        const bOrder = this.transformZenfuseOrder(assignedOrder);
+        const bOrder = utils.pipe(
+            this.preciseOrderValues.bind(this),
+            this.transformZenfuseOrder,
+            this.assignDefaultsInOrder,
+        )(zOrder);
 
-        const bCreatedOrder = await this.privateFetch('api/v3/order', {
+        const bPostedOrder = await this.privateFetch('api/v3/order', {
             method: 'POST',
             searchParams: bOrder,
         });
 
-        const zCreatedOrder = this.transformBinanceOrder(bCreatedOrder);
+        const zCreatedOrder = this.transformBinanceOrder(bPostedOrder);
 
-        zCreatedOrder.symbol = this.parseBinanceSymbol(bCreatedOrder.symbol);
+        zCreatedOrder.symbol = await this.parseBinanceSymbol(
+            bPostedOrder.symbol,
+        );
 
         this.cache.cacheOrder(zCreatedOrder);
 
-        utils.linkOriginalPayload(zCreatedOrder, bCreatedOrder);
+        utils.linkOriginalPayload(zCreatedOrder, bPostedOrder);
 
         return zCreatedOrder;
     }
@@ -233,7 +243,7 @@ class BinanceSpot extends BinanceBase {
     /**
      * Cancel an active order
      *
-     * @param {Order} zOrder Order to cancel
+     * @param {OrderParams} zOrder Order to cancel
      */
     async cancelOrder(zOrder) {
         this.cache.deleteCachedOrderById(zOrder.id);
@@ -260,7 +270,6 @@ class BinanceSpot extends BinanceBase {
      *
      * **NOTE:** Binance required order symbol for canceling.
      *      If the symbol did not pass, zenfuse.js makes an additional request 'fetchOpenOrders' to find the required symbol.
-     *      TODO: Make possible to pass symbol from user
      *
      * @param {string} orderId Binance order id
      */
@@ -347,11 +356,13 @@ class BinanceSpot extends BinanceBase {
             cachedOrder = openOrders.find((o) => o.orderId === orderId);
 
             if (!cachedOrder) {
-                // TODO: Make base error better
-                throw new BaseError(`Order with ${orderId} id does not exists`);
+                throw new RuntimeError(
+                    `Order with ${orderId} id does not exists`,
+                    'ZEFU_ORDER_NOT_FOUND',
+                );
             }
 
-            // throw 'TODO: Fix cache'; // TODO:!!!
+            throw 'TODO: Fix this cache error'; // TODO:!!!
         }
 
         const response = await this.privateFetch('api/v3/order', {
@@ -363,7 +374,7 @@ class BinanceSpot extends BinanceBase {
 
         const zOrder = this.transformBinanceOrder(response);
 
-        zOrder.symbol = this.parseBinanceSymbol(response.symbol);
+        zOrder.symbol = await this.parseBinanceSymbol(response.symbol);
 
         this.cache.cacheOrder(zOrder);
 
@@ -378,6 +389,35 @@ class BinanceSpot extends BinanceBase {
 
     getMarketDataStream() {
         return new MarketDataStream(this);
+    }
+
+    /**
+     * Insert default values for specific order type
+     *
+     * **DEV** All values should be for zenfuse interface
+     *
+     * @private
+     * @param {OrderParams} order
+     * @returns {OrderParams}
+     */
+    assignDefaultsInOrder(order) {
+        let newOrder;
+
+        if (order.type.toLowerCase() === 'limit') {
+            newOrder = mergeObjects(
+                BinanceSpot.DEFAULT_OPTIONS.defaults.limit,
+                order,
+            );
+        }
+
+        if (order.type.toLowerCase() === 'market') {
+            newOrder = mergeObjects(
+                BinanceSpot.DEFAULT_OPTIONS.defaults.market,
+                order,
+            );
+        }
+
+        return newOrder;
     }
 }
 

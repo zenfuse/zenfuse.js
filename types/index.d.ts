@@ -29,7 +29,7 @@ export type Kline = {
 export type timeInterval = '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '6h' | '8h' | '12h' | '1d' | '3d' | '1w' | '1M';
 import Binance = require("./exchanges/binance");
 import FTX = require("./exchanges/ftx");
-import Bitglobal = require("./exchanges/bithumb");
+import Bitglobal = require("./exchanges/bitglobal");
 import OKX = require("./exchanges/okx");
 export declare const errorCodes: {
     INVALID_CREDENTIALS: string;

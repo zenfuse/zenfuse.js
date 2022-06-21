@@ -20,6 +20,8 @@ const MockedAgent = require('./mocks/agent');
  * @property {Order} BUY_LIMIT_ORDER
  * @property {Order} SELL_LIMIT_ORDER
  * @property {Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usually a pair of stablecoins for a half price.
+ * @property {Order} PRECISION_REQUIRED_ORDER
+ * @property {Order} PRECISION_IMPOSSIBLE_ORDER
  * @property {object} PRICE_SUBSCRIPTION
  * @property {string} PRICE_SUBSCRIPTION.channel
  * @property {string} PRICE_SUBSCRIPTION.symbol
@@ -312,6 +314,28 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: env.SELL_LIMIT_ORDER.symbol,
                         type: env.SELL_LIMIT_ORDER.type,
                         side: env.SELL_LIMIT_ORDER.side,
+                    });
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeDefined();
+                });
+            });
+
+            describe('values precision', () => {
+                let result;
+                it('should precise order value and post it without errors', async () => {
+                    result = await exchange.postOrder(
+                        env.PRECISION_REQUIRED_ORDER,
+                    );
+                });
+
+                it('should have valid originalResponse', () => {
+                    expect(result).toBeDefined();
+                    expect(result).toMatchSchema(OrderSchema);
+                    expect(result).toMatchObject({
+                        symbol: env.PRECISION_REQUIRED_ORDER.symbol,
+                        type: env.PRECISION_REQUIRED_ORDER.type,
+                        side: env.PRECISION_REQUIRED_ORDER.side,
                     });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
