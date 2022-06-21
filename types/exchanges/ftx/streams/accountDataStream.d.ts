@@ -6,9 +6,9 @@ declare class AccountDataStream extends FtxWebsocketBase {
     constructor(baseInstance: import('../base'));
     /**
      *
-     * @returns {this}
+     * @returns {Promise<this>}
      */
-    open(): this;
+    open(): Promise<AccountDataStream>;
     serverMessageHandler(msgString: any): void;
     emitOrderUpdateEvent(payload: any): void;
 }
