@@ -83,7 +83,7 @@ describe('Order precision', () => {
                 throw 'Not caught';
             })
             .catch((err) => {
-                expect(err).toBe('PRECISION_IMPOSSIBLE);
+                expect(err.code).toBe('PRECISION_IMPOSSIBLE');
             });
     });
 });

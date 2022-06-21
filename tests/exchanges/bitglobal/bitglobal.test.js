@@ -60,11 +60,44 @@ const env = createEnv({
         symbol: 'BTC/USDT',
         interval: '1m',
     },
+    PRECISION_REQUIRED_ORDER: {
+        symbol: 'ZEFU/USDT',
+        side: 'buy',
+        type: 'limit',
+        quantity: 4318.43453245,
+        price: 0.00536235245234,
+    },
+    PRECISION_IMPOSSIBLE_ORDER: {
+        symbol: 'ZEFU/USDT',
+        side: 'buy',
+        type: 'limit',
+        quantity: 0.00000000001,
+        price: 0.00000000000001,
+    },
 });
 
 global.httpScope = createScope(env);
 
 masterTest(Bitglobal, env);
+
+describe('Order precision', () => {
+    it('should throw error on order values witch impossible to precise', async () => {
+        await new Bitglobal.spot()
+            .auth({
+                publicKey: env.API_PUBLIC_KEY,
+                privateKey: env.API_PRIVATE_KEY,
+            })
+            .postOrder(env.PRECISION_IMPOSSIBLE_ORDER)
+            .then((order) => {
+                // eslint-disable-next-line no-console
+                console.error('ORDER POSTED', order);
+                throw 'Not caught';
+            })
+            .catch((err) => {
+                expect(err.code).toBe('PRECISION_IMPOSSIBLE');
+            });
+    });
+});
 
 describe('Error Handling', () => {
     describe('INVALID_CREDENTIALS code', () => {

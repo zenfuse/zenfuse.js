@@ -296,6 +296,33 @@ class BitglobalBase extends ExchangeBase {
 
         return zOrder;
     }
+
+    /**
+     * Order modifier for price and quantity. Provide decimal precision context for basic method.
+     *
+     * @protected
+     * @param {OrderParams} zOrder
+     * @returns {OrderParams}
+     */
+    preciseOrderValues(zOrder) {
+        const marketPrecisionInfo = this.cache.globalCache.get(
+            'marketsPrecisionInfo',
+        );
+
+        if (!marketPrecisionInfo.has(zOrder.symbol)) {
+            // TODO: Make some
+            return zOrder;
+        }
+
+        const { quantityPrecision, pricePrecision } = marketPrecisionInfo.get(
+            zOrder.symbol,
+        );
+
+        return super.preciseOrderValues(zOrder, {
+            price: pricePrecision,
+            quantity: quantityPrecision,
+        });
+    }
 }
 
 module.exports = BitglobalBase;

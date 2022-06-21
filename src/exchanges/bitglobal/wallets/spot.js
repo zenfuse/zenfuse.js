@@ -144,7 +144,12 @@ class BitglobalSpot extends BitglobalBase {
     async postOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
-        const bOrder = this.transformZenfuseOrder(zOrder);
+        await this.cache.globalCache.updatingPromise;
+
+        const bOrder = utils.pipe(
+            this.preciseOrderValues.bind(this),
+            this.transformZenfuseOrder,
+        )(zOrder);
 
         if (zOrder.type === 'market' && zOrder.side === 'buy') {
             let orderTotal = null;
