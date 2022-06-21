@@ -341,19 +341,6 @@ module.exports = function masterTest(Exchange, env) {
                         result[Symbol.for('zenfuse.originalPayload')],
                     ).toBeDefined();
                 });
-
-                it('should throw error on order values witch impossible to precise', async () => {
-                    await exchange
-                        .postOrder(env.PRECISION_IMPOSSIBLE_ORDER)
-                        .then((order) => {
-                            // eslint-disable-next-line no-console
-                            console.error('ORDER POSTED', order);
-                            throw 'Not caught';
-                        })
-                        .catch((err) => {
-                            expect(err.code).toBe('PRECISION_IMPOSSIBLE');
-                        });
-                });
             });
         });
 
