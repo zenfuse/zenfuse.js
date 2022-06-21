@@ -212,9 +212,9 @@ class BinanceSpot extends BinanceBase {
      * @returns {Promise<PostedOrder>}
      */
     async postOrder(zOrder) {
-        await this.cache.globalCache.updatingPromise;
-
         this.validateOrderParams(zOrder);
+
+        await this.cache.globalCache.updatingPromise;
 
         const bOrder = utils.pipe(
             this.preciseOrderValues.bind(this),

@@ -25,6 +25,7 @@
         "BNBUSDT",
         "PERP",
         "whenbinance",
-        "stablecoins"
+        "stablecoins",
+        "openapi"
     ]
 }
