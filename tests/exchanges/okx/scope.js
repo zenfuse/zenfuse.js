@@ -234,6 +234,41 @@ module.exports = (env) => ({
                             },
                         ],
                     }),
+            'values precision': () =>
+                nock(HOSTNAME)
+                    .matchHeader('OK-ACCESS-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('OK-ACCESS-TIMESTAMP', Boolean)
+                    .matchHeader('OK-ACCESS-SIGN', Boolean)
+                    .matchHeader('OK-ACCESS-PASSPHRASE', Boolean)
+                    .post('/api/v5/trade/order', (b) => {
+                        expect(b).toMatchObject({
+                            instId: toOkxStyle(
+                                env.PRECISION_REQUIRED_ORDER.symbol,
+                            ),
+                            tdMode: 'cash',
+                            side: 'buy',
+                            ordType: 'limit',
+                            px: toOkxStyle(env.PRECISION_REQUIRED_ORDER.price),
+                            sz: toOkxStyle(
+                                env.PRECISION_REQUIRED_ORDER.quantity,
+                            ),
+                        });
+
+                        return true;
+                    })
+                    .reply(201, {
+                        code: '0',
+                        msg: '',
+                        data: [
+                            {
+                                clOrdId: '',
+                                ordId: '312269865356374016',
+                                tag: '',
+                                sCode: '0',
+                                sMsg: '',
+                            },
+                        ],
+                    }),
         },
         'fetchOpenOrders()': () =>
             nock(HOSTNAME)
