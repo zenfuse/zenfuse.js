@@ -19,6 +19,7 @@ jobs:
             - run: npm run lint
 
     mocks:
+        needs: lint
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
@@ -55,7 +56,7 @@ jobs:
                   path: tests/exchanges/*/mocks/static/*
                   key: heavy-mocks-${{ hashFiles('tests/exchanges/*/mocks/static/*') }}
                   restore-keys: |
-                      heavy-mocks-
+                      heavy-mocks-${{ hashFiles('tests/exchanges/*/mocks/static/*') }}
 
             - run: npm ci
             - run: npm test
