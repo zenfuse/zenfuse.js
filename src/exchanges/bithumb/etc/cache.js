@@ -11,7 +11,7 @@ class BitglobalCache extends BaseGlobalCache {
      * @param {BitglobalBase} baseInstance
      */
     constructor(baseInstance) {
-        super('bithumb');
+        super('bitglobal');
         this.base = baseInstance;
         this.localCache = {
             openOrders: new Map(),

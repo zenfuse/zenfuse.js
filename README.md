@@ -94,7 +94,7 @@ const { Binance, FTX, Bitglobal } = require('zenfuse');
 
 const binance = new Binance['spot']();
 const ftx = new FTX['spot']();
-const bithumb = new Bitglobal['spot']();
+const bitglobal = new Bitglobal['spot']();
 ```
 
 ### Public fetching
@@ -112,7 +112,7 @@ await binance.fetchMarkets();
 await ftx.fetchMarkets();
 // ['BTC/USD', 'ETH/USDT', ... ]
 
-await bithumb.fetchMarkets();
+await bitglobal.fetchMarkets();
 // ['BTC/USDT', 'ETH/USDT', ... ]
 ```
 
@@ -127,7 +127,7 @@ await binance.fetchTickers();
 await ftx.fetchTickers();
 // ['BTC', 'USD', ... ]
 
-await bithumb.fetchTickers();
+await bitglobal.fetchTickers();
 // ['BTC', 'ETH', ... ]
 ```
 

@@ -1,7 +1,7 @@
 /* eslint-disable @cspell/spellchecker */
 const nock = require('nock');
 
-const HOSTNAME = 'https://global-openapi.bithumb.pro';
+const HOSTNAME = 'https://global-openapi.bitglobal.pro';
 
 const spotFilePath = __dirname + '/mocks/static/spot.json';
 const klineFilePath = __dirname + '/mocks/static/kline.json';

@@ -18,7 +18,7 @@
         {
             "name": "Bitglobal E2E Tests",
             "request": "launch",
-            "runtimeArgs": ["run-script", "test:e2e", "bithumb"],
+            "runtimeArgs": ["run-script", "test:e2e", "bitglobal"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**/*"],
             "type": "node",
@@ -73,7 +73,7 @@
         {
             "name": "Bitglobal Integration Tests",
             "request": "launch",
-            "runtimeArgs": ["run-script", "test:integration", "bithumb"],
+            "runtimeArgs": ["run-script", "test:integration", "bitglobal"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**/*"],
             "type": "node",
