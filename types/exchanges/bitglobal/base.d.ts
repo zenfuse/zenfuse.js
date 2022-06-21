@@ -1,18 +1,17 @@
-export = BinanceBase;
+export = BitglobalBase;
 /**
- * Binance base class for method which included in any wallet type
- *
- * **DEV:** Any class what extends ExchangeBase should have same public interface
+ * Bitglobal base class for method which included in any wallet type
  */
-declare class BinanceBase extends ExchangeBase {
+declare class BitglobalBase extends ExchangeBase {
     /**
      * @param {import('../../base/exchange').BaseOptions} options User defined options for in http client lib
      */
     constructor(options: import('../../base/exchange').BaseOptions);
     /**
-     * @type {BinanceCache}
+     * @type {BitglobalCache}
      */
-    cache: BinanceCache;
+    cache: BitglobalCache;
+    msgNo: number;
     signatureEncoding: string;
     /**
      * Make http request based on constructor settings
@@ -25,11 +24,11 @@ declare class BinanceBase extends ExchangeBase {
     /**
      * Make authenticated http request based on constructor settings
      *
-     * @param {URL} url
+     * @param {string} url
      * @param {import('http').RequestOptions} options
-     * @returns {object};
+     * @returns {any}
      */
-    privateFetch(url: URL, options?: import('http').RequestOptions): object;
+    privateFetch(url: string, options?: import('http').RequestOptions): any;
     /**
      * Connect to authenticated API
      *
@@ -49,11 +48,11 @@ declare class BinanceBase extends ExchangeBase {
      */
     get hasKeys(): boolean;
     /**
-     * Ping binance servers
+     * Ping bitglobal servers
      *
      * @public
      */
-    public ping(): Promise<any>;
+    public ping(): Promise<void>;
     /**
      * @private
      */
@@ -63,36 +62,29 @@ declare class BinanceBase extends ExchangeBase {
      * @private
      */
     private handleFetcherError;
+    handleUnexpectedResponse(response: any): any;
+    createHmacSignatureBitglobal(sigParams: any, privateKey: any, encoding: any): string;
     /**
-     * Parses Binance symbol using cache
-     *
-     * @protected
-     * @param {string} bSymbol Cursed Binance symbol without separator
-     * @returns {string} Normal symbol with separator
-     */
-    protected parseBinanceSymbol(bSymbol: string): string;
-    /**
-     * @typedef {import('../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
+     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
      */
     /**
-     * Zenfuse -> Binance
+     * Zenfuse -> Bitglobal
      *
-     * **DEV:** This function does not assign defaults values
-     *
-     * @param {OrderParams} zOrder Zenfuse order parameters
-     * @returns {object} Order for binance api
+     * @param {OrderParams} zOrder
+     * @returns {object} Order for bitglobal api
      */
-    transformZenfuseOrder(zOrder: import("../../base/schemas/orderParams").ZenfuseOrderParams): object;
+    transformZenfuseOrder(zOrder: any): object;
     /**
      * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
      */
     /**
-     * Binance -> Zenfuse
+     * Bitglobal -> Zenfuse
      *
-     * @param {*} bOrder Order from binance
-     * @returns {PlacedOrder} Posted Zenfuse Order
+     * @param {*} bOrder Order from Bitglobal REST
+     * @param {object} zInitialOrder
+     * @returns {PlacedOrder} Zenfuse Order
      */
-    transformBinanceOrder(bOrder: any): any;
+    transformBitglobalOrder(bOrder: any, zInitialOrder?: object): any;
     /**
      * Order modifier for price and quantity. Provide decimal precision context for basic method.
      *
@@ -100,9 +92,9 @@ declare class BinanceBase extends ExchangeBase {
      * @param {OrderParams} zOrder
      * @returns {OrderParams}
      */
-    protected preciseOrderValues(zOrder: import("../../base/schemas/orderParams").ZenfuseOrderParams): import("../../base/schemas/orderParams").ZenfuseOrderParams;
+    protected preciseOrderValues(zOrder: any): any;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");
-import BinanceCache = require("./etc/cache");
+import BitglobalCache = require("./etc/cache");
 declare const keysSymbol: unique symbol;

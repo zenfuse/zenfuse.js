@@ -1,5 +1,6 @@
 export = BinanceCache;
 declare class BinanceCache extends BaseGlobalCache {
+    static ORDERS_CACHE_LENGTH: number;
     /**
      * @param {BinanceBase} baseInstance
      */
@@ -13,18 +14,6 @@ declare class BinanceCache extends BaseGlobalCache {
         openOrders: Map<any, any>;
     };
     updateSelfIfRequired(): void;
-    /**
-     * Array of all binance tickers
-     *
-     * @type {string[]}
-     */
-    get tickers(): string[];
-    /**
-     * Array of all binance ticker pairs
-     *
-     * @type {string[]}
-     */
-    get symbols(): string[];
     /**
      * Base Tickers and all their quote pairs
      *
@@ -57,10 +46,30 @@ declare class BinanceCache extends BaseGlobalCache {
      */
     deleteCachedOrderById(orderId: string): boolean;
     /**
+     * This method prevents heap out of memory on long-term process if he has many orders to post.
+     *
+     * @private
+     */
+    private careCachedOrders;
+    /**
      * Updating global cache using raw binance data
      *
      * @param {*} exchangeInfo Data from `api/v3/exchangeInfo` endpoint
      */
     updateCache(exchangeInfo: any): void;
+    /**
+     * Updating global cache using raw binance data
+     *
+     * @param {*} exchangeInfo Data from `api/v3/exchangeInfo` endpoint
+     */
+    updateParsedSymbols(exchangeInfo: any): void;
+    /**
+     * Update precision info for every market
+     *
+     * **DEV:** "precision" in zenfuse.js is a count of numbers after decimal point
+     *
+     * @param {*} exchangeInfo Data from `api/v3/exchangeInfo` endpoint
+     */
+    updatePrecision(exchangeInfo: any): void;
 }
 import BaseGlobalCache = require("../../../base/etc/cache");

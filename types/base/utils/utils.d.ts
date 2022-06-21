@@ -6,3 +6,10 @@ export function createHmacSignatureDefault({ ts, method, path, body }: {
     path: any;
     body?: string;
 }, key: any, encoding: any): string;
+/**
+ * Pipe function implementation from ramda
+ *
+ * @param  {...Function} fns List of functions to pipe
+ * @returns {Function}
+ */
+export function pipe(...fns: Function[]): Function;
