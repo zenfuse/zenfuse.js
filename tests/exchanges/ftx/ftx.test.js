@@ -49,6 +49,20 @@ const env = createEnv({
         quantity: 1,
         price: 1.5,
     },
+    PRECISION_REQUIRED_ORDER: {
+        symbol: 'DOGE/USD',
+        side: 'buy',
+        type: 'limit',
+        quantity: 277.30303003,
+        price: 0.03688849384834938,
+    },
+    PRECISION_IMPOSSIBLE_ORDER: {
+        symbol: 'DOGE/USD',
+        side: 'buy',
+        type: 'limit',
+        quantity: 0.1,
+        price: 0.000000000000001,
+    },
 });
 
 global.httpScope = createScope(env);
