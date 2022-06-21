@@ -32,7 +32,7 @@ jobs:
               uses: actions/cache@v3.0.4
               with:
                   path: tests/exchanges/*/mocks/static/*
-                  key: static-mocks-${{ github.event.repository.updated_at }}-${{ hashFiles('tests/exchanges/*/mocks/static/*') }}
+                  key: static-mocks-${{ github.sha }}
 
             - run: npm run download-mocks -- --force
 
@@ -54,9 +54,9 @@ jobs:
               uses: actions/cache@v3.0.4
               with:
                   path: tests/exchanges/*/mocks/static/*
-                  key: static-mocks-${{ github.event.repository.updated_at }}-${{ hashFiles('tests/exchanges/*/mocks/static/*') }}
+                  key: static-mocks-${{ github.sha }}
                   restore-keys: |
-                      static-mocks-${{ github.event.repository.updated_at }}
+                      static-mocks-${{ github.sha }}
 
             - run: npm ci
             - run: npm test
