@@ -99,12 +99,12 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     {
                         filename: 'spot.json',
                         endpoint:
-                            'https://global-openapi.bitglobal.pro/openapi/v1/spot/ticker?symbol=ALL',
+                            'https://global-openapi.bithumb.pro/openapi/v1/spot/ticker?symbol=ALL',
                     },
                     {
                         filename: 'kline.json',
                         endpoint:
-                            'https://global-openapi.bitglobal.pro/openapi/v1/spot/kline?symbol=BTC-USDT&type=m1&start=1646690750&end=1647694350',
+                            'https://global-openapi.bithumb.pro/openapi/v1/spot/kline?symbol=BTC-USDT&type=m1&start=1646690750&end=1647694350',
                     },
                 ];
 
