@@ -21,13 +21,13 @@ class BitglobalBase extends ExchangeBase {
     static DEFAULT_OPTIONS = {
         httpClientOptions: {
             responseType: 'json',
-            prefixUrl: 'https://global-openapi.bithumb.pro/openapi/v1',
+            prefixUrl: 'https://global-openapi.bitglobal.pro/openapi/v1',
             headers: {
                 'Content-Type': 'application/json',
             },
         },
         wsClientOptions: {
-            prefixUrl: 'wss://global-api.bithumb.pro',
+            prefixUrl: 'wss://global-api.bitglobal.pro',
         },
     };
 
@@ -142,7 +142,7 @@ class BitglobalBase extends ExchangeBase {
     }
 
     /**
-     * Ping bithumb servers
+     * Ping bitglobal servers
      *
      * @public
      */
@@ -206,7 +206,7 @@ class BitglobalBase extends ExchangeBase {
      * Zenfuse -> Bitglobal
      *
      * @param {OrderParams} zOrder
-     * @returns {object} Order for bithumb api
+     * @returns {object} Order for bitglobal api
      */
     transformZenfuseOrder(zOrder) {
         const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];

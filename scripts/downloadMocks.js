@@ -87,24 +87,24 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
-            task('Bithumb', ({ task, setStatus }) => {
-                if (!shouldRun('bithumb')) {
+            task('Bitglobal', ({ task, setStatus }) => {
+                if (!shouldRun('bitglobal')) {
                     setStatus('skipped');
                     return;
                 }
                 const mocksPath =
-                    __dirname + '/../tests/exchanges/bithumb/mocks/static/';
+                    __dirname + '/../tests/exchanges/bitglobal/mocks/static/';
 
                 const downloadList = [
                     {
                         filename: 'spot.json',
                         endpoint:
-                            'https://global-openapi.bithumb.pro/openapi/v1/spot/ticker?symbol=ALL',
+                            'https://global-openapi.bitglobal.pro/openapi/v1/spot/ticker?symbol=ALL',
                     },
                     {
                         filename: 'kline.json',
                         endpoint:
-                            'https://global-openapi.bithumb.pro/openapi/v1/spot/kline?symbol=BTC-USDT&type=m1&start=1646690750&end=1647694350',
+                            'https://global-openapi.bitglobal.pro/openapi/v1/spot/kline?symbol=BTC-USDT&type=m1&start=1646690750&end=1647694350',
                     },
                 ];
 
