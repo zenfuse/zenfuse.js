@@ -287,13 +287,15 @@ module.exports = (env) => ({
                 // Order creation
                 .post('/openapi/v1/spot/placeOrder', (b) => {
                     expect(b).toMatchObject({
-                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        symbol: toBitglobalStyle(
+                            env.NOT_EXECUTABLE_ORDER.symbol,
+                        ),
                         type: env.NOT_EXECUTABLE_ORDER.type,
                         side: env.NOT_EXECUTABLE_ORDER.side,
-                        quantity: toBithumbStyle(
+                        quantity: toBitglobalStyle(
                             env.NOT_EXECUTABLE_ORDER.quantity,
                         ),
-                        price: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        price: toBitglobalStyle(env.NOT_EXECUTABLE_ORDER.price),
                     });
 
                     expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
@@ -305,7 +307,9 @@ module.exports = (env) => ({
                 .reply(201, {
                     data: {
                         orderId: '23132134242',
-                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        symbol: toBitglobalStyle(
+                            env.NOT_EXECUTABLE_ORDER.symbol,
+                        ),
                     },
                     code: '0',
                     msg: 'success',
@@ -330,14 +334,14 @@ module.exports = (env) => ({
                         list: [
                             {
                                 orderId: '23132134242',
-                                symbol: toBithumbStyle(
+                                symbol: toBitglobalStyle(
                                     env.NOT_EXECUTABLE_ORDER.symbol,
                                 ),
-                                price: toBithumbStyle(
+                                price: toBitglobalStyle(
                                     env.NOT_EXECUTABLE_ORDER.price,
                                 ),
                                 tradedNum: '0.01',
-                                quantity: toBithumbStyle(
+                                quantity: toBitglobalStyle(
                                     env.NOT_EXECUTABLE_ORDER.quantity,
                                 ),
                                 avgPrice: '0',
@@ -358,7 +362,9 @@ module.exports = (env) => ({
                 .post(`/openapi/v1/spot/cancelOrder`, (b) => {
                     expect(b).toMatchObject({
                         orderId: '23132134242',
-                        symbol: toBithumbStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        symbol: toBitglobalStyle(
+                            env.NOT_EXECUTABLE_ORDER.symbol,
+                        ),
                     });
 
                     expect(b.apiKey).toBe(env.API_PUBLIC_KEY);
