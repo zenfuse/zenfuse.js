@@ -269,6 +269,7 @@ class BitglobalBase extends ExchangeBase {
             } else {
                 zOrder.status = 'canceled';
             }
+
             zOrder.symbol = bOrder.symbol.replace('-', '/');
             zOrder.timestamp = parseFloat(bOrder.createTime);
             zOrder.type = bOrder.type;
