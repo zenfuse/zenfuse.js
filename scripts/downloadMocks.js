@@ -1,5 +1,6 @@
 const task = require('tasuku');
 const got = require('got');
+const mri = require('mri');
 
 const fs = require('fs');
 const util = require('util');
@@ -7,16 +8,41 @@ const path = require('path');
 
 const writeFile = util.promisify(fs.writeFile);
 
-const isForce = process.argv.includes('--force');
+const options = mri(process.argv.slice(2), {
+    alias: {
+        f: 'force',
+        h: 'help',
+    },
+    default: {
+        only: '',
+        force: false,
+    },
+});
+
+if (options.help) {
+    const helpMessage = `Usage: npm run download-mocks -- [options...]
+-f, --force           Download even files already exists 
+    --only=<exchange> Run for specific exchange`;
+    process.stdout.write(helpMessage);
+    process.exit(0);
+}
+
+const nameExp = new RegExp(`^${options.only}`, 'i');
+const shouldRun = (name) => nameExp.test(name);
 
 task('Preparing mocks', async ({ task, setStatus }) => {
-    if (isForce) {
-        setStatus('Forced');
+    if (options.force) {
+        setStatus('forced');
     }
 
     await task.group(
         (task) => [
-            task('Binance', ({ task }) => {
+            task('Binance', ({ task, setStatus }) => {
+                if (!shouldRun('binance')) {
+                    setStatus('skipped');
+                    return;
+                }
+
                 const mocksPath =
                     __dirname + '/../tests/exchanges/binance/mocks/static/';
 
@@ -38,7 +64,12 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
-            task('FTX', ({ task }) => {
+            task('FTX', ({ task, setStatus }) => {
+                if (!shouldRun('ftx')) {
+                    setStatus('skipped');
+                    return;
+                }
+
                 const mocksPath =
                     __dirname + '/../tests/exchanges/ftx/mocks/static/';
 
@@ -56,9 +87,13 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 run(mocksPath, downloadList, task);
             }),
-            task('Bithumb', ({ task }) => {
+            task('Bitglobal', ({ task, setStatus }) => {
+                if (!shouldRun('bitglobal')) {
+                    setStatus('skipped');
+                    return;
+                }
                 const mocksPath =
-                    __dirname + '/../tests/exchanges/bithumb/mocks/static/';
+                    __dirname + '/../tests/exchanges/bitglobal/mocks/static/';
 
                 const downloadList = [
                     {
@@ -71,11 +106,20 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                         endpoint:
                             'https://global-openapi.bithumb.pro/openapi/v1/spot/kline?symbol=BTC-USDT&type=m1&start=1646690750&end=1647694350',
                     },
+                    {
+                        filename: 'spotConfig.json',
+                        endpoint:
+                            'https://global-openapi.bithumb.pro/openapi/v1/spot/config',
+                    },
                 ];
 
                 run(mocksPath, downloadList, task);
             }),
             task('OKX', ({ task }) => {
+                if (!shouldRun('okx')) {
+                    setStatus('skipped');
+                    return;
+                }
                 const mocksPath =
                     __dirname + '/../tests/exchanges/okx/mocks/static/';
 
@@ -106,8 +150,8 @@ const run = (mocksPath, downloadList, task) => {
         const filePath = mocksPath + filename;
 
         task(filename, async ({ setStatus, setOutput }) => {
-            if (fs.existsSync(filePath) && !isForce) {
-                setStatus('File exists');
+            if (fs.existsSync(filePath) && !options.force) {
+                setStatus('exists');
                 return;
             }
 
@@ -116,7 +160,7 @@ const run = (mocksPath, downloadList, task) => {
                     return writeFile(filePath, res.body);
                 })
                 .then(() => {
-                    setStatus('Downloaded');
+                    setStatus('downloaded');
                     setOutput(path.resolve(__dirname + '/../', filePath));
                 });
         });

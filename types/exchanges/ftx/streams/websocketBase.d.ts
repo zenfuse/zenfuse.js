@@ -26,13 +26,16 @@ declare class FtxWebsocketBase extends EventEmitter {
      */
     close(): this;
     handleConnectionError(err: any): void;
-    checkSocketIsConneted(): void;
+    checkSocketIsConnected(): void;
     get isSocketConnected(): boolean;
     /**
      * @param {object} msg
      * @returns {void}
      */
     sendSocketMessage(msg: object): void;
-    transformFtxOrder(fOrder: any): PlacedOrder;
+    /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+    transformFtxOrder(fOrder: any): import("../../../base/schemas/openOrder").PlacedOrder;
 }
 import { EventEmitter } from "events";

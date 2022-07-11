@@ -1,5 +1,5 @@
 /**
- * Zenfuse -> Bithumb intervals
+ * Zenfuse -> Bitglobal intervals
  *
  * @enum {import('../..').timeInterval}
  */

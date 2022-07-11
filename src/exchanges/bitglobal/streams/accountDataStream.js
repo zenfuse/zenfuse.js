@@ -1,9 +1,9 @@
 const { createHmac } = require('crypto');
 
 const utils = require('../../../base/utils/utils');
-const BithumbWebsocketBase = require('./websocketBase');
+const BitglobalWebsocketBase = require('./websocketBase');
 
-class AccountDataStream extends BithumbWebsocketBase {
+class AccountDataStream extends BitglobalWebsocketBase {
     /**
      * @type {import('ws').WebSocket}
      */
@@ -59,7 +59,7 @@ class AccountDataStream extends BithumbWebsocketBase {
     }
 
     emitOrderUpdateEvent(payload) {
-        const order = this.transformBithumbOrderWS(payload);
+        const order = this.transformBitglobalOrderWS(payload);
 
         utils.linkOriginalPayload(order, payload);
 

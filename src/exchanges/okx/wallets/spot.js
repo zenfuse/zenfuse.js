@@ -1,3 +1,5 @@
+const { deprecate } = require('util');
+
 const OkxBase = require('../base');
 const mergeObjects = require('deepmerge');
 
@@ -28,6 +30,13 @@ class OkxSpot extends OkxBase {
     constructor(options = {}) {
         const fullOptions = mergeObjects(OkxSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
+
+        // TODO: Remove after v1
+        this.createOrder = deprecate(
+            this.postOrder.bind(this),
+            'createOrder() is deprecated. Use postOrder() instead.',
+            'ZENFUSE_DEP001',
+        );
     }
 
     /**
@@ -182,7 +191,7 @@ class OkxSpot extends OkxBase {
      *
      * @param {Order} zOrder Order to create
      */
-    async createOrder(zOrder) {
+    async postOrder(zOrder) {
         this.validateOrderParams(zOrder);
 
         const xOrder = this.transformZenfuseOrder(zOrder);

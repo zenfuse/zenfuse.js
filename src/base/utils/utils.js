@@ -37,6 +37,7 @@ const timeIntervalToSeconds = (interval) => {
     return seconds;
 };
 
+// TODO: Refactor this
 const createHmacSignatureDefault = (
     { ts, method, path, body = '' },
     key,
@@ -49,8 +50,20 @@ const createHmacSignatureDefault = (
     return createHmac('sha256', key).update(signaturePayload).digest(encoding);
 };
 
+/**
+ * Pipe function implementation from ramda
+ *
+ * @param  {...Function} fns List of functions to pipe
+ * @returns {Function}
+ */
+const pipe =
+    (...fns) =>
+    (x) =>
+        fns.reduce((res, fn) => fn(res), x);
+
 module.exports = {
     linkOriginalPayload,
     timeIntervalToSeconds,
     createHmacSignatureDefault,
+    pipe,
 };

@@ -16,6 +16,7 @@ declare class FtxSpot extends FtxBase {
      * @param {BaseOptions} options
      */
     constructor(options?: BaseOptions);
+    createOrder: any;
     /**
      * @returns {string[]} Array of tickers on this exchange
      */
@@ -65,7 +66,7 @@ declare class FtxSpot extends FtxBase {
      *
      * @param {Order} zOrder Order to create
      */
-    createOrder(zOrder: any): Promise<any>;
+    postOrder(zOrder: any): Promise<any>;
     /**
      * Cancel an active order
      *

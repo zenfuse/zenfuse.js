@@ -31,7 +31,7 @@ declare class BinanceBase extends ExchangeBase {
      */
     privateFetch(url: URL, options?: import('http').RequestOptions): object;
     /**
-     * Connect to authentificated API
+     * Connect to authenticated API
      *
      * @param {object} keys
      * @param {string} keys.publicKey
@@ -43,7 +43,7 @@ declare class BinanceBase extends ExchangeBase {
         privateKey: string;
     }): this;
     /**
-     * Is instanse has keys to authenticate on not
+     * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */
@@ -66,52 +66,41 @@ declare class BinanceBase extends ExchangeBase {
     /**
      * Parses Binance symbol using cache
      *
-     * @param {string} bSymbol Binance symbol without separator
+     * @protected
+     * @param {string} bSymbol Cursed Binance symbol without separator
      * @returns {string} Normal symbol with separator
      */
-    parseBinanceSymbol(bSymbol: string): string;
+    protected parseBinanceSymbol(bSymbol: string): string;
     /**
-     * @param {Array} symbols Array of symbols from `api/v3/exchangeInfo`
-     * @returns {string[]} Array of tickers like `['BTC', 'BUSD'...]`
+     * @typedef {import('../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
      */
-    extractTickersFromSymbols(symbols: any[]): string[];
-    /**
-     * @typedef {import('../../../../base/schemas/orderParams').ZenfuseOrderParams} OrderParams
-     */
-    /**
-     * Insert default values for specific order type
-     *
-     * **DEV** All values should be for zenfuse interface
-     *
-     * @param {OrderParams} order
-     * @param {object} defaults
-     * @param {OrderParams} defaults.limit
-     * @param {OrderParams} defaults.market
-     * @returns {OrderParams}
-     */
-    assignDefaultsInOrder(order: any, defaults: {
-        limit: any;
-        market: any;
-    }): any;
     /**
      * Zenfuse -> Binance
      *
      * **DEV:** This function does not assign defaults values
      *
-     * @param {OrderParams} zOrder Zenfuse order
+     * @param {OrderParams} zOrder Zenfuse order parameters
      * @returns {object} Order for binance api
      */
-    transformZenfuseOrder(zOrder: any): object;
+    transformZenfuseOrder(zOrder: import("../../base/schemas/orderParams").ZenfuseOrderParams): object;
     /**
      * @typedef {import('../../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
      */
     /**
      * Binance -> Zenfuse
      *
-     * @param {*} bOrder Order fromf
-     * @returns {PlacedOrder} Zenfuse Order
+     * @param {*} bOrder Order from binance
+     * @returns {PlacedOrder} Posted Zenfuse Order
      */
     transformBinanceOrder(bOrder: any): any;
+    /**
+     * Order modifier for price and quantity. Provide decimal precision context for basic method.
+     *
+     * @protected
+     * @param {OrderParams} zOrder
+     * @returns {OrderParams}
+     */
+    protected preciseOrderValues(zOrder: import("../../base/schemas/orderParams").ZenfuseOrderParams): import("../../base/schemas/orderParams").ZenfuseOrderParams;
     [keysSymbol]: {};
 }
 import ExchangeBase = require("../../base/exchange");

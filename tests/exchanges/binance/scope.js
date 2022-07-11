@@ -59,7 +59,7 @@ module.exports = (env) => ({
                 .replyWithFile(200, historyFilePath, {
                     'Content-Type': 'application/json',
                 }),
-        'createOrder()': {
+        'postOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME)
                     .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
@@ -217,6 +217,58 @@ module.exports = (env) => ({
                         type: 'LIMIT',
                         side: 'SELL',
                         fills: [],
+                    }),
+            'values precision': () =>
+                nock(HOSTNAME)
+                    .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
+                    .post('/api/v3/order')
+                    .query((q) => {
+                        expect(q).toMatchObject({
+                            type: 'LIMIT',
+                            side: 'BUY',
+                        });
+                        expect(q.symbol).toBe(
+                            toBinanceStyle(env.PRECISION_REQUIRED_ORDER.symbol),
+                        );
+                        expect(q.quantity).toBe('400');
+                        expect(q.price).toBe('0.04688');
+
+                        expect(q.timestamp).toBeDefined();
+                        expect(q.signature).toBeDefined();
+                        return true;
+                    })
+                    .reply(201, {
+                        symbol: toBinanceStyle(
+                            env.PRECISION_REQUIRED_ORDER.symbol,
+                        ),
+                        orderId: 5114608,
+                        orderListId: -1,
+                        clientOrderId: 'nVuwTgVfxQtsMV9uuMMXxL',
+                        transactTime: Date.now(),
+                        price: '0.00000000',
+                        origQty: '0.00000000',
+                        executedQty: '0.00000000',
+                        cummulativeQuoteQty: '576.46100000',
+                        status: 'FILLED',
+                        timeInForce: 'GTC',
+                        type: toBinanceStyle(env.PRECISION_REQUIRED_ORDER.type),
+                        side: toBinanceStyle(env.PRECISION_REQUIRED_ORDER.side),
+                        fills: [
+                            {
+                                price: '0',
+                                qty: '0',
+                                commission: '0.00000000',
+                                commissionAsset: 'BNB',
+                                tradeId: 239238,
+                            },
+                            {
+                                price: '0',
+                                qty: '0',
+                                commission: '0',
+                                commissionAsset: 'BNB',
+                                tradeId: 239239,
+                            },
+                        ],
                     }),
         },
         'fetchBalances()': () =>

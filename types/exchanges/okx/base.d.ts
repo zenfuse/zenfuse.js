@@ -31,21 +31,21 @@ declare class OkxBase extends ExchangeBase {
      */
     privateFetch(url: string, options?: import('http').RequestOptions): any;
     /**
-     * Connect to authentificated API
+     * Connect to authenticated API
      *
      * @param {object} keys
      * @param {string} keys.publicKey
      * @param {string} keys.privateKey Same as secret key
-     * @param {string} keys.addKey OKX passphrase
+     * @param {string} keys.additionalKey OKX passphrase
      * @returns {this}
      */
-    auth({ publicKey, privateKey, addKey }: {
+    auth({ publicKey, privateKey, additionalKey }: {
         publicKey: string;
         privateKey: string;
-        addKey: string;
+        additionalKey: string;
     }): this;
     /**
-     * Is instanse has keys to authenticate on not
+     * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */

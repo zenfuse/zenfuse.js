@@ -34,6 +34,9 @@ declare class OkxWebsocketBase extends EventEmitter {
      * @returns {void}
      */
     sendSocketMessage(msg: object): void;
-    transformOkxOrder(xOrder: any): PlacedOrder;
+    /**
+     * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
+     */
+    transformOkxOrder(xOrder: any): import("../../../base/schemas/openOrder").PlacedOrder;
 }
 import { EventEmitter } from "events";

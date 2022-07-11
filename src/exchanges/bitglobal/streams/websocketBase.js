@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const { WebSocket } = require('ws');
 
-class BithumbWebsocketBase extends EventEmitter {
+class BitglobalWebsocketBase extends EventEmitter {
     static PING_INTERVAL = 15000; // 15 sec
 
     /**
@@ -46,7 +46,7 @@ class BithumbWebsocketBase extends EventEmitter {
 
                 this.pingIntervalId = setInterval(() => {
                     this.socket.send(JSON.stringify({ cmd: 'ping' }));
-                }, BithumbWebsocketBase.PING_INTERVAL);
+                }, BitglobalWebsocketBase.PING_INTERVAL);
 
                 resolve();
             });
@@ -97,7 +97,7 @@ class BithumbWebsocketBase extends EventEmitter {
      * @typedef {import('../../../base/schemas/openOrder').PlacedOrder} PlacedOrder
      */
 
-    transformBithumbOrderWS(bOrder) {
+    transformBitglobalOrderWS(bOrder) {
         /**
          * @type {PlacedOrder}
          */
@@ -126,4 +126,4 @@ class BithumbWebsocketBase extends EventEmitter {
     }
 }
 
-module.exports = BithumbWebsocketBase;
+module.exports = BitglobalWebsocketBase;

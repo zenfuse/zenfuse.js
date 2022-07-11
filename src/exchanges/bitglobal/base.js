@@ -2,19 +2,19 @@ const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
 
 const ExchangeBase = require('../../base/exchange');
-const BithumbApiError = require('./errors/api.error');
-const BithumbCache = require('./etc/cache');
+const BitglobalApiError = require('./errors/api.error');
+const BitglobalCache = require('./etc/cache');
 const ZenfuseUserError = require('../../base/errors/user.error');
 const { createHmac } = require('crypto');
 
 const keysSymbol = Symbol.for('zenfuse.keyVault');
 
 /**
- * Bithumb base class for method which included in any wallet type
+ * Bitglobal base class for method which included in any wallet type
  */
-class BithumbBase extends ExchangeBase {
+class BitglobalBase extends ExchangeBase {
     /**
-     * Http client options specially for Bithumb
+     * Http client options specially for Bitglobal
      *
      * @type {import('../../base/exchange').BaseOptions}
      */
@@ -27,12 +27,12 @@ class BithumbBase extends ExchangeBase {
             },
         },
         wsClientOptions: {
-            prefixUrl: 'wss://global-api.bithumb.pro',
+            prefixUrl: 'wss://global-api.bitglobal.pro',
         },
     };
 
     /**
-     * @type {BithumbCache}
+     * @type {BitglobalCache}
      */
     cache;
 
@@ -41,14 +41,14 @@ class BithumbBase extends ExchangeBase {
      */
     constructor(options) {
         const assignedOptions = mergeObjects(
-            BithumbBase.DEFAULT_OPTIONS,
+            BitglobalBase.DEFAULT_OPTIONS,
             options,
         );
         super(assignedOptions);
 
         this[keysSymbol] = {};
 
-        this.cache = new BithumbCache(this);
+        this.cache = new BitglobalCache(this);
         this.msgNo = 0;
         this.signatureEncoding = 'hex';
     }
@@ -94,7 +94,7 @@ class BithumbBase extends ExchangeBase {
                 {},
             );
 
-        const signature = this.createHmacSignatureBithumb(
+        const signature = this.createHmacSignatureBitglobal(
             sigParams,
             this[keysSymbol].privateKey,
             this.signatureEncoding,
@@ -142,7 +142,7 @@ class BithumbBase extends ExchangeBase {
     }
 
     /**
-     * Ping bithumb servers
+     * Ping bitglobal servers
      *
      * @public
      */
@@ -165,7 +165,7 @@ class BithumbBase extends ExchangeBase {
      */
     handleFetcherError(err) {
         if (err instanceof HTTPError) {
-            throw new BithumbApiError(err);
+            throw new BitglobalApiError(err);
         }
 
         throw err;
@@ -173,13 +173,13 @@ class BithumbBase extends ExchangeBase {
 
     handleUnexpectedResponse(response) {
         if (parseFloat(response.code) > 0) {
-            throw new BithumbApiError(response);
+            throw new BitglobalApiError(response);
         }
 
         return response;
     }
 
-    createHmacSignatureBithumb(sigParams, privateKey, encoding) {
+    createHmacSignatureBitglobal(sigParams, privateKey, encoding) {
         const charsToDel = ['{', '}', '"'];
 
         let signaturePayload = JSON.stringify(sigParams)
@@ -203,10 +203,10 @@ class BithumbBase extends ExchangeBase {
      */
 
     /**
-     * Zenfuse -> Bithumb
+     * Zenfuse -> Bitglobal
      *
      * @param {OrderParams} zOrder
-     * @returns {object} Order for bithumb api
+     * @returns {object} Order for bitglobal api
      */
     transformZenfuseOrder(zOrder) {
         const TRANSFORM_LIST = ['side', 'type', 'price', 'quantity', 'symbol'];
@@ -242,13 +242,13 @@ class BithumbBase extends ExchangeBase {
      */
 
     /**
-     * Bithumb -> Zenfuse
+     * Bitglobal -> Zenfuse
      *
-     * @param {*} bOrder Order from Bithumb REST
+     * @param {*} bOrder Order from Bitglobal REST
      * @param {object} zInitialOrder
      * @returns {PlacedOrder} Zenfuse Order
      */
-    transformBithumbOrder(bOrder, zInitialOrder = {}) {
+    transformBitglobalOrder(bOrder, zInitialOrder = {}) {
         /**
          * @type {PlacedOrder}
          */
@@ -296,6 +296,33 @@ class BithumbBase extends ExchangeBase {
 
         return zOrder;
     }
+
+    /**
+     * Order modifier for price and quantity. Provide decimal precision context for basic method.
+     *
+     * @protected
+     * @param {OrderParams} zOrder
+     * @returns {OrderParams}
+     */
+    preciseOrderValues(zOrder) {
+        const marketPrecisionInfo = this.cache.globalCache.get(
+            'marketsPrecisionInfo',
+        );
+
+        if (!marketPrecisionInfo.has(zOrder.symbol)) {
+            // TODO: Make some
+            return zOrder;
+        }
+
+        const { quantityPrecision, pricePrecision } = marketPrecisionInfo.get(
+            zOrder.symbol,
+        );
+
+        return super.preciseOrderValues(zOrder, {
+            price: pricePrecision,
+            quantity: quantityPrecision,
+        });
+    }
 }
 
-module.exports = BithumbBase;
+module.exports = BitglobalBase;

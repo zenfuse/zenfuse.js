@@ -1,17 +1,15 @@
 const ExchangeBaseException = require('../../../base/errors/exchange.error');
 const utils = require('../../../base/utils/utils');
 
-const codes = ExchangeBaseException.errorCodes;
-
 /**
  * @see https://binance-docs.github.io/apidocs/spot/en/#error-codes
  */
 class BinanceApiException extends ExchangeBaseException {
     static codesMap = new Map([
-        [-1022, codes.INVALID_CREDENTIALS],
-        [-2014, codes.INVALID_CREDENTIALS],
-        [-2015, codes.INVALID_CREDENTIALS],
-        [-2010, codes.INSUFFICIENT_FUNDS],
+        [-1022, 'INVALID_CREDENTIALS'],
+        [-2014, 'INVALID_CREDENTIALS'],
+        [-2015, 'INVALID_CREDENTIALS'],
+        [-2010, 'INSUFFICIENT_FUNDS'],
     ]);
 
     /**
@@ -27,7 +25,7 @@ class BinanceApiException extends ExchangeBaseException {
                 err.response.body.code,
             );
         } else {
-            this.code = codes.UNKNOWN_EXCEPTION;
+            this.code = 'UNKNOWN_EXCEPTION';
         }
 
         this.response = err.response.body;

@@ -20,6 +20,8 @@ const MockedAgent = require('./mocks/agent');
  * @property {Order} BUY_LIMIT_ORDER
  * @property {Order} SELL_LIMIT_ORDER
  * @property {Order} NOT_EXECUTABLE_ORDER An order that will never be executed. Usually a pair of stablecoins for a half price.
+ * @property {Order} PRECISION_REQUIRED_ORDER
+ * @property {Order} PRECISION_IMPOSSIBLE_ORDER
  * @property {object} PRICE_SUBSCRIPTION
  * @property {string} PRICE_SUBSCRIPTION.channel
  * @property {string} PRICE_SUBSCRIPTION.symbol
@@ -204,7 +206,7 @@ module.exports = function masterTest(Exchange, env) {
                 const keys = {
                     publicKey: env.API_PUBLIC_KEY,
                     privateKey: env.API_PRIVATE_KEY,
-                    addKey: env.API_ADD_KEY,
+                    additionalKey: env.API_ADDITIONAL_KEY,
                 };
 
                 expect(exchange.hasKeys).toBe(false);
@@ -217,14 +219,14 @@ module.exports = function masterTest(Exchange, env) {
 
         // NOTE: Now exchange is authenticated instance
 
-        describe('createOrder()', () => {
+        describe('postOrder()', () => {
             it('should be defined', () => {
-                expect(exchange.createOrder).toBeDefined();
+                expect(exchange.postOrder).toBeDefined();
             });
 
             it('should run only with keys', () => {
                 try {
-                    exchange.createOrder.bind(
+                    exchange.postOrder.bind(
                         new Exchange['spot'](),
                         env.NOT_EXECUTABLE_ORDER,
                     );
@@ -238,7 +240,7 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(env.BUY_MARKET_ORDER);
+                    result = await exchange.postOrder(env.BUY_MARKET_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
@@ -260,7 +262,7 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(env.SELL_MARKET_ORDER);
+                    result = await exchange.postOrder(env.SELL_MARKET_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
@@ -281,7 +283,7 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(env.BUY_LIMIT_ORDER);
+                    result = await exchange.postOrder(env.BUY_LIMIT_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
@@ -302,7 +304,7 @@ module.exports = function masterTest(Exchange, env) {
                 let result;
 
                 it('should create order without errors', async () => {
-                    result = await exchange.createOrder(env.SELL_LIMIT_ORDER);
+                    result = await exchange.postOrder(env.SELL_LIMIT_ORDER);
                 });
 
                 it('should have valid originalResponse', () => {
@@ -312,6 +314,28 @@ module.exports = function masterTest(Exchange, env) {
                         symbol: env.SELL_LIMIT_ORDER.symbol,
                         type: env.SELL_LIMIT_ORDER.type,
                         side: env.SELL_LIMIT_ORDER.side,
+                    });
+                    expect(
+                        result[Symbol.for('zenfuse.originalPayload')],
+                    ).toBeDefined();
+                });
+            });
+
+            describe('values precision', () => {
+                let result;
+                it('should precise order value and post it without errors', async () => {
+                    result = await exchange.postOrder(
+                        env.PRECISION_REQUIRED_ORDER,
+                    );
+                });
+
+                it('should have valid originalResponse', () => {
+                    expect(result).toBeDefined();
+                    expect(result).toMatchSchema(OrderSchema);
+                    expect(result).toMatchObject({
+                        symbol: env.PRECISION_REQUIRED_ORDER.symbol,
+                        type: env.PRECISION_REQUIRED_ORDER.type,
+                        side: env.PRECISION_REQUIRED_ORDER.side,
                     });
                     expect(
                         result[Symbol.for('zenfuse.originalPayload')],
@@ -381,7 +405,7 @@ module.exports = function masterTest(Exchange, env) {
             let result;
 
             it('should cancel order without errors', async () => {
-                const createdOrder = await exchange.createOrder(
+                const createdOrder = await exchange.postOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
 
@@ -416,7 +440,7 @@ module.exports = function masterTest(Exchange, env) {
             let result;
 
             it('should cancel order without errors', async () => {
-                const createdOrder = await exchange.createOrder(
+                const createdOrder = await exchange.postOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
 
@@ -458,7 +482,7 @@ module.exports = function masterTest(Exchange, env) {
             });
 
             it('should fetch without errors', async () => {
-                createdOrder = await exchange.createOrder(
+                createdOrder = await exchange.postOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
 
@@ -516,7 +540,9 @@ module.exports = function masterTest(Exchange, env) {
             exchange = new Exchange['spot']().auth({
                 publicKey: env.API_PUBLIC_KEY,
                 privateKey: env.API_PRIVATE_KEY,
-                addKey: env.API_ADD_KEY ? env.API_ADD_KEY : undefined,
+                additionalKey: env.API_ADDITIONAL_KEY
+                    ? env.API_ADDITIONAL_KEY
+                    : undefined,
             });
 
             accountDataStream = exchange.getAccountDataStream();
@@ -552,7 +578,7 @@ module.exports = function masterTest(Exchange, env) {
                     });
                 });
 
-                const createdOrder = await exchange.createOrder(
+                const createdOrder = await exchange.postOrder(
                     env.NOT_EXECUTABLE_ORDER,
                 );
 

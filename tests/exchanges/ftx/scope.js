@@ -73,7 +73,7 @@ module.exports = (env) => ({
                 .replyWithFile(200, historyFilePath, {
                     'Content-Type': 'application/json',
                 }),
-        'createOrder()': {
+        'postOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME)
                     .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
@@ -201,6 +201,40 @@ module.exports = (env) => ({
                             status: 'new',
                             filledSize: 0,
                             remainingSize: env.SELL_LIMIT_ORDER.quantity,
+                            reduceOnly: false,
+                            liquidation: null,
+                            avgFillPrice: null,
+                            postOnly: false,
+                            ioc: false,
+                            createdAt: new Date(),
+                            future: null,
+                        },
+                    }),
+            'values precision': () =>
+                nock(HOSTNAME)
+                    .matchHeader('FTX-KEY', env.API_PUBLIC_KEY)
+                    .matchHeader('FTX-TS', Boolean)
+                    .matchHeader('FTX-SIGN', Boolean)
+                    .post('/api/orders', {
+                        market: env.PRECISION_REQUIRED_ORDER.symbol,
+                        type: 'limit',
+                        side: 'buy',
+                        size: env.PRECISION_REQUIRED_ORDER.quantity,
+                        price: env.PRECISION_REQUIRED_ORDER.price,
+                    })
+                    .reply(201, {
+                        success: true,
+                        result: {
+                            id: 112589159471,
+                            clientId: null,
+                            market: env.PRECISION_REQUIRED_ORDER.symbol,
+                            type: 'limit',
+                            side: 'buy',
+                            price: 0,
+                            size: 0,
+                            status: 'new',
+                            filledSize: 0,
+                            remainingSize: 0,
                             reduceOnly: false,
                             liquidation: null,
                             avgFillPrice: null,

@@ -70,6 +70,23 @@ declare class ExchangeBase {
     }>;
     validateOrderParams(order: any): void;
     validateCandleHistoryParams(params: any): void;
+    /**
+     * @typedef {import('./schemas/orderParams').ZenfuseOrderParams} ZenfuseOrderParams
+     */
+    /**
+     * Preciser for basic order values. Exists for provide same precisions for any exchanges without context.
+     *
+     * @protected
+     * @param {ZenfuseOrderParams} zOrder
+     * @param {object} limits Decimal precisions
+     * @param {number} limits.price
+     * @param {number} limits.quantity
+     * @returns {ZenfuseOrderParams} Order parameters with precised price and quantity
+     */
+    protected preciseOrderValues(zOrder: OrderParamsSchema.ZenfuseOrderParams, limits: {
+        price: number;
+        quantity: number;
+    }): OrderParamsSchema.ZenfuseOrderParams;
 }
 declare namespace ExchangeBase {
     export { ExtraWsOptions, BaseOptions };
@@ -84,6 +101,7 @@ type ExtraWsOptions = {
     prefixUrl: string;
 };
 import z = require("zod");
+import OrderParamsSchema = require("./schemas/orderParams");
 type BaseOptions = {
     /**
      * This object will be passed to `got.extend`

@@ -28,17 +28,17 @@ declare class MarketDataStream extends FtxWebsocketBase {
      * @param {WebsocketEvent} arg
      * @param {'subscribe'|'unsubscribe'} command
      */
-    private editSubscribition;
+    private editSubscription;
     /**
      * @private
-     * @param {WebsocketEvent} event Candle stream event subscribtion
+     * @param {WebsocketEvent} event Candle stream event subscription
      */
     private setupCandleStream;
     /**
-     * @param {WebsocketEvent} event Candle stream event subscribtion
+     * @param {WebsocketEvent} event Candle stream event subscription
      */
     unsetupCandleStream(event: WebsocketEvent): Promise<void>;
-    unsubscribeFromAllbySymbol(): Promise<void>;
+    unsubscribeFromAllBySymbol(): Promise<void>;
     /**
      * @private
      * @param {import('ws').MessageEvent} msgEvent
@@ -52,7 +52,7 @@ declare class MarketDataStream extends FtxWebsocketBase {
     /**
      * @private
      * @param  {string[]} eventNames
-     * @returns {Promise<object>} Server responce
+     * @returns {Promise<object>} Server response
      */
     private sendSocketUnsubscribe;
 }

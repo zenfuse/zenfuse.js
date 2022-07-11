@@ -48,7 +48,7 @@ declare const ZenfuseOrderParams: z.ZodEffects<z.ZodObject<{
 declare namespace ZenfuseOrderParams {
     export { ZenfuseOrderParams };
 }
-import { z } from "zod";
+import { z } from "zod/lib";
 type ZenfuseOrderParams = {
     symbol: string;
     quantity: number | string;

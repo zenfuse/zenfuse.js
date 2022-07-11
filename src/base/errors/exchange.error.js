@@ -2,10 +2,10 @@ const ZenfuseBaseError = require('./base.error');
 
 class ExchangeBaseException extends ZenfuseBaseError {
     static errorCodes = {
-        INVALID_CREDENTIALS: Symbol('INVALID_CREDENTIALS'),
-        INSUFFICIENT_FUNDS: Symbol('INSUFFICIENT_FUNDS'),
-        INVALID_ORDER: Symbol('INVALID_ORDER'),
-        UNKNOWN_EXCEPTION: Symbol('UNKNOWN_EXCEPTION'),
+        INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+        INSUFFICIENT_FUNDS: 'INSUFFICIENT_FUNDS',
+        INVALID_ORDER: 'INVALID_ORDER',
+        UNKNOWN_EXCEPTION: 'UNKNOWN_EXCEPTION',
     };
 }
 

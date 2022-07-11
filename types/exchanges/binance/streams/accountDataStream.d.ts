@@ -40,7 +40,7 @@ declare class AccountDataStream extends ExchangeWebsocketBase {
      */
     private extendValidityTime;
     _validUntil: number;
-    checkSocketIsConneted(): void;
+    checkSocketIsConnected(): void;
     serverMessageHandler(msgString: any): void;
     emitOrderUpdateEvent(payload: any): void;
     [listenKeySymbol]: any;

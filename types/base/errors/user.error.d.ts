@@ -7,6 +7,7 @@ declare class ZenfuseUserError extends ZenfuseBaseError {
         UNSUPPORTED_FEATURE: string;
         NOT_AUTHENTICATED: string;
         VALIDATION_FAILED: string;
+        PRECISION_IMPOSSIBLE: string;
     };
     /**
      * @param {string} msg message
