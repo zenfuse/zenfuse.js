@@ -22,27 +22,27 @@ declare const ZenfuseOrderParams: z.ZodEffects<z.ZodObject<{
     }>;
 }, "passthrough", z.ZodTypeAny, {
     symbol?: string;
-    type?: string;
     quantity?: number;
     price?: number;
+    type?: string;
     side?: string;
 }, {
     symbol?: string;
-    type?: string;
     quantity?: number;
     price?: number;
+    type?: string;
     side?: string;
 }>, {
     symbol?: string;
-    type?: string;
     quantity?: number;
     price?: number;
+    type?: string;
     side?: string;
 }, {
     symbol?: string;
-    type?: string;
     quantity?: number;
     price?: number;
+    type?: string;
     side?: string;
 }>;
 declare namespace ZenfuseOrderParams {

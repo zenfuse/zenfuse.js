@@ -26,7 +26,7 @@ const env = createEnv({
         type: 'limit',
         side: 'buy',
         quantity: 0.0005,
-        price: 35000,
+        price: 25000,
     },
     CANDLES_REQUEST: {
         symbol: 'BTC/USDT',
@@ -51,7 +51,7 @@ const env = createEnv({
         type: 'limit',
         side: 'buy',
         quantity: 0.0004,
-        price: 35000,
+        price: 25000,
     },
     SELL_LIMIT_ORDER: {
         symbol: 'BTC/USDT',

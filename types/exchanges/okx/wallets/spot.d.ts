@@ -79,6 +79,7 @@ declare class OkxSpot extends OkxBase {
      * @param {string} orderId Okx order id
      */
     cancelOrderById(orderId: string): Promise<import("../../../base/schemas/openOrder").PlacedOrder>;
+    fetchOpenOrders(): Promise<any>;
     fetchBalances(): Promise<any>;
     /**
      *

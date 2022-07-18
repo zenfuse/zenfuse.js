@@ -20,23 +20,23 @@ declare const ZenfusePlacedOrder: z.ZodObject<{
     price: z.ZodOptional<z.ZodNumber>;
     quantity: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
+    id?: string;
+    timestamp?: number;
+    status?: "closed" | "open" | "canceled";
     symbol?: string;
     type?: "market" | "limit";
-    id?: string;
-    status?: "closed" | "open" | "canceled";
-    quantity?: number;
-    price?: number;
     side?: "buy" | "sell";
-    timestamp?: number;
+    price?: number;
+    quantity?: number;
 }, {
+    id?: string;
+    timestamp?: number;
+    status?: "closed" | "open" | "canceled";
     symbol?: string;
     type?: "market" | "limit";
-    id?: string;
-    status?: "closed" | "open" | "canceled";
-    quantity?: number;
-    price?: number;
     side?: "buy" | "sell";
-    timestamp?: number;
+    price?: number;
+    quantity?: number;
 }>;
 declare namespace ZenfusePlacedOrder {
     export { PlacedOrder };

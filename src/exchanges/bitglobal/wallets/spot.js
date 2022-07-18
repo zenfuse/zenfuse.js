@@ -167,7 +167,7 @@ class BitglobalSpot extends BitglobalBase {
         });
 
         const zCreatedOrder = this.transformBitglobalOrder(
-            bCreatedOrder,
+            bCreatedOrder.data,
             zOrder,
         );
 
@@ -233,9 +233,24 @@ class BitglobalSpot extends BitglobalBase {
         return orderToDelete;
     }
 
-    // TODO: Test for this
+    /**
+     * Fetch all user's open orders
+     */
     async fetchOpenOrders() {
-        throw 'Not implemented';
+        const response = await this.privateFetch('spot/openOrders', {
+            method: 'POST',
+            json: {
+                symbol: 'ALL',
+            },
+        });
+
+        const openOrders = response.data.list.map((order) => {
+            return this.transformBitglobalOrder(order);
+        });
+
+        utils.linkOriginalPayload(openOrders, response);
+
+        return openOrders;
     }
 
     // TODO: add coinType if necessary
@@ -244,7 +259,6 @@ class BitglobalSpot extends BitglobalBase {
             method: 'POST',
             json: {
                 assetType: 'spot',
-                // coinType: 'BTC',
             },
         });
 
@@ -284,7 +298,6 @@ class BitglobalSpot extends BitglobalBase {
         });
 
         const zOrder = this.transformBitglobalOrder(response, orderToFetch);
-
         return zOrder;
     }
 
