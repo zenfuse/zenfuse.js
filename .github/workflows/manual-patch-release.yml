@@ -15,17 +15,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Bump version
+        id: bump-version
         run: echo "::set-output name=version::$(npm version patch)"
         
       - name: Debug
         run: |
-          echo ${{ steps }}
+          echo ${{ join(steps) }}
           echo ${{ steps.bump-version }}
           echo ${{ steps.bump-version.outputs }}
           echo ${{ steps.bump-version.outputs.version }}
       
       - name: Create draft release in repository
-        run: gh release create ${{ steps.bump-version.outputs.version }} --generate-notes --draft
+        run: gh release create ${{ steps.bump-version.outputs.version }} --generate-notes --draft --prerelease
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
