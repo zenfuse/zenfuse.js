@@ -1,30 +1,24 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Manual patch release
 
-# Controls when the workflow will run
 on:
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  create:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       
       - uses: oleksiyrudenko/gha-git-credentials@v2-latest
         with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Bump version
         run: echo "::set-output name=version::$(npm version patch)"
       
       - name: Create draft release in repository
         run: gh release create ${{ steps.bump-version.output.version }} --generate-notes --draft
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
