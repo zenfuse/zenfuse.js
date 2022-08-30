@@ -18,7 +18,7 @@ jobs:
         run: echo "::set-output name=version::$(npm version patch)"
       
       - name: Create draft release in repository
-        run: gh release create ${{ steps.bump-version.output.version }} --generate-notes --draft
+        run: gh release create ${{ steps.bump-version.outputs.version }} --generate-notes --draft
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
