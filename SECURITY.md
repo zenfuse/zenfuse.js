@@ -4,4 +4,4 @@ Please do not open GitHub issues or pull requests - this makes the problem immed
 
 ## Reporting a Vulnerability
 
-To report a security vulnerability, please use the vyacheslav@izzqz.me email.
+To report a security vulnerability, please use the v@izzqz.me email.
