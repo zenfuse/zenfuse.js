@@ -39,6 +39,4 @@ patch:
 
     new_version=$(npm version patch --sign-git-tag);
 
-    git push;
-
-    gh release create $new_version --generate-notes --prerelease --draft;
+    gh release create $new_version --target $new_version --generate-notes --prerelease --draft;
