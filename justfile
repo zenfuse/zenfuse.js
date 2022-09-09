@@ -38,7 +38,9 @@ patch:
     read -p "Continue? (y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 0;
 
     new_version=$(npm version patch --no-git-tag-version--sign-git-commit);
-
     git push;
-
     gh release create $new_version --target main --generate-notes --prerelease;
+
+# Delete all untracked files
+clean:
+	git clean -xdf
