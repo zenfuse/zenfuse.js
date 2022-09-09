@@ -20,7 +20,7 @@ const options = mri(process.argv.slice(2), {
 });
 
 if (options.help) {
-    const helpMessage = `Usage: npm run download-mocks -- [options...]
+    const helpMessage = `Usage: downloadMocks.js [options...]
 -f, --force           Download even files already exists 
     --only=<exchange> Run for specific exchange`;
     process.stdout.write(helpMessage);
