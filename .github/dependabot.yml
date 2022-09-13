@@ -9,8 +9,14 @@ updates:
       directory: '/'
       schedule:
           interval: 'daily'
+      reviewers:
+          - 'izzqz'
+      target-branch: 'dependabot'
 
     - package-ecosystem: 'github-actions'
       directory: '/'
       schedule:
           interval: 'weekly'
+      reviewers:
+          - 'izzqz'
+      target-branch: 'dependabot'

@@ -1,18 +1,16 @@
 {
     "name": "zenfuse",
-    "version": "0.10.2",
+    "version": "0.10.3",
     "description": "Crypto exchanges connector library",
     "main": "src/index.js",
     "scripts": {
-        "test": "npm run test:unit --silent && npm run test:integration --silent",
-        "test:e2e": "TEST_MODE=e2e npm run jest --silent",
-        "test:integration": "TEST_MODE=integration npm run jest --silent",
-        "test:unit": "TEST_MODE=unit jest --testMatch '**/?(*.)+(spec).js'",
-        "jest": "node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand",
-        "format": "eslint --fix .; prettier --write .",
-        "lint": "eslint .",
-        "download-mocks": "node ./scripts/downloadMocks.js",
-        "build:types": "tsc"
+        "test": "just test unit && just test integration",
+        "test:e2e": "just test e2e",
+        "test:integration": "just test integration",
+        "test:unit": "just test unit",
+        "format": "just format",
+        "lint": "just lint",
+        "download-mocks": "just download-mocks"
     },
     "repository": {
         "type": "git",
@@ -46,6 +44,7 @@
         "eslint-plugin-jsdoc": "^39.2.8",
         "eslint-plugin-prettier": "^4.0.0",
         "jest": "^29.0.1",
+        "just-install": "^1.0.8",
         "mri": "^1.2.0",
         "nock": "^13.2.4",
         "prettier": "^2.4.1",
