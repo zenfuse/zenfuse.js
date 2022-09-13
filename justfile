@@ -1,6 +1,9 @@
 _default:
     @just --list
 
+@_ask msg:
+    bash -c 'read -p "{{msg}} (y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1;';
+
 # Download all static mocks for test usage
 download-mocks *args:
     node scripts/downloadMocks.js {{args}}
@@ -35,11 +38,15 @@ patch:
     	exit 1;
     fi
 
-    read -p "Continue? (y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 0;
+    just _ask 'Create verison tag and publish release?';
 
     new_version=$(npm version patch --sign-git-commit --sign-git-tag);
     git push;
     gh release create $new_version --target main --generate-notes --prerelease;
+
+deps-pr:
+    @just _ask 'Create update dependencies pull request?';
+    gh pr create --base main --head dependabot --assignee @me --title 'Update dependencies' --body ''
 
 # Delete all untracked files
 clean:
