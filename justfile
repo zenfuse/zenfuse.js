@@ -18,12 +18,14 @@ test mode:
     {{ if mode == "unit" { "--testMatch '**/?(*.)+(spec).js'" } else { "" } }}
 
 # Lint all files
-lint: cspell
-    npm exec eslint -- .
+lint: cspell eslint
+
+eslint *args='.':
+    npm exec eslint -- {{args}}
 
 # Format all files
 format:
-    npm exec eslint -- --fix .
+    @just eslint --fix .
     npm exec prettier -- --write .
 
 # Run GitLeaks docker command
