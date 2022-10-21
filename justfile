@@ -33,7 +33,16 @@ gitleaks *args:
 
 # Check files spelling
 cspell *args:
-    npm exec cspell -- lint '**' --show-context --no-progress --relative {{args}}
+    npm exec cspell -- lint '**' --show-context --no-progress --relative --show-suggestions {{args}}
+
+# Add word to custom cspell dictionary
+ignore-word word:
+    #!/usr/bin/env bash
+    set -euo pipefail;
+    dictpath={{justfile_directory()}}/.cspell-dictionary.txt;
+    echo {{word}} >> $dictpath;
+    sort -du -o $dictpath $dictpath;
+    echo Word {{word}} now ignored in cspell;
 
 # Create patch version release on github
 patch:

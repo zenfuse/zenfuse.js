@@ -144,7 +144,7 @@ class FtxCandleStream {
                 // TODO: Find way to fetch 1 candle using startTime
                 // WARN: Pain here
                 // startTime: baseTime - 60000 * 15,
-                // endTime: baseTime - 60000aqweotruciqpwtcqwtc
+                // endTime: baseTime - 60000
             })
             .catch((e) => {
                 throw e;
