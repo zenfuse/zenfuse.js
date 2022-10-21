@@ -25,6 +25,10 @@ format:
     npm exec eslint -- --fix .
     npm exec prettier -- --write .
 
+gitleaks:
+    @echo 'Running GitLeaks...'
+    docker run -v {{justfile_directory()}}:/path zricethezav/gitleaks:latest detect --source="/path" --report-path path/gitleaks-report.json
+
 # Create patch version release on github
 patch:
     #!/usr/bin/env bash
