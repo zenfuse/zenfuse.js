@@ -483,10 +483,10 @@ const b = new Binance['spot'](options);
 
 ### All options
 
-| Parameter           | Type                                  | Description                                                                                        |
-| ------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Parameter           | Type                                  | Description                                                                                         |
+| ------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | `httpClientOptions` | [`got.ExtendOptions`]                 | [`got.ExtendOptions`] are [got](https://github.com/sindresorhus/got) options, witch uses as fetcher |
-| `wsClientOptions`   | [`ExtraWsOptions & ws.ClientOptions`] | [ws](https://github.com/websockets/ws) options with `prefixUrl` support                            |
+| `wsClientOptions`   | [`ExtraWsOptions & ws.ClientOptions`] | [ws](https://github.com/websockets/ws) options with `prefixUrl` support                             |
 
 ## Advanced things
 
