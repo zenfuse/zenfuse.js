@@ -1,6 +1,7 @@
 _default:
     @just --list
 
+# Awaits confirmation from user
 @_ask msg:
     bash -c 'read -p "{{msg}} (y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1;';
 
@@ -10,14 +11,14 @@ download-mocks *args:
 
 alias dm := download-mocks
 
-# Run test
+# Run test [ unit | integration | e2e ]
 test mode:
     TEST_MODE={{mode}} node --unhandled-rejections=strict node_modules/.bin/jest \
     --no-cache --runInBand \
     {{ if mode == "unit" { "--testMatch '**/?(*.)+(spec).js'" } else { "" } }}
 
 # Lint all files
-lint:
+lint: cspell
     npm exec eslint -- .
 
 # Format all files
@@ -25,9 +26,14 @@ format:
     npm exec eslint -- --fix .
     npm exec prettier -- --write .
 
+# Run GitLeaks docker command
 gitleaks *args:
     @echo 'Running GitLeaks...'
-    docker run -v {{justfile_directory()}}:/path zricethezav/gitleaks:latest detect --source="/path" --report-path path/gitleaks-report.json {{args}}
+    docker run -v {{justfile_directory()}}:/repo zricethezav/gitleaks:latest detect --source="/repo" --report-path repo/gitleaks-report.json {{args}}
+
+# Check files spelling
+cspell *args:
+    npm exec cspell -- lint '**' --show-context --no-progress --relative {{args}}
 
 # Create patch version release on github
 patch:
@@ -48,6 +54,7 @@ patch:
     git push;
     gh release create $new_version --target main --generate-notes --prerelease;
 
+# Creates "Update dependencies" pull request in Github repository
 deps-pr:
     @just _ask 'Create update dependencies pull request?';
     gh pr create --base main --head dependabot --assignee @me --title 'Update dependencies' --body ''

@@ -27,5 +27,16 @@
         "whenbinance",
         "stablecoins",
         "openapi"
-    ]
+    ],
+    "ignorePaths": [
+        "node_modules/**",
+        "types/**",
+        "tests/exchanges/*/mocks/static/*",
+        "tests/exchanges/*/scope.js",
+        "**/*.spec.js",
+        ".git/**"
+    ],
+    "useGitignore": true,
+    "dots": true,
+    "noProgress": true
 }
