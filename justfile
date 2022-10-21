@@ -48,7 +48,7 @@ patch:
     	exit 1;
     fi
 
-    just _ask 'Create verison tag and publish release?';
+    just _ask 'Create version tag and publish release?';
 
     new_version=$(npm version patch --sign-git-commit --sign-git-tag);
     git push;

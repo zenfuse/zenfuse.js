@@ -1,32 +1,9 @@
 {
     "version": "0.2",
     "language": "en",
-    "words": [
-        "zenfuse",
-        "zefu",
-        "bitglobal",
-        "deepmerge",
-        "bitglobal",
-        "binance",
-        "APIKEY",
-        "UNSYNC",
-        "structuralize",
-        "structuralized",
-        "kline",
-        "klines",
-        "candlestream",
-        "unsetup",
-        "ETHBUSD",
-        "BTCETH",
-        "ETHBTC",
-        "FUNBNB",
-        "ELON",
-        "BTCUSDT",
-        "BNBUSDT",
-        "PERP",
-        "whenbinance",
-        "stablecoins",
-        "openapi"
+    "dictionaries": ["project-dictionary"],
+    "dictionaryDefinitions": [
+        { "name": "project-dictionary", "path": "./.cspell-dictionary.txt" }
     ],
     "ignorePaths": [
         "node_modules/**",
