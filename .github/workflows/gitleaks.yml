@@ -1,4 +1,4 @@
-name: gitleaks
+name: GitLeaks
 on: [pull_request, push, workflow_dispatch]
 jobs:
   scan:
