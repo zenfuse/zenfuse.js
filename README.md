@@ -272,7 +272,7 @@ This method resolves created order from exchange, this is `ZenfuseOrder` with so
 Cancels order using order id.
 
 ```js
-// Recieve created order
+// Receive created order
 const order = await binance.postOrder({
     symbol: 'DOGE/USDT',
     type: 'limit',
@@ -309,11 +309,11 @@ _Returns:_
 
 ## Real-time events
 
-Zenfuse.js uses [EventEmiter](https://nodejs.org/api/events.html#class-eventemitter) for real-time data. Uses websocket connections. By default, can handle unlimited listeners.
+Zenfuse.js uses [EventEmitter](https://nodejs.org/api/events.html#class-eventemitter) for real-time data. Uses websocket connections. By default, can handle unlimited listeners.
 
 ### Public events
 
-Any public events providing `MarketDataStream` inteface.
+Any public events providing `MarketDataStream` interface.
 
 #### `.getMarketDataStream`
 
@@ -444,7 +444,7 @@ await accountDataStream.open();
 
 `on('orderUpdate', listener: (order: ZenfuseOrder) => void)`
 
-`orderUpdate` emits when open order changes his status. Like fills or cancelation.
+`orderUpdate` emits when open order changes his status. Like fills or cancellation.
 
 ```js
 marketDataStream.on('orderUpdate', (order) => {
@@ -471,7 +471,7 @@ const { Binance } = require('zenfuse');
 
 const options = {
     httpClientOptions: {
-        prefixUrl: 'https://example.com', // Insted of binance.com/api
+        prefixUrl: 'https://example.com', // Instead of binance.com/api
     },
     wsClientOptions: {
         followRedirects: true,
@@ -483,10 +483,10 @@ const b = new Binance['spot'](options);
 
 ### All options
 
-| Parameter           | Type                                  | Description                                                                                        |
-| ------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `httpClientOptions` | [`got.ExtendOptions`]                 | [`got.ExtendOptions`] are [got](https://github.com/sindresorhus/got) optins, witch uses as fetcher |
-| `wsClientOptions`   | [`ExtraWsOptions & ws.ClientOptions`] | [ws](https://github.com/websockets/ws) options with `prefixUrl` support                            |
+| Parameter           | Type                                  | Description                                                                                         |
+| ------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `httpClientOptions` | [`got.ExtendOptions`]                 | [`got.ExtendOptions`] are [got](https://github.com/sindresorhus/got) options, witch uses as fetcher |
+| `wsClientOptions`   | [`ExtraWsOptions & ws.ClientOptions`] | [ws](https://github.com/websockets/ws) options with `prefixUrl` support                             |
 
 ## Advanced things
 

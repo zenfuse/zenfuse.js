@@ -14,8 +14,15 @@
     "parserOptions": {
         "ecmaVersion": 2019
     },
-    "plugins": ["prettier", "@typescript-eslint", "jest", "jsdoc"],
+    "plugins": [
+        "prettier",
+        "@typescript-eslint",
+        "jest",
+        "jsdoc",
+        "file-progress"
+    ],
     "rules": {
+        "file-progress/activate": 1,
         "prettier/prettier": "error",
         "jsdoc/require-property-description": "off",
         "jsdoc/require-param-description": "off",

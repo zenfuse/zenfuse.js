@@ -179,10 +179,10 @@ class BinanceSpot extends BinanceBase {
 
         const createSymbol = (symbol) => {
             if (!this.cache.parsedSymbols.has(symbol)) {
-                throw new RuntimeError(
-                    `Cannot find ${symbol} in binance cache`,
-                    'ZEFU_CACHE_UNSYNC',
-                );
+                // Binance can return price for unlisted markets
+                // Skip symbol for now.
+                // TODO: Do something with that
+                return undefined;
             }
             return this.cache.parsedSymbols.get(symbol).join('/');
         };
@@ -198,7 +198,7 @@ class BinanceSpot extends BinanceBase {
                     price: parseInt(bPrice.price),
                 };
             })
-            .filter(Boolean);
+            .filter((p) => !!p && !!p.symbol);
 
         utils.linkOriginalPayload(prices, response);
 

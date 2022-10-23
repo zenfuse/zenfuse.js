@@ -15,7 +15,7 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
-            - run: npm install --only=dev
+            - run: npm ci --only=dev
             - run: npm run lint
 
     mocks:
@@ -26,7 +26,7 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
-            - run: npm ci --only=dev
+            - run: npm ci
 
             - name: Cache Mocks
               uses: actions/cache@v3.0.8
