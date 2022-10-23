@@ -1,0 +1,43 @@
+
+> docs@0.0.0 serve
+> docusaurus serve
+
+[SUCCESS] Serving "build" directory at: http://localhost:3000/
+
+> docs@0.0.0 serve
+> docusaurus serve
+
+[SUCCESS] Serving "build" directory at: http://localhost:3000/
+
+> docs@0.0.0 start
+> docusaurus start
+
+[INFO] Starting the development server...
+[SUCCESS] Docusaurus website is running at: http://localhost:3000/
+ℹ Compiling Client
+✔ Client: Compiled successfully in 2.36s
+client (webpack 5.74.0) compiled successfully
+ℹ Compiling Client
+✔ Client: Compiled successfully in 995.00ms
+client (webpack 5.74.0) compiled successfully
+ℹ Compiling Client
+✔ Client: Compiled successfully in 553.99ms
+client (webpack 5.74.0) compiled successfully
+ℹ Compiling Client
+✔ Client: Compiled successfully in 314.15ms
+client (webpack 5.74.0) compiled successfully
+ℹ Compiling Client
+✔ Client: Compiled successfully in 692.02ms
+client (webpack 5.74.0) compiled successfully
+ℹ Compiling Client
+✔ Client: Compiled successfully in 381.79ms
+client (webpack 5.74.0) compiled successfully
+ℹ Compiling Client
+✔ Client: Compiled successfully in 974.95ms
+client (webpack 5.74.0) compiled successfully
+ℹ Compiling Client
+✔ Client: Compiled successfully in 1.01s
+client (webpack 5.74.0) compiled successfully
+ℹ Compiling Client
+✔ Client: Compiled successfully in 469.71ms
+client (webpack 5.74.0) compiled successfully
