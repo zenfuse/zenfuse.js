@@ -11,10 +11,10 @@ download-mocks *args:
 alias dm := download-mocks
 
 # Run test
-test mode:
+test mode *args:
     TEST_MODE={{mode}} node --unhandled-rejections=strict node_modules/.bin/jest \
     --no-cache --runInBand \
-    {{ if mode == "unit" { "--testMatch '**/?(*.)+(spec).js'" } else { "" } }}
+    {{ if mode == "unit" { "--testMatch '**/?(*.)+(spec).js'" } else { "" } }} {{args}}
 
 # Lint all files
 lint:
