@@ -2,9 +2,9 @@ name: deploy-docs
 
 on:
   push:
-    branches: [main]
+    branches: [main documentation]
   pull_request:
-    branches: [main]
+    branches: [main documentation]
  
   workflow_dispatch:
 
