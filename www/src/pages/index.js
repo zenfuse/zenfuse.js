@@ -13,7 +13,11 @@ import styles from './index.module.css';
  */
 function CodeDemonstration() {
     return (
-        <CodeBlock className="main-code-demonstration" language="js" showLineNumbers>
+        <CodeBlock
+            className="main-code-demonstration"
+            language="js"
+            showLineNumbers
+        >
             {`import { Binance } from 'zenfuse';
 
 // Creating connection instance
