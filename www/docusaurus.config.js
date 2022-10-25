@@ -6,13 +6,15 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'Zenfusejs Documentation',
+    title: 'zenfuse.js',
     tagline: 'A comprehensive crypto trading library for NodeJS',
     url: 'https://zenfuse.github.io/',
     baseUrl: '/zenfuse.js/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',
+
+    noIndex: true,
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
@@ -43,7 +45,7 @@ const config = {
                     customCss: require.resolve('./src/css/custom.css'),
                 },
             }),
-                    ],
+        ],
     ],
 
     themeConfig:
@@ -64,12 +66,13 @@ const config = {
                     },
                     {
                         label: 'Community',
-                        href: 'https://github.com/zenfuse/zenfuse.js/discussions',
+                        href: '/community',
                     },
                     {
                         href: 'https://github.com/zenfuse/zenfuse.js',
-                        label: 'GitHub',
                         position: 'right',
+                        className: 'header-github-link',
+                        'aria-label': 'GitHub repository',
                     },
                 ],
             },
@@ -119,14 +122,6 @@ const config = {
                 darkTheme: darkCodeTheme,
             },
         }),
-    plugins: [
-        [
-            require.resolve('@cmfcmf/docusaurus-search-local'),
-            {
-                // Options here
-            },
-        ],
-    ],
 };
 
 module.exports = config;

@@ -7,4 +7,3 @@ sidebar_position: 1
 Zenfuse.js is a crypto trading library connector for Node.js.
 
 ## Getting Started
-
