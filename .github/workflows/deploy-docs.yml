@@ -1,4 +1,4 @@
-name: deploy-docs
+name: Deploy Documentation
 
 on:
     push:
@@ -8,19 +8,24 @@ on:
 
     workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
     publish:
-        runs-on: jarredsumner/bun:edge
+        runs-on: ubuntu-latest
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - name: Check out repo
               uses: actions/checkout@v2
+            # Node is required for npm
+            - name: Set up Node
+              uses: antongolub/action-setup-bun@v1
+              with:
+                  cache: true
             # Install and build Docusaurus website
             - name: Build Docusaurus website
               run: |
                   cd www
-                  bun install 
+                  bun install
                   bun run build
             - name: Deploy to GitHub Pages
               if: success()
