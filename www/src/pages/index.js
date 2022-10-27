@@ -40,37 +40,39 @@ function Badges() {
         <>
             <a
                 style={{ 'margin-right': '0.3em' }}
-                href="https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml"
+                href="https://binance.com"
             >
                 <img
-                    src="https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml/badge.svg"
-                    alt="github CI status"
-                ></img>
-            </a>
-
-            <img
-                style={{ 'margin-right': '0.3em' }}
-                src="https://img.shields.io/node/v/zenfuse?logo=nodedotjs"
-                alt="nodejs version support"
-            ></img>
-
-            <a
-                style={{ 'margin-right': '0.3em' }}
-                href="https://snyk.io/vuln/npm:zenfuse"
-            >
-                <img
-                    src="https://img.shields.io/snyk/vulnerabilities/github/zenfuse/zenfuse.js?logo=snyk"
-                    alt="snyk vulnerabilities"
+                    src="img/exchanges/badges/binance-badge.svg"
+                    alt="Binance"
                 ></img>
             </a>
 
             <a
                 style={{ 'margin-right': '0.3em' }}
-                href="https://github.com/zenfuse/zenfuse.js/commits"
+                href="https://ftx.com"
             >
                 <img
-                    src="https://img.shields.io/github/last-commit/zenfuse/zenfuse.js?logo=git"
-                    alt="github CI status"
+                    src="img/exchanges/badges/FTX-badge.svg"
+                    alt="FTX"
+                ></img>
+            </a>
+            <a
+                style={{ 'margin-right': '0.3em' }}
+                href="https://okx.com"
+            >
+                <img
+                    src="img/exchanges/badges/OKX-badge.svg"
+                    alt="OKX"
+                ></img>
+            </a>
+            <a
+                style={{ 'margin-right': '0.3em' }}
+                href="https://www.bitglobal.com/en-us"
+            >
+                <img
+                    src="img/exchanges/badges/Bitglobal-badge.svg"
+                    alt="Bitglobal"
                 ></img>
             </a>
         </>
