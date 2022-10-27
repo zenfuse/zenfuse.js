@@ -7,14 +7,12 @@
         "start": "docusaurus start",
         "build": "docusaurus build",
         "swizzle": "docusaurus swizzle",
-        "deploy": "docusaurus deploy",
         "clear": "docusaurus clear",
         "serve": "docusaurus serve",
         "write-translations": "docusaurus write-translations",
         "write-heading-ids": "docusaurus write-heading-ids"
     },
     "dependencies": {
-        "@cmfcmf/docusaurus-search-local": "^0.11.0",
         "@docusaurus/core": "2.1.0",
         "@docusaurus/plugin-sitemap": "^2.1.0",
         "@docusaurus/preset-classic": "2.1.0",
