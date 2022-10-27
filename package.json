@@ -2,7 +2,7 @@
     "name": "zenfuse",
     "version": "0.10.5",
     "description": "Crypto exchanges connector library",
-    "main": "src/index.js",
+    "main": "src/index.cjs",
     "scripts": {
         "test": "just test unit && just test integration",
         "test:e2e": "just test e2e",
@@ -15,6 +15,13 @@
     "repository": {
         "type": "git",
         "url": "git+https://github.com/zenfuse/zenfuse.js.git"
+    },
+    "exports": {
+        ".": {
+            "import": "./index.mjs",
+            "require": "./index.cjs"
+        },
+        "./package.json": "./package.json"
     },
     "files": [
         "src",
