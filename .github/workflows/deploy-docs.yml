@@ -17,7 +17,7 @@ jobs:
             - name: Check out repo
               uses: actions/checkout@v2
             # Node is required for npm
-            - name: Set up Node
+            - name: Set up Bun
               uses: antongolub/action-setup-bun@v1
               with:
                   cache: true
