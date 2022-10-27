@@ -1,4 +1,4 @@
-name: deploy-docs
+name: Deploy Documentation
 
 on:
     push:
@@ -17,16 +17,16 @@ jobs:
             - name: Check out repo
               uses: actions/checkout@v2
             # Node is required for npm
-            - name: Set up Node
-              uses: actions/setup-node@v2
+            - name: Set up Bun
+              uses: antongolub/action-setup-bun@v1
               with:
-                  node-version: '16'
+                  cache: true
             # Install and build Docusaurus website
             - name: Build Docusaurus website
               run: |
                   cd www
-                  npm install 
-                  npm run build
+                  bun install
+                  bun run build
             - name: Deploy to GitHub Pages
               if: success()
               uses: crazy-max/ghaction-github-pages@v2
