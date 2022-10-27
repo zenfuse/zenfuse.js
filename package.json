@@ -1,6 +1,6 @@
 {
     "name": "zenfuse",
-    "version": "0.10.5",
+    "version": "0.10.6",
     "description": "Crypto exchanges connector library",
     "main": "src/index.cjs",
     "scripts": {
