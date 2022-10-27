@@ -2,6 +2,13 @@
 <img style="text-align: right" src="www/static/img/zenfusejs-logo.svg" alt="Logo of zenfuse javascript library"/>
 </a>
 
+[![Binance](www/static/img/exchanges/badges/binance-badge.svg)](https://binance.com)
+[![FTX](www/static/img/exchanges/badges/FTX-badge.svg)](https://ftx.com)
+[![OKX](www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com/)
+[![Bitglobal](www/static/img/exchanges/badges/Bitglobal-badge.svg)](https://www.bitglobal.com/en-us)
+
+# Comprehensive crypto trading library
+
 [![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml)
 ![Supported version](https://img.shields.io/node/v/zenfuse?logo=nodedotjs)
 [![Snyk](https://img.shields.io/snyk/vulnerabilities/github/zenfuse/zenfuse.js?logo=snyk)](https://snyk.io/vuln/npm:zenfuse)
