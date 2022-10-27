@@ -16,17 +16,12 @@ const config = {
 
     noIndex: true,
 
-    // GitHub pages deployment config.
-    // If you aren't using GitHub pages, you don't need these.
-    organizationName: 'zenfuse', // Usually your GitHub org/user name.
-    projectName: 'zenfuse.js', // Usually your repo name.
-
     // Even if you don't use internalization, you can use this field to set useful
     // metadata like html lang. For example, if your site is Chinese, you may want
     // to replace "en" with "zh-Hans".
     i18n: {
         defaultLocale: 'en',
-        locales: ['en'],
+        locales: ['en', 'ru'],
     },
 
     presets: [
@@ -55,7 +50,7 @@ const config = {
                 title: 'zenfuse.js',
                 // logo: {
                 //    alt: 'Zenfuse javascript library logo',
-                //    src: 'img/zenfuse-logo.svg',
+                //    src: 'img/zenfusejs-logo-no-frame.svg',
                 // },
                 items: [
                     {
@@ -66,7 +61,7 @@ const config = {
                     },
                     {
                         label: 'Community',
-                        href: '/community',
+                        href: 'https://github.com/zenfuse/zenfuse.js/discussions',
                     },
                     {
                         href: 'https://github.com/zenfuse/zenfuse.js',
