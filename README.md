@@ -2,6 +2,7 @@
 <img style="text-align: right" src="www/static/img/zenfusejs-logo.svg" alt="Logo of zenfuse javascript library"/>
 </a>
 
+<!-- Should be sorted by popularity -->
 [![Binance](www/static/img/exchanges/badges/binance-badge.svg)](https://binance.com)
 [![FTX](www/static/img/exchanges/badges/FTX-badge.svg)](https://ftx.com)
 [![OKX](www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com/)
