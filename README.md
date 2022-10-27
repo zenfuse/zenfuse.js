@@ -1,4 +1,6 @@
-# zenfuse.js
+<a href="https://zenfuse.js.dev">
+<img style="text-align: right" src="www/static/img/zenfusejs-logo.svg" alt="Logo of zenfuse javascript library"/>
+</a>
 
 [![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml)
 ![Supported version](https://img.shields.io/node/v/zenfuse?logo=nodedotjs)
