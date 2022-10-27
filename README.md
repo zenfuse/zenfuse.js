@@ -1,6 +1,5 @@
-<a href="https://zenfuse.js.dev">
-<img style="text-align: right" src="www/static/img/zenfusejs-logo.svg" alt="Logo of zenfuse javascript library"/>
-</a>
+![zenfuse.js](www/static/img/zenfusejs-logo-no-frame-white.svg#gh-dark-mode-only)
+![zenfuse.js](www/static/img/zenfusejs-logo-no-frame-black.svg#gh-light-mode-only)
 
 <!-- Should be sorted by popularity -->
 [![Binance](www/static/img/exchanges/badges/binance-badge.svg)](https://binance.com)
