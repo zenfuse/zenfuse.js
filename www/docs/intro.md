@@ -18,7 +18,7 @@ This library is in active state of development. New exchanges and features incom
 
 Feel free to [**create any issue**](https://github.com/zenfuse/zenfuse.js/issues) or ask about everything in [**Github Discussions**](https://github.com/zenfuse/zenfuse.js/discussions).
 
-::: 
+:::
 
 ## The problem solution
 
@@ -27,12 +27,12 @@ Zenfuse.js handles it, and provides clean, powerful solution for modern javascri
 
 **Key features:**
 
-- Fetching public data
-- Orders manipulating
-- Real-time events
-    - Current price
-    - Trades
-    - Account balance events
+-   Fetching public data
+-   Orders manipulating
+-   Real-time events
+    -   Current price
+    -   Trades
+    -   Account balance events
 
 Unlike alternative solutions. This library is
 
@@ -53,6 +53,7 @@ Install `zenfuse` package from npm.
 ```
 npm install zenfuse
 ```
+
 After you can import it.
 
 ```js
@@ -77,24 +78,22 @@ import { FTX, Binance } from 'zenfuse';
 const ftx = new FTX.spot();
 
 // Fetch current BTC/USD price from FTX exchange
-ftx.fetchPrice('BTC/USD')
-    .then((price) => {
-        console.log('Current BTC/USD price:', price);
-    })
+ftx.fetchPrice('BTC/USD').then((price) => {
+    console.log('Current BTC/USD price:', price);
+});
 
 // Fetch all current listing coins from FTX
-ftx.fetchTickers()
-    .then((tickers) => {
-        console.log('All FTX tickers', tickers.join(', '))
-    })
+ftx.fetchTickers().then((tickers) => {
+    console.log('All FTX tickers', tickers.join(', '));
+});
 
 const binance = new Binance.spot();
 
 // Authenticate instance, so you can use private methods
 binance.auth({
-        publicKey: '***',
-        privateKey: '***',
-    });
+    publicKey: '***',
+    privateKey: '***',
+});
 
 // Create connection instance for account events
 const accountDataStream = binance.getAccountDataStream();
@@ -104,16 +103,16 @@ await accountDataStream.open();
 
 // Subscribe for order updates on account
 accountDataStream.on('orderUpdate', (order) => {
-        console.log('Order Update:', order);
+    console.log('Order Update:', order);
 });
 
 // Sell 0.0004 ETH for 100 USDT, and we receive order update event above
 binance.postOrder({
-        symbol: 'ETH/USDT',
-        type: 'limit',
-        side: 'sell',
-        price: 100,
-        quantity: 0.0004,
+    symbol: 'ETH/USDT',
+    type: 'limit',
+    side: 'sell',
+    price: 100,
+    quantity: 0.0004,
 });
 
 // Create connection instance for market data
@@ -133,5 +132,3 @@ marketDataStream.on('newPrice', (event) => {
     console.log(`Current ${event.symbol} price`, '->', event.price);
 });
 ```
-
-

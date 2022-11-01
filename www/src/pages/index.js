@@ -38,33 +38,18 @@ binance.auth(creds).postOrder(params);`}
 function Badges() {
     return (
         <>
-            <a
-                style={{ 'margin-right': '0.3em' }}
-                href="https://binance.com"
-            >
+            <a style={{ 'margin-right': '0.3em' }} href="https://binance.com">
                 <img
                     src="img/exchanges/badges/binance-badge.svg"
                     alt="Binance"
                 ></img>
             </a>
 
-            <a
-                style={{ 'margin-right': '0.3em' }}
-                href="https://ftx.com"
-            >
-                <img
-                    src="img/exchanges/badges/FTX-badge.svg"
-                    alt="FTX"
-                ></img>
+            <a style={{ 'margin-right': '0.3em' }} href="https://ftx.com">
+                <img src="img/exchanges/badges/FTX-badge.svg" alt="FTX"></img>
             </a>
-            <a
-                style={{ 'margin-right': '0.3em' }}
-                href="https://okx.com"
-            >
-                <img
-                    src="img/exchanges/badges/OKX-badge.svg"
-                    alt="OKX"
-                ></img>
+            <a style={{ 'margin-right': '0.3em' }} href="https://okx.com">
+                <img src="img/exchanges/badges/OKX-badge.svg" alt="OKX"></img>
             </a>
             <a
                 style={{ 'margin-right': '0.3em' }}
