@@ -7,13 +7,13 @@ _default:
 
 # Download all static mocks for test usage
 download-mocks *args:
-    node scripts/downloadMocks.js {{args}}
+    node lib/scripts/downloadMocks.js {{args}}
 
 alias dm := download-mocks
 
 # Run test [ unit | integration | e2e ]
 test mode *args:
-    TEST_MODE={{mode}} node --unhandled-rejections=strict node_modules/.bin/jest \
+    cd lib && TEST_MODE={{mode}} node --unhandled-rejections=strict node_modules/.bin/jest \
     --no-cache --runInBand \
     {{ if mode == "unit" { "--testMatch '**/?(*.)+(spec).js'" } else { "" } }} {{args}}
 
