@@ -24,7 +24,9 @@
         "react-dom": "^17.0.2"
     },
     "devDependencies": {
-        "@docusaurus/module-type-aliases": "latest"
+        "@docusaurus/module-type-aliases": "latest",
+        "eslint": "^8.26.0",
+        "eslint-plugin-react": "^7.31.10"
     },
     "browserslist": {
         "production": [
