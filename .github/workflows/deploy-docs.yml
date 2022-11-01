@@ -2,9 +2,9 @@ name: Deploy Documentation
 
 on:
     push:
-        branches: [main, documentation]
+        branches: [main]
     pull_request:
-        branches: [main, documentation]
+        branches: [main]
 
     workflow_dispatch:
 
