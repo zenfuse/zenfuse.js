@@ -20,13 +20,13 @@ test mode *args:
 # Lint all files
 lint: cspell eslint
 
-eslint *args='.':
-    npm exec eslint -- {{args}}
+eslint *args:
+    npm exec eslint -- {{justfile_directory()}} {{args}}
 
 # Format all files
 format:
-    @just eslint --fix .
-    npm exec prettier -- --write .
+    @just eslint --fix
+    npm exec prettier -- --write {{justfile_directory()}} 
 
 # Run GitLeaks docker command
 gitleaks *args:
@@ -35,7 +35,7 @@ gitleaks *args:
 
 # Check files spelling
 cspell *args:
-    npm exec cspell -- lint '**' --show-context --no-progress --relative --show-suggestions {{args}}
+    npm exec cspell -- lint {{justfile_directory()}}/** --show-context --no-progress --relative --show-suggestions {{args}}
 
 # Add word to custom cspell dictionary
 ignore-word word:

@@ -33,4 +33,5 @@ websockets
 whenbinance
 zefu
 zenfuse
+zenfusejs
 zricethezav
