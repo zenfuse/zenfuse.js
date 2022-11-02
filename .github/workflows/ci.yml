@@ -16,7 +16,7 @@ jobs:
               with:
                   cache: 'npm'
                   cache-dependency-path: lib/package-lock.json
-            - run: npm ci --only=dev
+            - run: npm ci
             - run: npm run lint
 
     mocks:
