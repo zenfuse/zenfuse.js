@@ -21,6 +21,12 @@ jobs:
               with:
                   cache: 'npm'
                   cache-dependency-path: lib/package-lock.json
+            # temp
+            - name: Set up Bun
+              uses: antongolub/action-setup-bun@v1
+            - run: cd ../www && bun i
+            # /temp
+            
             - run: npm ci
             - run: npm run lint
 
