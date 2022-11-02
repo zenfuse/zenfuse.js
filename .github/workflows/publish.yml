@@ -7,7 +7,7 @@ on:
 
 jobs:
     ci:
-        uses: zenfuse/zenfuse.js/.github/workflows/ci.yml@main
+        uses: zenfuse/zenfuse.js/.github/workflows/npm-ci.yml@main
 
     publish-npm:
         needs: ci
