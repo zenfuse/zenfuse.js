@@ -4,4 +4,4 @@ Please do not open GitHub issues or pull requests - this makes the problem immed
 
 ## Reporting a Vulnerability
 
-To report a security vulnerability, please use the v@izzqz.me email.
+To report a security vulnerability, use [Github Security Advisories](https://github.com/zenfuse/zenfuse.js/security/advisories) or v@izzqz.me email.
