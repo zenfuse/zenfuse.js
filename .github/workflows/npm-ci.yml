@@ -60,7 +60,7 @@ jobs:
               run: just download-mocks
 
     unit-tests:
-        needs: [lint, mocks]
+        needs: lint
         runs-on: ubuntu-latest
         strategy:
             matrix:
