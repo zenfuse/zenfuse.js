@@ -41,6 +41,9 @@ jobs:
     publish-github:
         needs: CI
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
+        permissions: 
+            contents: read
+            packages: write
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
