@@ -2,6 +2,12 @@ name: Publish release
 
 on:
     workflow_dispatch:
+        inputs:
+            skip-ci:
+                type: boolean
+                description: Skip CI
+                required: false
+                default: false
     release:
         types: [created]
         
@@ -11,6 +17,7 @@ defaults:
 
 jobs:
     CI:
+        if: ${{ inputs.skip-ci == false }}
         uses: zenfuse/zenfuse.js/.github/workflows/npm-ci.yml@main
 
     publish-npm:
