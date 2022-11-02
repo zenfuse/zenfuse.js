@@ -1,4 +1,4 @@
-name: npm package CI
+name: Package CI
 
 on:
     workflow_dispatch:
