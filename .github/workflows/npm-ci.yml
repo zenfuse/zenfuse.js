@@ -1,0 +1,119 @@
+name: npm package CI
+
+on:
+    workflow_call:
+    push:
+        branches: [main]
+        paths:
+            - lib/**
+    pull_request:
+        branches: [main]
+        paths:
+            - lib/**
+
+defaults:
+    run:
+        shell: bash
+        working-directory: lib
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: extractions/setup-just@v1
+            - uses: actions/setup-node@v3
+              with:
+                  cache: 'npm'
+                  cache-dependency-path: lib/package-lock.json
+            - name: Install npm dependencies
+              run: npm ci
+            
+            - name: Lint javascript files
+              run: just eslint lib
+              
+            - name: Spellcheck all library files
+              run: just cspell lib
+
+    mocks:
+        needs: lint
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: extractions/setup-just@v1
+            - uses: actions/setup-node@v3
+              with:
+                  cache: 'npm'
+                  cache-dependency-path: lib/package-lock.json
+            
+            - name: Install npm dependencies
+              run: npm ci
+
+            - name: Cache Mocks
+              uses: actions/cache@v3.0.8
+              with:
+                  path: lib/tests/exchanges/*/mocks/static/*
+                  key: static-mocks-${{ github.sha }}
+            
+            - name: Download mock files from exchanges
+              run: just download-mocks -- --force
+
+    unit-tests:
+        needs: [lint, mocks]
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [14.x, 16.x, 18.x]
+        steps:
+            - uses: actions/checkout@v3
+            - uses: extractions/setup-just@v1
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+                  cache-dependency-path: lib/package-lock.json
+
+            - name: Restore cached mocks
+              uses: actions/cache@v3.0.8
+              with:
+                  path: lib/tests/exchanges/*/mocks/static/*
+                  key: static-mocks-${{ github.sha }}
+                  restore-keys: |
+                      static-mocks-${{ github.sha }}
+
+            - name: Install npm dependencies
+              run: npm ci
+            
+            - name: Run unit tests
+              run: just test unit
+
+    integration-tests:
+        needs: [lint, mocks]
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [14.x, 16.x, 18.x]
+        steps:
+            - uses: actions/checkout@v3
+            - uses: extractions/setup-just@v1
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+                  cache-dependency-path: lib/package-lock.json
+
+            - name: Restore cached mocks
+              uses: actions/cache@v3.0.8
+              with:
+                  path: lib/tests/exchanges/*/mocks/static/*
+                  key: static-mocks-${{ github.sha }}
+                  restore-keys: |
+                      static-mocks-${{ github.sha }}
+
+            - name: Install npm dependencies
+              run: npm ci
+
+            - name: Run integration tests
+              run: just test integration
