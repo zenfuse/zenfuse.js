@@ -40,8 +40,7 @@ jobs:
             - name: Run spellcheck
               run: just cspell www
 
-    debloy:
-        needs: lint
+    build:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repo
@@ -57,6 +56,20 @@ jobs:
 
             - name: Build Docusaurus website
               run: bun run build
+
+            - name: Upload a Build Artifact
+              if: success()
+              uses: actions/upload-artifact@v3.1.1
+              with:
+                  name: Docusaurus website
+                  path: www/build
+              
+    deploy:
+        needs: [lint, build]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out repo
+              uses: actions/checkout@v2
               
             - name: Deploy to GitHub Pages
               uses: crazy-max/ghaction-github-pages@v2
@@ -65,4 +78,3 @@ jobs:
                   build_dir: www/build
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-           
