@@ -9,7 +9,7 @@ const config = {
     title: 'zenfuse.js',
     tagline: 'A comprehensive crypto trading library for NodeJS',
     url: 'https://zenfuse.js.org/',
-    baseUrl: '',
+    baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',
