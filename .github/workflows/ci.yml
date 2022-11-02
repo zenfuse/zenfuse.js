@@ -41,7 +41,8 @@ jobs:
               with:
                   path: lib/tests/exchanges/*/mocks/static/*
                   key: static-mocks-${{ github.sha }}
-              run: npm run download-mocks -- --force
+            
+            - run: npm run download-mocks -- --force
 
     test:
         needs: [lint, mocks]
