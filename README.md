@@ -12,7 +12,6 @@
 
 [![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml)
 ![Supported version](https://img.shields.io/node/v/zenfuse?logo=nodedotjs)
-[![Snyk](https://img.shields.io/snyk/vulnerabilities/github/zenfuse/zenfuse.js?logo=snyk)](https://snyk.io/vuln/npm:zenfuse)
 [![Version](https://img.shields.io/npm/v/zenfuse?logo=npm)](https://www.npmjs.com/package/zenfuse)
 </br>
 [![Last Commit](https://img.shields.io/github/last-commit/zenfuse/zenfuse.js?logo=git)](https://github.com/zenfuse/zenfuse.js/commits)
