@@ -11,22 +11,27 @@ download-mocks *args:
 
 alias dm := download-mocks
 
-# Run test [ unit | integration | e2e ]
+# Run test [ unit | integration | e2e ] for npm package
 test mode *args:
     cd lib && TEST_MODE={{mode}} node --unhandled-rejections=strict node_modules/.bin/jest \
     --no-cache --runInBand \
     {{ if mode == "unit" { "--testMatch '**/?(*.)+(spec).js'" } else { "" } }} {{args}}
 
-# Lint all files
-lint: cspell eslint
+root := justfile_directory()
 
-eslint *args:
-    npm exec eslint -- {{justfile_directory()}} {{args}}
+# Lint all files
+lint *path=root:
+    @echo 'Run all linting jobs for {{path}}'
+    @just cspell {{path}}
+    @just eslint {{path}}
+
+eslint *path=root:
+    npm exec eslint -- {{path}}
 
 # Format all files
-format:
-    @just eslint --fix
-    npm exec prettier -- --write {{justfile_directory()}} 
+format *path=root:
+    @just eslint --fix {{path}}
+    npm exec prettier -- --write {{path}}
 
 # Run GitLeaks docker command
 gitleaks *args:
@@ -34,8 +39,9 @@ gitleaks *args:
     docker run -v {{justfile_directory()}}:/repo zricethezav/gitleaks:latest detect --source="/repo" --report-path repo/gitleaks-report.json {{args}}
 
 # Check files spelling
-cspell *args:
-    npm exec cspell -- lint {{justfile_directory()}}/** --show-context --no-progress --relative --show-suggestions {{args}}
+cspell *path=root:
+    @echo 'Running spellcheck...'
+    npm exec cspell -- lint {{path}}/** --show-context --no-progress --relative --show-suggestions
 
 # Add word to custom cspell dictionary
 ignore-word word:
