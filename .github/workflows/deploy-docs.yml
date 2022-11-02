@@ -21,7 +21,7 @@ defaults:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-    publish:
+    build:
         runs-on: ubuntu-latest
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -38,9 +38,11 @@ jobs:
 
             - name: Build Docusaurus website
               run: bun run build
-
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
             - name: Deploy to GitHub Pages
-              if: success()
               uses: crazy-max/ghaction-github-pages@v2
               with:
                   target_branch: gh-pages
