@@ -16,6 +16,9 @@
         "type": "git",
         "url": "git+https://github.com/zenfuse/zenfuse.js.git"
     },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
     "exports": {
         ".": {
             "import": "./index.mjs",
@@ -35,9 +38,10 @@
         "npm": ">=6"
     },
     "bugs": {
-        "url": "https://github.com/zenfuse/zenfuse.js/issues"
+        "url": "https://github.com/zenfuse/zenfuse.js/issues",
+        "email": "v@izzqz.me"
     },
-    "homepage": "https://zenfuse.js",
+    "homepage": "https://zenfuse.js.org",
     "types": "./types",
     "devDependencies": {
         "@cspell/dict-companies": "^3.0.1",
