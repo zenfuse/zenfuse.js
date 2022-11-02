@@ -30,6 +30,9 @@ jobs:
               with:
                   node-version: '16.x'
                   registry-url: 'https://registry.npmjs.org'
+                  always-auth: true
+                  cache: npm
+                  cache-dependency-path: lib
             - run: npm ci
             - run: npm publish
               env:
@@ -44,6 +47,10 @@ jobs:
               with:
                   node-version: '16.x'
                   registry-url: 'https://npm.pkg.github.com'
+                  always-auth: true
+                  scope: '@zenfuse'
+                  cache: npm
+                  cache-dependency-path: lib
             - run: npm ci
             - run: npm publish
               env:
