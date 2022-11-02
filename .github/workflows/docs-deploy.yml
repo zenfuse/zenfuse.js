@@ -1,14 +1,9 @@
-name: Deploy Documentation
+name: Deploy documentation
 
 on:
-    push:
-        branches: [main]
-        paths:
-            - 'www/**'
-    pull_request:
-        branches: [main]
-        paths:
-            - 'www/**'
+    workflow_run:
+        workflows: ['Docs CI']
+        types: [completed]
 
     workflow_dispatch:
     workflow_call:
