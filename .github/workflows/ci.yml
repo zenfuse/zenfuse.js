@@ -1,4 +1,4 @@
-name: CI
+name: npm package CI
 
 on:
     workflow_call:
@@ -16,7 +16,7 @@ jobs:
               with:
                   cache: 'npm'
                   cache-dependency-path: lib/package-lock.json
-            - run: cd lib
+              working-directory: ./lib
             - run: npm ci
             - run: npm run lint
 
@@ -29,7 +29,7 @@ jobs:
               with:
                   cache: 'npm'
                   cache-dependency-path: lib/package-lock.json
-            - run: cd lib
+              working-directory: ./lib
             - run: npm ci
 
             - name: Cache Mocks
@@ -37,8 +37,8 @@ jobs:
               with:
                   path: lib/tests/exchanges/*/mocks/static/*
                   key: static-mocks-${{ github.sha }}
+              working-directory: ./lib
 
-            - run: cd lib
             - run: npm run download-mocks -- --force
 
     test:
@@ -55,6 +55,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
                   cache-dependency-path: lib/package-lock.json
+              working-directory: ./lib
 
             - name: Restore mocks
               uses: actions/cache@v3.0.8
@@ -63,7 +64,7 @@ jobs:
                   key: static-mocks-${{ github.sha }}
                   restore-keys: |
                       static-mocks-${{ github.sha }}
+              working-directory: ./lib
 
-            - run: cd lib
             - run: npm ci
             - run: npm test
