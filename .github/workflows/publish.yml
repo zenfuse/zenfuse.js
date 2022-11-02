@@ -53,6 +53,7 @@ jobs:
                   scope: '@zenfuse'
                   cache: npm
                   cache-dependency-path: lib
+            - run: cat /home/runner/work/_temp/.npmrc
             - run: npm ci
             - run: npm publish
               env:
