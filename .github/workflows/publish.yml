@@ -4,13 +4,17 @@ on:
     workflow_dispatch:
     release:
         types: [created]
+        
+defaults:
+    run:
+        working-directory: lib
 
 jobs:
-    ci:
+    CI:
         uses: zenfuse/zenfuse.js/.github/workflows/npm-ci.yml@main
 
     publish-npm:
-        needs: ci
+        needs: CI
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
@@ -24,7 +28,7 @@ jobs:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   
     publish-github:
-        needs: ci
+        needs: CI
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
