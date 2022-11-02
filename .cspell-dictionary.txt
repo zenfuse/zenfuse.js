@@ -6,6 +6,7 @@ BTCETH
 btcusdt
 candlestream
 chonky
+clsx
 deepmerge
 depthfrom
 dictpath

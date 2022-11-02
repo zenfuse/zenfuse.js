@@ -6,10 +6,11 @@
         { "name": "project-dictionary", "path": "./.cspell-dictionary.txt" }
     ],
     "ignorePaths": [
-        "node_modules/**",
-        "types/**",
-        "tests/exchanges/*/mocks/static/*",
-        "tests/exchanges/*/scope.js",
+        "www/bun.lockb",
+        "lib/node_modules/**",
+        "lib/types/**",
+        "lib/tests/exchanges/*/mocks/static/*",
+        "lib/tests/exchanges/*/scope.js",
         "**/*.spec.js",
         ".git/**"
     ],
