@@ -3,10 +3,21 @@ name: Deploy Documentation
 on:
     push:
         branches: [main]
+        paths:
+            - 'www/**'
     pull_request:
         branches: [main]
+        paths:
+            - 'www/**'
 
     workflow_dispatch:
+    workflow_call:
+    
+defaults:
+    run:
+        shell: bash
+        working-directory: www
+    
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -21,12 +32,13 @@ jobs:
               uses: antongolub/action-setup-bun@v1
               with:
                   cache: true
-            # Install and build Docusaurus website
+
+            - name: Install npm dependencies
+              run: bun install
+
             - name: Build Docusaurus website
-              run: |
-                  cd www
-                  bun install
-                  bun run build
+              run: bun run build
+
             - name: Deploy to GitHub Pages
               if: success()
               uses: crazy-max/ghaction-github-pages@v2
