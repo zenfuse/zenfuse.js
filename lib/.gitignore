@@ -3,6 +3,3 @@ node_modules
 
 # Static mocks files
 tests/exchanges/*/mocks/static/*
-
-# GitLeaks
-gitleaks-report.json
