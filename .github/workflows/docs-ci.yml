@@ -1,0 +1,42 @@
+name: Docs CI
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - 'www/**'
+    pull_request:
+        branches: [main]
+        paths:
+            - 'www/**'
+
+    workflow_dispatch:
+    workflow_call:
+    
+defaults:
+    run:
+        shell: bash
+        working-directory: www
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out repo
+              uses: actions/checkout@v2
+            - uses: extractions/setup-just@v1
+
+            - name: Set up Bun
+              uses: antongolub/action-setup-bun@v1
+              with:
+                  cache: true
+
+            - name: Install npm dependencies
+              run: bun install
+
+            - name: Run eslint
+              run: just eslint www
+              
+            - name: Run spellcheck
+              run: just cspell www
+           
