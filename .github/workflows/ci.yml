@@ -15,6 +15,7 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
+                  cache-dependency-path: lib/package-lock.json
             - run: npm ci --only=dev
             - run: npm run lint
 
@@ -26,6 +27,7 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
+                  cache-dependency-path: lib/package-lock.json
             - run: npm ci
 
             - name: Cache Mocks
@@ -49,11 +51,12 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
+                  cache-dependency-path: lib/package-lock.json
 
             - name: Restore mocks
               uses: actions/cache@v3.0.8
               with:
-                  path: tests/exchanges/*/mocks/static/*
+                  path: lib/tests/exchanges/*/mocks/static/*
                   key: static-mocks-${{ github.sha }}
                   restore-keys: |
                       static-mocks-${{ github.sha }}
