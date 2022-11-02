@@ -10,7 +10,6 @@
 
 # Comprehensive crypto trading library
 
-[![CI](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml/badge.svg)](https://github.com/zenfuse/zenfuse.js/actions/workflows/ci.yml)
 ![Supported version](https://img.shields.io/node/v/zenfuse?logo=nodedotjs)
 [![Version](https://img.shields.io/npm/v/zenfuse?logo=npm)](https://www.npmjs.com/package/zenfuse)
 </br>
