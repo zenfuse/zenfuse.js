@@ -8,8 +8,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
     title: 'zenfuse.js',
     tagline: 'A comprehensive crypto trading library for NodeJS',
-    url: 'https://zenfuse.github.io/',
-    baseUrl: '/zenfuse.js/',
+    url: 'https://zenfuse.js.org/',
+    baseUrl: '',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',
