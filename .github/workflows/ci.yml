@@ -1,4 +1,4 @@
-name: CI
+name: npm package CI
 
 on:
     workflow_call:
@@ -6,6 +6,11 @@ on:
         branches: [main]
     pull_request:
         branches: [main]
+        
+defaults:
+    run:
+        shell: bash
+        working-directory: lib
 
 jobs:
     lint:
@@ -15,7 +20,14 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
-            - run: npm ci --only=dev
+                  cache-dependency-path: lib/package-lock.json
+            # temp
+            - name: Set up Bun
+              uses: antongolub/action-setup-bun@v1
+            - run: cd ../www && bun i
+            # /temp
+            
+            - run: npm ci
             - run: npm run lint
 
     mocks:
@@ -26,14 +38,16 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
-            - run: npm ci
+                  cache-dependency-path: lib/package-lock.json
+            - name: Setup dependencies
+              run: npm ci
 
             - name: Cache Mocks
               uses: actions/cache@v3.0.8
               with:
-                  path: tests/exchanges/*/mocks/static/*
+                  path: lib/tests/exchanges/*/mocks/static/*
                   key: static-mocks-${{ github.sha }}
-
+            
             - run: npm run download-mocks -- --force
 
     test:
@@ -49,11 +63,12 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
+                  cache-dependency-path: lib/package-lock.json
 
             - name: Restore mocks
               uses: actions/cache@v3.0.8
               with:
-                  path: tests/exchanges/*/mocks/static/*
+                  path: lib/tests/exchanges/*/mocks/static/*
                   key: static-mocks-${{ github.sha }}
                   restore-keys: |
                       static-mocks-${{ github.sha }}
