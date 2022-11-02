@@ -55,7 +55,7 @@ jobs:
                   cache-dependency-path: lib
             - run: cat /home/runner/work/_temp/.npmrc
             - run: npm ci
-            - run: npm publish
+            - run: npm publish --@zenfuse:registry=https://npm.pkg.github.com
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
