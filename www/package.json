@@ -1,5 +1,5 @@
 {
-    "name": "docs",
+    "name": "zenfuse-docs",
     "version": "0.0.0",
     "private": true,
     "scripts": {
@@ -24,6 +24,7 @@
         "react-dom": "^17.0.2"
     },
     "devDependencies": {
+        "@docusaurus/eslint-plugin": "^2.2.0",
         "@docusaurus/module-type-aliases": "latest",
         "eslint": "^8.26.0",
         "eslint-plugin-react": "^7.31.10"
