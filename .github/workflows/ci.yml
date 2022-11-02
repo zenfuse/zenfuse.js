@@ -16,6 +16,7 @@ jobs:
               with:
                   cache: 'npm'
                   cache-dependency-path: lib/package-lock.json
+            - run: cd lib
             - run: npm ci
             - run: npm run lint
 
@@ -28,14 +29,16 @@ jobs:
               with:
                   cache: 'npm'
                   cache-dependency-path: lib/package-lock.json
+            - run: cd lib
             - run: npm ci
 
             - name: Cache Mocks
               uses: actions/cache@v3.0.8
               with:
-                  path: tests/exchanges/*/mocks/static/*
+                  path: lib/tests/exchanges/*/mocks/static/*
                   key: static-mocks-${{ github.sha }}
 
+            - run: cd lib
             - run: npm run download-mocks -- --force
 
     test:
@@ -61,5 +64,6 @@ jobs:
                   restore-keys: |
                       static-mocks-${{ github.sha }}
 
+            - run: cd lib
             - run: npm ci
             - run: npm test
