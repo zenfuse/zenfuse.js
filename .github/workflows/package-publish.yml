@@ -54,9 +54,9 @@ jobs:
             - run: npm ci
             - name: Publish to registry
               run: |
-                echo "$( jq '.name = "$env:GITHUB_REPOSITORY_OWNER/zenfuse"' package.json )" > package.json
+                echo "$( jq '.name = "izzqz/zenfuse"' package.json )" > package.json
                 cat package.json
-                npm publish --@$env:GITHUB_REPOSITORY_OWNER:registry=https://npm.pkg.github.com
+                npm publish --@izzqz:registry=https://npm.pkg.github.com
 
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
