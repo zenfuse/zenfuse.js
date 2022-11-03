@@ -67,6 +67,7 @@ patch:
 
     just _ask 'Create version tag and publish release?';
 
+    cd lib;
     new_version=$(npm version patch --sign-git-commit --sign-git-tag);
     git push;
     gh release create $new_version --target main --generate-notes --prerelease;
