@@ -10,7 +10,7 @@ on:
                 default: false
     push:
         tags:
-            - 'v*'
+            - '*'
 
 jobs:
     ci:
@@ -39,7 +39,7 @@ jobs:
                 # Change publish registry
                 echo "$(jq '.publishConfig.registry = "https://registry.npmjs.org"' package.json)" > package.json
                 # Publish package
-                npm publish --access public --dry-run
+                npm publish --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -69,7 +69,7 @@ jobs:
                 # Add organisation scope to package name
                 echo "$( jq '.name = "@zenfuse/zenfuse"' package.json )" > package.json
                 # And publish this boy 
-                npm publish --@zenfuse:registry=https://npm.pkg.github.com --dry-run
+                npm publish --@zenfuse:registry=https://npm.pkg.github.com
 
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
