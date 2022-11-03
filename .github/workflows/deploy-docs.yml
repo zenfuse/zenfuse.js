@@ -32,7 +32,10 @@ jobs:
                   cache: true
 
             - name: Install npm dependencies
-              run: bun install
+              run: |
+                bun install
+                cd .. # repo root
+                bun install --no-save
 
             - name: Run eslint
               run: just eslint www
