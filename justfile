@@ -1,14 +1,25 @@
 _default:
+    @echo "\033[1;34m                __                   _     ";
+    @echo " _______ _ __  / _|_   _ ___  ___   (_)___ ";
+    @echo "|_  / _ \\ '_ \\| |_| | | / __|/ _ \\  | / __|";
+    @echo " / /  __/ | | |  _| |_| \\__ \\  __/_ | \\__ \\";
+    @echo "/___\\___|_| |_|_|  \\__,_|___/\\___(_)/ |___/";
+    @echo "                                  |__/     \033[0m";
     @just --list
 
 # Awaits confirmation from user
 @_ask msg:
     bash -c 'read -p "{{msg}} (y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1;';
 
-# Install all npm dependencies including web page
+# Prepare repository for contribution
 install:
+    @echo 'Installing repo dependencies'
     bun install --no-save
+    @echo 'Installing web page dependencies'
     cd www && bun install
+    @just download-mocks
+    @echo
+    @echo '(•_•) ( •_•)>⌐■-■ (⌐■_■) Done'
 
 # Download all static mocks for test usage
 download-mocks *args:
@@ -30,6 +41,7 @@ lint *path=root:
     @just cspell {{path}}
     @just eslint {{path}}
 
+# Run eslint
 eslint *path=root:
     npm exec eslint -- {{path}}
 
@@ -57,7 +69,7 @@ ignore-word word:
     sort -du -o $dictpath $dictpath;
     echo Word {{word}} now ignored in cspell;
 
-# Create patch version release on github
+# Create version tag and push it. Repo workflows will publish new release (only for maintainers)
 release version:
     #!/usr/bin/env bash
     set -euo pipefail;
@@ -88,11 +100,6 @@ release version:
 
     git push;
     git push origin $new_version;
-
-# Creates "Update dependencies" pull request in Github repository
-deps-pr:
-    @just _ask 'Create update dependencies pull request?';
-    gh pr create --base main --head dependabot --assignee @me --title 'Update dependencies' --body ''
 
 # Delete all untracked files
 clean:
