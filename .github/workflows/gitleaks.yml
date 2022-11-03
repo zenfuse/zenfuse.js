@@ -1,5 +1,5 @@
 name: GitLeaks
-on: [pull_request, push, workflow_dispatch]
+on: [push, workflow_dispatch]
 jobs:
     scan:
         name: Check leaks
