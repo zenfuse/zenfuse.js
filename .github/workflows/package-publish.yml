@@ -12,13 +12,14 @@ on:
         types: [published]
 
 jobs:
-    CI:
+    ci:
+        name: CI
         if: ${{ inputs.skip-ci == false }}
         uses: zenfuse/zenfuse.js/.github/workflows/package-ci.yml@main
 
     publish-npm:
         name: Publish to npm
-        needs: CI
+        needs: ci
         if: ${{ false }}
         # if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
         runs-on: ubuntu-latest
@@ -37,7 +38,7 @@ jobs:
 
     publish-github:
         name: Publish to gp
-        needs: CI
+        needs: ci
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
         permissions:
             contents: read
@@ -53,8 +54,7 @@ jobs:
             - run: npm ci
             - name: Publish to registry
               run: |
-                contents="$(jq '.name = "$env:GITHUB_REPOSITORY_OWNER/zenfuse"' package.json)" && echo -E "${contents}" > pacakge.json
-                cat package.json && npm publish --@$env:GITHUB_REPOSITORY_OWNER:registry=https://npm.pkg.github.com
+                contents="$(jq '.name = "$env:GITHUB_REPOSITORY_OWNER/zenfuse"' package.json)" && echo -E "${contents}" > pacakge.json && cat package.json && npm publish --@$env:GITHUB_REPOSITORY_OWNER:registry=https://npm.pkg.github.com
 
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
