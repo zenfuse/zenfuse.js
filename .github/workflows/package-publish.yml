@@ -81,11 +81,16 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
+            
+            - name: Get the version
+              id: version
+              run: echo name=$(echo $GITHUB_REF | cut -d / -f 3) >> $GITHUB_OUTPUT
+              
             - name: Post release
-              run: gh release create ${{ github.ref_name }} --target main --generate-notes --prerelease;
+              run: gh release create ${{ steps.version.outputs.name }} --target main --generate-notes --prerelease;
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 
             - name: Set output
               run: | 
-                echo "### New release ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+                echo "### New release ${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
