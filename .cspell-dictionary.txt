@@ -25,6 +25,7 @@ pipefail
 proxied
 sirwhenairdrop
 Snyk
+srcset
 stablecoins
 tasuku
 unsetup
