@@ -5,38 +5,40 @@ on:
     workflow_call:
     push:
         branches: [main]
-        paths:
-            - lib/**
     pull_request:
         branches: [main]
-        paths:
-            - lib/**
-
-defaults:
-    run:
-        shell: bash
-        working-directory: lib
 
 jobs:
     lint:
+        name: Lint files
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
             - uses: extractions/setup-just@v1
+            
+            - name: Set up Bun
+              uses: antongolub/action-setup-bun@v1
+              with:
+                  cache: true
+
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
-                  cache-dependency-path: lib/package-lock.json
+
             - name: Install npm dependencies
               run: npm ci
 
-            - name: Lint javascript files
-              run: just eslint lib
+            - name: Install docs dependencies
+              run: cd www && bun install
 
-            - name: Spellcheck all library files
-              run: just cspell lib
+            - name: Lint javascript files
+              run: just eslint
+
+            - name: Spellcheck all files
+              run: just cspell
 
     mocks:
+        name: Preparing mocks
         needs: lint
         runs-on: ubuntu-latest
         steps:
@@ -45,7 +47,6 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
-                  cache-dependency-path: lib/package-lock.json
 
             - name: Install npm dependencies
               run: npm ci
@@ -53,17 +54,11 @@ jobs:
             - name: Trying to restore cached mocks
               uses: actions/cache@v3.0.8
               with:
-                  path: lib/tests/exchanges/*/mocks/static/*
+                  path: tests/exchanges/*/mocks/static/*
                   key: static-mocks-${{ github.sha }}
 
             - name: Download mock files from exchanges
               run: just download-mocks
-
-            - name: Cache mocks
-              uses: actions/cache@v3.0.8
-              with:
-                  path: lib/tests/exchanges/*/mocks/static/*
-                  key: static-mocks-${{ github.sha }}
 
     unit-tests:
         needs: lint
@@ -79,12 +74,11 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
-                  cache-dependency-path: lib/package-lock.json
 
             - name: Restore cached mocks
               uses: actions/cache@v3.0.8
               with:
-                  path: lib/tests/exchanges/*/mocks/static/*
+                  path: tests/exchanges/*/mocks/static/*
                   key: static-mocks-${{ github.sha }}
                   restore-keys: |
                       static-mocks-${{ github.sha }}
@@ -109,12 +103,11 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
-                  cache-dependency-path: lib/package-lock.json
 
             - name: Restore cached mocks
               uses: actions/cache@v3.0.8
               with:
-                  path: lib/tests/exchanges/*/mocks/static/*
+                  path: tests/exchanges/*/mocks/static/*
                   key: static-mocks-${{ github.sha }}
                   restore-keys: |
                       static-mocks-${{ github.sha }}

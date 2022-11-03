@@ -5,15 +5,20 @@ _default:
 @_ask msg:
     bash -c 'read -p "{{msg}} (y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1;';
 
+# Install all npm dependencies including web page
+install:
+    bun install --no-save
+    cd www && bun install
+
 # Download all static mocks for test usage
 download-mocks *args:
-    node lib/scripts/downloadMocks.js {{args}}
+    node scripts/downloadMocks.js {{args}}
 
 alias dm := download-mocks
 
 # Run test [ unit | integration | e2e ] for npm package
 test mode *args:
-    cd lib && TEST_MODE={{mode}} node --unhandled-rejections=strict node_modules/.bin/jest \
+    TEST_MODE={{mode}} node --unhandled-rejections=strict node_modules/.bin/jest \
     --no-cache --runInBand \
     {{ if mode == "unit" { "--testMatch '**/?(*.)+(spec).js'" } else { "" } }} {{args}}
 
@@ -67,14 +72,12 @@ patch:
 
     just _ask 'Create version tag and publish release?';
 
-    cd lib;
-
     # Commit by myself cuz awaiting this pr to npm https://github.com/npm/cli/pull/5442
 
     new_version=$(npm version patch --no-git-tag-version);
 
     git add package.json package-lock.json
-    git commit -m 'Bump version'
+    git commit -m $new_version
     git tag $new_version
 
     git push --tags;
