@@ -50,12 +50,11 @@ jobs:
                   node-version: 18
                   registry-url: 'https://npm.pkg.github.com'
                   cache: npm
-
-            - name: Append org to package name
-              run: |
-                contents="$(jq '.name = "@izzqz/zenfuse"' package.json)" && echo -E "${contents}" > pacakge.json
-
             - run: npm ci
-            - run: cat package.json && npm publish --@zenfuse:registry=https://npm.pkg.github.com
+            - name: Publish to registry
+              run: |
+                contents="$(jq '.name = "$env:GITHUB_REPOSITORY_OWNER/zenfuse"' package.json)" && echo -E "${contents}" > pacakge.json
+                cat package.json && npm publish --@$env:GITHUB_REPOSITORY_OWNER:registry=https://npm.pkg.github.com
+
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
