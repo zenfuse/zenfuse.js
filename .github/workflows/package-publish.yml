@@ -54,7 +54,7 @@ jobs:
             - run: npm ci
             - name: Publish to registry
               run: |
-                echo "$( jq '.name = "izzqz/zenfuse"' package.json )" > package.json
+                echo "$( jq '.name = "@izzqz/zenfuse"' package.json )" > package.json
                 cat package.json
                 npm publish --@izzqz:registry=https://npm.pkg.github.com
 
