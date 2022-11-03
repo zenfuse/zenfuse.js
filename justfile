@@ -58,7 +58,7 @@ ignore-word word:
     echo Word {{word}} now ignored in cspell;
 
 # Create patch version release on github
-patch:
+release version:
     #!/usr/bin/env bash
     set -euo pipefail;
 
@@ -70,18 +70,24 @@ patch:
     	exit 1;
     fi
 
-    just _ask 'Create version tag and publish release?';
-
+    just _ask 'Create {{ version }} version tag?';
+ 
     # Commit by myself cuz awaiting this pr to npm https://github.com/npm/cli/pull/5442
 
     new_version=$(npm version patch --no-git-tag-version);
+    
+    cd www;
+    npm version $new_version;
+    cd ..;
 
-    git add package.json package-lock.json
+    git add package.json package-lock.json www/package.json
     git commit -m $new_version
     git tag $new_version
 
-    git push --tags;
-    gh release create $new_version --target main --generate-notes --prerelease;
+    just _ask 'Push $new_version version tag?';
+
+    git push;
+    git push origin $new_version;
 
 # Creates "Update dependencies" pull request in Github repository
 deps-pr:
