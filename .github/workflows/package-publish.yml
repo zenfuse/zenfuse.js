@@ -21,7 +21,7 @@ jobs:
     npm:
         name: Publish to npm
         needs: ci
-        if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
+        if: always() && (needs.ci.result == 'success' || needs.ci.result == 'skipped')
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
@@ -46,7 +46,7 @@ jobs:
     gp:
         name: Publish to gp
         needs: ci
-        if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
+        if: always() && (needs.ci.result == 'success' || needs.ci.result == 'skipped')
         permissions:
             contents: read
             packages: write
@@ -76,6 +76,7 @@ jobs:
                   
     release:
         needs: [npm, gp]
+        if: always() && (needs.ci.result == 'success' || needs.ci.result == 'skipped')
         name: Post new release
         runs-on: ubuntu-latest
         steps:
