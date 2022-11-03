@@ -18,7 +18,7 @@ defaults:
 jobs:
     CI:
         if: ${{ inputs.skip-ci == false }}
-        uses: zenfuse/zenfuse.js/.github/workflows/npm-ci.yml@main
+        uses: zenfuse/zenfuse.js/.github/workflows/package-ci.yml@main
 
     publish-npm:
         needs: CI
