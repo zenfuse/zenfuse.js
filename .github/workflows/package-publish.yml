@@ -31,12 +31,15 @@ jobs:
                   registry-url: 'https://registry.npmjs.org'
                   cache: npm
 
-            - run: npm ci
+            - name: Install npm dependencies
+              run: npm ci
+              
+            - name: Publish to npm registry
             - run: npm publish --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-    publish-github:
+    publish-gp:
         name: Publish to gp
         needs: ci
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
@@ -51,12 +54,16 @@ jobs:
                   node-version: 18
                   registry-url: 'https://npm.pkg.github.com'
                   cache: npm
-            - run: npm ci
-            - name: Publish to registry
+            
+            - name: Install npm dependencies
+              run: npm ci
+            
+            - name: Publish to github registry
               run: |
-                echo "$( jq '.name = "@izzqz/zenfuse"' package.json )" > package.json
-                cat package.json
-                npm publish --@izzqz:registry=https://npm.pkg.github.com
+                # Add organisation scope to package name
+                echo "$( jq '.name = "@zenfuse/zenfuse"' package.json )" > package.json
+                # And publish this boy 
+                npm publish --@zenfuse:registry=https://npm.pkg.github.com
 
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
