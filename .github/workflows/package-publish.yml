@@ -8,8 +8,9 @@ on:
                 description: Skip CI
                 required: false
                 default: false
-    release:
-        types: [published]
+    push:
+        tags:
+            - 'v*'
 
 jobs:
     ci:
@@ -72,3 +73,17 @@ jobs:
 
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  
+    release:
+        needs: [publish-npm, publish-gp]
+        name: Post new release
+        runs-on: ubuntu-latest
+        steps:
+            - name: Post release
+              run: gh release create ${{ github.ref_name }} --target main --generate-notes --prerelease;
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                
+            - name: Set output
+              run: | 
+                echo "### New release ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
