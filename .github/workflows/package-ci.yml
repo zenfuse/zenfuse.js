@@ -3,11 +3,6 @@ name: Package CI
 on:
     workflow_dispatch:
         inputs:
-            force:
-                type: boolean
-                description: Recache static mocks
-                required: false
-                default: false
             skip-lint:
                 type: boolean
                 description: Skip lint
@@ -64,7 +59,7 @@ jobs:
             - name: Install npm dependencies
               run: npm ci
               
-            - name: Cache
+            - name: Restoring mocks from cache
               uses: actions/cache@v3.0.11
               with:
                 path: tests/exchanges/*/mocks/static/*
@@ -87,7 +82,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [14.x, 16.x, 18.x]
+                node-version: [14, 16, 18]
         steps:
             - uses: actions/checkout@v3
             - uses: extractions/setup-just@v1
@@ -109,7 +104,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [14.x, 16.x, 18.x]
+                node-version: [14, 16, 18]
         steps:
             - uses: actions/checkout@v3
             - uses: extractions/setup-just@v1
