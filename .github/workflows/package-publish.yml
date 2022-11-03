@@ -76,7 +76,7 @@ jobs:
                   
     release:
         needs: [npm, gp]
-        if: always() && (needs.npm.result == 'success' || needs.gp.result == 'success')
+        if: always() && (needs.npm.result == 'success' && needs.gp.result == 'success')
         name: Post new release
         runs-on: ubuntu-latest
         steps:
@@ -84,13 +84,15 @@ jobs:
             
             - name: Get the version
               id: version
-              run: echo name=v$(jq '.version' package.json -r) >> $GITHUB_OUTPUT
+              run: echo name=$(jq '.version' package.json -r) >> $GITHUB_OUTPUT
               
             - name: Post release
-              run: gh release create ${{ steps.version.outputs.name }} --target main --generate-notes --prerelease;
+              run: gh release create v${{ steps.version.outputs.name }} --target main --generate-notes --prerelease;
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 
             - name: Set output
               run: | 
-                echo "### New release ${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+                echo "### New release v${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+                echo "#### https://www.npmjs.com/package/zenfuse/v/${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+                echo "#### https://github.com/zenfuse/zenfuse.js/releases/tag/v${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
