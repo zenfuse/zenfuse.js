@@ -20,8 +20,7 @@ jobs:
     publish-npm:
         name: Publish to npm
         needs: ci
-        if: ${{ false }}
-        # if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
+        if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
