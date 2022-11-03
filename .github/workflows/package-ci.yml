@@ -50,7 +50,7 @@ jobs:
             - name: Install npm dependencies
               run: npm ci
 
-            - name: Cache Mocks
+            - name: Trying to restore cached mocks
               uses: actions/cache@v3.0.8
               with:
                   path: lib/tests/exchanges/*/mocks/static/*
@@ -58,6 +58,12 @@ jobs:
             
             - name: Download mock files from exchanges
               run: just download-mocks
+              
+            - name: Cache mocks
+              uses: actions/cache@v3.0.8
+              with:
+                  path: lib/tests/exchanges/*/mocks/static/*
+                  key: static-mocks-${{ github.sha }}
 
     unit-tests:
         needs: lint
