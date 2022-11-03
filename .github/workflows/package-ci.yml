@@ -56,16 +56,15 @@ jobs:
 
             - name: Install npm dependencies
               run: npm ci
-
-            - name: Download static mocks
-              if: ${{ inputs.force == false }}
-              uses: actions/download-artifact@v3.0.1
+              
+            - name: Cache
+              uses: actions/cache@v3.0.11
               with:
-                name: static-mocks
+                path: tests/exchanges/*/mocks/static/*
 
             - name: Download mock files from exchanges
               run: just download-mocks
-              
+
             - name: Upload static mocks
               uses: actions/upload-artifact@v3.1.1
               with:
@@ -114,6 +113,7 @@ jobs:
               uses: actions/download-artifact@v3.0.1
               with:
                 name: static-mocks
+                path: tests/exchanges
 
             - name: Install npm dependencies
               run: npm ci
