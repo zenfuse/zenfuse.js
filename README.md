@@ -1,8 +1,10 @@
+<a href="https://zenfuse.js.org">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="www/static/img/zenfusejs-logo-no-frame-white.svg">
   <source media="(prefers-color-scheme: light)" srcset="www/static/img/zenfusejs-logo-no-frame-black.svg">
   <img alt="zenfuse.js logo" src="www/static/img/zenfusejs-logo-no-frame-black.svg">
 </picture>
+</a>
 
 <!-- Should be sorted by popularity -->
 [![Binance](www/static/img/exchanges/badges/binance-badge.svg)](https://binance.com)
