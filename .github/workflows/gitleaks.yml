@@ -2,7 +2,7 @@ name: GitLeaks
 on: [pull_request, push, workflow_dispatch]
 jobs:
     scan:
-        name: gitleaks
+        name: Check leaks
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
