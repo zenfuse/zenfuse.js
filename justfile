@@ -5,6 +5,11 @@ _default:
 @_ask msg:
     bash -c 'read -p "{{msg}} (y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1;';
 
+# Install all npm dependencies including web page
+install:
+    bun install --no-save
+    cd www && bun install
+
 # Download all static mocks for test usage
 download-mocks *args:
     node scripts/downloadMocks.js {{args}}

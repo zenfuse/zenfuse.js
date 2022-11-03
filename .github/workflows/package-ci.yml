@@ -15,12 +15,21 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - uses: extractions/setup-just@v1
+            
+            - name: Set up Bun
+              uses: antongolub/action-setup-bun@v1
+              with:
+                  cache: true
+
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
 
             - name: Install npm dependencies
               run: npm ci
+
+            - name: Install docs dependencies
+              run: cd www && bun install
 
             - name: Lint javascript files
               run: just eslint
