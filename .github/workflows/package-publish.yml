@@ -80,6 +80,7 @@ jobs:
         name: Post new release
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v3
             - name: Post release
               run: gh release create ${{ github.ref_name }} --target main --generate-notes --prerelease;
               env:
