@@ -18,7 +18,7 @@ jobs:
         if: ${{ inputs.skip-ci == false }}
         uses: zenfuse/zenfuse.js/.github/workflows/package-ci.yml@main
 
-    publish-npm:
+    npm:
         name: Publish to npm
         needs: ci
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
@@ -43,7 +43,7 @@ jobs:
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-    publish-gp:
+    gp:
         name: Publish to gp
         needs: ci
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
@@ -75,7 +75,7 @@ jobs:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   
     release:
-        needs: [publish-npm, publish-gp]
+        needs: [npm, gp]
         name: Post new release
         runs-on: ubuntu-latest
         steps:
