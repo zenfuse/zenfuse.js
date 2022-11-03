@@ -6,7 +6,6 @@ updates:
           interval: 'daily'
       reviewers:
           - 'izzqz'
-      target-branch: 'dependabot'
 
     - package-ecosystem: 'github-actions'
       directory: '/'
@@ -14,4 +13,3 @@ updates:
           interval: 'weekly'
       reviewers:
           - 'izzqz'
-      target-branch: 'dependabot'
