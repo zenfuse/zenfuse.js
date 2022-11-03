@@ -1,7 +1,7 @@
 {
     "name": "zenfuse",
     "version": "0.10.10",
-    "description": "Crypto exchanges connector library",
+    "description": "Comprehensive crypto trading library",
     "main": "src/index.cjs",
     "scripts": {
         "test": "just test unit && just test integration",
