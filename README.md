@@ -1,4 +1,4 @@
-<a href="https://zenfuse.js.org">
+<a href="https://zenfuse.js.org" target="_blank">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="www/static/img/zenfusejs-logo-no-frame-white.svg">
   <source media="(prefers-color-scheme: light)" srcset="www/static/img/zenfusejs-logo-no-frame-black.svg">
