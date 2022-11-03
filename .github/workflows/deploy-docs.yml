@@ -12,7 +12,7 @@ on:
 
     workflow_dispatch:
     workflow_call:
-    
+
 defaults:
     run:
         shell: bash
@@ -36,7 +36,7 @@ jobs:
 
             - name: Run eslint
               run: just eslint www
-              
+
             - name: Run spellcheck
               run: just cspell www
 
@@ -63,20 +63,20 @@ jobs:
               with:
                   name: Docusaurus website
                   path: www/build
-              
+
     deploy:
         needs: [lint, build]
         runs-on: ubuntu-latest
         steps:
             - name: Check out repo
               uses: actions/checkout@v2
-          
+
             - name: Download a Build Artifact
               uses: actions/download-artifact@v3.0.1
               with:
                   name: Docusaurus website
                   path: www/build
-              
+
             - name: Deploy to GitHub Pages
               uses: crazy-max/ghaction-github-pages@v2
               with:
