@@ -62,7 +62,6 @@ jobs:
               uses: actions/download-artifact@v3.0.1
               with:
                 name: static-mocks
-                path: tests/exchanges/*/mocks/static/*
 
             - name: Download mock files from exchanges
               run: just download-mocks
@@ -115,7 +114,6 @@ jobs:
               uses: actions/download-artifact@v3.0.1
               with:
                 name: static-mocks
-                path: tests/exchanges/*/mocks/static/*
 
             - name: Install npm dependencies
               run: npm ci
