@@ -69,7 +69,12 @@ patch:
 
     cd lib;
     new_version=$(npm version patch --sign-git-commit --sign-git-tag);
-    git push;
+
+    git add package.json package-lock.json
+    git commit -m 'Bump version'
+    git tag $new_version
+
+    git push --tags;
     gh release create $new_version --target main --generate-notes --prerelease;
 
 # Creates "Update dependencies" pull request in Github repository
