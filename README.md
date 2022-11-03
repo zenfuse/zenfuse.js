@@ -1,16 +1,16 @@
 <a href="https://zenfuse.js.org" target="_blank">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="www/static/img/zenfusejs-logo-no-frame-white.svg">
-  <source media="(prefers-color-scheme: light)" srcset="www/static/img/zenfusejs-logo-no-frame-black.svg">
-  <img alt="zenfuse.js logo" src="www/static/img/zenfusejs-logo-no-frame-black.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/zenfusejs-logo-no-frame-white.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/zenfusejs-logo-no-frame-black.svg">
+  <img alt="zenfuse.js logo" src="https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/zenfusejs-logo-no-frame-black.svg">
 </picture>
 </a>
 
 <!-- Should be sorted by popularity -->
-[![Binance](www/static/img/exchanges/badges/binance-badge.svg)](https://binance.com)
-[![FTX](www/static/img/exchanges/badges/FTX-badge.svg)](https://ftx.com)
-[![OKX](www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com)
-[![Bitglobal](www/static/img/exchanges/badges/Bitglobal-badge.svg)](https://www.bitglobal.com/en-us)
+[![Binance](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/binance-badge.svg)](https://binance.com)
+[![FTX](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/FTX-badge.svg)](https://ftx.com)
+[![OKX](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com)
+[![Bitglobal](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/Bitglobal-badge.svg)](https://www.bitglobal.com/en-us)
 
 # Comprehensive crypto trading library
 
