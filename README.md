@@ -1,12 +1,12 @@
-![zenfuse.js](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/zenfusejs-logo-no-frame-white.svg#gh-dark-mode-only)
-![zenfuse.js](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/zenfusejs-logo-no-frame-black.svg#gh-light-mode-only)
+[![zenfuse.js](www/static/img/zenfusejs-logo-no-frame-white.svg)](https://zenfuse.js.org#gh-dark-mode-only)
+[![zenfuse.js](www/static/img/zenfusejs-logo-no-frame-black.svg)](https://zenfuse.js.org#gh-light-mode-only)
 
 <!-- Should be sorted by popularity -->
 
-[![Binance](https://zenfuse.js.org//img/exchanges/badges/binance-badge.svg)](https://binance.com)
-[![FTX](https://zenfuse.js.org//img/exchanges/badges/FTX-badge.svg)](https://ftx.com)
-[![OKX](https://zenfuse.js.org//img/exchanges/badges/OKX-badge.svg)](https://www.okx.com/)
-[![Bitglobal](https://zenfuse.js.org//img/exchanges/badges/Bitglobal-badge.svg)](https://www.bitglobal.com/en-us)
+[![Binance](www/static/img/exchanges/badges/binance-badge.svg)](https://binance.com)
+[![FTX](www/static/img/exchanges/badges/FTX-badge.svg)](https://ftx.com)
+[![OKX](www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com)
+[![Bitglobal](www/static/img/exchanges/badges/Bitglobal-badge.svg)](https://www.bitglobal.com/en-us)
 
 # Comprehensive crypto trading library
 
