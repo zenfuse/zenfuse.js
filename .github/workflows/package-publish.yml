@@ -12,14 +12,14 @@ on:
         types: [published]
 
 jobs:
-    ci:
+    CI:
         name: CI
         if: ${{ inputs.skip-ci == false }}
         uses: zenfuse/zenfuse.js/.github/workflows/package-ci.yml@main
 
     publish-npm:
         name: Publish to npm
-        needs: ci
+        needs: CI
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
         runs-on: ubuntu-latest
         steps:
@@ -40,7 +40,7 @@ jobs:
 
     publish-gp:
         name: Publish to gp
-        needs: ci
+        needs: CI
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
         permissions:
             contents: read
