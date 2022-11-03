@@ -41,7 +41,7 @@ jobs:
         needs: CI
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
         permissions: 
-            contents: read
+            contents: write
             packages: write
         runs-on: ubuntu-latest
         steps:
@@ -53,7 +53,10 @@ jobs:
                   scope: '@zenfuse'
                   cache: npm
                   cache-dependency-path: lib
-            - run: cat /home/runner/work/_temp/.npmrc
+            
+            - name: Append org to package name
+              run: contents="$(jq '.name = "@zenfuse/zenfuse"' package.json)" && echo -E "${contents}" > pacakge.json
+
             - run: npm ci
             - run: npm publish --@zenfuse:registry=https://npm.pkg.github.com
               env:
