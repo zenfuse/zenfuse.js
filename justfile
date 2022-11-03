@@ -68,7 +68,10 @@ patch:
     just _ask 'Create version tag and publish release?';
 
     cd lib;
-    new_version=$(npm version patch --sign-git-commit --sign-git-tag);
+
+    # Commit by myself cuz awaiting this pr to npm https://github.com/npm/cli/pull/5442
+
+    new_version=$(npm version patch --no-git-tag-version);
 
     git add package.json package-lock.json
     git commit -m 'Bump version'
