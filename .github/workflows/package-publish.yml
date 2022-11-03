@@ -12,14 +12,14 @@ on:
         types: [published]
 
 jobs:
-    CI:
+    ci:
         name: CI
         if: ${{ inputs.skip-ci == false }}
         uses: zenfuse/zenfuse.js/.github/workflows/package-ci.yml@main
 
     publish-npm:
         name: Publish to npm
-        needs: CI
+        needs: ci
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
         runs-on: ubuntu-latest
         steps:
@@ -34,13 +34,17 @@ jobs:
               run: npm ci
               
             - name: Publish to npm registry
-              run: npm publish --access public
+              run: |
+                # Change publish registry
+                echo "$(jq '.publishConfig.registry = "https://registry.npmjs.org"' package.json)" > package.json
+                # Publish package
+                npm publish --access public --dry-run
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     publish-gp:
         name: Publish to gp
-        needs: CI
+        needs: ci
         if: always() && (needs.CI.result == 'success' || needs.CI.result == 'skipped')
         permissions:
             contents: read
@@ -59,10 +63,12 @@ jobs:
             
             - name: Publish to github registry
               run: |
+                # Change publish registry
+                echo "$(jq '.publishConfig.registry = "https://npm.pkg.github.com"' package.json)" > package.json
                 # Add organisation scope to package name
                 echo "$( jq '.name = "@zenfuse/zenfuse"' package.json )" > package.json
                 # And publish this boy 
-                npm publish --@zenfuse:registry=https://npm.pkg.github.com
+                npm publish --@zenfuse:registry=https://npm.pkg.github.com --dry-run
 
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
