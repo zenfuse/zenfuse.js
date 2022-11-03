@@ -1,8 +1,10 @@
-[![zenfuse.js](www/static/img/zenfusejs-logo-no-frame-white.svg)](https://zenfuse.js.org#gh-dark-mode-only)
-[![zenfuse.js](www/static/img/zenfusejs-logo-no-frame-black.svg)](https://zenfuse.js.org#gh-light-mode-only)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="www/static/img/zenfusejs-logo-no-frame-white.svg">
+  <source media="(prefers-color-scheme: light)" srcset="www/static/img/zenfusejs-logo-no-frame-black.svg">
+  <img alt="zenfuse.js logo" src="www/static/img/zenfusejs-logo-no-frame-black.svg">
+</picture>
 
 <!-- Should be sorted by popularity -->
-
 [![Binance](www/static/img/exchanges/badges/binance-badge.svg)](https://binance.com)
 [![FTX](www/static/img/exchanges/badges/FTX-badge.svg)](https://ftx.com)
 [![OKX](www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com)
@@ -12,7 +14,6 @@
 
 ![Supported version](https://img.shields.io/node/v/zenfuse?logo=nodedotjs)
 [![Version](https://img.shields.io/npm/v/zenfuse?logo=npm)](https://www.npmjs.com/package/zenfuse)
-</br>
 [![Last Commit](https://img.shields.io/github/last-commit/zenfuse/zenfuse.js?logo=git)](https://github.com/zenfuse/zenfuse.js/commits)
 [![Zenfuse Dev Tool](https://zenfuse.io/badges/devtool.svg)](https://zenfuse.io)
 
