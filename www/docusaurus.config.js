@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
     title: 'zenfuse.js',
-    tagline: 'A comprehensive crypto trading library for NodeJS',
+    tagline: 'Comprehensive crypto trading library for NodeJS',
     url: 'https://zenfuse.js.org/',
     baseUrl: '/',
     onBrokenLinks: 'throw',
