@@ -119,4 +119,4 @@ marketDataStream.on('newPrice', (event) => {
 });
 ```
 
-For more examples and guides see https://zenfuse.js.org/docs/introduction
+For more examples and guides see https://zenfuse.js.org/docs/intro
