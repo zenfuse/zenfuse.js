@@ -51,7 +51,7 @@ binance.fetchPrice('BTC/USDT');
 binance.auth(creds).postOrder(params);
 ```
 
-### See full documentaion in [zenfuse.js.org](https://zenfuse.js.org)
+### See full documentation in [zenfuse.js.org](https://zenfuse.js.org)
 
 ---
 
