@@ -1,9 +1,9 @@
 {
-    "label": "Basics",
+    "label": "Basic guides",
     "position": 2,
     "collapsed": false,
     "link": {
         "type": "generated-index",
-        "description": "The basics of the library"
+        "description": "The basic guides of the zenfuse.js"
     }
 }

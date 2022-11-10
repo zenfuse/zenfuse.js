@@ -4,13 +4,15 @@ sidebar_position: 1
 
 # Introduction
 
-Zenfuse.js is a crypto trading library connector for Node.js. For trading, analyze, visualize any manage any data from API easily on supported exchanges.
+Zenfuse.js is a crypto trading library connector for Node.js. For trading, analyze, visualize and manage any data from API easily on supported exchanges.
 
 **Current exchanges:**<br/>
 ![Binance](/img/exchanges/badges/binance-badge.svg)
 ![FTX](/img/exchanges/badges/FTX-badge.svg)
 ![OKX](/img/exchanges/badges/OKX-badge.svg)
 ![Bitglobal](/img/exchanges/badges/Bitglobal-badge.svg)
+
+**[⮮ Jump to code showcase ⮯](#a-small-showcase-for-the-impatient)**
 
 :::note In Development
 
@@ -34,8 +36,6 @@ Zenfuse.js handles it, and provides clean, powerful solution for modern javascri
     -   Trades
     -   Account balance events
 
-Unlike alternative solutions. This library is
-
 ## Getting Started
 
 :::info Note
@@ -46,7 +46,7 @@ This library for server side JS. It doesn't work in the browsers.
 
 ### Installation
 
-You will need
+You will need [Nodejs >14.x](https://nodejs.org/en/).
 
 Install `zenfuse` package from npm.
 
@@ -54,7 +54,7 @@ Install `zenfuse` package from npm.
 npm install zenfuse
 ```
 
-After you can import it.
+After you can import it in your code.
 
 ```js
 // ESM
