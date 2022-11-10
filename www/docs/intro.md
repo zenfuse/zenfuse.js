@@ -4,13 +4,15 @@ sidebar_position: 1
 
 # Introduction
 
-Zenfuse.js is a crypto trading library connector for Node.js. For trading, analyze, visualize any manage any data from API easily on supported exchanges.
+Zenfuse.js is a crypto trading library connector for Node.js. For trading, analyze, visualize and manage any data from API easily on supported exchanges.
 
 **Current exchanges:**<br/>
 ![Binance](/img/exchanges/badges/binance-badge.svg)
 ![FTX](/img/exchanges/badges/FTX-badge.svg)
 ![OKX](/img/exchanges/badges/OKX-badge.svg)
 ![Bitglobal](/img/exchanges/badges/Bitglobal-badge.svg)
+
+**[⮮ Jump to code showcase ⮯](#a-small-showcase-for-the-impatient)**
 
 :::note In Development
 
@@ -25,16 +27,15 @@ Feel free to [**create any issue**](https://github.com/zenfuse/zenfuse.js/issues
 Using many different crypto exchange API's is a drag. Different interfaces, namings, payload subscription, symbols separator and etc.
 Zenfuse.js handles it, and provides clean, powerful solution for modern javascript environment.
 
-**Key features:**
+### ✨ Key features:
 
--   Fetching public data
--   Orders manipulating
--   Real-time events
-    -   Current price
-    -   Trades
-    -   Account balance events
-
-Unlike alternative solutions. This library is
+-   🗃️ **Data fetching:** Market price, ticker listing, historical chart and any custom requests
+-   💱 **Orders manipulating:** Post, cancel and modify exchange orders
+-   🗠 **Real-time events:** Websocket streams
+    -   **Candlesticks streams:** Kline streams for charts, even when the exchange doesn't support this **(!)**
+    -   **Current price:** Simplified price of market
+    -   **Trades:** Actual market trades
+    -   **Account events:** Balance changing and new orders posting
 
 ## Getting Started
 
@@ -46,7 +47,7 @@ This library for server side JS. It doesn't work in the browsers.
 
 ### Installation
 
-You will need
+You will need [Nodejs >14.x](https://nodejs.org/en/).
 
 Install `zenfuse` package from npm.
 
@@ -54,7 +55,7 @@ Install `zenfuse` package from npm.
 npm install zenfuse
 ```
 
-After you can import it.
+After you can import it in your code.
 
 ```js
 // ESM
