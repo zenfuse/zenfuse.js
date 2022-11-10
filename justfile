@@ -67,6 +67,8 @@ ignore-word word:
     dictpath={{justfile_directory()}}/.cspell-dictionary.txt;
     echo {{word}} >> $dictpath;
     sort -du -o $dictpath $dictpath;
+    git add $dictpath;
+    git commit -m 'Add {{word}} as ignored word';
     echo Word {{word}} now ignored in cspell;
 
 # Create version tag and push it. Repo workflows will publish new release (only for maintainers)
