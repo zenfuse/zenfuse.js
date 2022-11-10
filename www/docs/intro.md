@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+slug: /introduction
 ---
 
 # Introduction
@@ -27,14 +28,15 @@ Feel free to [**create any issue**](https://github.com/zenfuse/zenfuse.js/issues
 Using many different crypto exchange API's is a drag. Different interfaces, namings, payload subscription, symbols separator and etc.
 Zenfuse.js handles it, and provides clean, powerful solution for modern javascript environment.
 
-**Key features:**
+### ✨ Key features:
 
--   Fetching public data
--   Orders manipulating
--   Real-time events
-    -   Current price
-    -   Trades
-    -   Account balance events
+-   🗃️ **Data fetching:** Market price, ticker listing, historical chart and any custom requests
+-   💱 **Orders manipulating:** Post, cancel and modify exchange orders
+-   🗠 **Real-time events:** Websocket streams
+    -   **Candlesticks streams:** Kline streams for charts, even when the exchange doesn't support this **(!)**
+    -   **Current price:** Simplified price of market
+    -   **Trades:** Actual market trades
+    -   **Account events:** Balance changing and new orders posting
 
 ## Getting Started
 
