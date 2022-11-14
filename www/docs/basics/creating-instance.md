@@ -6,7 +6,7 @@ description: How to use exchange instance
 
 # Creating instance
 
-Before using exchange methods, you need to create instatnce. Each instance can has unique environment.
+Before using exchange methods, you need to create instance. Each instance can has unique environment.
 
 ```js
 import { Binance, FTX, OKX, BitGlobal } from 'zenfuse';
@@ -17,7 +17,7 @@ const okx = new OKX.spot();
 const bitglobal = new BitGlobal.spot();
 ```
 
-The `spot` method definig only spot market instance.
+The `spot` method defining only spot market instance.
 
 :::note in development
 

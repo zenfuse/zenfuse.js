@@ -11,7 +11,7 @@ For http fetching use `.fetchPrice` method.
 
 ### For all markets
 
-If no parameret provided. Method will get current price from all awailable markets.
+If no parameter provided. Method will get current price from all awailable markets.
 
 ```js
 const priceList = await binance.fetchPrice();
@@ -29,7 +29,7 @@ ETH/DAI -> 1337.99
 ```
 ### For specific market
 
-To fetch precific market price, include first parameter as market symbol fith `/` separator.
+To fetch specific market price, include first parameter as market symbol fith `/` separator.
 
 ```js
 const price = await binance.fetchPrice('BTC/USDT');
@@ -87,7 +87,7 @@ Current ETH/USD price 1366.66
 
 ### Get price stream for more markets
 
-While websocket stream opeded, you can use `.subscribeTo` methind as much as you can.
+While websocket stream opened, you can use `.subscribeTo` method as much as you can.
 
 ```js
 // Bitcoin
