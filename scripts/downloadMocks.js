@@ -65,7 +65,8 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                 run(mocksPath, downloadList, task);
             }),
             task('FTX', ({ task, setStatus }) => {
-                if (!shouldRun('ftx')) {
+                // eslint-disable-next-line
+                if (true) {
                     setStatus('skipped');
                     return;
                 }
