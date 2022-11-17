@@ -39,9 +39,9 @@ Zenfuse.js handles it, and provides clean, powerful solution for modern javascri
 
 ## Getting Started
 
-:::info Note
+:::info Not for browsers
 
-This library for server side JS. It doesn't work in the browsers.
+This library for server side JS. It doesn't work in the browsers by design.
 
 :::
 
