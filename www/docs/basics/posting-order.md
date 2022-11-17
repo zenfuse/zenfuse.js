@@ -1,5 +1,6 @@
 ---
-current_possition: 3
+slug: /posting-order
+description: How to post new order
 ---
 
 # Posting order

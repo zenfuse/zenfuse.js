@@ -1,9 +1,11 @@
 ---
 slug: /get-current-price
-description: How to get current price
+description: How to get current market price 
 ---
 
 # Get current price
+
+To get current price of market using zenfuse.js you can use different methods.
 
 ## Fetch current price only once
 
