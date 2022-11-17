@@ -22,7 +22,7 @@ Feel free to [**create any issue**](https://github.com/zenfuse/zenfuse.js/issues
 
 :::
 
-## The problem solution
+## Motivation
 
 Using many different crypto exchange API's is a drag. Different interfaces, namings, payload subscription, symbols separator and etc.
 Zenfuse.js handles it, and provides clean, powerful solution for modern javascript environment.

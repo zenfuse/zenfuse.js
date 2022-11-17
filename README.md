@@ -7,6 +7,7 @@
 </a>
 
 <!-- Should be sorted by popularity -->
+
 [![Binance](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/binance-badge.svg)](https://binance.com)
 [![FTX](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/FTX-badge.svg)](https://ftx.com)
 [![OKX](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com)
@@ -20,7 +21,7 @@
 [![Zenfuse Dev Tool](https://zenfuse.io/badges/devtool.svg)](https://zenfuse.io)
 
 > **Note**
->  This library is in active state of development. New exchanges and features incoming. We really need your feedback to make this tool better. Feel free to [create any issue](https://github.com/zenfuse/zenfuse.js/issues) or ask about anything in [Github Discussions](https://github.com/zenfuse/zenfuse.js/discussions).
+> This library is in active state of development. New exchanges and features incoming. We really need your feedback to make this tool better. Feel free to [create any issue](https://github.com/zenfuse/zenfuse.js/issues) or ask about anything in [Github Discussions](https://github.com/zenfuse/zenfuse.js/discussions).
 
 This is a crypto trading library connector for Node.js. For trading, analyze, visualize and manage any data from API easily on supported exchanges.
 
@@ -35,7 +36,7 @@ Using many different crypto exchange API's is a drag. Different interfaces, nami
     -   **Current price:** Simplified price of market
     -   **Trades:** Actual market trades
     -   **Account events:** Balance changing and new orders posting
-    
+
 ### Simple Binance example
 
 ```js
@@ -58,6 +59,7 @@ binance.auth(creds).postOrder(params);
 "Talk is cheap. Show me the code."
 
 #### More code showcase
+
 ```js
 import { FTX, Binance } from 'zenfuse';
 

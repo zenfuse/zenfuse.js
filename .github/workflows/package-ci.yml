@@ -22,7 +22,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - uses: extractions/setup-just@v1
-            
+
             - name: Set up Bun
               uses: antongolub/action-setup-bun@v1
               with:
@@ -58,12 +58,12 @@ jobs:
 
             - name: Install npm dependencies
               run: npm ci
-              
+
             - name: Restoring mocks from cache
               uses: actions/cache@v3.0.11
               with:
-                path: tests/exchanges/*/mocks/static/*
-                key: static-mocks
+                  path: tests/exchanges/*/mocks/static/*
+                  key: static-mocks
 
             - name: Download mock files from exchanges
               run: just download-mocks
@@ -71,10 +71,10 @@ jobs:
             - name: Upload static mocks
               uses: actions/upload-artifact@v3.1.1
               with:
-                name: static-mocks
-                path: tests/exchanges/*/mocks/static/*
-                if-no-files-found: error
-                retention-days: 1
+                  name: static-mocks
+                  path: tests/exchanges/*/mocks/static/*
+                  if-no-files-found: error
+                  retention-days: 1
 
     unit-tests:
         needs: lint
@@ -117,8 +117,8 @@ jobs:
             - name: Download static mocks
               uses: actions/download-artifact@v3.0.1
               with:
-                name: static-mocks
-                path: tests/exchanges
+                  name: static-mocks
+                  path: tests/exchanges
 
             - name: Install npm dependencies
               run: npm ci
