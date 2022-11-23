@@ -28,8 +28,8 @@
     },
     "files": [
         "src",
-        "types",
-        "package-lock.json"
+        "!**/*.spec.js",
+        "types"
     ],
     "author": "zenfuse.io",
     "license": "AGPL-3.0-or-later",
