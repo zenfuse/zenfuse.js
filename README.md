@@ -20,11 +20,9 @@
 [![Zenfuse Dev Tool](https://zenfuse.io/badges/devtool.svg)](https://zenfuse.io)
 
 > **Note**
->  This library is in active state of development. New exchanges and features incoming. We really need your feedback to make this tool better. Feel free to [create any issue](https://github.com/zenfuse/zenfuse.js/issues) or ask about anything in [Github Discussions](https://github.com/zenfuse/zenfuse.js/discussions).
+>  This library is in active state of development. Feel free to [create any issue](https://github.com/zenfuse/zenfuse.js/issues) or ask about anything in [Github Discussions](https://github.com/zenfuse/zenfuse.js/discussions).
 
 This is a crypto trading library connector for Node.js. For trading, analyze, visualize and manage any data from API easily on supported exchanges.
-
-Using many different crypto exchange API's is a drag. Different interfaces, namings, payload signing, symbols separator and etc. Zenfuse.js handles it, and provides clean, powerful solution for modern javascript environment.
 
 ### ✨ Key features:
 
