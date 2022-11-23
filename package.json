@@ -21,8 +21,8 @@
     },
     "exports": {
         ".": {
-            "import": "./index.mjs",
-            "require": "./index.cjs"
+            "import": "./src/index.mjs",
+            "require": "./src/index.cjs"
         },
         "./package.json": "./package.json"
     },
