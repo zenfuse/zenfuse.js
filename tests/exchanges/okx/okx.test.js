@@ -109,7 +109,7 @@ describe('Error Handling', () => {
                 expect(e).toBeInstanceOf(OkxApiException);
                 expect(e.code).toBe(errorCodes.INVALID_CREDENTIALS);
                 expect(e.message).toBeDefined();
-                expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
+                expect(e.originalPayload).toBeDefined();
             }
         });
     });
@@ -144,7 +144,7 @@ describe('Error Handling', () => {
                 expect(e).toBeInstanceOf(OkxApiException);
                 expect(e.code).toBe(errorCodes.INSUFFICIENT_FUNDS);
                 expect(e.message).toBeDefined();
-                expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
+                expect(e.originalPayload).toBeDefined();
             }
         });
     });
@@ -170,7 +170,7 @@ describe('Error Handling', () => {
                 expect(e).toBeInstanceOf(OkxApiException);
                 expect(e.code).toBe(errorCodes.UNKNOWN_EXCEPTION);
                 expect(e.message).toBeDefined();
-                expect(e[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
+                expect(e.originalPayload).toBeDefined();
             }
         });
     });

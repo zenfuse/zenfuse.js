@@ -81,7 +81,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
                 expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
+                    result.originalPayload,
                 ).toBeDefined();
             });
 
@@ -111,7 +111,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
                 expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
+                    result.originalPayload,
                 ).toBeDefined();
             });
 
@@ -147,7 +147,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should have valid originalPayload', () => {
                 expect(result).toBeDefined();
                 expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
+                    result.originalPayload,
                 ).toBeDefined();
             });
 
@@ -158,7 +158,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
                 expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
+                    result.originalPayload,
                 ).toBeDefined();
             });
         });
@@ -182,7 +182,7 @@ module.exports = function masterTest(Exchange, env) {
                     expect(kline.interval).toBe(env.CANDLES_REQUEST.interval);
                     expect(kline.symbol).toBe(env.CANDLES_REQUEST.symbol);
                     expect(
-                        kline[Symbol.for('zenfuse.originalPayload')],
+                        kline.originalPayload,
                     ).toBeDefined();
                 });
             });
@@ -190,7 +190,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should have valid originalPayload', () => {
                 expect(result).toBeDefined();
                 expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
+                    result.originalPayload,
                 ).toBeDefined();
             });
         });
@@ -264,7 +264,7 @@ module.exports = function masterTest(Exchange, env) {
                     });
 
                     expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
+                        result.originalPayload,
                     ).toBeDefined();
                 });
             });
@@ -285,7 +285,7 @@ module.exports = function masterTest(Exchange, env) {
                         side: env.SELL_MARKET_ORDER.side,
                     });
                     expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
+                        result.originalPayload,
                     ).toBeDefined();
                 });
             });
@@ -306,7 +306,7 @@ module.exports = function masterTest(Exchange, env) {
                         side: env.BUY_LIMIT_ORDER.side,
                     });
                     expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
+                        result.originalPayload,
                     ).toBeDefined();
                 });
             });
@@ -327,7 +327,7 @@ module.exports = function masterTest(Exchange, env) {
                         side: env.SELL_LIMIT_ORDER.side,
                     });
                     expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
+                        result.originalPayload,
                     ).toBeDefined();
                 });
             });
@@ -349,7 +349,7 @@ module.exports = function masterTest(Exchange, env) {
                         side: env.PRECISION_REQUIRED_ORDER.side,
                     });
                     expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
+                        result.originalPayload,
                     ).toBeDefined();
                 });
             });
@@ -391,7 +391,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
                 expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
+                    result.originalPayload,
                 ).toBeDefined();
             });
         });
@@ -426,7 +426,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
                 expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
+                    result.originalPayload,
                 ).toBeDefined();
             });
         });
@@ -461,7 +461,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
                 expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
+                    result.originalPayload,
                 ).toBeDefined();
             });
         });

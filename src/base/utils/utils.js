@@ -1,7 +1,7 @@
 const { createHmac } = require('crypto');
 
 const linkOriginalPayload = (object, originalPayload) => {
-    Object.defineProperty(object, Symbol.for('zenfuse.originalPayload'), {
+    Object.defineProperty(object, 'originalPayload', {
         value: originalPayload,
         enumerable: false,
         configurable: true,
