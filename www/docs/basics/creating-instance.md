@@ -11,7 +11,7 @@ Before using exchange methods, you need to create instance. Each instance can ha
 ```js
 import { Binance, FTX, OKX, BitGlobal } from 'zenfuse';
 
-const binance = new Binance.spot()
+const binance = new Binance.spot();
 const ftx = new FTX.spot();
 const okx = new OKX.spot();
 const bitglobal = new BitGlobal.spot();
@@ -35,7 +35,7 @@ const binance = new Binance.spot({
     wsClientOptions: {
         followRedirects: true,
     },
-})
+});
 ```
 
 | Parameter           | Type                                  | Description                                                                                         |

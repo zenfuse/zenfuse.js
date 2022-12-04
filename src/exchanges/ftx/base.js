@@ -7,8 +7,6 @@ const FtxCache = require('./etc/cache');
 const UserError = require('../../base/errors/user.error');
 const { createHmacSignatureDefault } = require('../../base/utils/utils');
 
-const keysSymbol = Symbol.for('zenfuse.keyVault');
-
 /**
  * FTX base class for method which included in any wallet type
  *
@@ -45,7 +43,7 @@ class FtxBase extends ExchangeBase {
         const assignedOptions = mergeObjects(FtxBase.DEFAULT_OPTIONS, options);
         super(assignedOptions);
 
-        this[keysSymbol] = {};
+        this.keys = {};
 
         this.cache = new FtxCache(this);
         this.signatureEncoding = 'hex';
@@ -84,13 +82,13 @@ class FtxBase extends ExchangeBase {
 
         const signature = createHmacSignatureDefault(
             sigParams,
-            this[keysSymbol].privateKey,
+            this.keys.secretKey,
             this.signatureEncoding,
         );
 
         options = mergeObjects(options, {
             headers: {
-                'FTX-KEY': this[keysSymbol].publicKey,
+                'FTX-KEY': this.keys.publicKey,
                 'FTX-TS': timestamp,
                 'FTX-SIGN': signature,
             },
@@ -100,31 +98,12 @@ class FtxBase extends ExchangeBase {
     }
 
     /**
-     * Connect to authenticated API
-     *
-     * @param {object} keys
-     * @param {string} keys.publicKey
-     * @param {string} keys.privateKey Same as secret key
-     * @returns {this}
-     */
-    auth({ publicKey, privateKey }) {
-        this[keysSymbol] = {};
-        this[keysSymbol].publicKey = publicKey;
-        this[keysSymbol].privateKey = privateKey;
-        return this;
-    }
-
-    /**
      * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */
     get hasKeys() {
-        return (
-            !!this[keysSymbol] &&
-            !!this[keysSymbol].publicKey &&
-            !!this[keysSymbol].privateKey
-        );
+        return !!this.keys && !!this.keys.publicKey && !!this.keys.secretKey;
     }
 
     /**

@@ -1,6 +1,8 @@
 const { z } = require('zod');
 const zenfuse = require('zenfuse');
 
+const crypto = require('crypto');
+
 const MockedAgent = require('./mocks/agent');
 
 /**
@@ -205,7 +207,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should pass keys to instance', () => {
                 const keys = {
                     publicKey: env.API_PUBLIC_KEY,
-                    privateKey: env.API_PRIVATE_KEY,
+                    secretKey: env.API_PRIVATE_KEY,
                     additionalKey: env.API_ADDITIONAL_KEY,
                 };
 
@@ -214,6 +216,15 @@ module.exports = function masterTest(Exchange, env) {
                 exchange.auth(keys);
 
                 expect(exchange.hasKeys).toBe(true);
+            });
+
+            it('should make secret key secured', () => {
+                expect(exchange.keys.secretKey).toBeInstanceOf(
+                    crypto.KeyObject,
+                );
+
+                // it should not be exposed as string
+                expect(exchange.keys.secretKey).not.toBe(env.API_PRIVATE_KEY);
             });
         });
 
