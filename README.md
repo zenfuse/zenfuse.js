@@ -24,12 +24,12 @@
 
 This is a crypto trading library connector for Node.js. For trading, analyze, visualize and manage any data from API easily on supported exchanges.
 
-### ✨ Key features:
+### Key features:
 
 -   🗃️ **Data fetching:** Market price, ticker listing, historical chart and any custom requests
 -   💱 **Orders manipulating:** Post, cancel and modify exchange orders
 -   🗠 **Real-time events:** Websocket streams
-    -   **Candlesticks streams:** Kline streams for charts, even when the exchange doesn't support this **(!)**
+    -   **Candlesticks streams:** Kline streams for charts, even when the exchange doesn't support this **(🔥)**
     -   **Current price:** Simplified price of market
     -   **Trades:** Actual market trades
     -   **Account events:** Balance changing and new orders posting
