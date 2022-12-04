@@ -35,7 +35,6 @@ class HuobiSpot extends HuobiBase {
     constructor(options = {}) {
         const fullOptions = mergeObjects(HuobiSpot.DEFAULT_OPTIONS, options);
         super(fullOptions);
-        this.orderCount = 1;
     }
 
     /**
@@ -127,11 +126,11 @@ class HuobiSpot extends HuobiBase {
         // Trying to cut candles with user parameters
         if (params.startTime || params.endTime) {
             if (params.startTime && params.endTime) {
-                const isPossimbleToCut =
+                const isPossibleToCut =
                     result[0].timestamp < params.endTime &&
                     result[result.length - 1].timestamp > params.startTime;
 
-                if (isPossimbleToCut) {
+                if (isPossibleToCut) {
                     return result.filter(({ timestamp }) => {
                         return (
                             timestamp < params.endTime &&
@@ -142,10 +141,10 @@ class HuobiSpot extends HuobiBase {
             }
 
             if (params.startTime && !params.endTime) {
-                const isPossimbleToCut =
+                const isPossibleToCut =
                     result[result.length - 1].timestamp > params.startTime;
 
-                if (isPossimbleToCut) {
+                if (isPossibleToCut) {
                     return result.filter(({ timestamp }) => {
                         return timestamp > params.startTime;
                     });
@@ -224,7 +223,7 @@ class HuobiSpot extends HuobiBase {
      *
      * @param {Order} zOrder Order to create
      */
-    async createOrder(zOrder) {
+    async postOrder(zOrder) {
         this.validateOrderParams(zOrder);
         await this.fetchAccountIdIfRequired();
 
@@ -232,41 +231,7 @@ class HuobiSpot extends HuobiBase {
 
         hOrder['account-id'] = this.accountId;
 
-        hOrder['client-order-id'] = `ZENFUSE_HUOBI_ORDER_${this.orderCount}`;
-
-        this.orderCount += 1;
-
-        // NOTE: Different api for buy market order. See https://t.ly/RCzx
-        // Need to convert quantity to total
-        if (zOrder.type === 'market' && zOrder.side === 'buy') {
-            let orderTotal = null;
-
-            if (zOrder.price) {
-                orderTotal = zOrder.price * zOrder.quantity;
-            }
-
-            if (!zOrder.price) {
-                const { price } = await this.fetchPrice(zOrder.symbol);
-
-                orderTotal = price * zOrder.quantity;
-            }
-
-            hOrder.amount = orderTotal;
-        }
-
-        const response = await this.privateFetch('v1/order/orders/place', {
-            method: 'POST',
-            json: hOrder,
-        });
-
-        zOrder.timestamp = Date.now();
-        // zOrder.id = response.data.toString();
-        zOrder.id = hOrder['client-order-id'];
-        zOrder.status = 'open';
-
-        this.cache.cacheOrder(zOrder);
-
-        utils.linkOriginalPayload(zOrder, response);
+        // .......
 
         return zOrder;
     }
