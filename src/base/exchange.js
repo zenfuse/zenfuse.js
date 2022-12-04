@@ -87,11 +87,15 @@ class ExchangeBase {
      */
     auth(creds) {
         this.keys = {};
+
+        // Fix user typo
+        if (!creds.secretKey && creds.privateKey) {
+            creds.secretKey = creds.privateKey;
+        }
+
         this.keys.publicKey = creds.publicKey.toString();
 
-        this.keys.secretKey = createSecretKey(
-            creds.secretKey || creds.privateKey,
-        );
+        this.keys.secretKey = createSecretKey(Buffer.from(creds.secretKey));
 
         this.keys.additionalKey = creds.additionalKey;
 
