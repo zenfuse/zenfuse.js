@@ -1,3 +1,5 @@
+const { createSecretKey } = require('crypto');
+
 const got = require('got');
 const mergeObjects = require('deepmerge');
 const z = require('zod');
@@ -72,6 +74,28 @@ class ExchangeBase {
                 message: 'Symbol should have valid "/" separator',
             },
         );
+    }
+
+    /**
+     * Authenticate instance
+     *
+     * @param {object} creds
+     * @param {string} creds.publicKey
+     * @param {string} creds.secretKey Same as public key
+     * @param {string} [creds.additionalKey]
+     * @returns {this}
+     */
+    auth(creds) {
+        this.keys = {};
+        this.keys.publicKey = creds.publicKey.toString();
+
+        this.keys.secretKey = createSecretKey(
+            creds.secretKey || creds.privateKey,
+        );
+
+        this.keys.additionalKey = creds.additionalKey;
+
+        return this;
     }
 
     validateOrderParams(order) {

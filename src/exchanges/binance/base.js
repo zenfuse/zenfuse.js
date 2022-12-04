@@ -8,8 +8,6 @@ const BinanceCache = require('./etc/cache');
 const RuntimeError = require('../../base/errors/runtime.error');
 const UserError = require('../../base/errors/user.error');
 
-const keysSymbol = Symbol('keys');
-
 /**
  * Binance base class for method which included in any wallet type
  *
@@ -48,8 +46,6 @@ class BinanceBase extends ExchangeBase {
         );
         super(assignedOptions);
 
-        this[keysSymbol] = {};
-
         this.cache = new BinanceCache(this);
 
         this.signatureEncoding = 'hex';
@@ -66,7 +62,7 @@ class BinanceBase extends ExchangeBase {
         if (this.hasKeys) {
             options = mergeObjects(options, {
                 headers: {
-                    'X-MBX-APIKEY': this[keysSymbol].publicKey,
+                    'X-MBX-APIKEY': this.keys.publicKey,
                 },
             });
         }
@@ -90,33 +86,18 @@ class BinanceBase extends ExchangeBase {
 
         options.searchParams.signature = createHmac(
             'sha256',
-            this[keysSymbol].privateKey,
+            this.keys.privateKey,
         )
             .update(new URLSearchParams(options.searchParams).toString())
             .digest(this.signatureEncoding);
 
         options = mergeObjects(options, {
             headers: {
-                'X-MBX-APIKEY': this[keysSymbol].publicKey,
+                'X-MBX-APIKEY': this.keys.publicKey,
             },
         });
 
         return await this.fetcher(url, options).catch(this.handleFetcherError);
-    }
-
-    /**
-     * Connect to authenticated API
-     *
-     * @param {object} keys
-     * @param {string} keys.publicKey
-     * @param {string} keys.privateKey Same as secret key
-     * @returns {this}
-     */
-    auth({ publicKey, privateKey }) {
-        this[keysSymbol] = {};
-        this[keysSymbol].publicKey = publicKey;
-        this[keysSymbol].privateKey = privateKey;
-        return this;
     }
 
     /**
@@ -125,11 +106,7 @@ class BinanceBase extends ExchangeBase {
      * @type {boolean}
      */
     get hasKeys() {
-        return (
-            !!this[keysSymbol] &&
-            !!this[keysSymbol].publicKey &&
-            !!this[keysSymbol].privateKey
-        );
+        return !!this.keys && !!this.keys.publicKey && !!this.keys.privateKey;
     }
 
     /**
