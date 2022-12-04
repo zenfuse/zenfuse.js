@@ -1,6 +1,6 @@
 ---
 slug: /get-current-price
-description: How to get current market price 
+description: How to get current market price
 ---
 
 # Get current price
@@ -23,12 +23,15 @@ priceList.forEach({ symbol, price } => {
     console.log(symbol, '->', price)
 })
 ```
+
 Expected output:
+
 ```
 BTC/USDT -> 99999.99
 ETH/DAI -> 1337.99
 ...
 ```
+
 ### For specific market
 
 To fetch specific market price, include first parameter as market symbol fith `/` separator.
@@ -37,9 +40,11 @@ To fetch specific market price, include first parameter as market symbol fith `/
 const price = await binance.fetchPrice('BTC/USDT');
 
 // Console output
-console.log('Current Bitcoin price is', price)
+console.log('Current Bitcoin price is', price);
 ```
+
 Expected output:
+
 ```
 Current Bitcoin price 99999.99
 ```
@@ -63,9 +68,8 @@ const marketDataStream = ftx.getMarketDataStream();
 ### Get price stream for specific market
 
 ```js
-
 // Open websocket connection
-marketDataStream.open()
+marketDataStream.open();
 
 // Subscribe for current BTC price
 marketDataStream.subscribeTo({
@@ -80,6 +84,7 @@ marketDataStream.on('newPrice', (event) => {
 ```
 
 Expected output:
+
 ```
 Current ETH/USD price 1337.69
 Current ETH/USD price 1388.88
@@ -115,7 +120,9 @@ marketDataStream.on('newPrice', (event) => {
     console.log(`Current ${event.symbol} price`, '->', event.price);
 });
 ```
+
 Expected output:
+
 ```
 Current ETH/USD price 1337.69
 Current BTC/USD price 99999.99
@@ -124,4 +131,3 @@ Current BTC/USD price 99999.98
 Current ETH/USD price 1330.48
 ...
 ```
-

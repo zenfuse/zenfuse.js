@@ -33,13 +33,13 @@ jobs:
 
             - name: Install npm dependencies
               run: npm ci
-              
+
             - name: Publish to npm registry
               run: |
-                # Change publish registry
-                echo "$(jq '.publishConfig.registry = "https://registry.npmjs.org"' package.json)" > package.json
-                # Publish package
-                npm publish --access public
+                  # Change publish registry
+                  echo "$(jq '.publishConfig.registry = "https://registry.npmjs.org"' package.json)" > package.json
+                  # Publish package
+                  npm publish --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -58,22 +58,22 @@ jobs:
                   node-version: 18
                   registry-url: 'https://npm.pkg.github.com'
                   cache: npm
-            
+
             - name: Install npm dependencies
               run: npm ci
-            
+
             - name: Publish to github registry
               run: |
-                # Change publish registry
-                echo "$(jq '.publishConfig.registry = "https://npm.pkg.github.com"' package.json)" > package.json
-                # Add organisation scope to package name
-                echo "$( jq '.name = "@zenfuse/zenfuse"' package.json )" > package.json
-                # And publish this boy 
-                npm publish --@zenfuse:registry=https://npm.pkg.github.com
+                  # Change publish registry
+                  echo "$(jq '.publishConfig.registry = "https://npm.pkg.github.com"' package.json)" > package.json
+                  # Add organisation scope to package name
+                  echo "$( jq '.name = "@zenfuse/zenfuse"' package.json )" > package.json
+                  # And publish this boy 
+                  npm publish --@zenfuse:registry=https://npm.pkg.github.com
 
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  
+
     release:
         needs: [npm, gp]
         if: always() && (needs.npm.result == 'success' && needs.gp.result == 'success')
@@ -81,18 +81,18 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            
+
             - name: Get the version
               id: version
               run: echo name=$(jq '.version' package.json -r) >> $GITHUB_OUTPUT
-              
+
             - name: Post release
               run: gh release create v${{ steps.version.outputs.name }} --target main --generate-notes --prerelease;
               env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
             - name: Set output
-              run: | 
-                echo "### New release v${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
-                echo "#### https://www.npmjs.com/package/zenfuse/v/${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
-                echo "#### https://github.com/zenfuse/zenfuse.js/releases/tag/v${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+              run: |
+                  echo "### New release v${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+                  echo "#### https://www.npmjs.com/package/zenfuse/v/${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+                  echo "#### https://github.com/zenfuse/zenfuse.js/releases/tag/v${{ steps.version.outputs.name }}" >> $GITHUB_STEP_SUMMARY
