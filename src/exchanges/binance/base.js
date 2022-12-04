@@ -86,7 +86,7 @@ class BinanceBase extends ExchangeBase {
 
         options.searchParams.signature = createHmac(
             'sha256',
-            this.keys.privateKey,
+            this.keys.secretKey,
         )
             .update(new URLSearchParams(options.searchParams).toString())
             .digest(this.signatureEncoding);
@@ -106,7 +106,7 @@ class BinanceBase extends ExchangeBase {
      * @type {boolean}
      */
     get hasKeys() {
-        return !!this.keys && !!this.keys.publicKey && !!this.keys.privateKey;
+        return !!this.keys && !!this.keys.publicKey && !!this.keys.secretKey;
     }
 
     /**
