@@ -285,7 +285,7 @@ class BinanceSpot extends BinanceBase {
             // 	┬──┬ ノ(ò_óノ) Binance api kills nerve cells
             const openOrders = await this.fetchOpenOrders();
 
-            const response = openOrders[Symbol.for('zenfuse.originalPayload')];
+            const response = openOrders.originalPayload;
 
             const orderToDelete = response.find((o) => {
                 return o.orderId === orderId;

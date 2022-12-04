@@ -2,15 +2,22 @@ const utils = require('./utils');
 
 describe('linkOriginalPayload()', () => {
     const { linkOriginalPayload } = utils;
+    const object = {};
 
     it('should link symbol', () => {
         const payload = { random: Math.random() };
-        const object = {};
 
         linkOriginalPayload(object, payload);
 
-        expect(object[Symbol.for('zenfuse.originalPayload')]).toBeDefined();
-        expect(object[Symbol.for('zenfuse.originalPayload')]).toBe(payload);
+        expect(object.originalPayload).toBeDefined();
+        expect(object.originalPayload).toBe(payload);
+    });
+
+    it('should hide linked value', () => {
+        expect(Object.keys(object).length).toBe(0);
+        expect(Object.getOwnPropertyNames(object)).toStrictEqual([
+            'originalPayload',
+        ]);
     });
 });
 
