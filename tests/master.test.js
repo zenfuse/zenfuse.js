@@ -80,9 +80,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result.originalPayload,
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
 
             it('should return valid output', () => {
@@ -110,9 +108,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result.originalPayload,
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
 
             it('should return valid schema', () => {
@@ -146,9 +142,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalPayload', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result.originalPayload,
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
 
             it('should fetch specific price without errors', async () => {
@@ -157,9 +151,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result.originalPayload,
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 
@@ -181,17 +173,13 @@ module.exports = function masterTest(Exchange, env) {
                 result.forEach((kline) => {
                     expect(kline.interval).toBe(env.CANDLES_REQUEST.interval);
                     expect(kline.symbol).toBe(env.CANDLES_REQUEST.symbol);
-                    expect(
-                        kline.originalPayload,
-                    ).toBeDefined();
+                    expect(kline.originalPayload).toBeDefined();
                 });
             });
 
             it('should have valid originalPayload', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result.originalPayload,
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 
@@ -263,9 +251,7 @@ module.exports = function masterTest(Exchange, env) {
                         side: env.BUY_MARKET_ORDER.side,
                     });
 
-                    expect(
-                        result.originalPayload,
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
 
@@ -284,9 +270,7 @@ module.exports = function masterTest(Exchange, env) {
                         type: env.SELL_MARKET_ORDER.type,
                         side: env.SELL_MARKET_ORDER.side,
                     });
-                    expect(
-                        result.originalPayload,
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
 
@@ -305,9 +289,7 @@ module.exports = function masterTest(Exchange, env) {
                         type: env.BUY_LIMIT_ORDER.type,
                         side: env.BUY_LIMIT_ORDER.side,
                     });
-                    expect(
-                        result.originalPayload,
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
 
@@ -326,9 +308,7 @@ module.exports = function masterTest(Exchange, env) {
                         type: env.SELL_LIMIT_ORDER.type,
                         side: env.SELL_LIMIT_ORDER.side,
                     });
-                    expect(
-                        result.originalPayload,
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
 
@@ -348,9 +328,7 @@ module.exports = function masterTest(Exchange, env) {
                         type: env.PRECISION_REQUIRED_ORDER.type,
                         side: env.PRECISION_REQUIRED_ORDER.side,
                     });
-                    expect(
-                        result.originalPayload,
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
         });
@@ -390,9 +368,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result.originalPayload,
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 
@@ -425,9 +401,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result.originalPayload,
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 
@@ -460,9 +434,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result.originalPayload,
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 
