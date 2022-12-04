@@ -43,8 +43,6 @@ class OkxBase extends ExchangeBase {
         const assignedOptions = mergeObjects(OkxBase.DEFAULT_OPTIONS, options);
         super(assignedOptions);
 
-        this.keys = {};
-
         this.cache = new OkxCache(this);
         this.signatureEncoding = 'base64';
     }

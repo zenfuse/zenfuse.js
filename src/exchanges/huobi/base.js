@@ -9,8 +9,6 @@ const HuobiCache = require('./etc/cache');
 const ZenfuseRuntimeError = require('../../base/errors/runtime.error');
 const UserError = require('../../base/errors/user.error');
 
-const keysSymbol = Symbol.for('zenfuse.keyVault');
-
 /**
  * Huobi base class for method which included in any wallet type
  *
@@ -50,8 +48,6 @@ class HuobiBase extends ExchangeBase {
         );
         super(assignedOptions);
 
-        this[keysSymbol] = {};
-
         this.cache = new HuobiCache(this);
     }
 
@@ -79,7 +75,7 @@ class HuobiBase extends ExchangeBase {
         this.throwIfNotHasKeys();
 
         const queryString = new URLSearchParams({
-            AccessKeyId: this[keysSymbol].publicKey,
+            AccessKeyId: this.keys.publicKey,
             SignatureMethod: 'HmacSHA256',
             SignatureVersion: 2,
             Timestamp: new Date().toISOString().replace(/.\d+Z$/g, ''), // Remove miliseconds
@@ -97,7 +93,7 @@ class HuobiBase extends ExchangeBase {
             method,
             url,
             queryString,
-            this[keysSymbol].privateKey,
+            this.keys.secretKey,
         );
 
         queryString.append('Signature', signature);
@@ -110,31 +106,12 @@ class HuobiBase extends ExchangeBase {
     }
 
     /**
-     * Connect to authentificated API
-     *
-     * @param {object} keys
-     * @param {string} keys.publicKey
-     * @param {string} keys.privateKey Same as secret key
-     * @returns {this}
-     */
-    auth({ publicKey, privateKey }) {
-        this[keysSymbol] = {};
-        this[keysSymbol].publicKey = publicKey;
-        this[keysSymbol].privateKey = privateKey;
-        return this;
-    }
-
-    /**
-     * Is instanse has keys to authenticate on not
+     * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */
     get hasKeys() {
-        return (
-            !!this[keysSymbol] &&
-            !!this[keysSymbol].publicKey &&
-            !!this[keysSymbol].privateKey
-        );
+        return !!this.keys && !!this.keys.publicKey && !!this.keys.secretKey;
     }
 
     /**
@@ -180,10 +157,10 @@ class HuobiBase extends ExchangeBase {
         return res;
     }
 
-    createHmacSignatureHuobi(method, url, queryString, privateKey) {
+    createHmacSignatureHuobi(method, url, queryString, secretKey) {
         const preSignedText = `${method}\napi.huobi.pro\n/${url}\n${queryString.toString()}`;
 
-        return createHmac('sha256', privateKey)
+        return createHmac('sha256', secretKey)
             .update(preSignedText)
             .digest('base64');
     }
@@ -200,7 +177,7 @@ class HuobiBase extends ExchangeBase {
         let rawSymbol = '';
 
         if (!isSymbolCached) {
-            const errorMsg = `Unnable to parse huobi ${hSymbol} symbol`;
+            const errorMsg = `Unable to parse huobi ${hSymbol} symbol`;
 
             // 6 length symbol can devided by 2 pieces
             if (hSymbol.length === 6) {
@@ -244,7 +221,7 @@ class HuobiBase extends ExchangeBase {
     /**
      * Zenfuse -> Huobi
      *
-     * **DEV:** Doesnt include required account id
+     * **DEV:** Doesn't include required account id
      *
      * @param {Order} zOrder Zenfuse order
      * @returns {object} Order for binance api
@@ -274,9 +251,9 @@ class HuobiBase extends ExchangeBase {
     }
 
     /**
-     * Binance -> Zenfuse
+     * Huobi -> Zenfuse
      *
-     * @param {*} hOrder Order fromf
+     * @param {*} hOrder Order from Huobi
      * @returns {Order} Zenfuse Order
      */
     transformHuobiOrder(hOrder) {
