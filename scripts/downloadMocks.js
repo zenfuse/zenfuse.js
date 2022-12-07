@@ -144,7 +144,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                 return downloadEach(mocksPath, downloadList, task);
             }),
             task('Huobi', ({ task, setStatus }) => {
-                if (!shouldRun('huobi')) {
+                if (!isOnly('huobi')) {
                     setStatus('skipped');
                     return;
                 }
@@ -173,7 +173,11 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     },
                 ];
 
-                run(mocksPath, downloadList, task);
+                if (options.clean) {
+                    return removeEach(mocksPath, downloadList, task);
+                }
+
+                return downloadEach(mocksPath, downloadList, task);
             }),
             task('Huobi', ({ task, setStatus }) => {
                 if (!shouldRun('huobi')) {
@@ -219,7 +223,35 @@ const removeEach = (mocksPath, downloadList, task) => {
         const filePath = mocksPath + filename;
 
         task(filename, async ({ setStatus, setOutput }) => {
-            if (fs.existsSync(filePath) && !options.force) {
+            await fs
+                .rm(filePath)
+                .then(() => setStatus('removed'))
+                .then(() =>
+                    setOutput(path.resolve(__dirname + '/../', filePath)),
+                )
+                .catch((err) => {
+                    if (err.code === 'ENOENT') {
+                        setStatus('no such file');
+                    } else {
+                        throw err;
+                    }
+                });
+        });
+    }
+};
+
+const downloadEach = (mocksPath, downloadList, task) => {
+    for (const { filename, endpoint } of downloadList) {
+        const filePath = path.resolve(__dirname + '/../', mocksPath + filename);
+
+        task(filename, async ({ setStatus, setOutput }) => {
+            const isExists = await fs.stat(filePath).catch((err) => {
+                if (err.code !== 'ENOENT') {
+                    throw err;
+                }
+            });
+
+            if (isExists && !options.force) {
                 setStatus('exists');
                 return;
             }
