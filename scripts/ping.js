@@ -1,76 +1,69 @@
 const task = require('tasuku');
 const zenfuse = require('zenfuse');
 
-task('Ping servers', async ({ task }) => {
-    await task
-        .group(
-            (task) => [
-                task('Binance', async ({ setStatus, setOutput }) => {
-                    const binance = new zenfuse.Binance.spot();
-                    const hostname =
-                        binance.options.httpClientOptions.prefixUrl;
+(async () => {
+    await task('Binance', async ({ setStatus, setOutput }) => {
+        const binance = new zenfuse.Binance.spot();
+        const hostname = binance.options.httpClientOptions.prefixUrl;
 
-                    setStatus(hostname);
+        setStatus(hostname);
 
-                    const startTime = Date.now();
+        const startTime = Date.now();
 
-                    await binance.ping();
+        await binance.ping();
 
-                    setOutput(`${Date.now() - startTime} ms`);
-                }),
-                task('Bitglobal', async ({ setStatus, setOutput }) => {
-                    const bitglobal = new zenfuse.Bitglobal.spot();
-                    const hostname =
-                        bitglobal.options.httpClientOptions.prefixUrl;
+        setOutput(`${Date.now() - startTime} ms`);
+    });
 
-                    setStatus(hostname);
+    await task('Bitglobal', async ({ setStatus, setOutput }) => {
+        const bitglobal = new zenfuse.Bitglobal.spot();
+        const hostname = bitglobal.options.httpClientOptions.prefixUrl;
 
-                    const startTime = Date.now();
+        setStatus(hostname);
 
-                    await bitglobal.ping();
+        const startTime = Date.now();
 
-                    setOutput(`${Date.now() - startTime} ms`);
-                }),
-                task('OKX', async ({ setStatus, setOutput }) => {
-                    const okx = new zenfuse.OKX.spot();
-                    const hostname = okx.options.httpClientOptions.prefixUrl;
+        await bitglobal.ping();
 
-                    setStatus(hostname);
+        setOutput(`${Date.now() - startTime} ms`);
+    });
 
-                    const startTime = Date.now();
+    await task('OKX', async ({ setStatus, setOutput }) => {
+        const okx = new zenfuse.OKX.spot();
+        const hostname = okx.options.httpClientOptions.prefixUrl;
 
-                    await okx.ping();
+        setStatus(hostname);
 
-                    setOutput(`${Date.now() - startTime} ms`);
-                }),
-                task('Huobi', async ({ setStatus, setOutput }) => {
-                    const huobi = new zenfuse.Huobi.spot();
-                    const hostname = huobi.options.httpClientOptions.prefixUrl;
+        const startTime = Date.now();
 
-                    setStatus(hostname);
+        await okx.ping();
 
-                    const startTime = Date.now();
+        setOutput(`${Date.now() - startTime} ms`);
+    });
 
-                    await huobi.ping();
+    await task('Huobi', async ({ setStatus, setOutput }) => {
+        const huobi = new zenfuse.Huobi.spot();
+        const hostname = huobi.options.httpClientOptions.prefixUrl;
 
-                    setOutput(`${Date.now() - startTime} ms`);
-                }),
-                task('FTX', async ({ setStatus, setOutput }) => {
-                    const ftx = new zenfuse.FTX.spot();
-                    const hostname = ftx.options.httpClientOptions.prefixUrl;
+        setStatus(hostname);
 
-                    setStatus(hostname);
+        const startTime = Date.now();
 
-                    const startTime = Date.now();
+        await huobi.ping();
 
-                    await ftx.ping();
+        setOutput(`${Date.now() - startTime} ms`);
+    });
 
-                    setOutput(`${Date.now() - startTime} ms`);
-                }),
-            ],
-            {
-                concurrency: Infinity,
-            },
-        )
-        .catch(() => {});
-});
+    await task('FTX', async ({ setStatus, setOutput }) => {
+        const ftx = new zenfuse.FTX.spot();
+        const hostname = ftx.options.httpClientOptions.prefixUrl;
+
+        setStatus(hostname);
+
+        const startTime = Date.now();
+
+        await ftx.ping();
+
+        setOutput(`${Date.now() - startTime} ms`);
+    });
+})().catch(() => {});
