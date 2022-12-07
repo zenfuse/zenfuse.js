@@ -1,69 +1,22 @@
 const task = require('tasuku');
 const zenfuse = require('zenfuse');
 
+const ping = async (name, task) => {
+    const exchange = new zenfuse[name].spot();
+    const hostname = exchange.options.httpClientOptions.prefixUrl;
+
+    task.setStatus(hostname);
+
+    const startTime = Date.now();
+
+    await exchange.ping();
+
+    task.setOutput(`${Date.now() - startTime} ms`);
+};
+
 (async () => {
-    await task('Binance', async ({ setStatus, setOutput }) => {
-        const binance = new zenfuse.Binance.spot();
-        const hostname = binance.options.httpClientOptions.prefixUrl;
-
-        setStatus(hostname);
-
-        const startTime = Date.now();
-
-        await binance.ping();
-
-        setOutput(`${Date.now() - startTime} ms`);
-    });
-
-    await task('Bitglobal', async ({ setStatus, setOutput }) => {
-        const bitglobal = new zenfuse.Bitglobal.spot();
-        const hostname = bitglobal.options.httpClientOptions.prefixUrl;
-
-        setStatus(hostname);
-
-        const startTime = Date.now();
-
-        await bitglobal.ping();
-
-        setOutput(`${Date.now() - startTime} ms`);
-    });
-
-    await task('OKX', async ({ setStatus, setOutput }) => {
-        const okx = new zenfuse.OKX.spot();
-        const hostname = okx.options.httpClientOptions.prefixUrl;
-
-        setStatus(hostname);
-
-        const startTime = Date.now();
-
-        await okx.ping();
-
-        setOutput(`${Date.now() - startTime} ms`);
-    });
-
-    await task('Huobi', async ({ setStatus, setOutput }) => {
-        const huobi = new zenfuse.Huobi.spot();
-        const hostname = huobi.options.httpClientOptions.prefixUrl;
-
-        setStatus(hostname);
-
-        const startTime = Date.now();
-
-        await huobi.ping();
-
-        setOutput(`${Date.now() - startTime} ms`);
-    });
-
-    await task('FTX', async ({ setStatus, setOutput }) => {
-        const ftx = new zenfuse.FTX.spot();
-        const hostname = ftx.options.httpClientOptions.prefixUrl;
-
-        setStatus(hostname);
-
-        const startTime = Date.now();
-
-        await ftx.ping();
-
-        setOutput(`${Date.now() - startTime} ms`);
-    });
+    await task('Binance', async (task) => await ping('Binance', task));
+    await task('Bitglobal', async (task) => await ping('Bitglobal', task));
+    await task('OKX', async (task) => await ping('OKX', task));
+    await task('Huobi', async (task) => await ping('Huobi', task));
 })().catch(() => {});
