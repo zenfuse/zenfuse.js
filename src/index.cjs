@@ -11,19 +11,9 @@ const Huobi = require('./exchanges/huobi');
 module.exports = {
     Binance,
     FTX,
-    Bithumb,
     OKX,
-    Bitglobal: Bithumb, // TODO: Rename all githumb classes
+    Bitglobal,
     Huobi,
-    /**
-     * Object with lower case names for uid usage
-     */
-    exchanges: {
-        binance: Binance,
-        ftx: FTX,
-        bithumb: Bithumb,
-        huobi: Huobi,
-    },
 
     errorCodes: ExchangeBaseException.errorCodes,
     config: require('./base/conf/configurator'),
