@@ -106,3 +106,7 @@ release version:
 # Delete all untracked files
 clean:
     git clean -xdf
+
+# Ping exchanges servers
+ping:
+    node scripts/ping.js
