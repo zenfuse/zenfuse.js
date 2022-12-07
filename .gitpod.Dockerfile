@@ -1,7 +1,7 @@
 FROM gitpod/workspace-full:latest
 
 # Use 14 nodejs
-RUN bash -c ". .nvm/nvm.sh && nvm install 14 && nvm use 14 && nvm alias default 14"
+RUN bash -c ". .nvm/nvm.sh && nvm install 14 --latest-npm && nvm use 14 && nvm alias default 14"
 RUN echo "nvm use default &>/dev/null" >> ~/.bashrc.d/51-nvm-fix
 
 # Install just
