@@ -2,7 +2,6 @@ const { HTTPError } = require('got');
 const mergeObjects = require('deepmerge');
 const { createHmac } = require('crypto');
 
-const utils = require('../../base/utils/utils');
 const ExchangeBase = require('../../base/exchange');
 const HuobiApiError = require('./errors/api.error');
 const HuobiCache = require('./etc/cache');
@@ -16,7 +15,7 @@ const UserError = require('../../base/errors/user.error');
  */
 class HuobiBase extends ExchangeBase {
     /**
-     * Http client options specialy for Huobi
+     * Http client options specially for Huobi
      *
      * @type {import('../../base/exchange').BaseOptions}
      */
@@ -78,7 +77,7 @@ class HuobiBase extends ExchangeBase {
             AccessKeyId: this.keys.publicKey,
             SignatureMethod: 'HmacSHA256',
             SignatureVersion: 2,
-            Timestamp: new Date().toISOString().replace(/.\d+Z$/g, ''), // Remove miliseconds
+            Timestamp: new Date().toISOString().replace(/.\d+Z$/g, ''), // Remove milliseconds
         });
 
         if (options.searchParams) {

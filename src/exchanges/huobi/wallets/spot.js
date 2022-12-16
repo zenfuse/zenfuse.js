@@ -221,17 +221,39 @@ class HuobiSpot extends HuobiBase {
     /**
      * Create new spot order on Huobi
      *
-     * @param {Order} zOrder Order to create
+     * @param {Order} params Order to create
      */
-    async postOrder(zOrder) {
-        this.validateOrderParams(zOrder);
-        await this.fetchAccountIdIfRequired();
+    async postOrder(params) {
+        this.validateOrderParams(params);
 
-        const hOrder = this.transformZenfuseOrder(zOrder);
+        const hOrder = this.transformZenfuseOrder(params);
 
-        hOrder['account-id'] = this.accountId;
+        hOrder['account-id'] = await this.getAccountId();
 
-        // .......
+        // NOTE: For buy market order 'amount' is quantity of quote ticker in order ಠ_ಠ
+        // https://huobiapi.github.io/docs/spot/v1/en/#place-a-new-order:~:text=order%20size-,(for%20buy%20market%20order%2C%20it%27s%20order%20value),-NA
+        const isConvertRequired =
+            params.type === 'market' && params.side === 'buy';
+
+        if (isConvertRequired) {
+            const { price } = await this.fetchPrice(params.symbol);
+
+            hOrder.amount = price * params.quantity;
+        }
+
+        const response = await this.privateFetch('v1/order/orders/place', {
+            method: 'POST',
+            json: hOrder,
+        });
+
+        const zOrder = {
+            id: response.data,
+            timestamp: Date.now(),
+            status: 'open',
+            ...params,
+        };
+
+        utils.linkOriginalPayload(zOrder, response);
 
         return zOrder;
     }
@@ -311,11 +333,9 @@ class HuobiSpot extends HuobiBase {
     }
 
     async fetchOpenOrders() {
-        await this.fetchAccountIdIfRequired();
-
         const response = await this.privateFetch('v1/order/openOrders', {
             searchParams: {
-                'account-id': this.accountId,
+                'account-id': await this.getAccountId(),
             },
         });
 
@@ -331,10 +351,10 @@ class HuobiSpot extends HuobiBase {
     }
 
     async fetchBalances() {
-        await this.fetchAccountIdIfRequired();
+        const accountId = await this.getAccountId();
 
         const response = await this.privateFetch(
-            `v1/account/accounts/${this.accountId}/balance`,
+            `v1/account/accounts/${accountId}/balance`,
         );
 
         const mapedBalances = response.data.list.reduce(
@@ -396,12 +416,14 @@ class HuobiSpot extends HuobiBase {
     /**
      * @private
      */
-    async fetchAccountIdIfRequired() {
+    async getAccountId() {
         if (!this.accountId) {
             const response = await this.privateFetch('v1/account/accounts');
 
             this.accountId = response.data.find((a) => a.type === 'spot').id;
         }
+
+        return this.accountId;
     }
 }
 

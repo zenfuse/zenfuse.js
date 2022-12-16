@@ -99,7 +99,7 @@ module.exports = (env) => ({
                 .replyWithFile(200, candlesFilePath, {
                     'Content-Type': 'application/json',
                 }),
-        'createOrder()': {
+        'postOrder()': {
             'buy by market': () =>
                 nock(HOSTNAME, OPTIONS)
                     .get('/market/detail')
