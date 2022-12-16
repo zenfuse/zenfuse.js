@@ -28,12 +28,14 @@ const env = createEnv({
         type: 'market',
         side: 'buy',
         quantity: 0.0001,
+        price: -1,
     },
     SELL_MARKET_ORDER: {
         symbol: 'BTC/USDT',
         type: 'market',
         side: 'sell',
         quantity: 0.0001,
+        price: -1,
     },
     BUY_LIMIT_ORDER: {
         symbol: 'BTC/USDT',
