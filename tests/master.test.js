@@ -1,6 +1,8 @@
 const { z } = require('zod');
 const zenfuse = require('zenfuse');
 
+const crypto = require('crypto');
+
 const MockedAgent = require('./mocks/agent');
 
 /**
@@ -78,9 +80,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
 
             it('should return valid output', () => {
@@ -108,9 +108,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
 
             it('should return valid schema', () => {
@@ -144,9 +142,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalPayload', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
 
             it('should fetch specific price without errors', async () => {
@@ -155,9 +151,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 
@@ -179,17 +173,13 @@ module.exports = function masterTest(Exchange, env) {
                 result.forEach((kline) => {
                     expect(kline.interval).toBe(env.CANDLES_REQUEST.interval);
                     expect(kline.symbol).toBe(env.CANDLES_REQUEST.symbol);
-                    expect(
-                        kline[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeDefined();
+                    expect(kline.originalPayload).toBeDefined();
                 });
             });
 
             it('should have valid originalPayload', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 
@@ -205,7 +195,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should pass keys to instance', () => {
                 const keys = {
                     publicKey: env.API_PUBLIC_KEY,
-                    privateKey: env.API_PRIVATE_KEY,
+                    secretKey: env.API_PRIVATE_KEY,
                     additionalKey: env.API_ADDITIONAL_KEY,
                 };
 
@@ -214,6 +204,15 @@ module.exports = function masterTest(Exchange, env) {
                 exchange.auth(keys);
 
                 expect(exchange.hasKeys).toBe(true);
+            });
+
+            it('should make secret key secured', () => {
+                expect(exchange.keys.secretKey).toBeInstanceOf(
+                    crypto.KeyObject,
+                );
+
+                // it should not be exposed as string
+                expect(exchange.keys.secretKey).not.toBe(env.API_PRIVATE_KEY);
             });
         });
 
@@ -252,9 +251,7 @@ module.exports = function masterTest(Exchange, env) {
                         side: env.BUY_MARKET_ORDER.side,
                     });
 
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
 
@@ -273,9 +270,7 @@ module.exports = function masterTest(Exchange, env) {
                         type: env.SELL_MARKET_ORDER.type,
                         side: env.SELL_MARKET_ORDER.side,
                     });
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
 
@@ -294,9 +289,7 @@ module.exports = function masterTest(Exchange, env) {
                         type: env.BUY_LIMIT_ORDER.type,
                         side: env.BUY_LIMIT_ORDER.side,
                     });
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
 
@@ -315,9 +308,7 @@ module.exports = function masterTest(Exchange, env) {
                         type: env.SELL_LIMIT_ORDER.type,
                         side: env.SELL_LIMIT_ORDER.side,
                     });
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
 
@@ -337,9 +328,7 @@ module.exports = function masterTest(Exchange, env) {
                         type: env.PRECISION_REQUIRED_ORDER.type,
                         side: env.PRECISION_REQUIRED_ORDER.side,
                     });
-                    expect(
-                        result[Symbol.for('zenfuse.originalPayload')],
-                    ).toBeDefined();
+                    expect(result.originalPayload).toBeDefined();
                 });
             });
         });
@@ -379,9 +368,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 
@@ -414,9 +401,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 
@@ -449,9 +434,7 @@ module.exports = function masterTest(Exchange, env) {
 
             it('should have valid originalResponse', () => {
                 expect(result).toBeDefined();
-                expect(
-                    result[Symbol.for('zenfuse.originalPayload')],
-                ).toBeDefined();
+                expect(result.originalPayload).toBeDefined();
             });
         });
 

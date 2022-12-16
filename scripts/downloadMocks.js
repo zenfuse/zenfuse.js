@@ -2,16 +2,14 @@ const task = require('tasuku');
 const got = require('got');
 const mri = require('mri');
 
-const fs = require('fs');
-const util = require('util');
+const fs = require('fs/promises');
 const path = require('path');
-
-const writeFile = util.promisify(fs.writeFile);
 
 const options = mri(process.argv.slice(2), {
     alias: {
         f: 'force',
         h: 'help',
+        clear: 'clean',
     },
     default: {
         only: '',
@@ -22,13 +20,15 @@ const options = mri(process.argv.slice(2), {
 if (options.help) {
     const helpMessage = `Usage: downloadMocks.js [options...]
 -f, --force           Download even files already exists 
-    --only=<exchange> Run for specific exchange`;
+    --only=<exchange> Run for specific exchange
+    --clean           Delete all downloaded files`;
     process.stdout.write(helpMessage);
+    process.stdout.write('\n');
     process.exit(0);
 }
 
 const nameExp = new RegExp(`^${options.only}`, 'i');
-const shouldRun = (name) => nameExp.test(name);
+const isOnly = (name) => nameExp.test(name);
 
 task('Preparing mocks', async ({ task, setStatus }) => {
     if (options.force) {
@@ -38,7 +38,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
     await task.group(
         (task) => [
             task('Binance', ({ task, setStatus }) => {
-                if (!shouldRun('binance')) {
+                if (!isOnly('binance')) {
                     setStatus('skipped');
                     return;
                 }
@@ -62,34 +62,14 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     },
                 ];
 
-                run(mocksPath, downloadList, task);
-            }),
-            task('FTX', ({ task, setStatus }) => {
-                // eslint-disable-next-line
-                if (true) {
-                    setStatus('skipped');
-                    return;
+                if (options.clean) {
+                    return removeEach(mocksPath, downloadList, task);
                 }
 
-                const mocksPath =
-                    __dirname + '/../tests/exchanges/ftx/mocks/static/';
-
-                const downloadList = [
-                    {
-                        filename: 'markets.json',
-                        endpoint: 'https://ftx.com/api/markets',
-                    },
-                    {
-                        filename: 'history.json',
-                        endpoint:
-                            'https://ftx.com/api/markets/BTC/USDT/candles?resolution=60',
-                    },
-                ];
-
-                run(mocksPath, downloadList, task);
+                return downloadEach(mocksPath, downloadList, task);
             }),
             task('Bitglobal', ({ task, setStatus }) => {
-                if (!shouldRun('bitglobal')) {
+                if (!isOnly('bitglobal')) {
                     setStatus('skipped');
                     return;
                 }
@@ -114,10 +94,14 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     },
                 ];
 
-                run(mocksPath, downloadList, task);
+                if (options.clean) {
+                    return removeEach(mocksPath, downloadList, task);
+                }
+
+                return downloadEach(mocksPath, downloadList, task);
             }),
             task('OKX', ({ task }) => {
-                if (!shouldRun('okx')) {
+                if (!isOnly('okx')) {
                     setStatus('skipped');
                     return;
                 }
@@ -137,7 +121,11 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     },
                 ];
 
-                run(mocksPath, downloadList, task);
+                if (options.clean) {
+                    return removeEach(mocksPath, downloadList, task);
+                }
+
+                return downloadEach(mocksPath, downloadList, task);
             }),
         ],
         {
@@ -146,23 +134,51 @@ task('Preparing mocks', async ({ task, setStatus }) => {
     );
 });
 
-const run = (mocksPath, downloadList, task) => {
-    for (const { filename, endpoint } of downloadList) {
+const removeEach = (mocksPath, downloadList, task) => {
+    for (const { filename } of downloadList) {
         const filePath = mocksPath + filename;
 
         task(filename, async ({ setStatus, setOutput }) => {
-            if (fs.existsSync(filePath) && !options.force) {
+            await fs
+                .rm(filePath)
+                .then(() => setStatus('removed'))
+                .then(() =>
+                    setOutput(path.resolve(__dirname + '/../', filePath)),
+                )
+                .catch((err) => {
+                    if (err.code === 'ENOENT') {
+                        setStatus('no such file');
+                    } else {
+                        throw err;
+                    }
+                });
+        });
+    }
+};
+
+const downloadEach = (mocksPath, downloadList, task) => {
+    for (const { filename, endpoint } of downloadList) {
+        const filePath = path.resolve(__dirname + '/../', mocksPath + filename);
+
+        task(filename, async ({ setStatus, setOutput }) => {
+            const isExists = await fs.stat(filePath).catch((err) => {
+                if (err.code !== 'ENOENT') {
+                    throw err;
+                }
+            });
+
+            if (isExists) {
                 setStatus('exists');
                 return;
             }
 
             await got(endpoint)
                 .then((res) => {
-                    return writeFile(filePath, res.body);
+                    return fs.writeFile(filePath, res.body);
                 })
                 .then(() => {
                     setStatus('downloaded');
-                    setOutput(path.resolve(__dirname + '/../', filePath));
+                    setOutput(filePath);
                 });
         });
     }

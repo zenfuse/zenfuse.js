@@ -7,8 +7,6 @@ const OkxCache = require('./etc/cache');
 const { createHmacSignatureDefault } = require('../../base/utils/utils');
 const UserError = require('../../base/errors/user.error');
 
-const keysSymbol = Symbol.for('zenfuse.keyVault');
-
 /**
  * Okx base class for method which included in any wallet type
  *
@@ -45,7 +43,7 @@ class OkxBase extends ExchangeBase {
         const assignedOptions = mergeObjects(OkxBase.DEFAULT_OPTIONS, options);
         super(assignedOptions);
 
-        this[keysSymbol] = {};
+        this.keys = {};
 
         this.cache = new OkxCache(this);
         this.signatureEncoding = 'base64';
@@ -91,16 +89,16 @@ class OkxBase extends ExchangeBase {
 
         const signature = createHmacSignatureDefault(
             sigParams,
-            this[keysSymbol].privateKey,
+            this.keys.secretKey,
             this.signatureEncoding,
         );
 
         options = mergeObjects(options, {
             headers: {
-                'OK-ACCESS-KEY': this[keysSymbol].publicKey,
+                'OK-ACCESS-KEY': this.keys.publicKey,
                 'OK-ACCESS-TIMESTAMP': timestamp,
                 'OK-ACCESS-SIGN': signature,
-                'OK-ACCESS-PASSPHRASE': this[keysSymbol].additionalKey,
+                'OK-ACCESS-PASSPHRASE': this.keys.additionalKey,
             },
         });
 
@@ -110,33 +108,16 @@ class OkxBase extends ExchangeBase {
     }
 
     /**
-     * Connect to authenticated API
-     *
-     * @param {object} keys
-     * @param {string} keys.publicKey
-     * @param {string} keys.privateKey Same as secret key
-     * @param {string} keys.additionalKey OKX passphrase
-     * @returns {this}
-     */
-    auth({ publicKey, privateKey, additionalKey }) {
-        this[keysSymbol] = {};
-        this[keysSymbol].publicKey = publicKey;
-        this[keysSymbol].privateKey = privateKey;
-        this[keysSymbol].additionalKey = additionalKey;
-        return this;
-    }
-
-    /**
      * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */
     get hasKeys() {
         return (
-            !!this[keysSymbol] &&
-            !!this[keysSymbol].publicKey &&
-            !!this[keysSymbol].privateKey &&
-            !!this[keysSymbol].additionalKey
+            !!this.keys &&
+            !!this.keys.publicKey &&
+            !!this.keys.secretKey &&
+            !!this.keys.additionalKey
         );
     }
 

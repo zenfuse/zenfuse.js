@@ -7,8 +7,6 @@ const BitglobalCache = require('./etc/cache');
 const ZenfuseUserError = require('../../base/errors/user.error');
 const { createHmac } = require('crypto');
 
-const keysSymbol = Symbol.for('zenfuse.keyVault');
-
 /**
  * Bitglobal base class for method which included in any wallet type
  */
@@ -46,8 +44,6 @@ class BitglobalBase extends ExchangeBase {
         );
         super(assignedOptions);
 
-        this[keysSymbol] = {};
-
         this.cache = new BitglobalCache(this);
         this.msgNo = 0;
         this.signatureEncoding = 'hex';
@@ -79,7 +75,7 @@ class BitglobalBase extends ExchangeBase {
         const timestamp = Date.now();
 
         let sigParams = mergeObjects(options.json, {
-            apiKey: this[keysSymbol].publicKey,
+            apiKey: this.keys.publicKey,
             timestamp: timestamp.toString(),
             msgNo: this.msgNo.toString(),
         });
@@ -96,7 +92,7 @@ class BitglobalBase extends ExchangeBase {
 
         const signature = this.createHmacSignatureBitglobal(
             sigParams,
-            this[keysSymbol].privateKey,
+            this.keys.secretKey,
             this.signatureEncoding,
         );
 
@@ -114,31 +110,12 @@ class BitglobalBase extends ExchangeBase {
     }
 
     /**
-     * Connect to authenticated API
-     *
-     * @param {object} keys
-     * @param {string} keys.publicKey
-     * @param {string} keys.privateKey Same as secret key
-     * @returns {this}
-     */
-    auth({ publicKey, privateKey }) {
-        this[keysSymbol] = {};
-        this[keysSymbol].publicKey = publicKey;
-        this[keysSymbol].privateKey = privateKey;
-        return this;
-    }
-
-    /**
      * Is instance has keys to authenticate on not
      *
      * @type {boolean}
      */
     get hasKeys() {
-        return (
-            !!this[keysSymbol] &&
-            !!this[keysSymbol].publicKey &&
-            !!this[keysSymbol].privateKey
-        );
+        return !!this.keys && !!this.keys.publicKey && !!this.keys.secretKey;
     }
 
     /**
@@ -179,7 +156,7 @@ class BitglobalBase extends ExchangeBase {
         return response;
     }
 
-    createHmacSignatureBitglobal(sigParams, privateKey, encoding) {
+    createHmacSignatureBitglobal(sigParams, secretKey, encoding) {
         const charsToDel = ['{', '}', '"'];
 
         let signaturePayload = JSON.stringify(sigParams)
@@ -193,7 +170,7 @@ class BitglobalBase extends ExchangeBase {
             signaturePayload = signaturePayload.split(item).join('');
         });
 
-        return createHmac('sha256', privateKey)
+        return createHmac('sha256', secretKey)
             .update(signaturePayload)
             .digest(encoding);
     }

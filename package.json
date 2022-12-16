@@ -1,6 +1,6 @@
 {
     "name": "zenfuse",
-    "version": "0.10.17",
+    "version": "0.10.20",
     "description": "Comprehensive crypto trading library",
     "main": "src/index.cjs",
     "scripts": {
@@ -21,15 +21,15 @@
     },
     "exports": {
         ".": {
-            "import": "./index.mjs",
-            "require": "./index.cjs"
+            "import": "./src/index.mjs",
+            "require": "./src/index.cjs"
         },
         "./package.json": "./package.json"
     },
     "files": [
         "src",
-        "types",
-        "package-lock.json"
+        "!**/*.spec.js",
+        "types"
     ],
     "author": "zenfuse.io",
     "license": "AGPL-3.0-or-later",
@@ -52,7 +52,7 @@
         "@cspell/dict-fullstack": "^3.0.0",
         "@cspell/dict-html": "^4.0.0",
         "@cspell/dict-node": "^4.0.1",
-        "@cspell/dict-npm": "^4.0.1",
+        "@cspell/dict-npm": "^5.0.0",
         "@cspell/dict-software-terms": "^3.0.1",
         "@cspell/dict-typescript": "^3.0.1",
         "@cspell/eslint-plugin": "^6.0.0",
