@@ -7,6 +7,14 @@ description: How to post new order
 
 This is basic guide how to post your new order on Binance.
 
+:::tip API test environment
+
+If you dont want to post real orders on your exchange account, you can use testnet API.
+
+[**See testnet guide**](/docs/advanced/using-testnet)
+
+:::
+
 ## Authenticate your instance
 
 To post new order you need authenticate your instance with account API keys.

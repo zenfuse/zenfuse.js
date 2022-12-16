@@ -1,0 +1,9 @@
+{
+    "label": "Comprehensive guides",
+    "position": 3,
+    "collapsed": false,
+    "link": {
+        "type": "generated-index",
+        "description": "The comprehensive guides how to use zenfuse.js"
+    }
+}
