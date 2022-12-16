@@ -53,7 +53,7 @@ class HuobiCache extends BaseGlobalCache {
     /**
      * Base Tickers and all their quote pairs
      *
-     * @returns {Object.<string, string[]>}
+     * @returns {Object<string, string[]>}
      */
     get parsedSymbols() {
         this.updateSelfIfRequired();
