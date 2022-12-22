@@ -212,7 +212,7 @@ class HuobiBase extends ExchangeBase {
 
         if (orderIdType !== 'string' && orderIdType !== 'number') {
             throw new TypeError(
-                `Order id for canceling should be string or number, recieved ${orderIdType}`,
+                `Order id for canceling should be string or number, received ${orderIdType}`,
             );
         }
     }
@@ -288,6 +288,24 @@ class HuobiBase extends ExchangeBase {
         zOrder.quantity = parseFloat(hOrder.amount);
 
         return zOrder;
+    }
+
+    /**
+     * Order modifier for price and quantity. Provide decimal precision context for basic method.
+     *
+     * @protected
+     * @param {OrderParams} zOrder
+     * @returns {OrderParams}
+     */
+    preciseOrderValues(zOrder) {
+        const { quantityPrecision, pricePrecision } = this.cache.globalCache
+            .get('marketsPrecisionInfo')
+            .get(zOrder.symbol);
+
+        return super.preciseOrderValues(zOrder, {
+            price: pricePrecision,
+            quantity: quantityPrecision,
+        });
     }
 }
 
