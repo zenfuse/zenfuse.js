@@ -17,27 +17,18 @@ const options = mri(process.argv.slice(2), {
     },
 });
 
-const options = mri(process.argv.slice(2), {
-    alias: {
-        f: 'force',
-        h: 'help',
-    },
-    default: {
-        only: '',
-        force: false,
-    },
-});
-
 if (options.help) {
-    const helpMessage = `Usage: npm run download-mocks -- [options...]
+    const helpMessage = `Usage: downloadMocks.js [options...]
 -f, --force           Download even files already exists 
-    --only=<exchange> Run for specific exchange`;
+    --only=<exchange> Run for specific exchange
+    --clean           Delete all downloaded files`;
     process.stdout.write(helpMessage);
+    process.stdout.write('\n');
     process.exit(0);
 }
 
 const nameExp = new RegExp(`^${options.only}`, 'i');
-const shouldRun = (name) => nameExp.test(name);
+const isOnly = (name) => nameExp.test(name);
 
 task('Preparing mocks', async ({ task, setStatus }) => {
     if (options.force) {
@@ -47,7 +38,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
     await task.group(
         (task) => [
             task('Binance', ({ task, setStatus }) => {
-                if (!shouldRun('binance')) {
+                if (!isOnly('binance')) {
                     setStatus('skipped');
                     return;
                 }
@@ -71,21 +62,14 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                     },
                 ];
 
-                run(mocksPath, downloadList, task);
-            }),
-            task('FTX', ({ task, setStatus }) => {
-                if (!shouldRun('ftx')) {
-                    setStatus('skipped');
-                    return;
+                if (options.clean) {
+                    return removeEach(mocksPath, downloadList, task);
                 }
-
-                const mocksPath =
-                    __dirname + '/../tests/exchanges/ftx/mocks/static/';
 
                 return downloadEach(mocksPath, downloadList, task);
             }),
-            task('Bithumb', ({ task, setStatus }) => {
-                if (!shouldRun('bithumb')) {
+            task('Bitglobal', ({ task, setStatus }) => {
+                if (!isOnly('bitglobal')) {
                     setStatus('skipped');
                     return;
                 }
@@ -143,11 +127,12 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 return downloadEach(mocksPath, downloadList, task);
             }),
-            task('Huobi', ({ task, setStatus }) => {
+            task('Huobi', ({ task }) => {
                 if (!isOnly('huobi')) {
                     setStatus('skipped');
                     return;
                 }
+
                 const mocksPath =
                     __dirname + '/../tests/exchanges/huobi/mocks/static/';
 
@@ -161,15 +146,6 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                         filename: 'markets.json',
                         endpoint:
                             'https://api.huobi.pro/v2/settings/common/symbols',
-                    },
-                    {
-                        filename: 'pairs.json', // ticker pairs
-                        endpoint: 'https://api.huobi.pro/market/tickers',
-                    },
-                    {
-                        filename: 'candles.json',
-                        endpoint:
-                            'https://api.huobi.pro/market/history/kline?symbol=btcusdt&period=1min&size=2000',
                     },
                 ];
 
@@ -178,38 +154,6 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                 }
 
                 return downloadEach(mocksPath, downloadList, task);
-            }),
-            task('Huobi', ({ task, setStatus }) => {
-                if (!shouldRun('huobi')) {
-                    setStatus('skipped');
-                    return;
-                }
-                const mocksPath =
-                    __dirname + '/../tests/exchanges/huobi/mocks/static/';
-
-                const downloadList = [
-                    {
-                        filename: 'tickers.json',
-                        endpoint:
-                            'https://api.huobi.pro/v2/settings/common/currencies',
-                    },
-                    {
-                        filename: 'markets.json',
-                        endpoint:
-                            'https://api.huobi.pro/v2/settings/common/symbols',
-                    },
-                    {
-                        filename: 'pairs.json', // ticker pairs
-                        endpoint: 'https://api.huobi.pro/market/tickers',
-                    },
-                    {
-                        filename: 'candles.json',
-                        endpoint:
-                            'https://api.huobi.pro/market/history/kline?symbol=btcusdt&period=1min&size=2000',
-                    },
-                ];
-
-                run(mocksPath, downloadList, task);
             }),
         ],
         {
@@ -262,7 +206,7 @@ const downloadEach = (mocksPath, downloadList, task) => {
                 })
                 .then(() => {
                     setStatus('downloaded');
-                    setOutput(path.resolve(__dirname + '/../', filePath));
+                    setOutput(filePath);
                 });
         });
     }
