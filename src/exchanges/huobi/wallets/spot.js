@@ -226,7 +226,10 @@ class HuobiSpot extends HuobiBase {
     async postOrder(params) {
         this.validateOrderParams(params);
 
-        const hOrder = this.transformZenfuseOrder(params);
+        const hOrder = utils.pipe(
+            this.preciseOrderValues.bind(this),
+            this.transformZenfuseOrder.bind(this),
+        )(params);
 
         hOrder['account-id'] = await this.getAccountId();
 
@@ -239,6 +242,22 @@ class HuobiSpot extends HuobiBase {
             const { price } = await this.fetchPrice(params.symbol);
 
             hOrder.amount = price * params.quantity;
+
+            /**
+             * @see http://www.jacklmoore.com/notes/rounding-in-javascript/
+             * @param {number} value
+             * @param {number} limit
+             * @returns {number} Precised number
+             */
+            const precise = (value, limit) => {
+                return Number(Math.floor(value + 'e' + limit) + 'e-' + limit);
+            };
+
+            const { totalPrecision } = this.cache.globalCache
+                .get('marketsPrecisionInfo')
+                .get(params.symbol);
+
+            hOrder.total = precise(hOrder.total, totalPrecision);
         }
 
         const response = await this.privateFetch('v1/order/orders/place', {
@@ -263,24 +282,27 @@ class HuobiSpot extends HuobiBase {
      *
      * @param {Order} zOrder Huobi active order to cancel
      */
-    async cancelOrder(zOrder) {
+    async cancelOrder({ id, symbol }) {
         const response = await this.privateFetch(
-            `v1/order/orders/submitCancelClientOrder`,
+            `v1/order/orders/${id}/submitcancel`,
             {
                 method: 'POST',
                 json: {
-                    'client-order-id': zOrder.id,
+                    'order-id': id,
+                    symbol,
                 },
             },
         );
 
-        const cachedOrder = this.cache.getCachedOrderById(zOrder.id);
+        const cachedOrder = this.cache.getCachedOrderById(id);
 
         if (!cachedOrder) {
-            throw ZenfuseBaseError('ZEFU_CACHE_UNSYNC');
+            const order = { id, symbol };
+            utils.linkOriginalPayload(order, response);
+            return order;
         }
 
-        this.cache.deleteCachedOrderById(zOrder.id);
+        this.cache.deleteCachedOrderById(id);
 
         cachedOrder.status = 'canceled';
 
@@ -295,41 +317,7 @@ class HuobiSpot extends HuobiBase {
      * @param {string} orderId Huobi order id
      */
     async cancelOrderById(orderId) {
-        let cachedOrder = this.cache.getCachedOrderById(orderId);
-
-        if (!cachedOrder) {
-            const openOrders = await this.fetchOpenOrders();
-
-            const response = openOrders[Symbol.for('zenfuse.originalPayload')];
-
-            const orderToDelete = response.find((o) => {
-                return o.orderId === orderId;
-            });
-
-            if (!orderToDelete) {
-                throw new Error('Order symbol not found'); // TODO: Specific error desc
-            }
-
-            cachedOrder = orderToDelete;
-        }
-
-        const response = await this.privateFetch(
-            `v1/order/orders/submitCancelClientOrder`,
-            {
-                method: 'POST',
-                json: {
-                    'client-order-id': orderId,
-                },
-            },
-        );
-
-        this.cache.deleteCachedOrderById(orderId);
-
-        cachedOrder.status = 'canceled';
-
-        utils.linkOriginalPayload(cachedOrder, response);
-
-        return cachedOrder;
+        return this.cancelOrder({ id: orderId });
     }
 
     async fetchOpenOrders() {
