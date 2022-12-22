@@ -88,11 +88,21 @@ class HuobiCache extends BaseGlobalCache {
     }
 
     /**
-     * Updating global cache using raw huobi data
+     * Updating global cache using raw binance data
      *
-     * @param {*} rawMarkets Data from `api/v3/exchangeInfo` endpoint
+     * @param {*} rawMarkets Data from `v2/settings/common/symbols` endpoint
      */
     updateCache(rawMarkets) {
+        this.updateParsedSymbols(rawMarkets);
+        this.updatePrecision(rawMarkets);
+    }
+
+    /**
+     * Updating global cache using raw huobi data
+     *
+     * @param {*} rawMarkets Data from `v2/settings/common/symbols` endpoint
+     */
+    updateParsedSymbols(rawMarkets) {
         let tickers = new Set();
         let symbols = new Set();
 
@@ -135,6 +145,30 @@ class HuobiCache extends BaseGlobalCache {
         this.globalCache.set('parsedSymbols', parsedSymbols);
         this.globalCache.set('tickers', tickers);
         this.globalCache.set('symbols', symbols);
+    }
+
+    /**
+     * Update precision info for every market
+     *
+     * **DEV:** "precision" in zenfuse.js is a count of numbers after decimal point
+     *
+     * @param {*} rawMarkets Data from `api/v3/exchangeInfo` endpoint
+     */
+    updatePrecision(rawMarkets) {
+        const precisionInfo = new Map();
+
+        for (const marketData of rawMarkets.data) {
+            const baseTicker = marketData.bcdn; // base currency display name
+            const quoteTicker = marketData.qcdn; // quote currency display name
+
+            precisionInfo.set([baseTicker, quoteTicker].join('/'), {
+                pricePrecision: marketData.ttp, // trade total precision
+                quantityPrecision: marketData.tap, // trade amount precision
+                totalPrecision: marketData.ttp, // trade total precision
+            });
+        }
+
+        this.globalCache.set('marketsPrecisionInfo', precisionInfo);
     }
 }
 
