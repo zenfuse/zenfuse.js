@@ -192,6 +192,22 @@ module.exports = (env) => ({
                         status: 'ok',
                         data: '356501383558845',
                     }),
+            'values precision': () =>
+                nock(HOSTNAME, OPTIONS)
+                    .post('/v1/order/orders/place', (body) => {
+                        expect(body['account-id']).toBe(10000001);
+                        expect(body.amount).toBe('144.46');
+                        expect(body.price);
+                        expect(body.source).toBe('spot-api');
+                        expect(body.symbol);
+                        expect(body.type).toBe('buy-limit');
+                        return true;
+                    })
+                    .query(expectAuthParams)
+                    .reply(200, {
+                        status: 'ok',
+                        data: '356501383558845',
+                    }),
         },
         'fetchBalances()': () =>
             nock(HOSTNAME, OPTIONS)
@@ -244,7 +260,14 @@ module.exports = (env) => ({
                     data: '356501383558845',
                 })
                 // Order deletion
-                .post(`/v1/order/orders/356501383558845/submitcancel`)
+                .post(
+                    '/v1/order/orders/356501383558845/submitcancel',
+                    (body) => {
+                        expect(body.id);
+                        expect(body.symbol);
+                        return true;
+                    },
+                )
                 .query(expectAuthParams)
                 .reply(200),
 
