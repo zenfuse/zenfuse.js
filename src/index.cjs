@@ -3,6 +3,7 @@ const FTX = require('./exchanges/ftx');
 const Bitglobal = require('./exchanges/bitglobal');
 const OKX = require('./exchanges/okx');
 const ExchangeBaseException = require('./base/errors/exchange.error');
+const Huobi = require('./exchanges/huobi');
 
 /**
  * @enum
@@ -10,8 +11,9 @@ const ExchangeBaseException = require('./base/errors/exchange.error');
 module.exports = {
     Binance,
     FTX,
-    Bitglobal,
     OKX,
+    Bitglobal,
+    Huobi,
 
     errorCodes: ExchangeBaseException.errorCodes,
     config: require('./base/conf/configurator'),

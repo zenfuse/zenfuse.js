@@ -127,6 +127,34 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 return downloadEach(mocksPath, downloadList, task);
             }),
+            task('Huobi', ({ task }) => {
+                if (!isOnly('huobi')) {
+                    setStatus('skipped');
+                    return;
+                }
+
+                const mocksPath =
+                    __dirname + '/../tests/exchanges/huobi/mocks/static/';
+
+                const downloadList = [
+                    {
+                        filename: 'tickers.json',
+                        endpoint:
+                            'https://api.huobi.pro/v2/settings/common/currencies',
+                    },
+                    {
+                        filename: 'markets.json',
+                        endpoint:
+                            'https://api.huobi.pro/v2/settings/common/symbols',
+                    },
+                ];
+
+                if (options.clean) {
+                    return removeEach(mocksPath, downloadList, task);
+                }
+
+                return downloadEach(mocksPath, downloadList, task);
+            }),
         ],
         {
             concurrency: Infinity,
@@ -167,7 +195,7 @@ const downloadEach = (mocksPath, downloadList, task) => {
                 }
             });
 
-            if (isExists) {
+            if (isExists && !options.force) {
                 setStatus('exists');
                 return;
             }

@@ -49,6 +49,17 @@
             }
         },
         {
+            "name": "Huobi E2E Tests",
+            "request": "launch",
+            "runtimeArgs": ["run-script", "test:e2e", "huobi"],
+            "runtimeExecutable": "npm",
+            "skipFiles": ["<node_internals>/**/*"],
+            "type": "node",
+            "env": {
+                "NODE_DEBUG": "zenfuse*"
+            }
+        },
+        {
             "name": "Full Integration Tests",
             "request": "launch",
             "runtimeArgs": ["run-script", "test:integration"],
@@ -96,6 +107,17 @@
             "name": "FTX Integration Tests",
             "request": "launch",
             "runtimeArgs": ["run-script", "test:integration", "okx"],
+            "runtimeExecutable": "npm",
+            "skipFiles": ["<node_internals>/**/*"],
+            "type": "node",
+            "env": {
+                "NODE_DEBUG": "zenfuse*"
+            }
+        },
+        {
+            "name": "Huobi Integration Tests",
+            "request": "launch",
+            "runtimeArgs": ["run-script", "test:integration", "huobi"],
             "runtimeExecutable": "npm",
             "skipFiles": ["<node_internals>/**/*"],
             "type": "node",
