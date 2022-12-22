@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const { WebSocket } = require('ws');
 const { gunzip } = require('zlib');
-const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
+// const ZenfuseRuntimeError = require('../../../base/errors/runtime.error');
 
 class HuobiWebsocketBase extends EventEmitter {
     /**
@@ -94,26 +94,26 @@ class HuobiWebsocketBase extends EventEmitter {
                     price: parseFloat(wsOrder.orderPrice),
                     quantity: parseFloat(wsOrder.orderSize),
                 };
-            case 'deletion':
-                const cachedOrder = this.base.cache.getCachedOrderById(
-                    wsOrder.clientOrderId,
-                );
-                if (!cachedOrder) {
-                    throw new ZenfuseRuntimeError(
-                        `Order with ${orderId} id does not exists`,
-                        'ZEFU_ORDER_NOT_FOUND',
-                    );
-                }
-                return {
-                    id: wsOrder.clientOrderId,
-                    timestamp: wsOrder.lastActTime,
-                    status: 'canceled',
-                    symbol: parsedSymbol,
-                    type: cachedOrder.type,
-                    side: cachedOrder.side,
-                    price: cachedOrder.price,
-                    quantity: cachedOrder.quantity,
-                };
+            // case 'deletion':
+            //     const cachedOrder = this.base.cache.getCachedOrderById(
+            //         wsOrder.clientOrderId,
+            //     );
+            //     if (!cachedOrder) {
+            //         throw new ZenfuseRuntimeError(
+            //             `Order with ${wsOrder.clientOrderId} id does not exists`,
+            //             'ZEFU_ORDER_NOT_FOUND',
+            //         );
+            //     }
+            //     return {
+            //         id: wsOrder.clientOrderId,
+            //         timestamp: wsOrder.lastActTime,
+            //         status: 'canceled',
+            //         symbol: parsedSymbol,
+            //         type: cachedOrder.type,
+            //         side: cachedOrder.side,
+            //         price: cachedOrder.price,
+            //         quantity: cachedOrder.quantity,
+            //     };
             case 'trade':
                 return {
                     id: wsOrder.clientOrderId,

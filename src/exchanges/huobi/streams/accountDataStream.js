@@ -1,4 +1,3 @@
-const utils = require('../../../base/utils/utils');
 const HuobiWebsocketBase = require('./websocketBase');
 const { createHmac } = require('crypto');
 

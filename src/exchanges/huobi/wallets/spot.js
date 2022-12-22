@@ -7,7 +7,6 @@ const MarketDataStream = require('../streams/marketDataStream');
 
 const { timeIntervals } = require('../metadata');
 const ZenfuseUserError = require('../../../base/errors/user.error');
-const ZenfuseBaseError = require('../../../base/errors/base.error');
 
 /**
  * @typedef {import('../../../base/exchange').BaseOptions} BaseOptions

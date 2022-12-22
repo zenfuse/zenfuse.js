@@ -1,6 +1,5 @@
 image:
-  file: .gitpod.Dockerfile
+    file: .gitpod.Dockerfile
 
 tasks:
-  - init: just install
-
+    - init: just install
