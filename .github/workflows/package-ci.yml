@@ -47,7 +47,7 @@ jobs:
         name: Preparing mocks
         needs: lint
         if: always() && (needs.lint.result == 'success' || needs.lint.result == 'skipped')
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         steps:
             - uses: actions/checkout@v3
             - name: Install latest just release
