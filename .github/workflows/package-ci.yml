@@ -21,8 +21,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: extractions/setup-just@v1
-
             - name: Set up Bun
               uses: antongolub/action-setup-bun@v1
               with:
@@ -38,12 +36,8 @@ jobs:
             - name: Install docs dependencies
               run: cd www && bun install
 
-            - name: Lint javascript files
-              run: just eslint
-
-            - name: Spellcheck all files
-              run: just cspell
-
+            - name: Lint all files
+              run: npm run lint
     mocks:
         name: Preparing mocks
         needs: lint
@@ -51,7 +45,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: extractions/setup-just@v1
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
@@ -66,7 +59,7 @@ jobs:
                   key: static-mocks
 
             - name: Download mock files from exchanges
-              run: just download-mocks
+              run: npm run download-mocks
 
             - name: Upload static mocks
               uses: actions/upload-artifact@v3.1.1
@@ -85,7 +78,6 @@ jobs:
                 node-version: [14, 16, 18]
         steps:
             - uses: actions/checkout@v3
-            - uses: extractions/setup-just@v1
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
@@ -96,7 +88,7 @@ jobs:
               run: npm ci
 
             - name: Run unit tests
-              run: just test unit
+              run: npm run test:unit
 
     integration-tests:
         needs: [lint, mocks]
@@ -107,7 +99,6 @@ jobs:
                 node-version: [14, 16, 18]
         steps:
             - uses: actions/checkout@v3
-            - uses: extractions/setup-just@v1
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
@@ -124,4 +115,4 @@ jobs:
               run: npm ci
 
             - name: Run integration tests
-              run: just test integration
+              run: npm run test:integration
