@@ -88,7 +88,7 @@ release version:
  
     # Commit by myself cuz awaiting this pr to npm https://github.com/npm/cli/pull/5442
 
-    new_version=$(npm version patch --no-git-tag-version);
+    new_version=$(npm version {{ version }} --no-git-tag-version);
     
     cd www;
     npm version $new_version;
