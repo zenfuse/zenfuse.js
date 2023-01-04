@@ -50,7 +50,7 @@ jobs:
                   cache: 'npm'
 
             - name: Install npm dependencies
-              run: npm ci
+              run: npm install
 
             - name: Restoring mocks from cache
               uses: actions/cache@v3.0.11
