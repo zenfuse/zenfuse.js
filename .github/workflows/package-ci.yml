@@ -22,9 +22,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - name: Install latest just release
-              uses: taiki-e/install-action@v1
-              with:
-                tool: just
+              uses: taiki-e/install-action@just
             - name: Set up Bun
               uses: antongolub/action-setup-bun@v1
               with:
@@ -53,9 +51,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - name: Install latest just release
-              uses: taiki-e/install-action@v1
-              with:
-                tool: just
+              uses: taiki-e/install-action@just
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
@@ -90,9 +86,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - name: Install latest just release
-              uses: taiki-e/install-action@v1
-              with:
-                tool: just
+              uses: taiki-e/install-action@just
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
@@ -115,9 +109,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - name: Install latest just release
-              uses: taiki-e/install-action@v1
-              with:
-                tool: just
+              uses: taiki-e/install-action@just
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
