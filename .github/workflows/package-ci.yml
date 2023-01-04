@@ -21,8 +21,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: extractions/setup-just@v1
-
+            - name: Install latest just release
+              uses: taiki-e/install-action@just
             - name: Set up Bun
               uses: antongolub/action-setup-bun@v1
               with:
@@ -40,18 +40,20 @@ jobs:
 
             - name: Lint javascript files
               run: just eslint
-
-            - name: Spellcheck all files
+              
+            - name: Cpellcheck all files
               run: just cspell
-
     mocks:
         name: Preparing mocks
         needs: lint
         if: always() && (needs.lint.result == 'success' || needs.lint.result == 'skipped')
-        runs-on: ubuntu-latest
+        
+        # Preparing mocks are running on self-hosted runner because GitHub runner location can be different and exchange can respond with 451 Unavailable For Legal Reasons
+        runs-on: self-hosted
         steps:
             - uses: actions/checkout@v3
-            - uses: extractions/setup-just@v1
+            - name: Install latest just release
+              uses: taiki-e/install-action@just
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
@@ -85,7 +87,8 @@ jobs:
                 node-version: [14, 16, 18]
         steps:
             - uses: actions/checkout@v3
-            - uses: extractions/setup-just@v1
+            - name: Install latest just release
+              uses: taiki-e/install-action@just
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
@@ -107,7 +110,8 @@ jobs:
                 node-version: [14, 16, 18]
         steps:
             - uses: actions/checkout@v3
-            - uses: extractions/setup-just@v1
+            - name: Install latest just release
+              uses: taiki-e/install-action@just
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
