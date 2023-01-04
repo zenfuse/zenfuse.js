@@ -21,6 +21,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
+            - name: Install latest just release
+              uses: taiki-e/install-action@v1
+              with:
+                tool: just
             - name: Set up Bun
               uses: antongolub/action-setup-bun@v1
               with:
@@ -36,8 +40,11 @@ jobs:
             - name: Install docs dependencies
               run: cd www && bun install
 
-            - name: Lint all files
-              run: npm run lint
+            - name: Lint javascript files
+              run: just eslint
+              
+            - name: Cpellcheck all files
+              run: just cspell
     mocks:
         name: Preparing mocks
         needs: lint
@@ -45,12 +52,16 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
+            - name: Install latest just release
+              uses: taiki-e/install-action@v1
+              with:
+                tool: just
             - uses: actions/setup-node@v3
               with:
                   cache: 'npm'
 
             - name: Install npm dependencies
-              run: npm install
+              run: npm ci
 
             - name: Restoring mocks from cache
               uses: actions/cache@v3.0.11
@@ -59,7 +70,7 @@ jobs:
                   key: static-mocks
 
             - name: Download mock files from exchanges
-              run: npm run download-mocks
+              run: just download-mocks
 
             - name: Upload static mocks
               uses: actions/upload-artifact@v3.1.1
@@ -78,6 +89,10 @@ jobs:
                 node-version: [14, 16, 18]
         steps:
             - uses: actions/checkout@v3
+            - name: Install latest just release
+              uses: taiki-e/install-action@v1
+              with:
+                tool: just
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
@@ -88,7 +103,7 @@ jobs:
               run: npm ci
 
             - name: Run unit tests
-              run: npm run test:unit
+              run: just test unit
 
     integration-tests:
         needs: [lint, mocks]
@@ -99,6 +114,10 @@ jobs:
                 node-version: [14, 16, 18]
         steps:
             - uses: actions/checkout@v3
+            - name: Install latest just release
+              uses: taiki-e/install-action@v1
+              with:
+                tool: just
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
@@ -115,4 +134,4 @@ jobs:
               run: npm ci
 
             - name: Run integration tests
-              run: npm run test:integration
+              run: just test integration
