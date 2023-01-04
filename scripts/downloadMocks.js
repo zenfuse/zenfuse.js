@@ -147,6 +147,15 @@ task('Preparing mocks', async ({ task, setStatus }) => {
                         endpoint:
                             'https://api.huobi.pro/v2/settings/common/symbols',
                     },
+                    {
+                        filename: 'pairs.json', // ticker pairs
+                        endpoint: 'https://api.huobi.pro/market/tickers',
+                    },
+                    {
+                        filename: 'candles.json',
+                        endpoint:
+                            'https://api.huobi.pro/market/history/kline?symbol=btcusdt&period=1min&size=2000',
+                    },
                 ];
 
                 if (options.clean) {
