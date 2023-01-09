@@ -124,7 +124,7 @@ jobs:
                   cache: 'npm'
 
             - name: Download static mocks
-              uses: actions/download-artifact@v3.0.1
+              uses: actions/download-artifact@v3.0.2
               with:
                   name: static-mocks
                   path: tests/exchanges
