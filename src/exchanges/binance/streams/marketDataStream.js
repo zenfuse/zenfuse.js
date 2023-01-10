@@ -262,6 +262,7 @@ class MarketDataStream extends BinanceWebsocketBase {
         const msgString = JSON.stringify(msg);
 
         this.socket.send(msgString);
+        
 
         debug.log('-> OUT');
         debug.log(msg);

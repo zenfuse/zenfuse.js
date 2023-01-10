@@ -124,8 +124,8 @@ describe('Error Handling', () => {
                         method: 'POST',
                         searchParams: {
                             symbol: 'FUNBNB',
-                            side: 'sell',
-                            type: 'limit',
+                            side: 'SELL',
+                            type: 'LIMIT',
                             quantity: 999999,
                             price: 0.00003,
                             timeInForce: 'GTC',

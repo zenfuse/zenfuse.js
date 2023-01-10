@@ -18,9 +18,14 @@ expect.extend({
     },
 });
 
-const TEST_TIMEOUT = 30_000;
-
 global.isEnd2EndTest = process.env.TEST_MODE === 'e2e';
 global.isIntegrationTest = !global.isEnd2EndTest;
 
-jest.setTimeout(TEST_TIMEOUT);
+if (isIntegrationTest) {
+    jest.setTimeout(5_000); // 5sec
+}
+
+if (isEnd2EndTest) {
+    jest.setTimeout(30_000); // 30sec
+    jest.unmock('ws');
+}

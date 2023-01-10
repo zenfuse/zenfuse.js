@@ -7,6 +7,10 @@ const exchangeInfoFilePath = __dirname + '/mocks/static/exchangeInfo.json';
 const pricesFilePath = __dirname + '/mocks/static/prices.json';
 const historyFilePath = __dirname + '/mocks/static/history.json';
 
+const BinanceWebsocketServer = require('./mocks/ws-server');
+
+const wsServer = new BinanceWebsocketServer();
+
 /**
  * HTTP mocking scope for Binance master test
  * Should be as
@@ -551,6 +555,94 @@ module.exports = (env) => ({
                     fills: [],
                 }),
     },
+    'Spot Wallet Private Stream': {
+        'open()': () =>
+            nock(HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
+                .post('/api/v3/userDataStream', () => true)
+                .reply(200, {
+                    listenKey:
+                        'pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1',
+                })
+                .post('/api/v3/userDataStream', () => true)
+                .reply(200, {
+                    listenKey:
+                        'pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1',
+                })
+                // Create order
+                .post('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        type: 'LIMIT',
+                        side: 'BUY',
+                    });
+
+                    expect(q.symbol).toBe(
+                        toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                    );
+                    expect(q.quantity).toBe(
+                        toBinanceStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                    );
+                    return true;
+                })
+                .reply(() => {
+                    const body = {
+                        symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        orderId: 5123847,
+                        orderListId: -1,
+                        clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
+                        transactTime: 1637599759459,
+                        price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                        origQty: toBinanceStyle(
+                            env.NOT_EXECUTABLE_ORDER.quantity,
+                        ),
+                        executedQty: '0.00000000',
+                        cummulativeQuoteQty: '0.00000000',
+                        status: 'NEW',
+                        timeInForce: 'GTC',
+                        type: 'LIMIT',
+                        side: 'BUY',
+                        fills: [],
+                    };
+                    wsServer.emitNewOrder(body);
+                    return [200, body];
+                })
+                // Delete order
+                .delete('/api/v3/order')
+                .query((q) => {
+                    expect(q).toMatchObject({
+                        symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                        orderId: '5123847',
+                    });
+                    expect(q.signature).toBeDefined();
+                    expect(q.timestamp).toBeDefined();
+                    return true;
+                })
+                .reply(200, {
+                    symbol: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.symbol),
+                    orderId: 5123847,
+                    orderListId: -1,
+                    clientOrderId: '23xVptiQjqI2AgqpZgWI5o',
+                    transactTime: 1637599759459,
+                    price: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.price),
+                    origQty: toBinanceStyle(env.NOT_EXECUTABLE_ORDER.quantity),
+                    executedQty: '0.00000000',
+                    cummulativeQuoteQty: '0.00000000',
+                    status: 'NEW',
+                    timeInForce: 'GTC',
+                    type: 'LIMIT',
+                    side: 'BUY',
+                    fills: [],
+                }),
+        'close()': () =>
+            nock(HOSTNAME)
+                .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
+                .post('/api/v3/userDataStream')
+                .reply(200, {
+                    listenKey:
+                        'pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1',
+                }),
+    },
     'Error Handling': {
         'INVALID_CREDENTIALS code': () =>
             nock(HOSTNAME)
@@ -562,8 +654,13 @@ module.exports = (env) => ({
         'INSUFFICIENT_FUNDS code': () =>
             nock(HOSTNAME)
                 .matchHeader('X-MBX-APIKEY', env.API_PUBLIC_KEY)
-                .post('/api/v3/order', () => true)
-                .query(() => true)
+                .post('/api/v3/order')
+                .query((q) => {
+                    expect(q.symbol).toBe('FUNBNB');
+                    expect(q.side).toBe('SELL');
+                    expect(q.type).toBe('LIMIT');
+                    return true;
+                })
                 .reply(400, {
                     code: -2010,
                     msg: 'Account has insufficient balance for requested action.',

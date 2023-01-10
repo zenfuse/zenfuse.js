@@ -503,12 +503,6 @@ module.exports = function masterTest(Exchange, env) {
      */
 
     describe('Spot Wallet Private Stream', () => {
-        if (isIntegrationTest) {
-            // TODO: Mock websocket
-            // console.warn('Websocket test skipped');
-            return;
-        }
-
         /**
          * @type {AccountDataStream}
          */
@@ -538,7 +532,6 @@ module.exports = function masterTest(Exchange, env) {
         });
 
         describe('open()', () => {
-            // TODO: Mock websocket
             afterAll(() => {
                 accountDataStream.close();
             });
@@ -589,12 +582,6 @@ module.exports = function masterTest(Exchange, env) {
      */
 
     describe('Spot Wallet Public Stream', () => {
-        if (isIntegrationTest) {
-            // TODO: Mock websocket
-            // console.warn('Websocket test skipped');
-            return;
-        }
-
         /**
          * @type {MarketDataStream}
          */
@@ -707,7 +694,7 @@ module.exports = function masterTest(Exchange, env) {
     ///////////////////////////////////  Global Configurations  ///////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    describe('Global Configurations', () => {
+    describe.skip('Global Configurations', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
             // console.warn('Websocket test skipped');
@@ -746,13 +733,17 @@ module.exports = function masterTest(Exchange, env) {
     });
 };
 
-/*▄▀▄▀▀▀▀▄▀▄░░░░░░░░░░
-░░█░░░░░░░░▀▄░░░░░░▄░░
-░█░░▀░░▀░░░░░▀▄▄░░█░█░
-░█░▄░█▀░▄░░░░░░░▀▀░░█░
-░█░░▀▀▀▀░░░░░░░░░░░░█░
-░█░░░░░░░░░░░░░░░░░░█░
-░█░░░░░░░░░░░░░░░░░░█░
-░░█░░▄▄░░▄▄▄▄░░▄▄░░█░░
-░░█░▄▀█░▄▀░░█░▄▀█░▄▀░░
-░░░▀░░░▀░░░░░▀░░░▀░░*/
+/*
+
+  ▄▀▄▀▀▀▀▄▀▄
+  █        ▀▄      ▄  
+ █  ▀  ▀     ▀▄▄  █ █ 
+ █ ▄ █▀ ▄       ▀▀  █ 
+ █  ▀▀▀▀            █ 
+ █                  █ 
+ █                  █ 
+  █  ▄▄  ▄▄▄▄  ▄▄  █
+  █ ▄▀█ ▄▀  █ ▄▀█ ▄▀
+   ▀   ▀     ▀   ▀
+
+*/

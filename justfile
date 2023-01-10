@@ -30,7 +30,7 @@ alias dm := download-mocks
 # Run test [ unit | integration | e2e ] for npm package
 test mode *args:
     TEST_MODE={{mode}} node --unhandled-rejections=strict node_modules/.bin/jest \
-    --no-cache --runInBand \
+    --no-cache --runInBand --detectOpenHandles \
     {{ if mode == "unit" { "--testMatch '**/?(*.)+(spec).js'" } else { "" } }} {{args}}
 
 root := justfile_directory()

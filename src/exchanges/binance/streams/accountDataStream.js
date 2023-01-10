@@ -60,7 +60,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
     get isSocketConnected() {
         if (!this.socket) return false;
 
-        return this.socket.readyState === WebSocket.OPEN;
+        return this.socket.readyState === 1;
     }
 
     /**
@@ -122,7 +122,7 @@ class AccountDataStream extends ExchangeWebsocketBase {
     }
 
     serverMessageHandler(msgString) {
-        const payload = JSON.parse(msgString);
+        const payload = JSON.parse(msgString.data);
 
         const eventName = payload.e;
 
