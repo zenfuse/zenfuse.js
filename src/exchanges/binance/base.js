@@ -46,7 +46,9 @@ class BinanceBase extends ExchangeBase {
         );
         super(assignedOptions);
 
-        this.cache = new BinanceCache(this);
+        if (!options._noCache) {
+            this.cache = new BinanceCache(this);
+        }
 
         this.signatureEncoding = 'hex';
     }
