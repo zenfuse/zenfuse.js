@@ -41,8 +41,8 @@ class ExchangeWebsocketBase extends EventEmitter {
      * @private
      * @returns {Order} Zenfuse Order
      */
-    transformWebsocketOrder(wsOrder) {
-        const parsedSymbol = this.base.parseBinanceSymbol(wsOrder.s);
+    async transformWebsocketOrder(wsOrder) {
+        const parsedSymbol = await this.base.parseBinanceSymbol(wsOrder.s);
 
         return {
             id: wsOrder.i.toString(),

@@ -184,9 +184,9 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @fires MarketDataStream#newPrice
      * @param {*} payload
      */
-    emitNewPrice(payload) {
+    async emitNewPrice(payload) {
         const kline = this.transformCandlestick(payload.k);
-        const parsedSymbol = this.base.parseBinanceSymbol(kline.symbol);
+        const parsedSymbol = await this.base.parseBinanceSymbol(kline.symbol);
 
         debug.log('Emit "price" Event');
         debug.log(kline);
@@ -203,10 +203,10 @@ class MarketDataStream extends BinanceWebsocketBase {
      * @fires MarketDataStream#kline
      * @param {*} payload
      */
-    emitCandle(payload) {
+    async emitCandle(payload) {
         const kline = this.transformCandlestick(payload.k);
 
-        kline.symbol = this.base.parseBinanceSymbol(kline.symbol);
+        kline.symbol = await this.base.parseBinanceSymbol(kline.symbol);
 
         debug.log('Emit "candle" Event');
         debug.log(kline);

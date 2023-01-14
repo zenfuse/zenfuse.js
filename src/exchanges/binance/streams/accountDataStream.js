@@ -133,8 +133,8 @@ class AccountDataStream extends ExchangeWebsocketBase {
         this.emit('payload', payload);
     }
 
-    emitOrderUpdateEvent(payload) {
-        const order = this.transformWebsocketOrder(payload);
+    async emitOrderUpdateEvent(payload) {
+        const order = await this.transformWebsocketOrder(payload);
         this.emit('orderUpdate', order);
     }
 }
