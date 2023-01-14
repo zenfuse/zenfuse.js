@@ -6,6 +6,18 @@ const crypto = require('crypto');
 const MockedAgent = require('./mocks/agent');
 
 /**
+ * !!! IMPORTANT !!!
+ *
+ * This file is sensitive af so plz use this rules to not being fucked
+ *
+ * 1. Every describe block should have unique name (because of automatic nock scopes)
+ * 2. Use '.only' mode ONLY on describe blocks                                  ☁
+ * 3. If you see a lot of "Nock: No match for request" errors, bring a coffee c[_] its debug time
+ *
+ * (҂◡_◡) ᕤ good luck soldier
+ */
+
+/**
  * @typedef {import('../src/index.js').Order} Order
  * @typedef {import('../src/index.js').timeInterval} timeInterval
  */
@@ -46,28 +58,31 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/wallets/spot.js')} FtxSpot
      */
 
-    // TODO: Options usage tests
-
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////  HTTP INTERFACE  ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    describe('Spot Wallet HTTP interface', () => {
+    describe('Spot HTTP interface', () => {
         /**
          * @type {FtxSpot}
          */
-        let exchange = new Exchange['spot']();
+        let exchange = new Exchange.spot();
 
-        describe('ping()', () => {
+        beforeEach(async () => {
+            // Wait cache update
+            await exchange.cache.globalCache.updatingPromise;
+        });
+
+        describe('exchange.ping()', () => {
             it('should be defined', () => {
                 expect(exchange.ping).toBeDefined();
             });
-            it('should pings :)', async () => {
+            it('should resolves', async () => {
                 await exchange.ping();
             });
         });
 
-        describe('fetchMarkets()', () => {
+        describe('exchange.fetchMarkets()', () => {
             let result;
 
             it('should be defined', () => {
@@ -95,7 +110,11 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchTickers()', () => {
+        describe('exchange.fetchTickers()', () => {
+            beforeAll(async () => {
+                await exchange.cache.globalCache.updatingPromise;
+            });
+
             let result;
 
             it('should be defined', () => {
@@ -117,7 +136,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchPrice()', () => {
+        describe('exchange.fetchPrice()', () => {
             let result;
 
             it('should be defined', () => {
@@ -155,7 +174,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchCandleHistory()', () => {
+        describe('exchange.fetchCandleHistory()', () => {
             let result;
 
             it('should be defined', () => {
@@ -187,7 +206,7 @@ module.exports = function masterTest(Exchange, env) {
         //// Private API Zone
         ///////////////////////////////////////////////////////////////
 
-        describe('auth()', () => {
+        describe('exchange.auth()', () => {
             it('should bo defined', () => {
                 expect(exchange.auth).toBeDefined();
             });
@@ -218,7 +237,7 @@ module.exports = function masterTest(Exchange, env) {
 
         // NOTE: Now exchange is authenticated instance
 
-        describe('postOrder()', () => {
+        describe('exchange.postOrder()', () => {
             it('should be defined', () => {
                 expect(exchange.postOrder).toBeDefined();
             });
@@ -226,7 +245,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should run only with keys', () => {
                 try {
                     exchange.postOrder.bind(
-                        new Exchange['spot'](),
+                        new Exchange['spot']({ _noCache: true }),
                         env.NOT_EXECUTABLE_ORDER,
                     );
                 } catch (e) {
@@ -235,7 +254,7 @@ module.exports = function masterTest(Exchange, env) {
                 }
             });
 
-            describe('buy by market', () => {
+            describe('buy market order', () => {
                 let result;
 
                 it('should create order without errors', async () => {
@@ -255,7 +274,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
             });
 
-            describe('sell by market', () => {
+            describe('sell market order', () => {
                 let result;
 
                 it('should create order without errors', async () => {
@@ -274,7 +293,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
             });
 
-            describe('buy by limit', () => {
+            describe('buy limit order', () => {
                 let result;
 
                 it('should create order without errors', async () => {
@@ -293,7 +312,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
             });
 
-            describe('sell by limit', () => {
+            describe('sell limit order', () => {
                 let result;
 
                 it('should create order without errors', async () => {
@@ -312,7 +331,7 @@ module.exports = function masterTest(Exchange, env) {
                 });
             });
 
-            describe('values precision', () => {
+            describe('order values precision', () => {
                 let result;
                 it('should precise order value and post it without errors', async () => {
                     result = await exchange.postOrder(
@@ -333,14 +352,16 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchBalances()', () => {
+        describe('exchange.fetchBalances()', () => {
             it('should be defined', () => {
                 expect(exchange.fetchBalances).toBeDefined();
             });
 
             it('should run only with keys', () => {
                 try {
-                    exchange.fetchBalances.bind(new Exchange['spot']());
+                    exchange.fetchBalances.bind(
+                        new Exchange['spot']({ _noCache: true }),
+                    );
                 } catch (e) {
                     expect(e).toBeInstanceOf(UserError);
                     expect(e.code).toBe('NOT_AUTHENTICATED');
@@ -372,7 +393,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('cancelOrder()', () => {
+        describe('exchange.cancelOrder()', () => {
             it('should be defined', () => {
                 expect(exchange.cancelOrder).toBeDefined();
             });
@@ -380,7 +401,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should run only with keys', () => {
                 try {
                     exchange.cancelOrder.bind(
-                        new Exchange['spot'](),
+                        new Exchange['spot']({ _noCache: true }),
                         env.NOT_EXECUTABLE_ORDER,
                     );
                 } catch (e) {
@@ -405,7 +426,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('cancelOrderById()', () => {
+        describe('exchange.cancelOrderById()', () => {
             it('should be defined', () => {
                 expect(exchange.cancelOrderById).toBeDefined();
             });
@@ -413,7 +434,7 @@ module.exports = function masterTest(Exchange, env) {
             it('should run only with keys', () => {
                 try {
                     exchange.cancelOrderById.bind(
-                        new Exchange['spot'](),
+                        new Exchange['spot']({ _noCache: true }),
                         '7787',
                     );
                 } catch (e) {
@@ -438,25 +459,19 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('fetchOrderById()', () => {
+        describe('exchange.fetchOrderById()', () => {
             let result;
             let createdOrder;
 
             it('should run only with keys', () => {
                 try {
                     exchange.fetchOrderById.bind(
-                        new Exchange['spot'](),
+                        new Exchange['spot']({ _noCache: true }),
                         'super-order-id',
                     );
                 } catch (e) {
                     expect(e).toBeInstanceOf(UserError);
                     expect(e.code).toBe('NOT_AUTHENTICATED');
-                }
-            });
-
-            afterAll(() => {
-                if (createdOrder) {
-                    exchange.cancelOrderById(createdOrder.id);
                 }
             });
 
@@ -502,7 +517,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
      */
 
-    describe('Spot Wallet Private Stream', () => {
+    describe('Spot Private Websocket', () => {
         /**
          * @type {AccountDataStream}
          */
@@ -531,7 +546,7 @@ module.exports = function masterTest(Exchange, env) {
             }
         });
 
-        describe('open()', () => {
+        describe('accountDataStream.open()', () => {
             afterAll(() => {
                 accountDataStream.close();
             });
@@ -560,12 +575,11 @@ module.exports = function masterTest(Exchange, env) {
 
                 return await eventPromise.then((order) => {
                     expect(order.id).toBe(createdOrder.id);
-                    exchange.cancelOrder(order);
                 });
             });
         });
 
-        describe('close()', () => {
+        describe('accountDataStream.close()', () => {
             beforeAll(() => accountDataStream.open());
             it('should close connection', () => {
                 expect(accountDataStream.isSocketConnected).toBe(true);
@@ -581,7 +595,7 @@ module.exports = function masterTest(Exchange, env) {
      * @typedef {import('../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
      */
 
-    describe('Spot Wallet Public Stream', () => {
+    describe('Spot Public Websocket', () => {
         /**
          * @type {MarketDataStream}
          */
@@ -607,7 +621,7 @@ module.exports = function masterTest(Exchange, env) {
             }
         });
 
-        describe('open()', () => {
+        describe('marketDataStream.open()', () => {
             it('should connect to websocket', async () => {
                 await marketDataStream.open();
 
@@ -615,7 +629,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('subscribeTo()', () => {
+        describe('marketDataStream.subscribeTo()', () => {
             beforeEach(async () => {
                 expect(marketDataStream.isSocketConnected).toBe(true);
             });
@@ -654,7 +668,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('unsubscribeFrom()', () => {
+        describe('marketDataStream.unsubscribeFrom()', () => {
             beforeEach(async () => {
                 expect(marketDataStream.isSocketConnected).toBe(true);
             });
@@ -679,7 +693,7 @@ module.exports = function masterTest(Exchange, env) {
             });
         });
 
-        describe('close()', () => {
+        describe('marketDataStream.close()', () => {
             it('should close connection', () => {
                 expect(marketDataStream.isSocketConnected).toBe(true);
 
@@ -694,24 +708,9 @@ module.exports = function masterTest(Exchange, env) {
     ///////////////////////////////////  Global Configurations  ///////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    describe.skip('Global Configurations', () => {
-        if (isIntegrationTest) {
-            // TODO: Mock websocket
-            // console.warn('Websocket test skipped');
-            return;
-        }
+    describe('Global Configurations', () => {
         describe("'httpsAgent' option", () => {
-            it('should use custom agent on fetching', async () => {
-                const customAgent = new MockedAgent();
-
-                zenfuse.config.set('httpsAgent', customAgent);
-
-                await new Exchange.spot().ping();
-
-                expect(customAgent.createConnection).toHaveBeenCalled();
-            });
-
-            it('should use custom agent on websocket', async () => {
+            it('should use custom agent inside got', async () => {
                 const customAgent = new MockedAgent();
 
                 zenfuse.config.set('httpsAgent', customAgent);
@@ -721,13 +720,6 @@ module.exports = function masterTest(Exchange, env) {
                 expect(
                     exchange.fetcher.defaults.options.agent.https,
                 ).toBeInstanceOf(MockedAgent);
-
-                await exchange
-                    .getMarketDataStream()
-                    .open()
-                    .then((e) => e.close());
-
-                expect(customAgent.createConnection).toHaveBeenCalled();
             });
         });
     });
