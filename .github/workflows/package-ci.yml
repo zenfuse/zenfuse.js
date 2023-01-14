@@ -74,7 +74,7 @@ jobs:
               run: just download-mocks
 
             - name: Upload static mocks
-              uses: actions/upload-artifact@v3.1.1
+              uses: actions/upload-artifact@v3.1.2
               with:
                   name: static-mocks
                   path: tests/exchanges/*/mocks/static/*
