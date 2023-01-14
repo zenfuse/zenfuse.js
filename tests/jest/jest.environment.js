@@ -2,18 +2,11 @@ const { TestEnvironment } = require('jest-environment-node');
 
 class ZenfuseJestEnvironment extends TestEnvironment {
     /**
-     * List scopes with should run
+     * List scopes witch should run
      *
      * @type {Map<string, Function>}
      */
     scopesToOpen = new Map();
-
-    /**
-     * List all scopes by block object
-     *
-     * @type {Map<{ name: string, mode: 'only'|'skip' }, Function>}
-     */
-    allScopes = new Map();
 
     openScopes = new Map();
 
@@ -34,11 +27,8 @@ class ZenfuseJestEnvironment extends TestEnvironment {
                 this.global.testTimeout = state.testTimeout;
                 this.global.isExchangeTestFailed = false;
                 break;
-            case 'finish_describe_definition':
-                this.addBlockToScopes(event);
-                break;
             case 'run_start':
-                this.fillScopesToOpen(state);
+                this.prepareScopes(state);
                 break;
             case 'hook_failure':
             case 'test_fn_failure':
@@ -51,12 +41,12 @@ class ZenfuseJestEnvironment extends TestEnvironment {
                 break;
             case 'run_describe_start':
                 if (!this.global.isExchangeTestFailed) {
-                    this.openHttpMockingScope(event.describeBlock);
+                    this.openScope(event.describeBlock);
                 }
                 break;
             case 'run_describe_finish':
                 if (!this.global.isExchangeTestFailed) {
-                    this.closeHttpMockingScope(event.describeBlock, state);
+                    this.closeScope(event.describeBlock, state);
                 }
                 break;
         }
@@ -66,64 +56,88 @@ class ZenfuseJestEnvironment extends TestEnvironment {
         }
     }
 
-    addBlockToScopes(event) {
-        const scope = this.getScopeByBlockName(event.blockName);
+    prepareScopes(jestState) {
+        const allowList = new Set();
+        const disallowList = new Set();
 
-        if (!scope) return;
+        const isOnlyMode = jestState.hasFocusedTests;
 
-        this.allScopes.set(
-            {
-                name: event.blockName,
-                mode: event.mode,
-            },
-            scope,
-        );
-    }
+        const setupBlock = (block) => {
+            if (block.type !== 'describeBlock') return;
+            if (disallowList.has(block)) return;
 
-    fillScopesToOpen(jestState) {
-        const entries = [...this.allScopes.entries()];
-
-        this.scopesToOpen = new Map();
-
-        if (jestState.hasFocusedTests) {
-            for (const [block, scope] of entries) {
-                if (block.mode === 'only') {
-                    // TODO: Add every children of only block
-
-                    this.scopesToOpen.set(block.name, scope);
-                }
+            if (block.mode === 'skip') {
+                disallowList.add(block);
+                block.children.forEach((b) => {
+                    disallowList.add(b);
+                });
             }
-        } else {
-            entries.forEach(([block, scope]) => {
-                if (block.mode !== 'skip' && scope) {
-                    this.scopesToOpen.set(block.name, scope);
-                }
-            });
-        }
 
-        if (this.context.httpScope.root) {
-            this.scopesToOpen.set(
-                'ROOT_DESCRIBE_BLOCK',
-                this.context.httpScope.root,
-            );
+            if (block.mode === 'only') {
+                allowList.add(block);
+
+                const addParent = (block) => {
+                    if (!block.parent) return;
+                    allowList.add(block.parent);
+                    return addParent(block.parent);
+                };
+
+                addParent(block.parent);
+
+                block.children.forEach((b) => {
+                    if (b.mode !== 'skip') {
+                        allowList.add(b);
+                    }
+                });
+            }
+
+            if (!isOnlyMode) {
+                allowList.add(block);
+            }
+
+            block.children.forEach(setupBlock);
+        };
+
+        setupBlock(jestState.currentDescribeBlock);
+
+        for (const block of allowList) {
+            if (block.type !== 'describeBlock') continue;
+
+            const scope = this.getScopeByBlockName(block.name);
+            if (scope) {
+                this.scopesToOpen.set(block.name, scope);
+            }
         }
     }
 
-    openHttpMockingScope(block) {
+    openScope(block) {
+        // if (block.name === 'INSUFFICIENT_FUNDS code') {
+        //     debugger;
+        // }
         if (this.scopesToOpen.has(block.name)) {
             const scope = this.scopesToOpen.get(block.name);
             this.openScopes.set(scope, scope());
         }
     }
 
-    closeHttpMockingScope(block, jestState) {
+    closeScope(block, jestState) {
         if (this.scopesToOpen.has(block.name)) {
-            const scope = this.openScopes.get(block.name);
+            const scopeFunction = this.scopesToOpen.get(block.name);
+            const scope = this.openScopes.get(scopeFunction);
 
             try {
-                if (scope) scope.done();
+                if (scope) {
+                    // scope.abortPendingRequests();
+                    scope.done();
+                    this.openScopes.delete(scopeFunction);
+                }
             } catch (err) {
                 jestState.unhandledErrors.push(err);
+                try {
+                    scope.cleanAll();
+                } catch {
+                    /**/
+                }
             }
         }
     }
