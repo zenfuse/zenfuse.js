@@ -1,5 +1,8 @@
 const { TestEnvironment } = require('jest-environment-node');
 
+const nock = require('nock');
+const inspector = require('inspector');
+
 class ZenfuseJestEnvironment extends TestEnvironment {
     /**
      * List scopes witch should run
@@ -26,13 +29,16 @@ class ZenfuseJestEnvironment extends TestEnvironment {
             case 'setup':
                 this.global.testTimeout = state.testTimeout;
                 this.global.isExchangeTestFailed = false;
+                this.global.console = inspector.console;
                 break;
             case 'run_start':
                 this.prepareScopes(state);
                 break;
             case 'hook_failure':
+            case 'error':
             case 'test_fn_failure':
                 this.global.isExchangeTestFailed = true;
+                this.teardown();
                 break;
             case 'test_start':
                 if (this.global.isExchangeTestFailed) {
@@ -77,25 +83,27 @@ class ZenfuseJestEnvironment extends TestEnvironment {
                 allowList.add(block);
 
                 const addParent = (block) => {
-                    if (!block.parent) return;
-                    allowList.add(block.parent);
+                    if (!block) return;
+                    allowList.add(block);
                     return addParent(block.parent);
                 };
 
                 addParent(block.parent);
 
-                block.children.forEach((b) => {
-                    if (b.mode !== 'skip') {
-                        allowList.add(b);
-                    }
-                });
+                if (block.children) {
+                    block.children.forEach((b) => {
+                        if (b.mode !== 'skip') {
+                            allowList.add(b);
+                        }
+                    });
+                }
             }
 
             if (!isOnlyMode) {
                 allowList.add(block);
             }
 
-            block.children.forEach(setupBlock);
+            if (block.children) block.children.forEach(setupBlock);
         };
 
         setupBlock(jestState.currentDescribeBlock);
@@ -108,6 +116,9 @@ class ZenfuseJestEnvironment extends TestEnvironment {
                 this.scopesToOpen.set(block.name, scope);
             }
         }
+
+        inspector.console.info('This scopes will be opened:');
+        inspector.console.log([...this.scopesToOpen.keys()]);
     }
 
     openScope(block) {
@@ -127,17 +138,12 @@ class ZenfuseJestEnvironment extends TestEnvironment {
 
             try {
                 if (scope) {
-                    // scope.abortPendingRequests();
                     scope.done();
-                    this.openScopes.delete(scopeFunction);
                 }
             } catch (err) {
                 jestState.unhandledErrors.push(err);
-                try {
-                    scope.cleanAll();
-                } catch {
-                    /**/
-                }
+            } finally {
+                this.openScopes.delete(scopeFunction);
             }
         }
     }
@@ -154,28 +160,14 @@ class ZenfuseJestEnvironment extends TestEnvironment {
             }
         }
 
-        const recursivelyFind = (block) => {
-            for (let [key, value] of Object.entries(block)) {
-                if (value === null) {
-                    continue;
-                }
-                if (key === name && typeof value === 'function') {
-                    return value;
-                }
+        return this.context.httpScope[name];
+    }
 
-                if (typeof value === 'object') {
-                    const scope = recursivelyFind(value);
-
-                    if (scope) {
-                        return scope;
-                    } else {
-                        continue;
-                    }
-                }
-            }
-        };
-
-        return recursivelyFind(this.context.httpScope);
+    teardown() {
+        nock.abortPendingRequests();
+        nock.cleanAll();
+        this.openScopes.clear();
+        this.scopesToOpen.clear();
     }
 }
 
