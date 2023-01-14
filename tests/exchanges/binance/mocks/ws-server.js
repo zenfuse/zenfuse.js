@@ -5,6 +5,14 @@ const EventEmitter = require('events');
  * Binance websocket server implementation to mock connection
  */
 class BinanceWebsocketServer extends EventEmitter {
+    /**
+     * List of paths to handle connection
+     */
+    PATHS = [
+        'wss://stream.binance.com:9443/ws',
+        'wss://stream.binance.com:9443/ws/pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1',
+    ];
+
     table = new Map([
         [
             /{"method":"SUBSCRIBE","params":\["btcusdt@kline_1m"\],"id":\d+}/,
@@ -25,17 +33,18 @@ class BinanceWebsocketServer extends EventEmitter {
 
     connections = [];
 
+    servers = [];
+
     constructor() {
         super();
+        this.start();
+    }
+
+    start() {
         // NOTE: mock-socket doesn't support multiple paths
-        this.servers = [
-            // Basic binance path
-            new FakeServer('wss://stream.binance.com:9443/ws'),
-            // Binance account data stream by listen key
-            new FakeServer(
-                'wss://stream.binance.com:9443/ws/pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1',
-            ),
-        ];
+        this.PATHS.forEach((path) => {
+            this.servers.push(new FakeServer(path));
+        });
 
         this.servers.forEach((h) => {
             h.on('connection', (socket) => {
@@ -47,12 +56,18 @@ class BinanceWebsocketServer extends EventEmitter {
         });
     }
 
+    stop() {
+        this.servers.forEach((server) => server.stop());
+        this.connections.forEach((socket) => socket.removeListener('message'));
+        this.servers = [];
+    }
+
     handleMessage(socket, msg) {
         const { id } = JSON.parse(msg);
 
-        for (const [regex, respond] of this.table) {
+        for (const [regex, send] of this.table) {
             if (regex.test(msg)) {
-                respond(socket.send.bind(socket), id);
+                send(socket.send.bind(socket), id);
             }
         }
     }
@@ -62,11 +77,7 @@ class BinanceWebsocketServer extends EventEmitter {
      *
      * @param {*} b Binance order
      */
-    async emitNewOrder(b) {
-        console.log('emitNewOrder', b.symbol);
-        // Wait 100ms
-        await new Promise((r) => setTimeout(r, 100));
-
+    emitNewOrder(b) {
         const payload = JSON.stringify({
             e: 'executionReport', // Event type
             E: 1499405658658, // Event time
