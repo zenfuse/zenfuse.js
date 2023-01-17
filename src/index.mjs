@@ -6,10 +6,7 @@ import OKX from './exchanges/okx';
 import ExchangeBaseException from './base/errors/exchange.error';
 import configurator from './base/conf/configurator';
 
-/**
- * @enum
- */
-module.exports = {
+export default {
     Binance,
     FTX,
     Bitglobal,
