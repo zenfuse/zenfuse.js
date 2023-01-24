@@ -35,7 +35,7 @@
     "license": "AGPL-3.0-or-later",
     "engines": {
         "node": ">=14",
-        "npm": ">=6"
+        "npm": ">=8"
     },
     "bugs": {
         "url": "https://github.com/zenfuse/zenfuse.js/issues",
