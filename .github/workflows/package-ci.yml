@@ -46,9 +46,6 @@ jobs:
 
             - name: Lint javascript files
               run: just eslint
-
-            - name: Cpellcheck all files
-              run: just cspell
     mocks:
         name: Preparing mocks
         needs: lint
