@@ -7,8 +7,8 @@ sidebar_position: 1
 Zenfuse.js is a crypto trading library connector for Node.js. For trading, analyze, visualize and manage any data from API easily on supported exchanges.
 
 **Current exchanges:**<br/>
-![Binance](/img/exchanges/badges/binance-badge.svg)
-![FTX](/img/exchanges/badges/FTX-badge.svg)
+![Binance](/img/exchanges/badges/Binance-badge.svg)
+![Huobi](/img/exchanges/badges/Huobi-badge.svg)
 ![OKX](/img/exchanges/badges/OKX-badge.svg)
 ![Bitglobal](/img/exchanges/badges/Bitglobal-badge.svg)
 
@@ -74,18 +74,18 @@ We strongly recommend see the sources for better understanding. The library isn'
 ### A small showcase for the impatient
 
 ```js
-import { FTX, Binance } from 'zenfuse';
+import { Huobi, Binance } from 'zenfuse';
 
-const ftx = new FTX.spot();
+const Huobi = new Huobi.spot();
 
-// Fetch current BTC/USD price from FTX exchange
-ftx.fetchPrice('BTC/USD').then((price) => {
+// Fetch current BTC/USD price from Huobi exchange
+Huobi.fetchPrice('BTC/USD').then((price) => {
     console.log('Current BTC/USD price:', price);
 });
 
-// Fetch all current listing coins from FTX
-ftx.fetchTickers().then((tickers) => {
-    console.log('All FTX tickers', tickers.join(', '));
+// Fetch all current listing coins from Huobi
+Huobi.fetchTickers().then((tickers) => {
+    console.log('All Huobi tickers', tickers.join(', '));
 });
 
 const binance = new Binance.spot();

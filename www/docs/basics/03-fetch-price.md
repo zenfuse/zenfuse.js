@@ -56,13 +56,13 @@ To get current price in real time you need `marketDataStream` instance.
 ### Create `marketDataCreate` instance
 
 ```js
-import { FTX } from 'zenfuse';
+import { Huobi } from 'zenfuse';
 
 // Create exchange instance
-const ftx = FTX.spot();
+const huobi = Huobi.spot();
 
 // Create stream instance
-const marketDataStream = ftx.getMarketDataStream();
+const marketDataStream = huobi.getMarketDataStream();
 ```
 
 ### Get price stream for specific market
@@ -74,7 +74,7 @@ marketDataStream.open();
 // Subscribe for current BTC price
 marketDataStream.subscribeTo({
     channel: 'price',
-    symbol: 'ETH/USD', // ftx market symbol
+    symbol: 'ETH/USD', // huobi market symbol
 });
 
 // After we will handle newPrice events
@@ -109,7 +109,7 @@ marketDataStream.subscribeTo({
     symbol: 'ETH/USD',
 });
 
-// FTX token (this stream from ftx exhcnage)
+// Huobi token (this stream from huobi exhcnage)
 marketDataStream.subscribeTo({
     channel: 'price',
     symbol: 'FTT/USD',

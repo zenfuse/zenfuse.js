@@ -1,5 +1,4 @@
 const { z } = require('zod');
-const { timeIntervals } = require('../../exchanges/ftx/metadata');
 
 /**
  * @typedef ZenfuseKline
@@ -7,7 +6,7 @@ const { timeIntervals } = require('../../exchanges/ftx/metadata');
  * @property {number} hight
  * @property {number} low
  * @property {number} close
- * @property {timeIntervals} timestamp
+ * @property {string} timestamp
  * @property {string} interval
  * @property {boolean} [isClosed] Exists only from stream
  * @property {string} symbol

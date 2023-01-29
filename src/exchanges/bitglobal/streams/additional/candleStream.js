@@ -3,7 +3,7 @@ const utils = require('../../../../base/utils/utils');
 const MarketDataStream = require('../marketDataStream');
 
 /**
- * Creates candlestick stream for FTX, witch based only on trades.
+ * Creates candlestick stream for Bitglobal, witch based only on trades.
  *
  * **NOTE:** Only one stream should be registered on instance
  *

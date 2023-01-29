@@ -13,10 +13,10 @@ Each instance can has unique environment and specifying scope of connection usag
 Example with all exchanges classes:
 
 ```js
-import { Binance, FTX, OKX, BitGlobal } from 'zenfuse';
+import { Binance, Huobi, OKX, BitGlobal } from 'zenfuse';
 
 const binance = new Binance.spot();
-const ftx = new FTX.spot();
+const huobi = new Huobi.spot();
 const okx = new OKX.spot();
 const bitglobal = new BitGlobal.spot();
 ```

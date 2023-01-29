@@ -7,16 +7,16 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="49"
+   width="71"
    height="20"
    role="img"
-   aria-label="FTX"
+   aria-label="Binance"
    version="1.1"
-   id="svg1687"
-   sodipodi:docname="FTX-badge.svg"
+   id="svg154"
+   sodipodi:docname="Binance-badge.svg"
    inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
   <metadata
-     id="metadata1693">
+     id="metadata160">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -27,7 +27,7 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs1691" />
+     id="defs158" />
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -39,18 +39,17 @@
      inkscape:pageshadow="2"
      inkscape:window-width="1536"
      inkscape:window-height="832"
-     id="namedview1689"
+     id="namedview156"
      showgrid="false"
-     showguides="false"
-     inkscape:zoom="9.1058037"
-     inkscape:cx="24.5"
+     inkscape:zoom="4.8252568"
+     inkscape:cx="8.7656718"
      inkscape:cy="10"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg1687" />
+     inkscape:current-layer="g152" />
   <title
-     id="title1661">FTX</title>
+     id="title128">Binance</title>
   <linearGradient
      id="s"
      x2="0"
@@ -59,40 +58,40 @@
        offset="0"
        stop-color="#bbb"
        stop-opacity=".1"
-       id="stop1663" />
+       id="stop130" />
     <stop
        offset="1"
        stop-opacity=".1"
-       id="stop1665" />
+       id="stop132" />
   </linearGradient>
   <clipPath
      id="r">
     <rect
-       width="49"
+       width="71"
        height="20"
        rx="3"
        fill="#fff"
-       id="rect1668" />
+       id="rect135" />
   </clipPath>
   <g
      clip-path="url(#r)"
-     id="g1677">
+     id="g144">
     <rect
        width="0"
        height="20"
        fill="#555"
-       id="rect1671" />
+       id="rect138" />
     <rect
        x="0"
-       width="49"
+       width="71"
        height="20"
-       fill="#11a9bc"
-       id="rect1673" />
+       fill="#f3ba2f"
+       id="rect140" />
     <rect
-       width="49"
+       width="71"
        height="20"
        fill="url(#s)"
-       id="rect1675" />
+       id="rect142" />
   </g>
   <g
      fill="#fff"
@@ -100,47 +99,50 @@
      font-family="Verdana,Geneva,DejaVu Sans,sans-serif"
      text-rendering="geometricPrecision"
      font-size="110"
-     id="g1685">
+     id="g152">
     <text
        aria-hidden="true"
-       x="335"
+       x="445"
        y="150"
-       fill="#010101"
+       fill="#ccc"
        fill-opacity=".3"
        transform="scale(.1)"
-       textLength="210"
-       id="text1681">FTX</text>
+       textLength="430"
+       id="text148">Binance</text>
     <text
-       x="335"
+       x="445"
        y="140"
        transform="scale(.1)"
-       fill="#fff"
-       textLength="210"
-       id="text1683">FTX</text>
-  </g>
-  <g
-     transform="matrix(0.01082586,0,0,-0.0124533,-35.058605,56.139476)"
-     id="g12"
-     style="fill:#ffffff">
-    <path
-       id="path38"
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 4067.87,3142.9 h 298.8 v 298.7 h -298.8 v -298.7"
-       inkscape:connector-curvature="0" />
-    <path
-       id="path40"
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 4631.77,3854.5 h -563.9 v -298.8 h 563.9 v 0 h 102.55 v 298.7 h -102.55 v 0.1"
-       inkscape:connector-curvature="0" />
-    <path
-       id="path42"
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 4067.87,4267.1 v -298.7 h 925.6 v 298.7 h -925.6"
-       inkscape:connector-curvature="0" />
-    <path
-       id="path44"
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 3700.27,3555.7 h 298.7 v 298.8 h -298.7 v -298.8"
-       inkscape:connector-curvature="0" />
+       fill="#333"
+       textLength="430"
+       id="text150">Binance</text>
+    <g
+       fill="#f3ba2f"
+       id="g548"
+       transform="matrix(0.11057927,0,0,0.11057578,5.0005664,3)"
+       style="fill:#333333;fill-opacity:1">
+      <path
+         d="M 38.72,53.2 63.31,28.62 87.91,53.22 102.21,38.91 63.31,0 24.41,38.9 Z"
+         id="path522"
+         style="fill:#333333;fill-opacity:1" />
+      <path
+         d="M 3.64,53.19 H 23.87 V 73.42 H 3.64 Z"
+         transform="rotate(-45,14.029909,62.648622)"
+         id="path524"
+         style="fill:#333333;fill-opacity:1" />
+      <path
+         d="M 38.72,73.41 63.31,98 87.91,73.4 102.22,87.69 102.21,87.7 63.31,126.61 24.41,87.72 24.39,87.7 Z"
+         id="path526"
+         style="fill:#333333;fill-opacity:1" />
+      <path
+         d="m 101.64,53.19 h 20.23 v 20.23 h -20.23 z"
+         transform="rotate(-45,112.03241,62.654657)"
+         id="path528"
+         style="fill:#333333;fill-opacity:1" />
+      <path
+         d="M 77.82,63.3 63.31,48.78 52.58,59.51 l -1.24,1.23 -2.54,2.54 -0.02,0.02 0.02,0.03 14.51,14.5 14.51,-14.52 0.01,-0.01 z"
+         id="path530"
+         style="fill:#333333;fill-opacity:1" />
+    </g>
   </g>
 </svg>

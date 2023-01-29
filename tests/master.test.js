@@ -42,10 +42,6 @@ const KlineSchema = require('../src/base/schemas/kline');
  * @param {MasterTestEnvironment} env
  */
 module.exports = function masterTest(Exchange, env) {
-    /**
-     * @typedef {import('../src/exchanges/ftx/wallets/spot.js')} FtxSpot
-     */
-
     // TODO: Options usage tests
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,9 +49,6 @@ module.exports = function masterTest(Exchange, env) {
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     describe('Spot Wallet HTTP interface', () => {
-        /**
-         * @type {FtxSpot}
-         */
         let exchange = new Exchange['spot']();
 
         describe('ping()', () => {
@@ -498,10 +491,6 @@ module.exports = function masterTest(Exchange, env) {
     ////////////////////////////////////  WEBSOCKET INTERFACE  ////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @typedef {import('../src/exchanges/ftx/streams/accountDataStream.js')} AccountDataStream
-     */
-
     describe('Spot Wallet Private Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
@@ -514,9 +503,6 @@ module.exports = function masterTest(Exchange, env) {
          */
         let accountDataStream;
 
-        /**
-         * @type {FtxSpot}
-         */
         let exchange;
 
         beforeAll(() => {
@@ -584,10 +570,6 @@ module.exports = function masterTest(Exchange, env) {
         });
     });
 
-    /**
-     * @typedef {import('../src/exchanges/ftx/streams/marketDataStream.js')} MarketDataStream
-     */
-
     describe('Spot Wallet Public Stream', () => {
         if (isIntegrationTest) {
             // TODO: Mock websocket
@@ -600,9 +582,6 @@ module.exports = function masterTest(Exchange, env) {
          */
         let marketDataStream;
 
-        /**
-         * @type {FtxSpot}
-         */
         let exchange;
 
         beforeAll(() => {

@@ -8,7 +8,7 @@ const klineFilePath = __dirname + '/mocks/static/kline.json';
 const spotConfigFilePath = __dirname + '/mocks/static/spotConfig.json';
 
 /**
- * HTTP mocking scope for FTX master test
+ * HTTP mocking scope for Bitglobal master test
  * Should be as
  *
  * @param {import('../../master.test').MasterTestEnvironment} env

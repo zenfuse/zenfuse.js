@@ -1,5 +1,4 @@
 import Binance from './exchanges/binance';
-import FTX from './exchanges/ftx';
 import Bitglobal from './exchanges/bitglobal';
 import OKX from './exchanges/okx';
 
@@ -11,7 +10,6 @@ import configurator from './base/conf/configurator';
  */
 module.exports = {
     Binance,
-    FTX,
     Bitglobal,
     OKX,
 
