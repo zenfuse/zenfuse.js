@@ -27,17 +27,6 @@
             }
         },
         {
-            "name": "FTX E2E Tests",
-            "request": "launch",
-            "runtimeArgs": ["run-script", "test:e2e", "ftx"],
-            "runtimeExecutable": "npm",
-            "skipFiles": ["<node_internals>/**/*"],
-            "type": "node",
-            "env": {
-                "NODE_DEBUG": "zenfuse*"
-            }
-        },
-        {
             "name": "OKX E2E Tests",
             "request": "launch",
             "runtimeArgs": ["run-script", "test:e2e", "okx"],
@@ -93,18 +82,7 @@
             }
         },
         {
-            "name": "FTX Integration Tests",
-            "request": "launch",
-            "runtimeArgs": ["run-script", "test:integration", "ftx"],
-            "runtimeExecutable": "npm",
-            "skipFiles": ["<node_internals>/**/*"],
-            "type": "node",
-            "env": {
-                "NODE_DEBUG": "zenfuse*"
-            }
-        },
-        {
-            "name": "FTX Integration Tests",
+            "name": "OKX Integration Tests",
             "request": "launch",
             "runtimeArgs": ["run-script", "test:integration", "okx"],
             "runtimeExecutable": "npm",
