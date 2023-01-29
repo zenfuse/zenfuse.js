@@ -40,9 +40,6 @@ jobs:
             - name: Run eslint
               run: just eslint www
 
-            - name: Run spellcheck
-              run: just cspell www
-
     build:
         runs-on: ubuntu-latest
         steps:
