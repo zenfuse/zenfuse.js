@@ -1,5 +1,4 @@
 const Binance = require('./exchanges/binance');
-const FTX = require('./exchanges/ftx');
 const Bitglobal = require('./exchanges/bitglobal');
 const OKX = require('./exchanges/okx');
 const ExchangeBaseException = require('./base/errors/exchange.error');
@@ -10,7 +9,6 @@ const Huobi = require('./exchanges/huobi');
  */
 module.exports = {
     Binance,
-    FTX,
     OKX,
     Bitglobal,
     Huobi,

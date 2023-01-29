@@ -45,8 +45,11 @@ function Badges() {
                 ></img>
             </a>
 
-            <a style={{ 'margin-right': '0.3em' }} href="https://ftx.com">
-                <img src="img/exchanges/badges/FTX-badge.svg" alt="FTX"></img>
+            <a style={{ 'margin-right': '0.3em' }} href="https://huobi.com">
+                <img
+                    src="img/exchanges/badges/Huobi-badge.svg"
+                    alt="Huobi"
+                ></img>
             </a>
             <a style={{ 'margin-right': '0.3em' }} href="https://okx.com">
                 <img src="img/exchanges/badges/OKX-badge.svg" alt="OKX"></img>
