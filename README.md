@@ -61,18 +61,18 @@ binance.auth(creds).postOrder(params);
 #### More code showcase
 
 ```js
-import { FTX, Binance } from 'zenfuse';
+import { Huobi, Binance } from 'zenfuse';
 
-const ftx = new FTX.spot();
+const Huobi = new Huobi.spot();
 
-// Fetch current BTC/USD price from FTX exchange
-ftx.fetchPrice('BTC/USD').then((price) => {
+// Fetch current BTC/USD price from Huobi exchange
+Huobi.fetchPrice('BTC/USD').then((price) => {
     console.log('Current BTC/USD price:', price);
 });
 
-// Fetch all current listing coins from FTX
-ftx.fetchTickers().then((tickers) => {
-    console.log('All FTX tickers', tickers.join(', '));
+// Fetch all current listing coins from Huobi
+Huobi.fetchTickers().then((tickers) => {
+    console.log('All Huobi tickers', tickers.join(', '));
 });
 
 const binance = new Binance.spot();
