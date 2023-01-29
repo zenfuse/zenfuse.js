@@ -12,7 +12,7 @@ const pairsFilePath = __dirname + '/mocks/static/pairs.json';
 const candlesFilePath = __dirname + '/mocks/static/candles.json';
 
 /**
- * HTTP mocking scope for FTX master test
+ * HTTP mocking scope for Huobi master test
  * Should be as
  *
  * @param {import('../../master.test').MasterTestEnvironment} env
