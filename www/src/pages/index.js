@@ -40,7 +40,7 @@ function Badges() {
         <>
             <a style={{ 'margin-right': '0.3em' }} href="https://binance.com">
                 <img
-                    src="img/exchanges/badges/binance-badge.svg"
+                    src="img/exchanges/badges/Binance-badge.svg"
                     alt="Binance"
                 ></img>
             </a>

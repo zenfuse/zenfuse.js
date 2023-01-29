@@ -7,7 +7,7 @@ sidebar_position: 1
 Zenfuse.js is a crypto trading library connector for Node.js. For trading, analyze, visualize and manage any data from API easily on supported exchanges.
 
 **Current exchanges:**<br/>
-![Binance](/img/exchanges/badges/binance-badge.svg)
+![Binance](/img/exchanges/badges/Binance-badge.svg)
 ![Huobi](/img/exchanges/badges/Huobi-badge.svg)
 ![OKX](/img/exchanges/badges/OKX-badge.svg)
 ![Bitglobal](/img/exchanges/badges/Bitglobal-badge.svg)
