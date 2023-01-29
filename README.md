@@ -63,15 +63,15 @@ binance.auth(creds).postOrder(params);
 ```js
 import { Huobi, Binance } from 'zenfuse';
 
-const Huobi = new Huobi.spot();
+const huobi = new Huobi.spot();
 
 // Fetch current BTC/USD price from Huobi exchange
-Huobi.fetchPrice('BTC/USD').then((price) => {
+huobi.fetchPrice('BTC/USD').then((price) => {
     console.log('Current BTC/USD price:', price);
 });
 
 // Fetch all current listing coins from Huobi
-Huobi.fetchTickers().then((tickers) => {
+huobi.fetchTickers().then((tickers) => {
     console.log('All Huobi tickers', tickers.join(', '));
 });
 
