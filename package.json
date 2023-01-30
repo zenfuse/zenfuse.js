@@ -42,7 +42,7 @@
         "email": "v@izzqz.me"
     },
     "homepage": "https://zenfuse.js.org",
-    "types": "./types",
+    "types": "./zenfuse.d.ts",
     "devDependencies": {
         "@cspell/dict-companies": "^3.0.1",
         "@cspell/dict-cryptocurrencies": "^3.0.0",

@@ -13,9 +13,7 @@ const KlineSchema = require('./schemas/kline');
 
 /**
  * @typedef {object} ExtraWsOptions
- * @property {string} prefixUrl When specified, `prefixUrl` will be
- *      prepended to websocket `url`.
- *      **Note:** Path will be overwritten
+ * @property {string} prefixUrl 
  */
 
 /**
