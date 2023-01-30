@@ -1,8 +1,8 @@
 const Binance = require('./exchanges/binance');
 const Bitglobal = require('./exchanges/bitglobal');
+const Huobi = require('./exchanges/huobi');
 const OKX = require('./exchanges/okx');
 const ExchangeBaseException = require('./base/errors/exchange.error');
-const Huobi = require('./exchanges/huobi');
 
 /**
  * @enum
