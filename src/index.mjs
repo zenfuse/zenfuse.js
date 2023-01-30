@@ -1,18 +1,22 @@
-import Binance from './exchanges/binance';
-import Bitglobal from './exchanges/bitglobal';
-import OKX from './exchanges/okx';
+import Binance from './exchanges/binance/index.js';
+import Huobi from './exchanges/huobi/index.js';
+import Bitglobal from './exchanges/bitglobal/index.js';
+import OKX from './exchanges/okx/index.js';
 
-import ExchangeBaseException from './base/errors/exchange.error';
-import configurator from './base/conf/configurator';
+import ExchangeBaseException from './base/errors/exchange.error.js';
+import configurator from './base/conf/configurator.js';
 
-/**
- * @enum
- */
-module.exports = {
+const errorCodes = ExchangeBaseException.errorCodes;
+const config = configurator;
+
+export const zenfuse = {
     Binance,
+    Huobi,
     Bitglobal,
     OKX,
-
-    errorCodes: ExchangeBaseException.errorCodes,
-    config: configurator,
+    ////
+    errorCodes,
+    config,
 };
+
+export default zenfuse;
