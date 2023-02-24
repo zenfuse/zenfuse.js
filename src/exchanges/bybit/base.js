@@ -25,7 +25,7 @@ class BybitBase extends ExchangeBase {
             prefixUrl: 'https://api.bybit.com/',
         },
         wsClientOptions: {
-            prefixUrl: 'wss://stream.binance.com:9443/',
+            prefixUrl: 'wss://stream.bybit.com/v5/public/spot',
         },
     };
     /**
@@ -119,7 +119,7 @@ class BybitBase extends ExchangeBase {
      * @public
      */
     async ping() {
-        return await this.publicFetch('api/v3/ping');
+        return await this.publicFetch('v3/public/time');
     }
 
     /**
