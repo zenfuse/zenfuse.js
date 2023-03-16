@@ -11,9 +11,11 @@
 <!-- Example: https://img.shields.io/badge/-Huobi-fff?logo=data:image/svg+xml;base64,PHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA4OCAxMzUuOSIgdmlld0JveD0iMCAwIDg4IDEzNS45IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Im01Ny44IDQxLjhjMC0xOS41LTkuNC0zNi4zLTE2LjYtNDEuOCAwIDAtLjUtLjMtLjUuNS0uNiAzNy43LTE5LjcgNDgtMzAuMyA2MS43LTI0LjMgMzEuOC0xLjcgNjYuNiAyMS4zIDczIDEyLjkgMy42LTMtNi40LTUtMjcuNC0yLjQtMjUuNSAzMS4xLTQ0LjkgMzEuMS02NiIgZmlsbD0iIzI4MmU1YiIvPjxwYXRoIGQ9Im03MC40IDU0LjdjLS4xLS4xLS4zLS4xLS41IDAgMCAwIDAgMC0uMS4xLS40IDQuNy01LjYgMTQuOS0xMi4xIDI0LjItMjIuMSAzMS42LTkuNSA0Ni44LTIuNCA1NSA0LjEgNC44IDAgMCAxMC4zLTQuOS44LS40IDIwLTEwLjYgMjIuMS0zMy43IDIuMS0yMi41LTEyLjItMzYuNi0xNy4zLTQwLjciIGZpbGw9IiMwNTliZGMiLz48L3N2Zz4=&logoWidth=10 -->
 
 [![Binance](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/Binance-badge.svg)](https://binance.com)
+[![Bybit](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/Bybit-badge.svg)](https://bybit.com)
 [![Huobi](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/Huobi-badge.svg)](https://huobi.com)
 [![OKX](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com)
 [![Bitglobal](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/Bitglobal-badge.svg)](https://bitglobal.com)
+
 
 # Comprehensive crypto trading library
 
