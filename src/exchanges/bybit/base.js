@@ -78,17 +78,16 @@ class BybitBase extends ExchangeBase {
         this.throwIfNotHasKeys();
 
         if (!options.searchParams) options.searchParams = {};
-        
+
         const timestamp = Date.now();
-        const queryString = new URLSearchParams(options.searchParams).toString();
+        const queryString = new URLSearchParams(
+            options.searchParams,
+        ).toString();
         const RECV_WINDOW = 5000;
 
         const sigString = `${timestamp}${this.keys.publicKey}${RECV_WINDOW}${queryString}`;
 
-        const signature = createHmac(
-            'sha256',
-            this.keys.secretKey,
-        )
+        const signature = createHmac('sha256', this.keys.secretKey)
             .update(sigString)
             .digest(this.signatureEncoding);
 

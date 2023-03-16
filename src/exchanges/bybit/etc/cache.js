@@ -13,7 +13,7 @@ class BybitCache extends BaseGlobalCache {
      * @param {BybitBase} baseInstance
      */
     constructor(baseInstance) {
-        super('binance');
+        super('bybit');
         this.base = baseInstance;
         this.localCache = {
             openOrders: new Map(),
@@ -83,8 +83,7 @@ class BybitCache extends BaseGlobalCache {
      */
     careCachedOrders() {
         const isShouldCut =
-            this.localCache.openOrders.length >
-            BybitCache.ORDERS_CACHE_LENGTH;
+            this.localCache.openOrders.length > BybitCache.ORDERS_CACHE_LENGTH;
 
         if (isShouldCut) {
             const lastOrderId = [...this.localCache.openOrders.keys()].shift();

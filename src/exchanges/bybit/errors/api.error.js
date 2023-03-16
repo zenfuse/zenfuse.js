@@ -21,9 +21,7 @@ class BybitApiException extends ExchangeBaseException {
         const bErrCode = err.response.body.code;
 
         if (BybitApiException.codesMap.has(bErrCode)) {
-            this.code = BybitApiException.codesMap.get(
-                err.response.body.code,
-            );
+            this.code = BybitApiException.codesMap.get(err.response.body.code);
         } else {
             this.code = 'UNKNOWN_EXCEPTION';
         }

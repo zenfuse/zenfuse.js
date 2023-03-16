@@ -50,8 +50,8 @@ class BybitSpot extends BybitBase {
     async fetchTickers() {
         const response = await this.publicFetch('/v5/market/instruments-info', {
             searchParams: {
-                category: 'spot'
-            }
+                category: 'spot',
+            },
         });
 
         this.cache.updateCache(response);
@@ -78,7 +78,7 @@ class BybitSpot extends BybitBase {
      * @returns {string[]} Array of ticker pairs on this exchange
      */
     async fetchMarkets() {
-        const response = await this.publicFetch('v5/market/tickers', );
+        const response = await this.publicFetch('v5/market/tickers');
 
         this.cache.updateCache(response);
 
@@ -231,9 +231,7 @@ class BybitSpot extends BybitBase {
 
         const zCreatedOrder = this.transformBybitOrder(bPostedOrder);
 
-        zCreatedOrder.symbol = await this.parseBybitSymbol(
-            bPostedOrder.symbol,
-        );
+        zCreatedOrder.symbol = await this.parseBybitSymbol(bPostedOrder.symbol);
 
         this.cache.cacheOrder(zCreatedOrder);
 
