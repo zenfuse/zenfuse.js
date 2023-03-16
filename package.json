@@ -1,6 +1,6 @@
 {
     "name": "zenfuse",
-    "version": "0.12.0",
+    "version": "0.13.0",
     "description": "Comprehensive crypto trading library",
     "main": "src/index.cjs",
     "scripts": {
