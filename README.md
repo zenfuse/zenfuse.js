@@ -14,7 +14,6 @@
 [![Bybit](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/Bybit-badge.svg)](https://bybit.com)
 [![Huobi](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/Huobi-badge.svg)](https://huobi.com)
 [![OKX](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com)
-[![Bitglobal](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/Bitglobal-badge.svg)](https://bitglobal.com)
 
 
 # Comprehensive crypto trading library
@@ -25,9 +24,9 @@
 [![Zenfuse Dev Tool](https://zenfuse.io/badges/devtool.svg)](https://zenfuse.io)
 
 > **Note**
-> This library is in active state of development. Feel free to [create any issue](https://github.com/zenfuse/zenfuse.js/issues) or ask about anything in [Github Discussions](https://github.com/zenfuse/zenfuse.js/discussions).
+> Feel free to [create any issue](https://github.com/zenfuse/zenfuse.js/issues) or ask about anything in [Github Discussions](https://github.com/zenfuse/zenfuse.js/discussions).
 
-This is a crypto trading library connector for Node.js. For trading, analyze, visualize and manage any data from API easily on supported exchanges.
+This is a crypto trading library connector for Node.js. For trading, analyze, visualize and manage any data from API easily on supported exchanges and more.
 
 ### Key features:
 
@@ -53,14 +52,9 @@ binance.fetchPrice('BTC/USDT');
 // Post order
 binance.auth(creds).postOrder(params);
 ```
-
-### See full documentation in [zenfuse.js.org](https://zenfuse.js.org)
-
 ---
 
-"Talk is cheap. Show me the code."
-
-#### More code showcase
+#### Simple code showcase
 
 ```js
 import { Huobi, Binance } from 'zenfuse';
@@ -123,4 +117,5 @@ marketDataStream.on('newPrice', (event) => {
 });
 ```
 
-For more examples and guides see https://zenfuse.js.org/docs/intro
+### **See documentation in [zenfuse.js.org](https://zenfuse.js.org/docs/intro/)**
+
