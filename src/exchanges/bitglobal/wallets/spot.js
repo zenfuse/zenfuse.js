@@ -16,6 +16,8 @@ const { timeIntervals } = require('../metadata');
 /**
  * Bitglobal class for spot wallet API
  *
+ * @deprecated Not working by now due to exchange update
+ * @see https://support.bithumb.pro/hc/en-us/articles/21874365451289-Announcement-on-BitGlobal-Platform-Upgrade
  */
 class BitglobalSpot extends BitglobalBase {
     static DEFAULT_OPTIONS = {
