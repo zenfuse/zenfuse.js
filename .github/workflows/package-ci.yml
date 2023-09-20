@@ -111,7 +111,7 @@ jobs:
               run: npm ci
 
             - name: Run unit tests
-              run: just test unit
+              run: just test-unit
 
     integration-tests:
         needs: [lint, mocks]
@@ -144,4 +144,4 @@ jobs:
               run: npm ci
 
             - name: Run integration tests
-              run: just test integration
+              run: just test-integration

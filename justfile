@@ -27,11 +27,27 @@ download-mocks *args:
 
 alias dm := download-mocks
 
-# Run test [ unit | integration | e2e ] for npm package
-test mode *args:
-    TEST_MODE={{mode}} node --unhandled-rejections=strict node_modules/.bin/jest \
-    --no-cache --runInBand \
-    {{ if mode == "unit" { "--testMatch '**/?(*.)+(spec).js'" } else { "" } }} {{args}}
+jest_command := 'node --unhandled-rejections=strict node_modules/.bin/jest --no-cache --runInBand'
+
+# Run integration tests
+test-integration *args:
+    @echo '\033[44;1m INTEGRATION TEST \033[0m\n'
+
+    TEST_MODE=integration {{ jest_command }} \
+    --testPathIgnorePatterns=bitglobal.test.js {{ args }}
+
+# Run unit tests
+test-unit *args:
+    @echo '\033[47;1m UNIT TEST \033[0m\n'
+
+    TEST_MODE=unit {{ jest_command }} \
+    --testMatch '**/?(*.)+(spec).js' {{ args }}
+
+# Run end2end tests for specific exchange
+test-e2e *exchange:
+    @echo '\033[41;1m ! \033[43;30m E2E TEST {{ exchange }} \033[41;1m ! \033[0m\n'
+    
+    TEST_MODE=e2e {{ jest_command }} {{ exchange }}
 
 root := justfile_directory()
 
