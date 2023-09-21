@@ -12,7 +12,7 @@ module.exports = async () => {
 
     switch (testMode) {
         case 'e2e':
-            exitIfExchangeUnspecified()
+            exitIfExchangeUnspecified();
 
             /** @see https://github.com/nock/nock#turning-nock-off-experimental */
             process.env.NOCK_OFF = 'true';
