@@ -15,7 +15,7 @@ const ping = async (name, task) => {
     return await exchange
         .ping()
         .then(() => task.setOutput(getEndTime()))
-        .catch((err) => handleError(err, task))
+        .catch((err) => handleError(err, task));
 };
 
 const handleError = (err, task) => {
@@ -32,9 +32,7 @@ const handleError = (err, task) => {
     task('Bitglobal', async (task) => ping('Bitglobal', task));
     task('OKX', async (task) => ping('OKX', task));
     task('Huobi', async (task) => ping('Huobi', task));
-})().catch((err) => {
-    debugger;
-});
+})();
 
 /**
  *  Fix for error handler in ./node_modules/yoga-layout-prebuilt/yoga-layout/build/Release/nbind.js:53
