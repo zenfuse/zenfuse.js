@@ -2,6 +2,7 @@ name: Realdata Mocks
 
 on:
     workflow_dispatch:
+    workflow_call:
 
 jobs:
     mocks_github:
