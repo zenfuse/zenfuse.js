@@ -47,7 +47,7 @@ jobs:
             - name: Lint javascript files
               run: just eslint
     mocks:
-        uses: ./mocks.yml
+        uses: ./.github/workflows/mocks.yml
 
     unit-tests:
         needs: lint
