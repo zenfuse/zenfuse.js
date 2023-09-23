@@ -5,6 +5,8 @@ const mri = require('mri');
 const fs = require('fs/promises');
 const path = require('path');
 
+const HTTPError = require('got').HTTPError;
+
 const options = mri(process.argv.slice(2), {
     alias: {
         f: 'force',
@@ -68,7 +70,15 @@ task('Preparing mocks', async ({ task, setStatus }) => {
 
                 return downloadEach(mocksPath, downloadList, task);
             }),
-            task('Bitglobal', ({ task, setStatus }) => {
+            task('Bitglobal', ({ task, setStatus, setWarning }) => {
+                ///////
+                if (isOnly('bitglobal')) {
+                    setStatus('skipped by default');
+                    setWarning('Bitglobal is currently not supported');
+                    return;
+                }
+                ///////
+
                 if (!isOnly('bitglobal')) {
                     setStatus('skipped');
                     return;
@@ -220,3 +230,12 @@ const downloadEach = (mocksPath, downloadList, task) => {
         });
     }
 };
+
+/**
+ *  Fix for error handler in ./node_modules/yoga-layout-prebuilt/yoga-layout/build/Release/nbind.js:53
+ */
+process.setUncaughtExceptionCaptureCallback((err) => {
+    if (!(err instanceof HTTPError)) {
+        throw err;
+    }
+});

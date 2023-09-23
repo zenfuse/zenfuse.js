@@ -4,10 +4,11 @@
     "description": "Comprehensive crypto trading library",
     "main": "src/index.cjs",
     "scripts": {
+        "just": "just",
         "test": "just test unit && just test integration",
-        "test:e2e": "just test e2e",
-        "test:integration": "just test integration",
-        "test:unit": "just test unit",
+        "test:e2e": "just test-e2e",
+        "test:integration": "just test-integration",
+        "test:unit": "just test-unit",
         "format": "just format",
         "lint": "just lint",
         "download-mocks": "just download-mocks"
