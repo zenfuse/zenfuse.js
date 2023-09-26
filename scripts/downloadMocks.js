@@ -231,12 +231,15 @@ const downloadEach = (mocksPath, downloadList, task) => {
     }
 };
 
-/**
- *  Fix for error handler in ./node_modules/yoga-layout-prebuilt/yoga-layout/build/Release/nbind.js:53
- */
-process.setUncaughtExceptionCaptureCallback((err) => {
+const handleError = (err) => {
     if (!(err instanceof HTTPError)) {
         throw err;
     }
     process.exitCode = 1;
-});
+}
+
+/**
+ *  Fix for error handler in ./node_modules/yoga-layout-prebuilt/yoga-layout/build/Release/nbind.js:53
+ */
+process.setUncaughtExceptionCaptureCallback(handleError);
+process.on('unhandledRejection', handleError);
