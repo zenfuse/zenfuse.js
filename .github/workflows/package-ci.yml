@@ -102,7 +102,6 @@ jobs:
               with:
                   name: static-mocks
                   path: tests/exchanges
-                  fail-on-cache-miss: true
 
             - name: Install npm dependencies
               run: npm ci
