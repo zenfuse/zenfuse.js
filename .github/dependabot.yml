@@ -2,10 +2,6 @@ version: 2
 updates:
     - package-ecosystem: 'npm'
       directory: '/'
-      groups:
-          update-types:
-          - "minor"
-          - "patch"
       schedule:
           interval: 'daily'
       reviewers:
