@@ -44,7 +44,7 @@ jobs:
     mocks_alt:
         name: Prepare mocks using self hosted runner
         needs: mocks_github
-        if: always() && (needs.lint.mocks_github == 'error')
+        if: needs.lint.mocks_github == 'failed'
 
         # Preparing mocks are running on self-hosted runner because GitHub runner location can be different and exchange can respond with 451 Unavailable For Legal Reasons
         runs-on: ubuntu-latest
