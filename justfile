@@ -23,7 +23,7 @@ install:
 
 # Download all static mocks for test usage
 download-mocks *args:
-    node scripts/downloadMocks.js {{args}}
+    node --unhandled-rejections=strict scripts/downloadMocks.js {{args}}
 
 alias dm := download-mocks
 
