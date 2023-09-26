@@ -15,7 +15,6 @@
 [![Huobi](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/Huobi-badge.svg)](https://huobi.com)
 [![OKX](https://raw.githubusercontent.com/zenfuse/zenfuse.js/main/www/static/img/exchanges/badges/OKX-badge.svg)](https://www.okx.com)
 
-
 # Comprehensive crypto trading library
 
 ![Supported version](https://img.shields.io/node/v/zenfuse?logo=nodedotjs)
@@ -52,6 +51,7 @@ binance.fetchPrice('BTC/USDT');
 // Post order
 binance.auth(creds).postOrder(params);
 ```
+
 ---
 
 #### Simple code showcase
@@ -118,4 +118,3 @@ marketDataStream.on('newPrice', (event) => {
 ```
 
 ### **See documentation in [zenfuse.js.org](https://zenfuse.js.org/docs/intro/)**
-

@@ -236,7 +236,7 @@ const handleError = (err) => {
         throw err;
     }
     process.exitCode = 1;
-}
+};
 
 /**
  *  Fix for error handler in ./node_modules/yoga-layout-prebuilt/yoga-layout/build/Release/nbind.js:53

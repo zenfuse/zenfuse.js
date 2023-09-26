@@ -40,7 +40,7 @@ jobs:
                   path: tests/exchanges/*/mocks/static/*
                   if-no-files-found: error
                   retention-days: 90
-    
+
     mocks_alt:
         needs: mocks_github
         if: always() && contains(join(needs.*.result, ','), 'success')
