@@ -1,0 +1,81 @@
+name: Realdata Mocks
+
+on:
+    workflow_dispatch:
+    workflow_call:
+
+jobs:
+    mocks_github:
+        runs-on: ubuntu-latest
+        continue-on-error: true
+        steps:
+            - uses: actions/checkout@v3
+            - uses: taiki-e/install-action@v2
+              with:
+                  tool: just
+            - uses: actions/setup-node@v3
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'npm'
+
+            - name: Update npm to latest
+              run: npm i -g npm@9 --registry=https://registry.npmjs.org
+
+            - name: Install npm dependencies
+              run: npm ci
+
+            - name: Restoring mocks from cache
+              uses: actions/cache@v3.3.1
+              with:
+                  path: tests/exchanges/*/mocks/static/*
+                  key: static-mocks
+
+            - name: Download mock files from exchanges
+              run: just download-mocks
+
+            - name: Upload static mocks
+              uses: actions/upload-artifact@v3.1.2
+              with:
+                  name: static-mocks
+                  path: tests/exchanges/*/mocks/static/*
+                  if-no-files-found: error
+                  retention-days: 90
+    
+    mocks_alt:
+        needs: mocks_github
+        if: always() && contains(join(needs.*.result, ','), 'success')
+
+        # Preparing mocks are running on self-hosted runner because GitHub runner location can be different and exchange can respond with 451 Unavailable For Legal Reasons
+        runs-on: self-hosted
+        steps:
+            - uses: actions/checkout@v3
+            - uses: taiki-e/install-action@v2
+              with:
+                  tool: just
+            - uses: actions/setup-node@v3
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'npm'
+
+            - name: Update npm to latest
+              run: npm i -g npm@9 --registry=https://registry.npmjs.org
+
+            - name: Install npm dependencies
+              run: npm ci
+
+            - name: Restoring mocks from cache
+              uses: actions/cache@v3.3.1
+              with:
+                  path: tests/exchanges/*/mocks/static/*
+                  key: static-mocks
+
+            - name: Download mock files from exchanges
+              run: just download-mocks
+
+            - name: Upload static mocks
+              uses: actions/upload-artifact@v3.1.2
+              with:
+                  name: static-mocks
+                  path: tests/exchanges/*/mocks/static/*
+                  if-no-files-found: error
+                  retention-days: 90
