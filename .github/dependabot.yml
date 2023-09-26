@@ -4,8 +4,8 @@ updates:
       directory: '/'
       groups:
           update-types:
-              - "minor"
-              - "patch"
+          - "minor"
+          - "patch"
       schedule:
           interval: 'daily'
       reviewers:
