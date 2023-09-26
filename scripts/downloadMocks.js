@@ -37,7 +37,7 @@ task('Preparing mocks', async ({ task, setStatus }) => {
         setStatus('forced');
     }
 
-    await task.group(
+    return await task.group(
         (task) => [
             task('Binance', ({ task, setStatus }) => {
                 if (!isOnly('binance')) {
@@ -238,4 +238,5 @@ process.setUncaughtExceptionCaptureCallback((err) => {
     if (!(err instanceof HTTPError)) {
         throw err;
     }
+    process.exitCode = 1;
 });
