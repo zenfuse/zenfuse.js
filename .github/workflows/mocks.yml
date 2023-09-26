@@ -25,7 +25,7 @@ jobs:
               run: npm ci
 
             - name: Restoring mocks from cache
-              uses: actions/cache@v3.3.1
+              uses: actions/cache@v3.3.2
               with:
                   path: tests/exchanges/*/mocks/static/*
                   key: static-mocks
@@ -64,7 +64,7 @@ jobs:
               run: npm ci
 
             - name: Restoring mocks from cache
-              uses: actions/cache@v3.3.1
+              uses: actions/cache@v3.3.2
               with:
                   path: tests/exchanges/*/mocks/static/*
                   key: static-mocks
