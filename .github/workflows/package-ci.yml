@@ -75,7 +75,7 @@ jobs:
               run: just test-unit
 
     integration-tests:
-        needs: [lint, mocks]
+        needs: [lint]
         if: always() && (needs.lint.result == 'success' || needs.lint.result == 'skipped')
         runs-on: ubuntu-latest
         strategy:
@@ -94,12 +94,6 @@ jobs:
 
             - name: Update npm to latest
               run: npm i -g npm@9 --registry=https://registry.npmjs.org
-
-            - name: Download static mocks
-              uses: actions/download-artifact@v3.0.2
-              with:
-                  name: static-mocks
-                  path: tests/exchanges
 
             - name: Install npm dependencies
               run: npm ci
