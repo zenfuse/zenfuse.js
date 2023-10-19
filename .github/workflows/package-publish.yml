@@ -24,7 +24,7 @@ jobs:
         if: always() && (needs.ci.result == 'success' || needs.ci.result == 'skipped')
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: actions/setup-node@v3
               with:
                   node-version: 18
@@ -52,7 +52,7 @@ jobs:
             packages: write
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: actions/setup-node@v3
               with:
                   node-version: 18
@@ -80,7 +80,7 @@ jobs:
         name: Post new release
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
 
             - name: Get the version
               id: version
