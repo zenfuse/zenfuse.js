@@ -1,6 +1,6 @@
 {
     "name": "zenfuse-docs",
-    "version": "0.13.1",
+    "version": "0.13.3",
     "private": true,
     "scripts": {
         "docusaurus": "docusaurus",
