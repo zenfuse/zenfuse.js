@@ -9,7 +9,7 @@ jobs:
         runs-on: ubuntu-latest
         continue-on-error: true
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: taiki-e/install-action@v2
               with:
                   tool: just
@@ -48,7 +48,7 @@ jobs:
         # Preparing mocks are running on self-hosted runner because GitHub runner location can be different and exchange can respond with 451 Unavailable For Legal Reasons
         runs-on: self-hosted
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: taiki-e/install-action@v2
               with:
                   tool: just
