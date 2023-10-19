@@ -33,6 +33,8 @@ jest_command := 'node --unhandled-rejections=strict node_modules/.bin/jest --no-
 test-integration *args:
     @echo '\033[44;1m INTEGRATION TEST \033[0m\n'
 
+    tar xvf tests/mocks.tar.gz
+
     TEST_MODE=integration {{ jest_command }} \
     --testPathIgnorePatterns=bitglobal.test.js {{ args }}
 
