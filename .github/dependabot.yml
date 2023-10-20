@@ -4,12 +4,13 @@ updates:
       directory: '/'
       schedule:
           interval: 'daily'
-      reviewers:
-          - 'izzqz'
+      groups:
+          dev:
+              dependency-type: development
+          production:
+              dependency-type: production
 
     - package-ecosystem: 'github-actions'
       directory: '/'
       schedule:
-          interval: 'weekly'
-      reviewers:
-          - 'izzqz'
+          interval: 'daily'
