@@ -30,7 +30,7 @@ jobs:
               with:
                   cache: true
 
-            - uses: actions/setup-node@v3
+            - uses: actions/setup-node@v4
               with:
                   node-version-file: '.nvmrc'
                   cache: 'npm'
@@ -60,7 +60,7 @@ jobs:
               with:
                   tool: just
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
@@ -87,7 +87,7 @@ jobs:
               with:
                   tool: just
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
