@@ -59,7 +59,7 @@ jobs:
 
             - name: Upload a Build Artifact
               if: success()
-              uses: actions/upload-artifact@v4.1.0
+              uses: actions/upload-artifact@v4.2.0
               with:
                   name: Docusaurus website
                   path: www/build
